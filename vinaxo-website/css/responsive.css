@@ -1,0 +1,837 @@
+/* ==========================================================================
+   VINAXO PREMIUM CORPORATE WEBSITE - COMPREHENSIVE RESPONSIVE STYLESHEET
+   Viewports: 320px, 360px, 375px, 390px, 414px, 430px, 768px, 820px, 1024px,
+              1280px, 1366px, 1536px, 1920px (FHD), 2560px (2K), 3840px (4K)
+   Supports Browser Zoom: 80%, 100%, 125%, 150%, 200%
+   ========================================================================== */
+
+/* ==========================================================================
+   1. LARGE DESKTOPS, 2K & 4K (>= 1440px)
+   ========================================================================== */
+@media (min-width: 1440px) {
+  .hero-title {
+    font-size: 3.875rem; /* ~62px */
+  }
+  .hero-image-card img {
+    height: 480px;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --container-max: 1360px;
+  }
+  .hero-title {
+    font-size: 4rem; /* 64px */
+  }
+  .hero-image-card img {
+    height: 520px;
+  }
+}
+
+@media (min-width: 2560px) {
+  :root {
+    --container-max: 1440px;
+  }
+}
+
+/* ==========================================================================
+   2. LAPTOP 14–15.6 INCH & COMPACT DESKTOPS (1101px to 1280px)
+   Prevents menu collisions on 1366x768 and 1280x720 laptops at 100%-120% zoom
+   ========================================================================== */
+@media (max-width: 1280px) and (min-width: 1101px) {
+  :root {
+    --nav-w-home: 72px;
+    --nav-w-about: 88px;
+    --nav-w-products: 76px;
+    --nav-w-quality: 84px;
+    --nav-w-markets: 94px;
+    --nav-w-news: 118px;
+    --nav-w-contact: 66px;
+    --header-logo-w: 215px;
+    --header-actions-w: 196px;
+    --header-quote-w: 136px;
+    --header-lang-w: 54px;
+  }
+
+  .desktop-nav {
+    gap: 2px;
+  }
+
+  .desktop-nav .nav-link {
+    font-size: 0.75rem; /* 12px */
+    padding: 0 4px;
+    height: 34px;
+  }
+
+  .brand-logo {
+    gap: 8px;
+  }
+
+  .brand-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .brand-name {
+    font-size: 1.25rem;
+  }
+
+  .brand-tagline {
+    font-size: 0.45rem;
+    letter-spacing: 0.04em;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  .header-quote-btn {
+    font-size: 0.6875rem;
+    padding: 0 8px;
+    height: 36px;
+  }
+
+  .lang-btn {
+    font-size: 0.75rem;
+    padding: 0 6px;
+    height: 34px;
+  }
+
+  .hero-grid {
+    gap: 32px;
+    grid-template-columns: 1fr 1.15fr;
+  }
+
+  .hero-title {
+    font-size: 3rem;
+  }
+
+  .hero-image-card img {
+    height: 400px;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .about-grid {
+    gap: 28px;
+  }
+
+  .about-metrics {
+    gap: 20px 16px;
+  }
+
+  .quality-global-grid {
+    gap: 40px;
+  }
+
+  .global-col {
+    padding-left: 36px;
+  }
+}
+
+/* ==========================================================================
+   3. TABLET LANDSCAPE & LAPTOP 125% ZOOM (<= 1100px)
+   Clean transition to mobile drawer. Eliminates overlap on iPad 1024px
+   and 1366px laptop at 125% zoom (1092px)
+   ========================================================================== */
+@media (max-width: 1100px) {
+  :root {
+    --header-height: 72px;
+  }
+
+  /* Header transitions cleanly to mobile navigation */
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .mobile-nav-toggle {
+    display: flex !important;
+  }
+
+  .header-quote-btn {
+    display: none !important;
+  }
+
+  .brand-logo {
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+  }
+
+  .header-actions {
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+    gap: 10px;
+  }
+
+  /* Hero Section */
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .hero-copy {
+    text-align: left;
+    max-width: 650px;
+  }
+
+  .hero-desc {
+    max-width: 100%;
+  }
+
+  .hero-image-card img {
+    height: 360px;
+  }
+
+  .hero-script-accent {
+    right: 16px;
+    top: -24px;
+  }
+
+  /* Products Grid */
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  /* About Section */
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .about-visual-card {
+    height: 260px;
+  }
+
+  .about-metrics {
+    padding-left: 0;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid #ECEEE7;
+    padding-top: 24px;
+  }
+
+  /* Quality & Global Market */
+  .quality-global-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .global-col {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid #ECEEE7;
+    padding-top: 40px;
+  }
+
+  /* News Grid */
+  .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .news-grid article:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+
+  /* Footer Grid */
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 36px;
+    padding-bottom: 40px;
+  }
+
+  /* CTA Banner */
+  .cta-banner-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 40px 28px;
+  }
+
+  /* Subpage components */
+  .leadership-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .facility-overview-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .media-relations-card {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 32px 24px;
+  }
+
+  .cards-grid-3,
+  .cards-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+/* ==========================================================================
+   4. TABLET PORTRAIT (<= 992px)
+   ========================================================================== */
+@media (max-width: 992px) {
+  .page-banner {
+    padding: 96px 0 44px 0;
+  }
+
+  .page-banner-title {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+  }
+
+  .process-steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .logistics-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .market-regions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-page-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .contact-partnership-cta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 32px 24px;
+  }
+}
+
+/* ==========================================================================
+   5. MOBILE LANDSCAPE & TABLETS (<= 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .section-title {
+    font-size: clamp(1.5rem, 4.5vw, 1.875rem);
+  }
+
+  .section-header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    padding-top: 28px;
+    padding-bottom: 56px;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 6.5vw, 2.625rem);
+  }
+
+  .hero-features {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .hero-image-card img {
+    height: 280px;
+  }
+
+  .hero-origin-stamp {
+    right: 16px;
+    bottom: -16px;
+  }
+
+  .stamp-inner {
+    width: 76px;
+    height: 76px;
+  }
+
+  .stamp-country {
+    font-size: 0.65rem;
+  }
+
+  .hero-script-accent p {
+    font-size: 1.5rem;
+  }
+
+  /* About Metrics */
+  .about-metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  /* Products Grid */
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  /* News Grid */
+  .news-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .news-grid article:nth-child(3) {
+    grid-column: auto;
+  }
+
+  /* Cards & Components */
+  .cards-grid-3,
+  .cards-grid-4 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .facility-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .contact-form-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .contact-map-frame {
+    height: 300px;
+  }
+
+  .process-steps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .logistics-bar {
+    grid-template-columns: 1fr;
+    padding: 24px 18px;
+  }
+
+  .timeline-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-form-panel {
+    padding: 24px 18px;
+  }
+
+  .facility-gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .certifications-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .product-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 24px 18px;
+  }
+
+  .product-detail-media img {
+    max-height: 220px;
+  }
+
+  /* CTA Banner */
+  .cta-banner-card {
+    min-height: auto;
+  }
+
+  .cta-banner-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 32px 20px;
+  }
+
+  .cta-banner-content {
+    padding: 24px 18px;
+  }
+
+  .cta-banner-grid .cta-banner-content {
+    padding: 0;
+  }
+
+  .cta-banner-title {
+    font-size: 1.625rem;
+  }
+
+  .cta-visual-card {
+    max-width: 100%;
+  }
+
+  /* Modal Form */
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-dialog {
+    padding: 0;
+  }
+
+  .modal-header {
+    padding: 20px 18px 14px;
+  }
+
+  .modal-body {
+    padding: 18px;
+  }
+
+  /* Footer */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-bottom: 32px;
+  }
+
+  .footer-bottom-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .footer-legal-links {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+/* ==========================================================================
+   6. INTERMEDIATE MOBILE (<= 640px)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .leadership-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .facility-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* ==========================================================================
+   7. STANDARD MOBILE PHONES (<= 480px / 430px / 390px / 375px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: clamp(1.75rem, 7.5vw, 2.125rem);
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero-image-card img {
+    height: 240px;
+  }
+
+  .hero-script-accent {
+    display: none; /* Prevents overflow & overlap on narrow screens */
+  }
+
+  .stamp-inner {
+    width: 68px;
+    height: 68px;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .product-image-box {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* Product category filter bar: smooth horizontal scroll on mobile */
+  .product-category-pills {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 8px;
+    gap: 8px;
+    scrollbar-width: none;
+  }
+
+  .product-category-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .product-cat-pill {
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: 0.8125rem;
+    padding: 6px 14px;
+  }
+
+  .certifications-list {
+    justify-content: flex-start;
+  }
+
+  .brand-tagline {
+    font-size: 0.4375rem;
+    letter-spacing: 0.04em;
+  }
+
+  .contact-map-bar {
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .contact-map-bar .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .contact-partnership-cta {
+    padding: 20px 16px;
+  }
+
+  .contact-partnership-actions {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .contact-partnership-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   8. MICRO MOBILE SCREENS (<= 360px / 320px)
+   iPhone SE 1st gen, small Android phones, 200% browser zoom
+   ========================================================================== */
+@media (max-width: 360px) {
+  :root {
+    --page-gutter: 12px;
+  }
+
+  .brand-logo {
+    gap: 6px;
+  }
+
+  .brand-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .brand-name {
+    font-size: 1.125rem;
+  }
+
+  .brand-tagline {
+    font-size: 0.38rem;
+    letter-spacing: 0.02em;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .lang-btn {
+    font-size: 0.72rem;
+    padding: 0 4px;
+    width: auto;
+    min-width: auto;
+  }
+
+  .mobile-nav-toggle {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+  }
+
+  .footer-contact-item {
+    font-size: 0.8125rem;
+  }
+}
+
+/* ==========================================================================
+   9. STANDARDIZED ICON & MEDIA CONTROLS
+   Ensures SVG elements never scale out of proportion or inherit broken widths
+   ========================================================================== */
+.feature-card-icon,
+.icon-box-feature {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.feature-card-icon svg,
+.icon-box-feature svg {
+  width: 24px;
+  height: 24px;
+  max-width: 24px;
+  max-height: 24px;
+  flex-shrink: 0;
+}
+
+.contact-icon-wrap,
+.stat-icon-wrap {
+  width: 20px;
+  height: 20px;
+  max-width: 20px;
+  max-height: 20px;
+  flex-shrink: 0;
+}
+
+.contact-icon-wrap svg,
+.stat-icon-wrap svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   10. TOUCH TARGET ACCESSIBILITY (Min 44x44px for primary controls)
+   ========================================================================== */
+@media (pointer: coarse) {
+  .btn,
+  .lang-btn,
+  .mobile-nav-toggle,
+  .footer-social-btn,
+  .product-arrow-btn,
+  .product-cat-pill,
+  .news-filter-btn {
+    min-height: 44px;
+  }
+
+  .footer-social-btn,
+  .mobile-nav-toggle {
+    min-width: 44px;
+  }
+
+  .mobile-nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* ==========================================================================
+   11. ACCESSIBILITY: REDUCED MOTION PREFERENCE
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .export-route,
+  .radar-pulse,
+  .radar-pulse-2 {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   12. REDESIGNED B2B EDITORIAL & COMPLIANCE COMPONENTS RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .market-regions-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .logistics-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    padding: 32px 28px;
+  }
+  .logistics-item {
+    border-right: none;
+    padding: 0;
+  }
+  .logistics-item:nth-child(1),
+  .logistics-item:nth-child(2) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 20px;
+  }
+  .certifications-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .subpage-cta-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .subpage-cta-banner {
+    padding: 40px 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .logistics-bar {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 24px 20px;
+  }
+  .logistics-item {
+    padding: 0 0 16px 0 !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+  .logistics-item:last-child {
+    padding-bottom: 0 !important;
+    border-bottom: none !important;
+  }
+  .certifications-grid-4 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .subpage-cta-banner {
+    padding: 32px 20px;
+    border-radius: 16px;
+  }
+  .subpage-cta-title {
+    font-size: 1.5rem;
+  }
+  .btn-cta-gold,
+  .btn-cta-ghost {
+    width: 100%;
+    justify-content: center;
+  }
+  .compliance-transparency-note {
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px 18px;
+  }
+}

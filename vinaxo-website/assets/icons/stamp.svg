@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" fill="none">
+  <!-- Outer subtle circular background -->
+  <circle cx="60" cy="60" r="58" fill="#FFFFFF" stroke="#E6EFE8" stroke-width="1.5"/>
+  <!-- Dashed green ring -->
+  <circle cx="60" cy="60" r="50" stroke="#174D32" stroke-width="1.6" stroke-dasharray="4,3.5"/>
+  <circle cx="60" cy="60" r="47" stroke="#174D32" stroke-width="0.7" opacity="0.3"/>
+  <!-- Text Elements -->
+  <text x="60" y="38" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="8.5" font-weight="800" letter-spacing="2.5" fill="#94A3B8">FROM</text>
+  <text x="60" y="56" text-anchor="middle" font-family="'Playfair Display', Georgia, serif" font-size="16" font-weight="900" letter-spacing="1.2" fill="#0F291E">VIETNAM</text>
+  <text x="60" y="72" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="7.5" font-weight="700" letter-spacing="1.8" fill="#174D32">TO THE WORLD</text>
+  <!-- Leaf icon at bottom -->
+  <g transform="translate(53, 80)">
+    <path d="M2 13C3.5 7.5 7.5 3.5 13 2.5C12 7.5 8 12 2 13Z" fill="#174D32"/>
+    <path d="M5 10C6.5 7 8.5 5 12 4" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round"/>
+  </g>
+</svg>
