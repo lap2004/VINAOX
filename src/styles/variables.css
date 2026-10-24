@@ -1,0 +1,64 @@
+/* ==========================================================================
+   VINAXO DESIGN SYSTEM TOKENS & VARIABLES
+   Premium Agricultural Corporate Website
+   ========================================================================== */
+
+:root {
+  /* Brand Color Palette */
+  --primary-green: #174D32;
+  --primary-light: #2D6A4F;
+  --forest-green: #103D2A;
+  --dark-green: #0C2717;
+  --light-sage: #E8F0E8;
+  --sage-border: #D2DFD2;
+  --cream-bg: #FAFAF5;
+  --soft-beige: #F4F1EA;
+  --white: #FFFFFF;
+
+  /* Accent & Status Colors */
+  --color-accent: #34A853;
+  --color-gold: #D4A373;
+  --color-gold-light: #FBF4EC;
+  --color-blue-badge: #1D4ED8;
+  --color-blue-bg: #EFF6FF;
+
+  /* Neutral & Text Colors */
+  --color-heading: #18271F;
+  --color-body: #505F56;
+  --color-body-dark: #2C3B33;
+  --color-muted: #839188;
+  --color-border: #E3E9E2;
+  --color-border-subtle: #EDF2EC;
+
+  /* Typography */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  --font-script: 'Caveat', cursive;
+
+  /* Layout & Spacing */
+  --container-max: 1320px;
+  --page-gutter: clamp(16px, 3.5vw, 40px);
+  --section-space: clamp(48px, 6vw, 96px);
+  --header-height: 80px;
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 9999px;
+
+  /* Elevation & Shadows */
+  --shadow-xs: 0 1px 3px rgba(16, 61, 42, 0.04);
+  --shadow-sm: 0 4px 12px rgba(16, 61, 42, 0.06);
+  --shadow-md: 0 10px 25px -4px rgba(16, 61, 42, 0.08), 0 4px 10px -2px rgba(16, 61, 42, 0.04);
+  --shadow-lg: 0 20px 35px -5px rgba(16, 61, 42, 0.10), 0 8px 16px -3px rgba(16, 61, 42, 0.05);
+  --shadow-xl: 0 25px 50px -12px rgba(16, 61, 42, 0.18);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.04);
+
+  /* Transitions */
+  --transition-fast: 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-base: 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
