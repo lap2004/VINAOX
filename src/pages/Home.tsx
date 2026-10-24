@@ -251,11 +251,11 @@ export const Home: React.FC = () => {
                   overflow: 'hidden',
                   border: '8px solid var(--white)',
                   boxShadow: 'var(--shadow-xl)',
-                  aspectRatio: '1/1',
-                  backgroundColor: '#E7EFE8',
+                  aspectRatio: '4/3',
+                  backgroundColor: '#F5F8F5',
                 }}
               >
-                <picture>
+                <picture style={{ display: 'block', width: '100%', height: '100%' }}>
                   <source srcSet="/assets/images/hero_fruits.webp" type="image/webp" />
                   <img
                     src="/assets/images/hero_fruits.jpg"
@@ -273,45 +273,62 @@ export const Home: React.FC = () => {
                 <div
                   style={{
                     position: 'absolute',
-                    bottom: '20px',
-                    left: '20px',
-                    right: '20px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.92)',
-                    backdropFilter: 'blur(8px)',
-                    padding: '14px 18px',
+                    bottom: '16px',
+                    left: '16px',
+                    right: '16px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.94)',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    padding: '12px 18px',
                     borderRadius: 'var(--radius-md)',
-                    border: '1px solid rgba(255, 255, 255, 0.8)',
-                    boxShadow: 'var(--shadow-md)',
+                    border: '1px solid rgba(255, 255, 255, 0.9)',
+                    boxShadow: '0 8px 24px rgba(16, 61, 42, 0.12)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    gap: '12px',
                   }}
                 >
-                  <div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
                     <div
                       style={{
                         fontFamily: 'var(--font-script)',
                         fontSize: '1.45rem',
                         color: 'var(--forest-green)',
                         fontWeight: 700,
-                        lineHeight: 1.1,
+                        lineHeight: 1.15,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
                       }}
                     >
                       Good Fruits, Brighter Tomorrows
                     </div>
-                    <div style={{ fontSize: '0.76rem', color: 'var(--color-body)' }}>
-                      {isVi ? 'Trái cây sấy dẻo nhiệt thấp chuẩn xuất khẩu' : 'Low-temperature export-grade dehydrated fruits'}
+                    <div
+                      style={{
+                        fontSize: '0.78rem',
+                        color: 'var(--color-body)',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {isVi
+                        ? 'Trái cây sấy dẻo nhiệt thấp chuẩn xuất khẩu'
+                        : 'Low-temperature export-grade dehydrated fruits'}
                     </div>
                   </div>
 
                   <div
                     style={{
-                      padding: '4px 10px',
+                      padding: '5px 12px',
                       borderRadius: 'var(--radius-pill)',
                       backgroundColor: 'var(--forest-green)',
                       color: '#FFFFFF',
-                      fontSize: '0.72rem',
+                      fontSize: '0.74rem',
                       fontWeight: 700,
+                      flexShrink: 0,
+                      letterSpacing: '0.04em',
                     }}
                   >
                     OCOP 3★
@@ -323,20 +340,21 @@ export const Home: React.FC = () => {
               <div
                 style={{
                   position: 'absolute',
-                  top: '-24px',
-                  right: '-24px',
-                  width: '104px',
-                  height: '104px',
+                  top: '-16px',
+                  right: '-16px',
+                  width: '92px',
+                  height: '92px',
                   zIndex: 3,
-                  filter: 'drop-shadow(0 6px 14px rgba(16, 61, 42, 0.18))',
+                  filter: 'drop-shadow(0 8px 20px rgba(16, 61, 42, 0.16))',
                   animation: 'spinSlow 36s linear infinite',
+                  pointerEvents: 'none',
                 }}
                 className="hero-floating-stamp"
               >
                 <img
                   src="/assets/icons/stamp.svg"
                   alt="From Vietnam to the World"
-                  style={{ width: '100%', height: '100%' }}
+                  style={{ width: '100%', height: '100%', display: 'block' }}
                 />
               </div>
             </div>
@@ -490,13 +508,13 @@ export const Home: React.FC = () => {
             </Link>
           </div>
 
-          {/* 5 Product Cards Grid */}
+          {/* Featured Product Cards Grid */}
           <div
-            className="grid-5"
+            className="home-products-grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
-              gap: '20px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: '24px',
             }}
           >
             {featuredProducts.map((p) => (

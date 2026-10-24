@@ -24,8 +24,14 @@
 
 .grid-5 {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: clamp(16px, 2vw, 24px);
+}
+
+.home-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
 }
 
 /* ==========================================================================
@@ -103,7 +109,8 @@
   .grid-2,
   .grid-3,
   .grid-4,
-  .grid-5 {
+  .grid-5,
+  .home-products-grid {
     grid-template-columns: 1fr !important;
   }
 

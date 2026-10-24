@@ -13,6 +13,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+  const langTimerRef = useRef<number | null>(null);
 
   // Monitor scroll for sticky header elevation
   useEffect(() => {
@@ -23,15 +24,30 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close language dropdown when clicking outside
+  // Close language dropdown on outside click (mouse or touch)
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
       if (langRef.current && !langRef.current.contains(e.target as Node)) {
         setIsLangOpen(false);
       }
     };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, []);
+
+  // Close on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsLangOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Lock scroll when mobile menu is open
@@ -55,6 +71,34 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
     { to: '/news', label: t('nav.news', 'Press & Media') },
     { to: '/contact', label: t('nav.contact', 'Contact') },
   ];
+
+  const handleMouseEnterLang = () => {
+    if (langTimerRef.current) {
+      window.clearTimeout(langTimerRef.current);
+      langTimerRef.current = null;
+    }
+    setIsLangOpen(true);
+  };
+
+  const handleMouseLeaveLang = () => {
+    if (langTimerRef.current) {
+      window.clearTimeout(langTimerRef.current);
+    }
+    // Grace delay prevents abrupt closing when moving between button and menu
+    langTimerRef.current = window.setTimeout(() => {
+      setIsLangOpen(false);
+      langTimerRef.current = null;
+    }, 180);
+  };
+
+  const handleToggleLangClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (langTimerRef.current) {
+      window.clearTimeout(langTimerRef.current);
+      langTimerRef.current = null;
+    }
+    setIsLangOpen((prev) => !prev);
+  };
 
   const handleSelectLang = (lang: Language) => {
     setLanguage(lang);
@@ -166,13 +210,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
             <div
               ref={langRef}
               style={{ position: 'relative' }}
-              onMouseEnter={() => setIsLangOpen(true)}
-              onMouseLeave={() => setIsLangOpen(false)}
+              onMouseEnter={handleMouseEnterLang}
+              onMouseLeave={handleMouseLeaveLang}
             >
               <button
                 type="button"
-                onClick={() => setIsLangOpen(!isLangOpen)}
+                onClick={handleToggleLangClick}
                 aria-expanded={isLangOpen}
+                aria-haspopup="true"
                 aria-label="Change language"
                 style={{
                   display: 'flex',
@@ -189,98 +234,115 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                   fontWeight: 700,
                   cursor: 'pointer',
                   transition: 'all 0.18s ease',
-                  minWidth: '68px',
+                  minWidth: '76px',
                   justifyContent: 'center',
+                  flexShrink: 0,
                 }}
               >
                 <Globe size={14} color="var(--primary-green)" />
                 <span>{language.toUpperCase()}</span>
-                <ChevronDown size={13} />
+                <ChevronDown
+                  size={13}
+                  style={{
+                    transform: isLangOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s ease',
+                  }}
+                />
               </button>
 
-              {/* Dropdown Menu */}
+              {/* Dropdown Menu Container (paddingTop creates invisible bridge so mouse never exits parent) */}
               {isLangOpen && (
                 <div
                   style={{
                     position: 'absolute',
                     top: '100%',
                     right: 0,
-                    marginTop: '6px',
-                    width: '136px',
-                    backgroundColor: 'var(--white)',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--color-border)',
-                    boxShadow: 'var(--shadow-md)',
-                    padding: '6px',
+                    paddingTop: '6px',
                     zIndex: 900,
-                    animation: 'dropdownFade 0.18s ease',
                   }}
+                  onMouseEnter={handleMouseEnterLang}
+                  onMouseLeave={handleMouseLeaveLang}
                 >
-                  <button
-                    type="button"
-                    onClick={() => handleSelectLang('vi')}
+                  <div
+                    role="menu"
                     style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      borderRadius: 'var(--radius-sm)',
-                      border: 'none',
-                      backgroundColor:
-                        language === 'vi'
-                          ? 'var(--light-sage)'
-                          : 'transparent',
-                      color:
-                        language === 'vi'
-                          ? 'var(--forest-green)'
-                          : 'var(--color-heading)',
-                      fontWeight: language === 'vi' ? 700 : 500,
-                      fontSize: '0.84rem',
-                      cursor: 'pointer',
-                      textAlign: 'left',
+                      width: '144px',
+                      backgroundColor: 'var(--white)',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1px solid var(--color-border)',
+                      boxShadow: 'var(--shadow-lg)',
+                      padding: '6px',
+                      animation: 'dropdownFade 0.18s ease',
                     }}
                   >
-                    <span>Tiếng Việt</span>
-                    {language === 'vi' && (
-                      <span style={{ fontSize: '0.75rem' }}>✓</span>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSelectLang('en')}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      borderRadius: 'var(--radius-sm)',
-                      border: 'none',
-                      backgroundColor:
-                        language === 'en'
-                          ? 'var(--light-sage)'
-                          : 'transparent',
-                      color:
-                        language === 'en'
-                          ? 'var(--forest-green)'
-                          : 'var(--color-heading)',
-                      fontWeight: language === 'en' ? 700 : 500,
-                      fontSize: '0.84rem',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                    }}
-                  >
-                    <span>English</span>
-                    {language === 'en' && (
-                      <span style={{ fontSize: '0.75rem' }}>✓</span>
-                    )}
-                  </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => handleSelectLang('vi')}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderRadius: 'var(--radius-sm)',
+                        border: 'none',
+                        backgroundColor:
+                          language === 'vi'
+                            ? 'var(--light-sage)'
+                            : 'transparent',
+                        color:
+                          language === 'vi'
+                            ? 'var(--forest-green)'
+                            : 'var(--color-heading)',
+                        fontWeight: language === 'vi' ? 700 : 500,
+                        fontSize: '0.84rem',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                      }}
+                    >
+                      <span>Tiếng Việt</span>
+                      {language === 'vi' && (
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>✓</span>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => handleSelectLang('en')}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderRadius: 'var(--radius-sm)',
+                        border: 'none',
+                        backgroundColor:
+                          language === 'en'
+                            ? 'var(--light-sage)'
+                            : 'transparent',
+                        color:
+                          language === 'en'
+                            ? 'var(--forest-green)'
+                            : 'var(--color-heading)',
+                        fontWeight: language === 'en' ? 700 : 500,
+                        fontSize: '0.84rem',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                      }}
+                    >
+                      <span>English</span>
+                      {language === 'en' && (
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>✓</span>
+                      )}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Request a Quote CTA Button */}
+            {/* Request a Quote CTA Button - fixed minimum width prevents layout jitter */}
             <button
               type="button"
               onClick={() => onOpenQuote()}
@@ -289,6 +351,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                 padding: '9px 18px',
                 fontSize: '0.84rem',
                 borderRadius: 'var(--radius-pill)',
+                minWidth: '154px',
+                justifyContent: 'center',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
               }}
             >
               <span>{t('nav.getQuote', 'Request a Quote')}</span>
