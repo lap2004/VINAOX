@@ -33,15 +33,14 @@ export const PressMedia: React.FC = () => {
       {/* Page Hero */}
       <PageHero
         badge={isVi ? 'BÁO CHÍ & TRUYỀN THÔNG • PRESS ARCHIVE' : 'PRESS ARCHIVE • VERIFIED COVERAGE'}
-        titleLine1={isVi ? 'Báo Chí & Tin Tức Doanh Nghiệp' : 'VINAXO in the Press'}
-        titleLine2={isVi ? 'Xác Minh Từ Báo Giới Chính Luận' : '& Corporate Operational Updates'}
+        title={t('pageBanners.news.title') || (isVi ? 'Báo Chí Nói Về VINAXO & Hoạt Động Doanh Nghiệp' : 'VINAXO in the Press & Media')}
         description={
-          isVi
-            ? 'Tổng hợp 9 bài viết, bài phỏng vấn và trích dẫn phát biểu của Ban Lãnh đạo CÔNG TY TNHH VINAXO trên các cơ quan báo chí uy tín quốc gia và địa phương: CafeF, Báo Người Lao Động, Báo 24H, Báo Sài Gòn Giải Phóng, Báo Thanh Niên, Báo Đồng Tháp, Báo Nông Nghiệp & Môi Trường.'
-            : 'Explore verified media coverage, executive interviews, and factory operation news published across Vietnam’s national press outlets. Direct links to original articles provided with complete transparency.'
+          t('pageBanners.news.subtitle') ||
+          (isVi
+            ? 'Tổng hợp các bài viết, phóng sự và trích dẫn từ các cơ quan báo chí chính thống về hoạt động chế biến, xuất khẩu nông sản của VINAXO.'
+            : 'Explore verified media coverage, executive interviews, and factory operation news published across Vietnam’s national press outlets.')
         }
         breadcrumbCurrent={isVi ? 'Báo Chí & Tin Tức' : 'Press & Media'}
-        theme="cream"
       />
 
       {/* ======================================================================

@@ -104,14 +104,17 @@ export const Products: React.FC = () => {
 
   return (
     <div className="products-page">
-      {/* Page Hero */}
+      {/* Page Hero Banner */}
       <PageHero
         badge={isVi ? 'DANH MỤC XUẤT KHẨU • B2B PRODUCT CATALOG' : 'EXPORT CATALOG • B2B DRIED FRUITS'}
-        titleLine1={isVi ? 'Trái Cây Sấy Tự Nhiên' : 'Naturally Pure Tropical Fruits'}
-        titleLine2={isVi ? 'Tiêu Chuẩn Quốc Tế BRCGS & OCOP' : 'BRCGS Grade B & 3-Star OCOP'}
-        description={t('productsPage.section1.desc')}
+        title={t('pageBanners.products.title') || (isVi ? 'Danh Mục Sản Phẩm Trái Cây Sấy VINAXO' : 'VINAXO Tropical Dried Fruit Catalog')}
+        description={
+          t('pageBanners.products.subtitle') ||
+          (isVi
+            ? '100% tự nhiên, sấy dẻo nhiệt thấp, không thêm đường, bảo toàn màu sắc và dưỡng chất tự nhiên từ các vùng chuyên canh ĐBSCL.'
+            : '100% natural, gently low-temperature dehydrated, zero added sugar or artificial preservatives — bringing authentic tropical tastes to global consumers.')
+        }
         breadcrumbCurrent={isVi ? 'Sản Phẩm' : 'Products'}
-        theme="cream"
       />
 
       {/* ========================================================================
@@ -120,9 +123,9 @@ export const Products: React.FC = () => {
       <section className="subpage-section" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
         <div className="container">
           <div className="text-center" style={{ maxWidth: '820px', margin: '0 auto 40px auto' }}>
-            <span className="section-label">{t('productsPage.section1.label')}</span>
+            <span className="section-label">{t('productsPage.section1.label') || (isVi ? 'NÔNG SẢN SẤY CAO CẤP' : 'PREMIUM DRIED FRUITS')}</span>
             <h2 className="section-title">
-              {t('productsPage.section1.title')}
+              {t('productsPage.section1.title') || (isVi ? 'Nông Sản Nhiệt Đới Chọn Lọc Từ Vùng Trồng Đạt Chuẩn' : 'Selected Tropical Fruits from Certified Mekong Orchards')}
             </h2>
             <p className="section-desc" style={{ margin: '0 auto' }}>
               {t('productsPage.section1.desc')}

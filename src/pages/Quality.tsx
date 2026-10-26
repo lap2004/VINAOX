@@ -49,11 +49,14 @@ export const Quality: React.FC = () => {
       {/* Page Hero */}
       <PageHero
         badge={isVi ? 'TIÊU CHUẨN CHẤT LƯỢNG • BRCGS & OCOP' : 'QUALITY ASSURANCE • BRCGS & OCOP'}
-        titleLine1={isVi ? 'Tiêu Chuẩn Chất Lượng' : 'Quality Standards &'}
-        titleLine2={isVi ? '& Quy Trình Sản Xuất' : 'Closed Manufacturing Process'}
-        description={t('qualityPage.section1.desc')}
+        title={t('pageBanners.quality.title') || (isVi ? 'Tiêu Chuẩn Chất Lượng & Quy Trình Chế Biến' : 'Quality Assurance & Processing Standards')}
+        description={
+          t('pageBanners.quality.subtitle') ||
+          (isVi
+            ? 'Kiểm soát an toàn thực phẩm nghiêm ngặt từ vùng trồng đến thành phẩm xuất khẩu, đạt chứng nhận quốc tế BRCGS Grade B và chuỗi cung ứng BSCI.'
+            : 'Strict food safety controls from accredited orchard sourcing to sterile cleanroom packaging, certified under BRCGS Grade B and BSCI social compliance.')
+        }
         breadcrumbCurrent={isVi ? 'Chất Lượng & Sản Xuất' : 'Quality & Production'}
-        theme="cream"
       />
 
       {/* ========================================================================

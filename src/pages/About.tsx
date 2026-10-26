@@ -74,11 +74,14 @@ export const About: React.FC = () => {
       {/* Page Hero */}
       <PageHero
         badge={isVi ? 'HỒ SƠ DOANH NGHIỆP • CÔNG TY TNHH VINAXO' : 'CORPORATE PROFILE • VINAXO COMPANY LIMITED'}
-        titleLine1={isVi ? 'Hành Trình Gắn Bó Nông Sản' : 'Rooted in Vietnam,'}
-        titleLine2={isVi ? '& Sứ Mệnh Vươn Tầm Toàn Cầu' : 'Growing for a Healthier World'}
-        description={t('about.description')}
+        title={t('pageBanners.about.title') || (isVi ? 'Về Công Ty TNHH VINAXO' : 'About VINAXO Company Limited')}
+        description={
+          t('pageBanners.about.subtitle') ||
+          (isVi
+            ? 'Doanh nghiệp chế biến và xuất khẩu trái cây sấy tự nhiên từ đồng bằng sông Cửu Long, nâng tầm nông sản Việt với tiêu chuẩn an toàn thực phẩm quốc tế.'
+            : 'Pioneering premium Vietnamese dried fruits from the fertile Mekong Delta to world tables, built upon direct farmer partnerships and BRCGS food safety excellence.')
+        }
         breadcrumbCurrent={isVi ? 'Giới Thiệu' : 'About Us'}
-        theme="cream"
       />
 
       {/* ========================================================================

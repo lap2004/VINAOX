@@ -17,11 +17,14 @@ export const GlobalMarket: React.FC = () => {
       {/* Page Hero */}
       <PageHero
         badge={isVi ? 'MẠNG LƯỚI THỊ TRƯỜNG & XUẤT KHẨU TOÀN CẦU' : 'GLOBAL EXPORT REACH & TRADE NETWORK'}
-        titleLine1={isVi ? 'Thị Trường Toàn Cầu' : 'Global Export Network'}
-        titleLine2={isVi ? '& Tuyến Vận Tải Quốc Tế' : '& International Trade Routes'}
-        description={t('marketsPage.section1.desc')}
+        title={t('pageBanners.markets.title') || (isVi ? 'Mạng Lưới Thị Trường & Xuất Khẩu Toàn Cầu' : 'Global Export Markets & Supply Chain')}
+        description={
+          t('pageBanners.markets.subtitle') ||
+          (isVi
+            ? 'Cung ứng nông sản trái cây sấy dẻo nhiệt đới tới các thị trường khó tính nhất: Hoa Kỳ (~70%), Liên minh Châu Âu (~20%), Hàn Quốc và Nga.'
+            : 'Delivering world-class Vietnamese agricultural produce across the United States (~70%), the European Union (~20%), Russia, and East Asia.')
+        }
         breadcrumbCurrent={isVi ? 'Thị Trường Xuất Khẩu' : 'Global Markets'}
-        theme="cream"
       />
 
       {/* ========================================================================
