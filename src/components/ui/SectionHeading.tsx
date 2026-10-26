@@ -50,8 +50,9 @@ export const SectionHeading: React.FC<SectionHeadingProps> = ({
           className={`section-desc ${
             align === 'center' ? 'section-desc-center' : ''
           } ${light ? 'section-desc-light' : ''}`}
-          dangerouslySetInnerHTML={{ __html: description }}
-        />
+        >
+          {description}
+        </p>
       )}
     </div>
   );

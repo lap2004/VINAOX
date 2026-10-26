@@ -40,6 +40,7 @@
   --page-gutter: clamp(16px, 3.5vw, 40px);
   --section-space: clamp(48px, 6vw, 96px);
   --header-height: 80px;
+  --header-logo-w: 260px;
 
   /* Border Radii */
   --radius-xs: 4px;

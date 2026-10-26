@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Globe, Award, ShieldCheck, Heart } from 'lucide-react';
+import { MapPin, Phone, Mail, Globe, Heart } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { COMPANY_INFO } from '../../data/company';
 
@@ -34,16 +34,26 @@ export const Footer: React.FC = () => {
           {/* Column 1: Brand & Legal */}
           <div>
             <div style={{ marginBottom: '18px' }}>
-              <Link to="/" style={{ display: 'inline-block' }}>
-                <img
-                  src="/assets/logo/vinaxo-logo.svg"
-                  alt="VINAXO"
-                  style={{
-                    height: '40px',
-                    width: 'auto',
-                    filter: 'brightness(0) invert(1)',
-                  }}
-                />
+              <Link
+                to="/"
+                className="brand-logo footer-logo"
+                aria-label="VINAXO - Home"
+                style={{ display: 'flex', width: 'auto', minWidth: 0, textDecoration: 'none' }}
+              >
+                <div className="brand-icon" style={{ width: '32px', height: '32px' }}>
+                  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 26C8 16 16 8 26 6C24 16 16 24 6 26Z" fill="#FFFFFF" />
+                    <path d="M12 20C14 14 18 10 24 8" stroke="#174D32" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <div className="brand-text-wrap">
+                  <span className="brand-name" style={{ color: '#FFFFFF' }}>VINAXO</span>
+                  <span className="brand-tagline" style={{ color: '#A6C9AD' }}>
+                    {language === 'vi'
+                      ? 'HƯƠNG VỊ TỰ NHIÊN | VƯƠN TẦM QUỐC TẾ'
+                      : 'NATURAL GOODNESS | GLOBAL REACH'}
+                  </span>
+                </div>
               </Link>
             </div>
             <p
@@ -281,23 +291,36 @@ export const Footer: React.FC = () => {
                 className="footer-contact-item"
                 style={{ display: 'flex', gap: '10px', alignItems: 'center' }}
               >
-                <Globe
-                  size={18}
-                  style={{ color: '#A3E6B8', flexShrink: 0 }}
-                />
                 <a
-                  href={COMPANY_INFO.contacts.website}
+                  href="https://vinaxo.vn/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#A3E6B8' }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    color: '#A3E6B8',
+                    textDecoration: 'none',
+                    transition: 'color 0.15s ease',
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = '#FFFFFF')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = '#A3E6B8')
+                  }
                 >
-                  vinaxo.net
+                  <Globe
+                    size={18}
+                    style={{ flexShrink: 0 }}
+                  />
+                  <span>vinaxo.vn</span>
                 </a>
               </div>
             </div>
           </div>
 
-          {/* Column 4: Compliance & Developed by SONAI */}
+          {/* Column 4: Developed by SONAI */}
           <div>
             <h4
               style={{
@@ -309,81 +332,83 @@ export const Footer: React.FC = () => {
                 marginBottom: '20px',
               }}
             >
-              {isVi ? 'Tiêu Chuẩn & Phát Triển' : 'Standards & Engineering'}
+              {isVi ? 'Phát Triển Bởi' : 'Developed By'}
             </h4>
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '12px',
-                fontSize: '0.85rem',
+                gap: '10px',
               }}
             >
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  padding: '8px 12px',
-                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '1.45rem',
+                  fontWeight: 800,
+                  color: '#FFFFFF',
+                  letterSpacing: '0.05em',
+                  lineHeight: 1.2,
                 }}
               >
-                <Award size={18} style={{ color: '#FCD34D' }} />
-                <span>BRCGS Food Safety Grade B</span>
+                SONAI
               </div>
 
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  padding: '8px 12px',
-                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.88rem',
+                  color: 'rgba(255, 255, 255, 0.75)',
+                  fontWeight: 500,
+                  lineHeight: 1.4,
                 }}
               >
-                <ShieldCheck size={18} style={{ color: '#34D399' }} />
-                <span>3-Star OCOP Certified Produce</span>
+                {isVi
+                  ? 'Công Nghệ Trí Tuệ Nhân Tạo'
+                  : 'Artificial Intelligence Technology'}
               </div>
+
+              <p
+                style={{
+                  fontSize: '0.82rem',
+                  color: 'rgba(255, 255, 255, 0.65)',
+                  lineHeight: 1.5,
+                  margin: '2px 0 6px 0',
+                }}
+              >
+                Website Designed & Developed by SONAI.
+              </p>
 
               <div
                 style={{
-                  marginTop: '12px',
-                  padding: '14px',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                  marginTop: '2px',
                 }}
               >
-                <div
+                <a
+                  href="https://sonai.vn"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{
-                    fontSize: '0.78rem',
-                    color: 'rgba(255, 255, 255, 0.6)',
-                    marginBottom: '4px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: '#A3E6B8',
+                    fontSize: '0.88rem',
+                    fontWeight: 500,
+                    textDecoration: 'none',
+                    transition: 'color 0.15s ease',
                   }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = '#FFFFFF')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = '#A3E6B8')
+                  }
                 >
-                  ENGINEERED & POWERED BY
-                </div>
-                <div
-                  style={{
-                    fontSize: '1rem',
-                    fontWeight: 800,
-                    color: '#FFFFFF',
-                    letterSpacing: '1px',
-                  }}
-                >
-                  SONAI
-                </div>
-                <div
-                  style={{
-                    fontSize: '0.76rem',
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    marginTop: '2px',
-                  }}
-                >
-                  Advanced Enterprise Web Solutions
-                </div>
+                  <Globe size={15} style={{ flexShrink: 0 }} />
+                  <span>sonai.vn</span>
+                </a>
               </div>
             </div>
           </div>

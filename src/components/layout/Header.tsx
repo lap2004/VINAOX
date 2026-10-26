@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, Globe, ChevronDown, ArrowRight } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, ArrowRight, Check } from 'lucide-react';
 import { useLanguage, Language } from '../../i18n/LanguageContext';
 
 export interface HeaderProps {
@@ -14,6 +14,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
   const langTimerRef = useRef<number | null>(null);
+  const wasOpenedByClickRef = useRef<boolean>(false);
 
   // Monitor scroll for sticky header elevation
   useEffect(() => {
@@ -29,6 +30,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
     const handlePointerDown = (e: MouseEvent | TouchEvent) => {
       if (langRef.current && !langRef.current.contains(e.target as Node)) {
         setIsLangOpen(false);
+        wasOpenedByClickRef.current = false;
       }
     };
     document.addEventListener('mousedown', handlePointerDown);
@@ -44,6 +46,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setIsLangOpen(false);
+        wasOpenedByClickRef.current = false;
+        setIsMobileMenuOpen(false);
       }
     };
     document.addEventListener('keydown', handleKeyDown);
@@ -81,6 +85,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
   };
 
   const handleMouseLeaveLang = () => {
+    // If opened by explicit click or tap, do not auto-close on mouse leave
+    if (wasOpenedByClickRef.current) return;
     if (langTimerRef.current) {
       window.clearTimeout(langTimerRef.current);
     }
@@ -88,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
     langTimerRef.current = window.setTimeout(() => {
       setIsLangOpen(false);
       langTimerRef.current = null;
-    }, 180);
+    }, 250);
   };
 
   const handleToggleLangClick = (e: React.MouseEvent) => {
@@ -97,12 +103,17 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
       window.clearTimeout(langTimerRef.current);
       langTimerRef.current = null;
     }
-    setIsLangOpen((prev) => !prev);
+    setIsLangOpen((prev) => {
+      const next = !prev;
+      wasOpenedByClickRef.current = next;
+      return next;
+    });
   };
 
   const handleSelectLang = (lang: Language) => {
     setLanguage(lang);
     setIsLangOpen(false);
+    wasOpenedByClickRef.current = false;
   };
 
   return (
@@ -130,45 +141,31 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
           transition: 'all 0.25s ease',
         }}
       >
-        <div
-          className="container"
-          style={{
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          {/* Logo Brand */}
-          <Link
-            to="/"
-            aria-label="VINAXO Homepage"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexShrink: 0,
-            }}
-          >
-            <img
-              src="/assets/logo/vinaxo-logo.svg"
-              alt="VINAXO - Natural Goodness | Global Reach"
-              style={{
-                height: '42px',
-                width: 'auto',
-                display: 'block',
-              }}
-            />
-          </Link>
+        <div className="header-container">
+          {/* Zone 1: Brand Logo Left */}
+          <div className="header-logo-zone">
+            <Link to="/" className="brand-logo" aria-label="VINAXO - Home">
+              <div className="brand-icon">
+                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 26C8 16 16 8 26 6C24 16 16 24 6 26Z" fill="#174D32" />
+                  <path d="M12 20C14 14 18 10 24 8" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="brand-text-wrap">
+                <span className="brand-name">VINAXO</span>
+                <span className="brand-tagline">
+                  {language === 'vi'
+                    ? 'HƯƠNG VỊ TỰ NHIÊN | VƯƠN TẦM QUỐC TẾ'
+                    : 'NATURAL GOODNESS | GLOBAL REACH'}
+                </span>
+              </div>
+            </Link>
+          </div>
 
-          {/* Desktop Navigation Links */}
+          {/* Zone 2: Desktop Navigation Links Center */}
           <nav
             className="desktop-nav"
             aria-label="Main Navigation"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
           >
             {navItems.map((item) => (
               <NavLink
@@ -177,35 +174,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                 className={({ isActive }) =>
                   `nav-link ${isActive ? 'active' : ''}`
                 }
-                style={({ isActive }) => ({
-                  padding: '8px 14px',
-                  borderRadius: 'var(--radius-pill)',
-                  fontSize: '0.88rem',
-                  fontWeight: isActive ? 700 : 500,
-                  color: isActive
-                    ? 'var(--primary-green)'
-                    : 'var(--color-heading)',
-                  backgroundColor: isActive
-                    ? 'rgba(45, 106, 79, 0.08)'
-                    : 'transparent',
-                  transition: 'all 0.18s ease',
-                  whiteSpace: 'nowrap',
-                })}
               >
                 {item.label}
               </NavLink>
             ))}
           </nav>
 
-          {/* Header Action Controls */}
-          <div
-            className="header-actions"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-            }}
-          >
+          {/* Zone 3: Header Action Controls Right */}
+          <div className="header-actions">
             {/* Language Selector Dropdown */}
             <div
               ref={langRef}
@@ -266,12 +242,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                   <div
                     role="menu"
                     style={{
-                      width: '144px',
+                      minWidth: '84px',
+                      width: '100%',
                       backgroundColor: 'var(--white)',
                       borderRadius: 'var(--radius-md)',
                       border: '1px solid var(--color-border)',
-                      boxShadow: 'var(--shadow-lg)',
-                      padding: '6px',
+                      boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04)',
+                      padding: '4px',
                       animation: 'dropdownFade 0.18s ease',
                     }}
                   >
@@ -281,7 +258,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                       onClick={() => handleSelectLang('vi')}
                       style={{
                         width: '100%',
-                        padding: '8px 12px',
+                        padding: '7px 10px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
@@ -295,15 +272,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                           language === 'vi'
                             ? 'var(--forest-green)'
                             : 'var(--color-heading)',
-                        fontWeight: language === 'vi' ? 700 : 500,
-                        fontSize: '0.84rem',
+                        fontWeight: language === 'vi' ? 700 : 600,
+                        fontSize: '0.82rem',
                         cursor: 'pointer',
                         textAlign: 'left',
+                        transition: 'background-color 0.15s ease',
                       }}
                     >
-                      <span>Tiếng Việt</span>
+                      <span>VI</span>
                       {language === 'vi' && (
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>✓</span>
+                        <Check size={13} strokeWidth={2.5} color="var(--forest-green)" />
                       )}
                     </button>
                     <button
@@ -312,7 +290,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                       onClick={() => handleSelectLang('en')}
                       style={{
                         width: '100%',
-                        padding: '8px 12px',
+                        padding: '7px 10px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
@@ -326,15 +304,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                           language === 'en'
                             ? 'var(--forest-green)'
                             : 'var(--color-heading)',
-                        fontWeight: language === 'en' ? 700 : 500,
-                        fontSize: '0.84rem',
+                        fontWeight: language === 'en' ? 700 : 600,
+                        fontSize: '0.82rem',
                         cursor: 'pointer',
                         textAlign: 'left',
+                        transition: 'background-color 0.15s ease',
                       }}
                     >
-                      <span>English</span>
+                      <span>EN</span>
                       {language === 'en' && (
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800 }}>✓</span>
+                        <Check size={13} strokeWidth={2.5} color="var(--forest-green)" />
                       )}
                     </button>
                   </div>
@@ -351,7 +330,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                 padding: '9px 18px',
                 fontSize: '0.84rem',
                 borderRadius: 'var(--radius-pill)',
-                minWidth: '154px',
+                minWidth: '172px',
                 justifyContent: 'center',
                 flexShrink: 0,
                 whiteSpace: 'nowrap',
@@ -368,20 +347,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle navigation menu"
               aria-expanded={isMobileMenuOpen}
-              style={{
-                display: 'none',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '40px',
-                height: '40px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--color-border)',
-                backgroundColor: 'transparent',
-                color: 'var(--color-heading)',
-                cursor: 'pointer',
-              }}
             >
-              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
@@ -428,11 +395,28 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                 marginBottom: '20px',
               }}
             >
-              <img
-                src="/assets/logo/vinaxo-logo.svg"
-                alt="VINAXO"
-                style={{ height: '32px', width: 'auto' }}
-              />
+              <Link
+                to="/"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="brand-logo"
+                style={{ width: 'auto', minWidth: 'auto', textDecoration: 'none' }}
+                aria-label="VINAXO - Home"
+              >
+                <div className="brand-icon" style={{ width: '28px', height: '28px' }}>
+                  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 26C8 16 16 8 26 6C24 16 16 24 6 26Z" fill="#174D32" />
+                    <path d="M12 20C14 14 18 10 24 8" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <div className="brand-text-wrap">
+                  <span className="brand-name" style={{ fontSize: '1.25rem' }}>VINAXO</span>
+                  <span className="brand-tagline" style={{ fontSize: '0.44rem' }}>
+                    {language === 'vi'
+                      ? 'HƯƠNG VỊ TỰ NHIÊN | VƯƠN TẦM QUỐC TẾ'
+                      : 'NATURAL GOODNESS | GLOBAL REACH'}
+                  </span>
+                </div>
+              </Link>
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -498,36 +482,52 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                   onClick={() => handleSelectLang('vi')}
                   style={{
                     flex: 1,
-                    padding: '10px',
+                    padding: '10px 12px',
                     borderRadius: 'var(--radius-sm)',
-                    border: '1px solid var(--color-border)',
+                    border:
+                      language === 'vi'
+                        ? '1px solid var(--primary-green)'
+                        : '1px solid var(--color-border)',
                     backgroundColor:
                       language === 'vi' ? 'var(--primary-green)' : 'transparent',
                     color: language === 'vi' ? '#FFFFFF' : 'var(--color-heading)',
                     fontWeight: 700,
-                    fontSize: '0.85rem',
+                    fontSize: '0.88rem',
                     cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
                   }}
                 >
-                  Tiếng Việt
+                  <span>VI</span>
+                  {language === 'vi' && <Check size={15} strokeWidth={2.5} />}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSelectLang('en')}
                   style={{
                     flex: 1,
-                    padding: '10px',
+                    padding: '10px 12px',
                     borderRadius: 'var(--radius-sm)',
-                    border: '1px solid var(--color-border)',
+                    border:
+                      language === 'en'
+                        ? '1px solid var(--primary-green)'
+                        : '1px solid var(--color-border)',
                     backgroundColor:
                       language === 'en' ? 'var(--primary-green)' : 'transparent',
                     color: language === 'en' ? '#FFFFFF' : 'var(--color-heading)',
                     fontWeight: 700,
-                    fontSize: '0.85rem',
+                    fontSize: '0.88rem',
                     cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
                   }}
                 >
-                  English
+                  <span>EN</span>
+                  {language === 'en' && <Check size={15} strokeWidth={2.5} />}
                 </button>
               </div>
 

@@ -121,8 +121,9 @@ export const PageHero: React.FC<PageHeroProps> = ({
             color: isForest ? 'rgba(255,255,255,0.9)' : 'var(--color-body)',
             marginBottom: children ? '28px' : '0',
           }}
-          dangerouslySetInnerHTML={{ __html: description }}
-        />
+        >
+          {description}
+        </p>
 
         {children && <div style={{ marginTop: '28px' }}>{children}</div>}
       </div>

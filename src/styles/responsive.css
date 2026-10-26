@@ -1,6 +1,7 @@
 /* ==========================================================================
    VINAXO RESPONSIVE SYSTEM
-   Breakpoints: Mobile (320-480px), Tablet (768-1024px), Laptop (1100-1440px), Desktop (1440px+)
+   Breakpoints: Micro Mobile (<=360px), Mobile (<=480px), Phablet/Tablet (<=768px),
+   Tablet Portrait (<=992px), Tablet Landscape (<=1100px), Laptop/Desktop (>1100px)
    ========================================================================== */
 
 /* Utility Grids Responsive Reflow */
@@ -28,34 +29,49 @@
   gap: clamp(16px, 2vw, 24px);
 }
 
-.home-products-grid {
+.home-products-grid,
+.products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
+}
+
+/* Desktop Defaults for Mobile-Aware Hero Elements */
+.hero-features-mobile {
+  display: none !important;
+}
+
+.hero-features-desktop {
+  display: flex;
 }
 
 /* ==========================================================================
    BREAKPOINTS
    ========================================================================== */
 
-/* Laptop Compact (1101px - 1280px) */
-@media (min-width: 1101px) and (max-width: 1280px) {
-  .nav-menu {
-    gap: 4px;
+/* Laptop Compact (1201px - 1320px) */
+@media (min-width: 1201px) and (max-width: 1320px) {
+  .quality-global-grid {
+    gap: 40px;
   }
 
-  .nav-link {
-    font-size: 0.84rem;
-    padding: 6px 10px;
-  }
-
-  .header-actions {
-    gap: 10px;
+  .global-col {
+    padding-left: 36px;
   }
 }
 
-/* Tablet Landscape & Below (<= 1100px) */
-@media (max-width: 1100px) {
+/* Tablet Landscape & Below (<= 1200px) — Clean Switch to Mobile Navigation */
+@media (max-width: 1200px) {
+  .header-logo-zone {
+    width: auto !important;
+  }
+
+  .brand-logo {
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+  }
+
   .desktop-nav {
     display: none !important;
   }
@@ -71,6 +87,50 @@
   .grid-4 {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .certifications-grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .quality-global-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+
+  .global-col {
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-top: 1px solid #ECEEE7 !important;
+    padding-top: 40px !important;
+  }
+
+  /* Products Grid Tablet */
+  .products-grid,
+  .home-products-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 18px !important;
+  }
+
+  /* About Section 3-column reflow */
+  .about-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+
+  .about-visual-card {
+    height: 260px !important;
+  }
+
+  .about-metrics {
+    padding-left: 0 !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    border-top: 1px solid #ECEEE7 !important;
+    padding-top: 24px !important;
+  }
+
+  .hero-image-card img {
+    height: 360px !important;
+  }
 }
 
 /* Tablet Portrait (<= 992px) */
@@ -79,9 +139,36 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  /* Home Hero Reflow: Sequence Eyebrow -> Title -> Desc -> CTAs -> Image -> Features */
   .hero-grid {
     grid-template-columns: 1fr !important;
-    gap: 40px !important;
+    gap: 36px !important;
+  }
+
+  .hero-features-desktop {
+    display: none !important;
+  }
+
+  .hero-features-mobile {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    margin-top: 28px !important;
+  }
+
+  .process-steps-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  .leadership-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  .facility-overview-grid {
+    grid-template-columns: 1fr !important;
+    gap: 36px !important;
   }
 
   .about-preview-grid {
@@ -98,22 +185,186 @@
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 36px !important;
   }
+
+  .contact-page-grid {
+    grid-template-columns: 1fr !important;
+    gap: 36px !important;
+  }
+
+  .contact-partnership-cta {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 24px !important;
+    padding: 32px 24px !important;
+  }
 }
 
 /* Mobile Devices (<= 768px) */
 @media (max-width: 768px) {
   :root {
-    --header-height: 72px;
+    --header-height: 68px;
+  }
+
+  /* Header Top Bar: Hide inline quote button to leave ample breathing room for logo, language pill, and hamburger */
+  .header-quote-btn {
+    display: none !important;
+  }
+
+  .brand-logo {
+    width: auto !important;
+    min-width: auto !important;
+    gap: 8px !important;
+  }
+
+  .brand-icon {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .brand-name {
+    font-size: 1.25rem !important;
+  }
+
+  .brand-tagline {
+    font-size: 0.44rem !important;
+    letter-spacing: 0.04em !important;
   }
 
   .grid-2,
   .grid-3,
   .grid-4,
-  .grid-5,
-  .home-products-grid {
+  .grid-5 {
     grid-template-columns: 1fr !important;
   }
 
+  /* Hero Section Mobile Polish */
+  .hero-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 12px !important;
+    margin-bottom: 24px !important;
+  }
+
+  .hero-actions a,
+  .hero-actions .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 48px !important;
+  }
+
+  .hero-image-card img {
+    height: 280px !important;
+  }
+
+  .hero-script-accent {
+    top: -12px !important;
+    right: 14px !important;
+    transform: rotate(-2.5deg) !important;
+  }
+
+  .hero-script-accent p {
+    font-size: clamp(1.3rem, 4vw, 1.7rem) !important;
+  }
+
+  .hero-origin-stamp {
+    right: 16px !important;
+    bottom: -16px !important;
+  }
+
+  .stamp-inner {
+    width: 78px !important;
+    height: 78px !important;
+  }
+
+  /* Products Filter Pills: Smooth Horizontal Touch Swipe */
+  .product-category-pills {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    padding: 4px 4px 14px 4px !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    margin-bottom: 24px !important;
+  }
+
+  .product-category-pills::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .product-cat-pill {
+    flex-shrink: 0 !important;
+    padding: 8px 16px !important;
+    font-size: 0.8125rem !important;
+  }
+
+  /* Products Grid: 2 Columns on Phablets/Wider Mobile */
+  .products-grid,
+  .home-products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+
+  /* Quality Page Mobile Reflow */
+  .process-steps-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Global Market Page Mobile Reflow */
+  .market-regions-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .logistics-bar {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    padding: 24px 20px !important;
+  }
+
+  .logistics-item {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 16px 0 !important;
+  }
+
+  .logistics-item:first-child {
+    padding-top: 0 !important;
+  }
+
+  .logistics-item:last-child {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* News Page Media Relations Card */
+  .media-relations-card {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    padding: 24px 20px !important;
+  }
+
+  /* About Page Reflows */
+  .about-metrics {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+    padding-left: 0 !important;
+  }
+
+  .leadership-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .timeline-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Footer Mobile Reflow */
   .footer-grid {
     grid-template-columns: 1fr !important;
     gap: 32px !important;
@@ -121,38 +372,203 @@
 
   .stats-grid-2x2 {
     grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+  }
+
+  /* Contact Page Mobile Reflow */
+  .contact-form-grid-2 {
+    grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
 
-  .hero-ctas {
-    flex-direction: column;
-    width: 100%;
+  .contact-map-frame {
+    height: clamp(260px, 45vw, 360px) !important;
   }
 
-  .hero-ctas .btn {
-    width: 100%;
+  .contact-form-panel {
+    padding: 24px 18px !important;
   }
 
-  .filter-tabs {
-    overflow-x: auto;
-    white-space: nowrap;
-    padding-bottom: 8px;
-    -webkit-overflow-scrolling: touch;
-    justify-content: flex-start !important;
+  /* General grid-mobile-1 helper: enforce 1 column on mobile */
+  .grid-mobile-1 {
+    grid-template-columns: 1fr !important;
   }
 
-  .filter-pill {
-    flex-shrink: 0;
+  /* Subpage Section CTA Padding */
+  .subpage-cta-section {
+    padding-bottom: 56px !important;
+  }
+
+  /* ========================================================================
+     CORPORATE CTA MOBILE STANDARDIZATION (SYNCHRONIZED WITH HOMEPAGE CTA)
+     ======================================================================== */
+  .corporate-cta-card,
+  .cta-section {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    padding: 36px 22px !important;
+    border-radius: 20px !important;
+    text-align: center !important;
+  }
+
+  .corporate-cta-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    gap: 18px !important;
+  }
+
+  .corporate-cta-content,
+  .cta-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    gap: 0 !important;
+  }
+
+  .corporate-cta-eyebrow {
+    text-align: center !important;
+    margin: 0 auto 10px auto !important;
+    display: inline-block !important;
+  }
+
+  .corporate-cta-title,
+  .cta-title {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 0 12px 0 !important;
+    font-size: clamp(24px, 6.5vw, 32px) !important;
+    line-height: 1.22 !important;
+    text-align: center !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+
+  .corporate-cta-desc,
+  .cta-description {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+    text-align: center !important;
+    margin: 0 !important;
+  }
+
+  .corporate-cta-actions,
+  .home-cta-actions,
+  .cta-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+    margin-top: 8px !important;
+  }
+
+  .corporate-cta-actions .corporate-cta-link,
+  .corporate-cta-actions a,
+  .corporate-cta-actions .btn,
+  .corporate-cta-actions button,
+  .home-cta-actions a,
+  .home-cta-actions .btn,
+  .home-cta-actions button,
+  .cta-actions a,
+  .cta-actions button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    box-sizing: border-box !important;
+    white-space: normal !important;
+    text-align: center !important;
+    padding: 12px 20px !important;
+    font-size: 0.9375rem !important;
+  }
+
+  /* Home CTA Card Mobile Padding */
+  .home-cta-card {
+    padding: 36px 20px !important;
+    border-radius: 20px !important;
+  }
+
+  /* Contact Partnership CTA Mobile Alignment */
+  .contact-partnership-cta {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 20px !important;
+    padding: 36px 20px !important;
+    border-radius: 20px !important;
+  }
+
+  .contact-partnership-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .contact-partnership-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+
+  .contact-partnership-actions a,
+  .contact-partnership-actions .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 48px !important;
+    text-align: center !important;
   }
 }
 
-/* Micro Mobile (<= 480px & 360px) */
+
+/* Micro & Compact Mobile (<= 480px) */
 @media (max-width: 480px) {
-  .header-quote-btn {
+  /* Products Grid: 1 Column on smaller mobile devices for maximum readability */
+  .products-grid,
+  .home-products-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .certifications-grid-4 {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Hero Section: Keep image clean and uncluttered */
+  .hero-script-accent {
     display: none !important;
   }
 
-  .stats-grid-2x2 {
+  .hero-origin-stamp {
+    right: 12px !important;
+    bottom: -12px !important;
+  }
+
+  .stamp-inner {
+    width: 68px !important;
+    height: 68px !important;
+  }
+
+  .market-pills-grid {
     grid-template-columns: 1fr !important;
   }
 
@@ -167,15 +583,76 @@
     margin: 8px;
     padding: 20px 16px;
   }
+
+  .corporate-cta-card,
+  .cta-section,
+  .home-cta-card {
+    padding: 32px 18px !important;
+  }
+
+  .corporate-cta-title,
+  .cta-title {
+    font-size: clamp(20px, 6vw, 26px) !important;
+  }
 }
 
-/* Touch Target Optimization */
+/* Extra Small / Micro Mobile (<= 360px & 320px) */
+@media (max-width: 360px) {
+  .corporate-cta-card,
+  .cta-section,
+  .home-cta-card {
+    padding: 28px 14px !important;
+  }
+
+  .corporate-cta-actions .btn,
+  .home-cta-actions .btn,
+  .cta-actions .btn {
+    padding: 10px 12px !important;
+    font-size: 0.875rem !important;
+  }
+
+  .about-metrics {
+
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .stats-grid-2x2 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .brand-logo {
+    gap: 6px !important;
+  }
+
+  .brand-icon {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .brand-name {
+    font-size: 1.08rem !important;
+  }
+
+  .brand-tagline {
+    font-size: 0.38rem !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  .hero-image-card img {
+    height: 220px !important;
+  }
+}
+
+/* Touch Target Optimization (WCAG 2.1 AA >= 44x44px) */
 @media (pointer: coarse) {
   button,
   .btn,
   .nav-link,
   .lang-btn,
-  .filter-pill {
+  .product-cat-pill,
+  .mobile-menu-btn {
     min-height: 44px;
     min-width: 44px;
   }

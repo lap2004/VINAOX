@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Newspaper, ExternalLink, MessageSquareQuote, Mail } from 'lucide-react';
+import { ExternalLink, MessageSquareQuote, Mail } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { newsData, NewsItem } from '../data/news';
 import { COMPANY_INFO } from '../data/company';
@@ -8,7 +8,7 @@ import { NewsCard } from '../components/news/NewsCard';
 import { NewsFilter } from '../components/news/NewsFilter';
 
 export const PressMedia: React.FC = () => {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const isVi = language === 'vi';
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -174,44 +174,52 @@ export const PressMedia: React.FC = () => {
             ))}
           </div>
 
-          {/* Media Relations Contact Card */}
-          <div
-            className="card"
-            style={{
-              padding: 'clamp(24px, 4vw, 36px)',
-              backgroundColor: 'var(--light-sage)',
-              borderRadius: 'var(--radius-xl)',
-              border: '1.5px solid var(--sage-border)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '20px',
-            }}
-          >
+          {/* ========================================================================
+              SECTION 2: MEDIA KIT & PRESS RELATIONS CONTACT BOX (MATCHING HTML 1:1)
+              ======================================================================== */}
+          <div className="media-relations-card" style={{ marginTop: '56px' }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--forest-green)', fontWeight: 700, marginBottom: '6px' }}>
-                <Newspaper size={20} />
-                <span style={{ fontSize: '1.05rem' }}>
-                  {isVi ? 'Liên Hệ Dành Cho Cơ Quan Báo Chí & Truyền Thông' : 'Media Relations & Press Inquiries'}
-                </span>
-              </div>
-              <p style={{ fontSize: '0.86rem', color: 'var(--color-body-dark)', lineHeight: 1.6, maxWidth: '640px' }}>
-                {isVi
-                  ? 'Ban Truyền thông Công ty TNHH VINAXO sẵn sàng cung cấp hình ảnh tư liệu độ phân giải cao về cơ sở chế biến, thông số xuất khẩu và kết nối phỏng vấn Ban Giám đốc.'
-                  : 'VINAXO’s Corporate Communications desk is available to provide high-resolution facility assets, trade statistics, and executive interviews.'}
+              <span className="section-label">{t('newsPage.mediaCard.label')}</span>
+              <h2 className="title-serif" style={{ fontSize: '1.625rem', color: 'var(--forest-green)', marginBottom: '12px' }}>
+                {t('newsPage.mediaCard.title')}
+              </h2>
+              <p style={{ fontSize: '0.9375rem', color: 'var(--color-body)', lineHeight: 1.6, marginBottom: '20px' }}>
+                {t('newsPage.mediaCard.desc')}
               </p>
+              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+                <a
+                  href={`mailto:${COMPANY_INFO.contacts.email}?subject=Press%20Inquiry%20-%20VINAXO`}
+                  className="btn btn-primary"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <Mail size={16} />
+                  <span>{t('newsPage.mediaCard.btnInterview')}</span>
+                </a>
+                <a href="/contact" className="btn btn-secondary">
+                  <span>{t('newsPage.mediaCard.btnContact')}</span>
+                </a>
+              </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <a
-                href={`mailto:${COMPANY_INFO.contacts.email}?subject=Press%20Inquiry%20-%20VINAXO`}
-                className="btn btn-primary btn-sm"
-                style={{ textDecoration: 'none' }}
-              >
-                <Mail size={15} />
-                <span>{isVi ? 'Gửi Email Phỏng Vấn' : 'Email Press Desk'}</span>
-              </a>
+            <div style={{ backgroundColor: 'var(--light-sage)', padding: '28px', borderRadius: 'var(--radius-md)', border: '1px solid #D5E2D9' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--forest-green)', marginBottom: '12px' }}>
+                {t('newsPage.mediaCard.boxTitle')}
+              </h3>
+              <p style={{ fontSize: '0.875rem', color: '#374151', marginBottom: '8px' }}>
+                <strong>{t('newsPage.mediaCard.spokespersonLabel')} </strong>
+                <span>{t('newsPage.mediaCard.spokespersonVal')}</span>
+              </p>
+              <p style={{ fontSize: '0.875rem', color: '#374151', marginBottom: '8px' }}>
+                <strong>{t('newsPage.mediaCard.emailLabel')} </strong>
+                <span>{COMPANY_INFO.contacts.email}</span>
+              </p>
+              <p style={{ fontSize: '0.875rem', color: '#374151', marginBottom: '8px' }}>
+                <strong>{t('newsPage.mediaCard.hotlineLabel')} </strong>
+                <span>{COMPANY_INFO.contacts.hotline}</span>
+              </p>
+              <p style={{ fontSize: '0.8125rem', color: '#6B7280', marginTop: '12px', lineHeight: 1.5 }}>
+                {t('newsPage.mediaCard.copyrightNote')}
+              </p>
             </div>
           </div>
         </div>
@@ -219,5 +227,6 @@ export const PressMedia: React.FC = () => {
     </div>
   );
 };
+
 
 export default PressMedia;

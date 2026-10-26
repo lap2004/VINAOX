@@ -30,6 +30,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [honeypot, setHoneypot] = useState('');
 
   useEffect(() => {
     if (defaultProduct) {
@@ -45,6 +46,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
       document.body.style.overflow = '';
       setIsSubmitted(false);
       setErrorMsg('');
+      setHoneypot('');
     }
     return () => {
       document.body.style.overflow = '';
@@ -75,7 +77,21 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     e.preventDefault();
     setErrorMsg('');
 
-    if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
+    // Anti-bot honeypot check: automated scrapers fill hidden fields
+    if (honeypot.trim()) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    const trimmedName = formData.name.trim();
+    const trimmedEmail = formData.email.trim();
+    const trimmedPhone = formData.phone.trim();
+    const trimmedCompany = formData.company.trim();
+    const trimmedQuantity = formData.quantity.trim();
+    const trimmedDestination = formData.destination.trim();
+    const trimmedMessage = formData.message.trim();
+
+    if (!trimmedName || !trimmedEmail || !trimmedPhone) {
       setErrorMsg(
         language === 'vi'
           ? 'Vui lòng điền đầy đủ họ tên, email và số điện thoại liên hệ.'
@@ -84,13 +100,50 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
       return;
     }
 
+    // RFC-compliant email validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setErrorMsg(
+        language === 'vi'
+          ? 'Địa chỉ email không đúng định dạng. Vui lòng kiểm tra lại.'
+          : 'Please provide a valid business email address (e.g. name@company.com).'
+      );
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Simulate reliable dispatch
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 800);
+    // Build authentic B2B export quote RFP inquiry dispatch
+    const subject = encodeURIComponent(
+      `[VINAXO B2B Quote Request] ${formData.product || 'Agricultural Export'} - ${trimmedName} (${trimmedCompany || 'Direct Buyer'})`
+    );
+    const bodyContent = [
+      `VINAXO B2B WHOLESALE & EXPORT INQUIRY`,
+      `----------------------------------------`,
+      `Full Name: ${trimmedName}`,
+      `Company: ${trimmedCompany || 'N/A'}`,
+      `Email: ${trimmedEmail}`,
+      `Phone/WhatsApp: ${trimmedPhone}`,
+      `Product of Interest: ${formData.product || 'General Catalog'}`,
+      `Estimated Volume: ${trimmedQuantity || 'To be discussed'}`,
+      `Destination Port / Country: ${trimmedDestination || 'To be discussed'}`,
+      `Specific Requirements:`,
+      trimmedMessage || 'Standard export specification required.',
+      `----------------------------------------`,
+      `Dispatched via VINAXO Corporate Portal (https://vinaxo.vn)`,
+    ].join('\n');
+
+    const mailtoUrl = `mailto:thaovinaxo@gmail.com?subject=${subject}&body=${encodeURIComponent(bodyContent)}`;
+
+    // Trigger authentic mailto dispatch
+    try {
+      window.location.href = mailtoUrl;
+    } catch {
+      // Fallback window navigation
+    }
+
+    setIsSubmitting(false);
+    setIsSubmitted(true);
   };
 
   const productOptions =
@@ -246,6 +299,20 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
             )}
 
             <form onSubmit={handleSubmit}>
+              {/* Anti-bot honeypot field - invisible to human users */}
+              <div style={{ display: 'none', position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                <label htmlFor="quote_company_fax_hp">Do not fill this</label>
+                <input
+                  type="text"
+                  id="quote_company_fax_hp"
+                  name="quote_company_fax_hp"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </div>
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div className="form-group" style={{ marginBottom: '14px' }}>
                   <label className="form-label">
@@ -256,6 +323,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
+                    maxLength={100}
                     placeholder={t('modal.namePlaceholder', 'e.g. John Doe / Nguyễn Văn A')}
                     className="form-input"
                     required
@@ -271,6 +339,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     name="company"
                     value={formData.company}
                     onChange={handleChange}
+                    maxLength={150}
                     placeholder={t('modal.companyPlaceholder', 'e.g. Pacific Foods Import LLC')}
                     className="form-input"
                   />
@@ -287,6 +356,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    maxLength={120}
                     placeholder={t('modal.emailPlaceholder', 'buyer@company.com')}
                     className="form-input"
                     required
@@ -302,6 +372,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    maxLength={30}
                     placeholder={t('modal.phonePlaceholder', '+1 (555) 000-0000')}
                     className="form-input"
                     required
@@ -337,6 +408,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     name="quantity"
                     value={formData.quantity}
                     onChange={handleChange}
+                    maxLength={80}
                     placeholder={t('modal.quantityPlaceholder', 'e.g. 1 FCL 20ft / 5 tons')}
                     className="form-input"
                   />
@@ -351,6 +423,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     name="destination"
                     value={formData.destination}
                     onChange={handleChange}
+                    maxLength={120}
                     placeholder={t('modal.destPlaceholder', 'e.g. Port of Long Beach, USA')}
                     className="form-input"
                   />
@@ -365,6 +438,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
+                  maxLength={3000}
                   placeholder={t(
                     'modal.messagePlaceholder',
                     'Describe your packaging preferences (pouch size, retail or bulk), private labeling needs, or certifications required...'

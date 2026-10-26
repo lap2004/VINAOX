@@ -86,7 +86,7 @@ export const COMPANY_INFO: CompanyInfo = {
     hotline: "+84 907 494 177",
     phoneDisplay: "0907 494 177",
     email: "thaovinaxo@gmail.com",
-    website: "https://vinaxo.net"
+    website: "https://vinaxo.vn/"
   },
   auditStatus: {
     lastAudited: "2026-10-23",

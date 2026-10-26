@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vinaxo.net/sitemap.xml
+# Disallow sensitive asset scraping
+Disallow: /dist/
+Disallow: /node_modules/
+Disallow: /*.json$
+
+Sitemap: https://vinaxo.vn/sitemap.xml

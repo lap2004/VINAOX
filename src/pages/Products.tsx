@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useOutletContext, useSearchParams } from 'react-router-dom';
-import { Package, ShieldCheck, Truck, Layers, CheckCircle2, ArrowRight } from 'lucide-react';
+import { FileText, Package, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { productsData, ProductItem } from '../data/products';
 import { PageHero } from '../components/ui/PageHero';
 import { ProductCard } from '../components/products/ProductCard';
 import { ProductDetailModal } from '../components/products/ProductDetailModal';
-import { ProductFilter } from '../components/products/ProductFilter';
-import { Button } from '../components/ui/Button';
+import { CorporateCTA } from '../components/ui/CorporateCTA';
 import { MainLayoutContext } from '../components/layout/MainLayout';
 
 export const Products: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
   const [searchParams] = useSearchParams();
   const { onOpenQuote } = useOutletContext<MainLayoutContext>();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const isVi = language === 'vi';
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -35,7 +34,73 @@ export const Products: React.FC = () => {
   const filteredProducts =
     activeCategory === 'all'
       ? productsData
-      : productsData.filter((p) => p.category === activeCategory);
+      : productsData.filter((p) => {
+          if (activeCategory === 'ocop') return Boolean(p.ocop);
+          return p.category === activeCategory;
+        });
+
+  const specRows = [
+    {
+      name: t('productsPage.section3.row1Name'),
+      origin: t('productsPage.section3.row1Origin'),
+      moisture: '< 15%',
+      shelfLife: t('productsPage.section3.months12'),
+      cert: t('productsPage.section3.certOcop'),
+      certColor: '#92400E',
+      certBg: '#FEF3C7',
+      productQuery: 'dried-mango',
+    },
+    {
+      name: t('productsPage.section3.row2Name'),
+      origin: t('productsPage.section3.row2Origin'),
+      moisture: '< 14%',
+      shelfLife: t('productsPage.section3.months12'),
+      cert: t('productsPage.section3.certOcop'),
+      certColor: '#92400E',
+      certBg: '#FEF3C7',
+      productQuery: 'dried-jackfruit',
+    },
+    {
+      name: t('productsPage.section3.row3Name'),
+      origin: t('productsPage.section3.row3Origin'),
+      moisture: '< 16%',
+      shelfLife: t('productsPage.section3.months12'),
+      cert: t('productsPage.section3.certOcop'),
+      certColor: '#92400E',
+      certBg: '#FEF3C7',
+      productQuery: 'dried-dragon-fruit',
+    },
+    {
+      name: t('productsPage.section3.row4Name'),
+      origin: t('productsPage.section3.row4Origin'),
+      moisture: '< 15%',
+      shelfLife: t('productsPage.section3.months12'),
+      cert: t('productsPage.section3.certNatural'),
+      certColor: '#065F46',
+      certBg: '#D1FAE5',
+      productQuery: 'dried-pineapple',
+    },
+    {
+      name: t('productsPage.section3.row5Name'),
+      origin: t('productsPage.section3.row5Origin'),
+      moisture: '< 18%',
+      shelfLife: t('productsPage.section3.months12'),
+      cert: t('productsPage.section3.certNatural'),
+      certColor: '#065F46',
+      certBg: '#D1FAE5',
+      productQuery: 'dried-banana',
+    },
+    {
+      name: t('productsPage.section3.row6Name'),
+      origin: t('productsPage.section3.row6Origin'),
+      moisture: '< 12%',
+      shelfLife: t('productsPage.section3.months12'),
+      cert: t('productsPage.section3.certEudr'),
+      certColor: '#1E40AF',
+      certBg: '#DBEAFE',
+      productQuery: 'energy-bar',
+    },
+  ];
 
   return (
     <div className="products-page">
@@ -44,32 +109,93 @@ export const Products: React.FC = () => {
         badge={isVi ? 'DANH MỤC XUẤT KHẨU • B2B PRODUCT CATALOG' : 'EXPORT CATALOG • B2B DRIED FRUITS'}
         titleLine1={isVi ? 'Trái Cây Sấy Tự Nhiên' : 'Naturally Pure Tropical Fruits'}
         titleLine2={isVi ? 'Tiêu Chuẩn Quốc Tế BRCGS & OCOP' : 'BRCGS Grade B & 3-Star OCOP'}
-        description={
-          isVi
-            ? 'Danh mục 6 dòng trái cây sấy dẻo và sản phẩm chế biến sâu tiêu chuẩn xuất khẩu của CÔNG TY TNHH VINAXO. Không chất bảo quản, không thêm đường tinh luyện, giữ trọn vẹn màu sắc tự nhiên và vi lượng dinh dưỡng.'
-            : 'Explore VINAXO’s export portfolio of 6 natural soft-dried tropical fruits and value-added lines. Free from added sugars and chemical preservatives, optimized for international retail supermarkets and OEM private labeling.'
-        }
+        description={t('productsPage.section1.desc')}
         breadcrumbCurrent={isVi ? 'Sản Phẩm' : 'Products'}
-        theme="sage"
+        theme="cream"
       />
 
-      {/* Main Products Grid & Filter Section */}
-      <section className="section section-white">
+      {/* ========================================================================
+          SECTION 1: PRODUCT INTRO & SPEC HIGHLIGHTS (MATCHING HTML 1:1)
+          ======================================================================== */}
+      <section className="subpage-section" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
         <div className="container">
-          {/* Category Filter Pills */}
-          <ProductFilter
-            activeCategory={activeCategory}
-            onSelectCategory={(cat) => setActiveCategory(cat)}
-          />
+          <div className="text-center" style={{ maxWidth: '820px', margin: '0 auto 40px auto' }}>
+            <span className="section-label">{t('productsPage.section1.label')}</span>
+            <h2 className="section-title">
+              {t('productsPage.section1.title')}
+            </h2>
+            <p className="section-desc" style={{ margin: '0 auto' }}>
+              {t('productsPage.section1.desc')}
+            </p>
+          </div>
 
-          {/* Product Grid */}
+          {/* Product Category Filter Pills */}
+          <div className="product-category-pills" role="tablist" aria-label="Product categories">
+            <button
+              className={`product-cat-pill ${activeCategory === 'all' ? 'active' : ''}`}
+              onClick={() => setActiveCategory('all')}
+              role="tab"
+            >
+              {t('productFilterTabs.all')}
+            </button>
+            <button
+              className={`product-cat-pill ${activeCategory === 'mango' ? 'active' : ''}`}
+              onClick={() => setActiveCategory('mango')}
+              role="tab"
+            >
+              {t('productFilterTabs.mango')}
+            </button>
+            <button
+              className={`product-cat-pill ${activeCategory === 'jackfruit' ? 'active' : ''}`}
+              onClick={() => setActiveCategory('jackfruit')}
+              role="tab"
+            >
+              {t('productFilterTabs.jackfruit')}
+            </button>
+            <button
+              className={`product-cat-pill ${activeCategory === 'dragon' ? 'active' : ''}`}
+              onClick={() => setActiveCategory('dragon')}
+              role="tab"
+            >
+              {t('productFilterTabs.dragon')}
+            </button>
+            <button
+              className={`product-cat-pill ${activeCategory === 'pineapple' ? 'active' : ''}`}
+              onClick={() => setActiveCategory('pineapple')}
+              role="tab"
+            >
+              {t('productFilterTabs.pineapple')}
+            </button>
+            <button
+              className={`product-cat-pill ${activeCategory === 'banana' ? 'active' : ''}`}
+              onClick={() => setActiveCategory('banana')}
+              role="tab"
+            >
+              {t('productFilterTabs.banana')}
+            </button>
+            <button
+              className={`product-cat-pill ${activeCategory === 'energy-bar' ? 'active' : ''}`}
+              onClick={() => setActiveCategory('energy-bar')}
+              role="tab"
+            >
+              {t('productFilterTabs.energyBar')}
+            </button>
+            <button
+              className={`product-cat-pill ${activeCategory === 'ocop' ? 'active' : ''}`}
+              onClick={() => setActiveCategory('ocop')}
+              role="tab"
+            >
+              {t('productFilterTabs.ocop')}
+            </button>
+          </div>
+
+          {/* Dynamic Product Grid */}
           <div
-            className="grid-3"
+            className="products-grid home-products-grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: '28px',
-              marginBottom: '64px',
+              gap: '24px',
+              marginTop: '40px',
             }}
           >
             {filteredProducts.map((p) => (
@@ -81,168 +207,207 @@ export const Products: React.FC = () => {
               />
             ))}
           </div>
+        </div>
+      </section>
 
-          {/* ======================================================================
-              B2B PACKAGING & OEM CAPABILITIES SPECIFICATION SECTION
-              ====================================================================== */}
+      {/* ========================================================================
+          SECTION 2: OEM / PRIVATE LABEL PROCESSING CAPABILITIES (MATCHING HTML 1:1)
+          ======================================================================== */}
+      <section
+        className="subpage-section"
+        style={{
+          backgroundColor: 'var(--cream-bg)',
+          borderTop: '1px solid var(--color-border)',
+          borderBottom: '1px solid var(--color-border)',
+          paddingTop: '80px',
+          paddingBottom: '80px',
+        }}
+      >
+        <div className="container">
+          <div className="text-center" style={{ maxWidth: '800px', margin: '0 auto 48px auto' }}>
+            <span className="section-label">{t('productsPage.section2.label')}</span>
+            <h2 className="section-title">
+              {t('productsPage.section2.title')}
+            </h2>
+            <p className="section-desc" style={{ margin: '0 auto' }}>
+              {t('productsPage.section2.desc')}
+            </p>
+          </div>
+
           <div
             style={{
-              marginTop: '64px',
-              padding: 'clamp(28px, 4vw, 44px)',
-              backgroundColor: 'var(--cream-bg)',
-              borderRadius: 'var(--radius-xl)',
-              border: '1px solid var(--color-border)',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: '28px',
             }}
           >
-            <div style={{ marginBottom: '28px' }}>
-              <span className="section-eyebrow">
-                {isVi ? 'QUY CÁCH ĐÓNG GÓI & NĂNG LỰC GIA CÔNG' : 'B2B PACKAGING & OEM CAPABILITIES'}
-              </span>
-              <h2
-                className="title-serif"
-                style={{
-                  fontSize: 'clamp(1.6rem, 2.5vw, 2.2rem)',
-                  color: 'var(--color-heading)',
-                  marginTop: '8px',
-                }}
-              >
-                {isVi
-                  ? 'Quy Cách Đóng Gói Xuất Khẩu & Nhãn Riêng OEM'
-                  : 'Export Packing Standards & Private Labeling Services'}
-              </h2>
-              <p style={{ fontSize: '0.92rem', color: 'var(--color-body)', marginTop: '8px', maxWidth: '780px' }}>
-                {isVi
-                  ? 'VINAXO cung cấp đầy đủ các giải pháp đóng gói linh hoạt từ túi bán lẻ có zip, thùng carton chuyên dụng xuất khẩu đến đóng pallet theo tiêu chuẩn kiểm dịch quốc tế.'
-                  : 'VINAXO provides versatile packaging formats ranging from consumer stand-up pouches to master export cartons and palletized shipments adhering to global phytosanitary rules.'}
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: 'var(--radius-lg)',
+                padding: '36px 30px',
+                border: '1px solid var(--color-border)',
+                boxShadow: 'var(--shadow-xs)',
+              }}
+            >
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: 'var(--light-sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-green)', marginBottom: '16px' }}>
+                <FileText size={22} />
+              </div>
+              <h3 style={{ fontSize: '1.25rem', color: 'var(--color-heading)', marginBottom: '10px' }}>
+                {t('productsPage.section2.card1Title')}
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: 'var(--color-body)', lineHeight: 1.65 }}>
+                {t('productsPage.section2.card1Desc')}
               </p>
             </div>
 
             <div
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-                gap: '20px',
+                backgroundColor: '#FFFFFF',
+                borderRadius: 'var(--radius-lg)',
+                padding: '36px 30px',
+                border: '1px solid var(--color-border)',
+                boxShadow: 'var(--shadow-xs)',
               }}
             >
-              {/* Packaging Format 1 */}
-              <div
-                className="card"
-                style={{
-                  padding: '24px',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: 'var(--radius-md)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <Package size={22} color="var(--primary-green)" />
-                  <strong style={{ color: 'var(--color-heading)', fontSize: '1rem' }}>
-                    {isVi ? 'Bán Lẻ / Retail Pouches' : 'Retail Pouches'}
-                  </strong>
-                </div>
-                <ul style={{ paddingLeft: '18px', fontSize: '0.85rem', color: 'var(--color-body)', lineHeight: 1.7 }}>
-                  <li>{isVi ? 'Túi zip nhôm đáy đứng: 100g, 250g, 500g' : 'Stand-up foil pouches: 100g, 250g, 500g'}</li>
-                  <li>{isVi ? 'Bơm khí Nitơ bảo quản hương vị tự nhiên' : 'Nitrogen flushing for shelf-life stability'}</li>
-                  <li>{isVi ? 'In nhãn thương hiệu VINAXO hoặc OEM' : 'Branded or White-label packaging'}</li>
-                </ul>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: 'var(--light-sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-green)', marginBottom: '16px' }}>
+                <Package size={22} />
               </div>
-
-              {/* Packaging Format 2 */}
-              <div
-                className="card"
-                style={{
-                  padding: '24px',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: 'var(--radius-md)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <Layers size={22} color="var(--primary-green)" />
-                  <strong style={{ color: 'var(--color-heading)', fontSize: '1rem' }}>
-                    {isVi ? 'Thùng Carton Xuất Khẩu' : 'Master Export Cartons'}
-                  </strong>
-                </div>
-                <ul style={{ paddingLeft: '18px', fontSize: '0.85rem', color: 'var(--color-body)', lineHeight: 1.7 }}>
-                  <li>{isVi ? 'Thùng carton 5 lớp chống ẩm: 5kg, 10kg, 20kg' : '5-ply heavy-duty cartons: 5kg, 10kg, 20kg'}</li>
-                  <li>{isVi ? 'Lớp lót túi PE thực phẩm vô trùng kép' : 'Double food-grade PE liner bags'}</li>
-                  <li>{isVi ? 'Mã vạch và tem phụ đa ngôn ngữ EN/FR/DE' : 'Multilingual labeling and GS1 barcodes'}</li>
-                </ul>
-              </div>
-
-              {/* Packaging Format 3 */}
-              <div
-                className="card"
-                style={{
-                  padding: '24px',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: 'var(--radius-md)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <Truck size={22} color="var(--primary-green)" />
-                  <strong style={{ color: 'var(--color-heading)', fontSize: '1rem' }}>
-                    {isVi ? 'Đóng Pallet & Container' : 'Pallet & Container Load'}
-                  </strong>
-                </div>
-                <ul style={{ paddingLeft: '18px', fontSize: '0.85rem', color: 'var(--color-body)', lineHeight: 1.7 }}>
-                  <li>{isVi ? 'Pallet gỗ hun trùng chuẩn ISPM-15' : 'ISPM-15 heat-treated export pallets'}</li>
-                  <li>{isVi ? '40 - 50 thùng / Pallet quấn màng co PE' : '40 - 50 cartons per shrink-wrapped pallet'}</li>
-                  <li>{isVi ? 'Container 20ft (~10 tấn) / 40ft (~20 tấn)' : 'FCL 20ft (~10 MT) / 40ft (~20 MT)'}</li>
-                </ul>
-              </div>
-
-              {/* Packaging Format 4 */}
-              <div
-                className="card"
-                style={{
-                  padding: '24px',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: 'var(--radius-md)',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                  <ShieldCheck size={22} color="var(--primary-green)" />
-                  <strong style={{ color: 'var(--color-heading)', fontSize: '1rem' }}>
-                    {isVi ? 'Hồ Sơ Kiểm Nghiệm B2B' : 'Quality Documentation'}
-                  </strong>
-                </div>
-                <ul style={{ paddingLeft: '18px', fontSize: '0.85rem', color: 'var(--color-body)', lineHeight: 1.7 }}>
-                  <li>{isVi ? 'Chứng nhận BRCGS Grade B & OCOP 3 sao' : 'BRCGS Grade B Certificate & OCOP proof'}</li>
-                  <li>{isVi ? 'Phiếu kiểm nghiệm vi sinh COA từng lô hàng' : 'Batch-specific COA microbiology test report'}</li>
-                  <li>{isVi ? 'Giấy chứng nhận kiểm dịch thực vật (Phyto)' : 'Official Phytosanitary Certificate issued'}</li>
-                </ul>
-              </div>
+              <h3 style={{ fontSize: '1.25rem', color: 'var(--color-heading)', marginBottom: '10px' }}>
+                {t('productsPage.section2.card2Title')}
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: 'var(--color-body)', lineHeight: 1.65 }}>
+                {t('productsPage.section2.card2Desc')}
+              </p>
             </div>
 
             <div
               style={{
-                marginTop: '28px',
-                paddingTop: '20px',
-                borderTop: '1px solid var(--color-border)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '16px',
+                backgroundColor: '#FFFFFF',
+                borderRadius: 'var(--radius-lg)',
+                padding: '36px 30px',
+                border: '1px solid var(--color-border)',
+                boxShadow: 'var(--shadow-xs)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem', color: 'var(--color-body-dark)' }}>
-                <CheckCircle2 size={18} color="var(--primary-green)" />
-                <span>
-                  {isVi
-                    ? 'Chính sách cung cấp bộ mẫu (Free Commercial Sample Kit) cho đối tác nhập khẩu uy tín.'
-                    : 'Sample evaluation kits dispatched worldwide for accredited commercial distributors.'}
-                </span>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: 'var(--light-sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-green)', marginBottom: '16px' }}>
+                <ShieldCheck size={22} />
               </div>
-
-              <Button
-                variant="primary"
-                onClick={() => onOpenQuote()}
-                icon={<ArrowRight size={15} />}
-              >
-                {isVi ? 'Yêu Cầu Báo Giá & Nhận Mẫu Thử' : 'Request Pricing & Sample Kit'}
-              </Button>
+              <h3 style={{ fontSize: '1.25rem', color: 'var(--color-heading)', marginBottom: '10px' }}>
+                {t('productsPage.section2.card3Title')}
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: 'var(--color-body)', lineHeight: 1.65 }}>
+                {t('productsPage.section2.card3Desc')}
+              </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ========================================================================
+          SECTION 3: SPECIFICATIONS COMPARISON TABLE (MATCHING HTML 1:1)
+          ======================================================================== */}
+      <section className="subpage-section" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
+        <div className="container">
+          <div className="text-center" style={{ maxWidth: '800px', margin: '0 auto 40px auto' }}>
+            <span className="section-label">{t('productsPage.section3.label')}</span>
+            <h2 className="section-title">
+              {t('productsPage.section3.title')}
+            </h2>
+            <p className="section-desc" style={{ margin: '0 auto' }}>
+              {t('productsPage.section3.desc')}
+            </p>
+          </div>
+
+          <div
+            className="specs-table-wrapper"
+            style={{
+              overflowX: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              backgroundColor: '#FFFFFF',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--color-border)',
+              boxShadow: 'var(--shadow-xs)',
+            }}
+          >
+            <table style={{ width: '100%', minWidth: '640px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
+              <thead>
+                <tr style={{ backgroundColor: 'var(--light-sage)', color: 'var(--forest-green)', borderBottom: '2px solid var(--color-border)' }}>
+                  <th style={{ padding: '16px 20px', fontWeight: 700 }}>{t('productsPage.section3.colName')}</th>
+                  <th style={{ padding: '16px 20px', fontWeight: 700 }}>{t('productsPage.section3.colOrigin')}</th>
+                  <th style={{ padding: '16px 20px', fontWeight: 700 }}>{t('productsPage.section3.colMoisture')}</th>
+                  <th style={{ padding: '16px 20px', fontWeight: 700 }}>{t('productsPage.section3.colShelfLife')}</th>
+                  <th style={{ padding: '16px 20px', fontWeight: 700 }}>{t('productsPage.section3.colCert')}</th>
+                  <th style={{ padding: '16px 20px', fontWeight: 700, textAlign: 'right' }}>{t('productsPage.section3.colQuote')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {specRows.map((r, idx) => (
+                  <tr
+                    key={idx}
+                    style={{
+                      borderBottom: '1px solid #EEF2EE',
+                      backgroundColor: idx % 2 === 1 ? '#FAFCFA' : '#FFFFFF',
+                    }}
+                  >
+                    <td style={{ padding: '16px 20px', fontWeight: 600, color: 'var(--color-heading)' }}>
+                      {r.name}
+                    </td>
+                    <td style={{ padding: '16px 20px', color: 'var(--color-body)' }}>
+                      {r.origin}
+                    </td>
+                    <td style={{ padding: '16px 20px', color: 'var(--forest-green)', fontWeight: 600 }}>
+                      {r.moisture}
+                    </td>
+                    <td style={{ padding: '16px 20px', color: 'var(--color-body)' }}>
+                      {r.shelfLife}
+                    </td>
+                    <td style={{ padding: '16px 20px' }}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          backgroundColor: r.certBg,
+                          color: r.certColor,
+                        }}
+                      >
+                        {r.cert}
+                      </span>
+                    </td>
+                    <td style={{ padding: '16px 20px', textAlign: 'right' }}>
+                      <button
+                        onClick={() => onOpenQuote(r.name)}
+                        className="btn btn-outline"
+                        style={{ padding: '6px 14px', fontSize: '0.75rem' }}
+                      >
+                        {t('productsPage.section3.quoteBtn')}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================
+          SECTION 4: B2B CALL TO ACTION BANNER (MATCHING HTML 1:1)
+          ======================================================================== */}
+      <section className="subpage-section subpage-cta-section">
+        <div className="container">
+          <CorporateCTA
+            eyebrow={t('productsPage.section4.label')}
+            title={t('productsPage.section4.title')}
+            description={t('productsPage.section4.desc')}
+            primaryText={t('productsPage.section4.btnPrimary')}
+            onPrimaryClick={() => onOpenQuote()}
+            secondaryText={t('productsPage.section4.btnSecondary')}
+            secondaryLink="/contact"
+          />
         </div>
       </section>
 
