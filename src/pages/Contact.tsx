@@ -482,11 +482,11 @@ export const Contact: React.FC = () => {
                   >
                     {isVi ? (
                       <>
-                        💡 <em>Kết nối thực tế:</em> Sau khi nhấn gửi, hệ thống sẽ mở ứng dụng email của bạn với tiêu đề và nội dung được tạo tự động để gửi trực tiếp tới <strong>thaovinaxo@gmail.com</strong>. Quý khách cũng có thể liên hệ trực tiếp qua Zalo/Hotline <strong>0907 494 177</strong> để nhận báo giá nhanh nhất.
+                        <em>Kết nối thực tế:</em> Sau khi nhấn gửi, hệ thống sẽ mở ứng dụng email của bạn với tiêu đề và nội dung được tạo tự động để gửi trực tiếp tới <strong>thaovinaxo@gmail.com</strong>. Quý khách cũng có thể liên hệ trực tiếp qua Zalo/Hotline <strong>0907 494 177</strong> để nhận báo giá nhanh nhất.
                       </>
                     ) : (
                       <>
-                        💡 <em>Direct connection:</em> Upon submitting, your default email client opens with prefilled commercial details to <strong>thaovinaxo@gmail.com</strong>. You may also call directly via Hotline <strong>+84 907 494 177</strong>.
+                        <em>Direct connection:</em> Upon submitting, your default email client opens with prefilled commercial details to <strong>thaovinaxo@gmail.com</strong>. You may also call directly via Hotline <strong>+84 907 494 177</strong>.
                       </>
                     )}
                   </div>
@@ -537,14 +537,62 @@ export const Contact: React.FC = () => {
                   </svg>
                 </a>
               </div>
-              <iframe
-                className="contact-map-frame"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62744.15610052932!2d106.516139!3d10.380295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310aa5b7a12a55ab%3A0xb35a098863f6a27e!2zVHAuIEfDsiBDw7RuZyBUw6J5LCBUaeG7gW4gR2lhbmcsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1700000000000!5m2!1svi!2s"
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Bản đồ chỉ đường đến nhà máy VINAXO Tiền Giang"
-              ></iframe>
+              <div style={{ position: 'relative', width: '100%', height: '400px', backgroundColor: '#EEF4F0' }}>
+                {/* Fallback card underlay — rendered in DOM underneath the iframe.
+                    If iframe is blocked by an ad-blocker or strict browser privacy shield,
+                    this fallback provides full GPS details and an instant button to open Maps */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '24px',
+                    textAlign: 'center',
+                    backgroundColor: '#F3F7F4'
+                  }}
+                >
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#D7E8DC', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px', color: '#1B5E39' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '24px', height: '24px' }}>
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                  </div>
+                  <h4 style={{ margin: '0 0 6px', fontSize: '1rem', fontWeight: 700, color: '#103D2A' }}>
+                    {isVi ? 'Nhà Máy Chế Biến VINAXO Tiền Giang' : 'VINAXO Processing Plant Tien Giang'}
+                  </h4>
+                  <p style={{ margin: '0 0 16px', fontSize: '0.875rem', color: '#55635C', maxWidth: '480px' }}>
+                    {isVi
+                      ? 'Thị trấn Vĩnh Bình, Huyện Gò Công Tây, Tỉnh Tiền Giang (Tọa độ: 10.380295, 106.516139)'
+                      : 'Vinh Binh Town, Go Cong Tay District, Tien Giang Province (Coords: 10.380295, 106.516139)'}
+                  </p>
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=V%C4%A9nh+B%C3%ACnh+G%C3%B2+C%C3%B4ng+T%C3%A2y+Ti%E1%BB%81n+Giang"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                    style={{ padding: '10px 20px', fontSize: '0.875rem' }}
+                  >
+                    <span>{isVi ? 'Mở Chỉ Đường Google Maps' : 'Open Directions in Google Maps'}</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', marginLeft: '6px' }}>
+                      <line x1="7" y1="17" x2="17" y2="7"></line>
+                      <polyline points="7 7 17 7 17 17"></polyline>
+                    </svg>
+                  </a>
+                </div>
+
+                <iframe
+                  className="contact-map-frame"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62744.15610052932!2d106.516139!3d10.380295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x310aa5b7a12a55ab%3A0xb35a098863f6a27e!2zVHAuIEfDsiBDw7RuZyBUw6J5LCBUaeG7gW4gR2lhbmcsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1700000000000!5m2!1svi!2s"
+                  allowFullScreen={false}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Bản đồ chỉ đường đến nhà máy VINAXO Tiền Giang"
+                  style={{ position: 'relative', zIndex: 1, width: '100%', height: '400px', border: 0 }}
+                ></iframe>
+              </div>
             </div>
           </div>
         </section>
