@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Menu, X, Globe, ChevronDown, ArrowRight, Check } from 'lucide-react';
 import { useLanguage, Language } from '../../i18n/LanguageContext';
 
@@ -9,12 +9,46 @@ export interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
   const { language, setLanguage, t } = useLanguage();
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
   const langTimerRef = useRef<number | null>(null);
   const wasOpenedByClickRef = useRef<boolean>(false);
+
+  // Scroll to top helper
+  const handleNavClick = (to: string) => {
+    const isCurrentPage =
+      location.pathname === to ||
+      (to === '/' && (location.pathname === '' || location.pathname === '/'));
+
+    if (isCurrentPage) {
+      // Clicking menu of current page: smooth scroll to top
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth',
+      });
+    } else {
+      // Navigating to a different page: reset scroll immediately to prevent starting at previous scroll offset
+      const htmlEl = document.documentElement;
+      const originalBehavior = htmlEl.style.scrollBehavior;
+      htmlEl.style.scrollBehavior = 'auto';
+
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant',
+      });
+      htmlEl.scrollTop = 0;
+      document.body.scrollTop = 0;
+
+      requestAnimationFrame(() => {
+        htmlEl.style.scrollBehavior = originalBehavior;
+      });
+    }
+  };
 
   // Monitor scroll for sticky header elevation
   useEffect(() => {
@@ -144,7 +178,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
         <div className="header-container">
           {/* Zone 1: Brand Logo Left */}
           <div className="header-logo-zone">
-            <Link to="/" className="brand-logo" aria-label="VINAXO - Home">
+            <Link
+              to="/"
+              onClick={() => handleNavClick('/')}
+              className="brand-logo"
+              aria-label="VINAXO - Home"
+            >
               <div className="brand-icon">
                 <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M6 26C8 16 16 8 26 6C24 16 16 24 6 26Z" fill="#174D32" />
@@ -171,6 +210,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
               <NavLink
                 key={item.to}
                 to={item.to}
+                onClick={() => handleNavClick(item.to)}
                 className={({ isActive }) =>
                   `nav-link ${isActive ? 'active' : ''}`
                 }
@@ -397,7 +437,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
             >
               <Link
                 to="/"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleNavClick('/');
+                }}
                 className="brand-logo"
                 style={{ width: 'auto', minWidth: 'auto', textDecoration: 'none' }}
                 aria-label="VINAXO - Home"
@@ -445,7 +488,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleNavClick(item.to);
+                  }}
                   style={({ isActive }) => ({
                     padding: '12px 16px',
                     borderRadius: 'var(--radius-md)',

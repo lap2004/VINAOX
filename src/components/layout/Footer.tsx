@@ -1,14 +1,45 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { MapPin, Phone, Mail, Globe, Heart } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { COMPANY_INFO } from '../../data/company';
 
 export const Footer: React.FC = () => {
   const { t, language } = useLanguage();
+  const location = useLocation();
   const currentYear = new Date().getFullYear();
 
   const isVi = language === 'vi';
+
+  const handleFooterLinkClick = (to: string) => {
+    const isCurrentPage =
+      location.pathname === to ||
+      (to === '/' && (location.pathname === '' || location.pathname === '/'));
+
+    if (isCurrentPage) {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth',
+      });
+    } else {
+      const htmlEl = document.documentElement;
+      const originalBehavior = htmlEl.style.scrollBehavior;
+      htmlEl.style.scrollBehavior = 'auto';
+
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant',
+      });
+      htmlEl.scrollTop = 0;
+      document.body.scrollTop = 0;
+
+      requestAnimationFrame(() => {
+        htmlEl.style.scrollBehavior = originalBehavior;
+      });
+    }
+  };
 
   return (
     <footer
@@ -36,6 +67,7 @@ export const Footer: React.FC = () => {
             <div style={{ marginBottom: '18px' }}>
               <Link
                 to="/"
+                onClick={() => handleFooterLinkClick('/')}
                 className="brand-logo footer-logo"
                 aria-label="VINAXO - Home"
                 style={{ display: 'flex', width: 'auto', minWidth: 0, textDecoration: 'none' }}
@@ -123,6 +155,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/"
+                  onClick={() => handleFooterLinkClick('/')}
                   style={{ color: 'rgba(255, 255, 255, 0.8)' }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.color = '#FFFFFF')
@@ -137,6 +170,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/about"
+                  onClick={() => handleFooterLinkClick('/about')}
                   style={{ color: 'rgba(255, 255, 255, 0.8)' }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.color = '#FFFFFF')
@@ -151,6 +185,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/products"
+                  onClick={() => handleFooterLinkClick('/products')}
                   style={{ color: 'rgba(255, 255, 255, 0.8)' }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.color = '#FFFFFF')
@@ -165,6 +200,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/quality"
+                  onClick={() => handleFooterLinkClick('/quality')}
                   style={{ color: 'rgba(255, 255, 255, 0.8)' }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.color = '#FFFFFF')
@@ -179,6 +215,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/markets"
+                  onClick={() => handleFooterLinkClick('/markets')}
                   style={{ color: 'rgba(255, 255, 255, 0.8)' }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.color = '#FFFFFF')
@@ -193,6 +230,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/news"
+                  onClick={() => handleFooterLinkClick('/news')}
                   style={{ color: 'rgba(255, 255, 255, 0.8)' }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.color = '#FFFFFF')
@@ -207,6 +245,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/contact"
+                  onClick={() => handleFooterLinkClick('/contact')}
                   style={{ color: 'rgba(255, 255, 255, 0.8)' }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.color = '#FFFFFF')

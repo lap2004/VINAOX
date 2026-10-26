@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ExternalLink, MessageSquareQuote, Mail } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { newsData, NewsItem } from '../data/news';
@@ -195,9 +196,9 @@ export const PressMedia: React.FC = () => {
                   <Mail size={16} />
                   <span>{t('newsPage.mediaCard.btnInterview')}</span>
                 </a>
-                <a href="/contact" className="btn btn-secondary">
+                <Link to="/contact" className="btn btn-secondary">
                   <span>{t('newsPage.mediaCard.btnContact')}</span>
-                </a>
+                </Link>
               </div>
             </div>
 
