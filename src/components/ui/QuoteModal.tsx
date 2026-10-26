@@ -18,12 +18,10 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
 
   const [formData, setFormData] = useState({
     name: '',
-    company: '',
     email: '',
     phone: '',
+    company: '',
     product: defaultProduct,
-    quantity: '',
-    destination: '',
     message: '',
   });
 
@@ -87,14 +85,12 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     const trimmedEmail = formData.email.trim();
     const trimmedPhone = formData.phone.trim();
     const trimmedCompany = formData.company.trim();
-    const trimmedQuantity = formData.quantity.trim();
-    const trimmedDestination = formData.destination.trim();
     const trimmedMessage = formData.message.trim();
 
     if (!trimmedName || !trimmedEmail || !trimmedPhone) {
       setErrorMsg(
         language === 'vi'
-          ? 'Vui lòng điền đầy đủ họ tên, email và số điện thoại liên hệ.'
+          ? 'Vui lòng điền họ tên, email và số điện thoại liên hệ.'
           : 'Please provide your full name, email address, and phone number.'
       );
       return;
@@ -125,10 +121,8 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
       `Email: ${trimmedEmail}`,
       `Phone/WhatsApp: ${trimmedPhone}`,
       `Product of Interest: ${formData.product || 'General Catalog'}`,
-      `Estimated Volume: ${trimmedQuantity || 'To be discussed'}`,
-      `Destination Port / Country: ${trimmedDestination || 'To be discussed'}`,
-      `Specific Requirements:`,
-      trimmedMessage || 'Standard export specification required.',
+      `Specifications & Requirements:`,
+      trimmedMessage || 'Standard export CIF/FOB quotation requested.',
       `----------------------------------------`,
       `Dispatched via VINAXO Corporate Portal (https://vinaxo.vn)`,
     ].join('\n');
@@ -180,7 +174,11 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
       <div
         className="modal-content"
         onClick={(e) => e.stopPropagation()}
-        style={{ padding: 'clamp(24px, 4vw, 40px)' }}
+        style={{
+          maxWidth: '560px',
+          padding: 'clamp(22px, 3.5vw, 32px)',
+          borderRadius: '20px',
+        }}
       >
         {/* Close Button */}
         <button
@@ -188,10 +186,10 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
           aria-label="Close modal"
           style={{
             position: 'absolute',
-            top: '20px',
-            right: '20px',
-            width: '36px',
-            height: '36px',
+            top: '18px',
+            right: '18px',
+            width: '32px',
+            height: '32px',
             borderRadius: '50%',
             border: '1px solid var(--color-border)',
             backgroundColor: 'var(--cream-bg)',
@@ -200,41 +198,44 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
             justifyContent: 'center',
             cursor: 'pointer',
             color: 'var(--color-heading)',
-            transition: 'background-color 0.2s',
+            transition: 'all 0.2s ease',
+            zIndex: 10,
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = 'var(--light-sage)';
+            e.currentTarget.style.transform = 'scale(1.05)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = 'var(--cream-bg)';
+            e.currentTarget.style.transform = 'scale(1)';
           }}
         >
-          <X size={18} />
+          <X size={16} />
         </button>
 
         {isSubmitted ? (
-          <div style={{ textAlign: 'center', padding: '24px 8px' }}>
+          <div style={{ textAlign: 'center', padding: '28px 12px' }}>
             <div
               style={{
-                width: '64px',
-                height: '64px',
+                width: '56px',
+                height: '56px',
                 borderRadius: '50%',
                 backgroundColor: 'var(--light-sage)',
                 color: 'var(--primary-green)',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: '20px',
+                marginBottom: '16px',
               }}
             >
-              <CheckCircle size={36} />
+              <CheckCircle size={32} />
             </div>
             <h3
               className="title-serif"
               style={{
-                fontSize: '1.75rem',
+                fontSize: '1.5rem',
                 color: 'var(--forest-green)',
-                marginBottom: '12px',
+                marginBottom: '10px',
               }}
             >
               {t('modal.successTitle', 'Thank You for Your Inquiry!')}
@@ -242,15 +243,15 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
             <p
               style={{
                 color: 'var(--color-body)',
-                lineHeight: 1.65,
-                maxWidth: '480px',
-                margin: '0 auto 28px',
+                lineHeight: 1.6,
+                fontSize: '0.92rem',
+                maxWidth: '440px',
+                margin: '0 auto 24px',
               }}
             >
-              {t(
-                'modal.successMessage',
-                'Your B2B quote request has been received. Our export trade team will review your specifications and contact you within 24 business hours.'
-              )}
+              {language === 'vi'
+                ? 'Yêu cầu báo giá của bạn đã được chuyển tiếp đến Bộ phận Xuất khẩu VINAXO. Đội ngũ thương mại quốc tế sẽ phản hồi trong vòng 24 giờ làm việc.'
+                : 'Your B2B quote inquiry has been forwarded to VINAXO Export Desk. Our team will review your specifications and contact you within 24 business hours.'}
             </p>
             <Button variant="primary" onClick={onClose}>
               {t('modal.closeBtn', 'Close Window')}
@@ -258,26 +259,47 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
           </div>
         ) : (
           <div>
-            <div style={{ marginBottom: '24px' }}>
-              <span className="section-eyebrow">
+            {/* Header */}
+            <div style={{ marginBottom: '18px', paddingRight: '28px' }}>
+              <span
+                className="section-eyebrow"
+                style={{
+                  display: 'inline-block',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  color: 'var(--primary-green)',
+                  backgroundColor: 'var(--light-sage)',
+                  padding: '3px 10px',
+                  borderRadius: '9999px',
+                  marginBottom: '6px',
+                }}
+              >
                 {t('modal.eyebrow', 'VINAXO EXPORT INQUIRY')}
               </span>
               <h2
                 id="modal-title"
                 className="title-serif"
                 style={{
-                  fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
+                  fontSize: 'clamp(1.35rem, 2.2vw, 1.65rem)',
                   color: 'var(--color-heading)',
-                  marginTop: '8px',
-                  marginBottom: '8px',
+                  margin: '4px 0 6px',
+                  lineHeight: 1.25,
                 }}
               >
                 {t('modal.title', 'Request a Wholesale Quote')}
               </h2>
-              <p style={{ fontSize: '0.9rem', color: 'var(--color-body)' }}>
+              <p
+                style={{
+                  fontSize: '0.85rem',
+                  color: 'var(--color-body)',
+                  lineHeight: 1.45,
+                  margin: 0,
+                }}
+              >
                 {t(
                   'modal.desc',
-                  'Please fill in your company details and fruit specifications. Our B2B export desk will provide CIF/FOB pricing and technical spec sheets.'
+                  'Fill in your details below to receive direct CIF/FOB pricing or samples within 24 business hours.'
                 )}
               </p>
             </div>
@@ -288,10 +310,10 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                   backgroundColor: '#FEF2F2',
                   border: '1px solid #FCA5A5',
                   color: '#991B1B',
-                  padding: '10px 14px',
+                  padding: '8px 12px',
                   borderRadius: 'var(--radius-sm)',
-                  fontSize: '0.875rem',
-                  marginBottom: '16px',
+                  fontSize: '0.825rem',
+                  marginBottom: '12px',
                 }}
               >
                 {errorMsg}
@@ -313,10 +335,18 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div className="form-group" style={{ marginBottom: '14px' }}>
-                  <label className="form-label">
-                    {t('modal.nameLabel', 'Your Full Name')} <span className="required">*</span>
+              {/* Row 1: Name & Email */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: '12px',
+                  marginBottom: '11px',
+                }}
+              >
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label" style={{ fontSize: '0.8125rem', marginBottom: '5px' }}>
+                    {t('modal.nameLabel', 'Full Name')} <span className="required">*</span>
                   </label>
                   <input
                     type="text"
@@ -324,31 +354,15 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     value={formData.name}
                     onChange={handleChange}
                     maxLength={100}
-                    placeholder={t('modal.namePlaceholder', 'e.g. John Doe / Nguyễn Văn A')}
+                    placeholder={t('modal.namePlaceholder', 'John Doe / Nguyễn Văn A')}
                     className="form-input"
+                    style={{ padding: '9px 12px', fontSize: '0.9rem' }}
                     required
                   />
                 </div>
 
-                <div className="form-group" style={{ marginBottom: '14px' }}>
-                  <label className="form-label">
-                    {t('modal.companyLabel', 'Company / Organization')}
-                  </label>
-                  <input
-                    type="text"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    maxLength={150}
-                    placeholder={t('modal.companyPlaceholder', 'e.g. Pacific Foods Import LLC')}
-                    className="form-input"
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div className="form-group" style={{ marginBottom: '14px' }}>
-                  <label className="form-label">
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label" style={{ fontSize: '0.8125rem', marginBottom: '5px' }}>
                     {t('modal.emailLabel', 'Business Email')} <span className="required">*</span>
                   </label>
                   <input
@@ -359,12 +373,23 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     maxLength={120}
                     placeholder={t('modal.emailPlaceholder', 'buyer@company.com')}
                     className="form-input"
+                    style={{ padding: '9px 12px', fontSize: '0.9rem' }}
                     required
                   />
                 </div>
+              </div>
 
-                <div className="form-group" style={{ marginBottom: '14px' }}>
-                  <label className="form-label">
+              {/* Row 2: Phone & Company */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: '12px',
+                  marginBottom: '11px',
+                }}
+              >
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label" style={{ fontSize: '0.8125rem', marginBottom: '5px' }}>
                     {t('modal.phoneLabel', 'Phone / WhatsApp')} <span className="required">*</span>
                   </label>
                   <input
@@ -373,15 +398,33 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     value={formData.phone}
                     onChange={handleChange}
                     maxLength={30}
-                    placeholder={t('modal.phonePlaceholder', '+1 (555) 000-0000')}
+                    placeholder={t('modal.phonePlaceholder', '+84 907 494 177')}
                     className="form-input"
+                    style={{ padding: '9px 12px', fontSize: '0.9rem' }}
                     required
+                  />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label" style={{ fontSize: '0.8125rem', marginBottom: '5px' }}>
+                    {t('modal.companyLabel', 'Company Name')}
+                  </label>
+                  <input
+                    type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleChange}
+                    maxLength={150}
+                    placeholder={t('modal.companyPlaceholder', 'Pacific Foods Import LLC')}
+                    className="form-input"
+                    style={{ padding: '9px 12px', fontSize: '0.9rem' }}
                   />
                 </div>
               </div>
 
-              <div className="form-group" style={{ marginBottom: '14px' }}>
-                <label className="form-label">
+              {/* Row 3: Product of Interest */}
+              <div className="form-group" style={{ marginBottom: '11px' }}>
+                <label className="form-label" style={{ fontSize: '0.8125rem', marginBottom: '5px' }}>
                   {t('modal.productLabel', 'Product of Interest')}
                 </label>
                 <select
@@ -389,6 +432,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                   value={formData.product}
                   onChange={handleChange}
                   className="form-select"
+                  style={{ padding: '9px 12px', fontSize: '0.9rem', cursor: 'pointer' }}
                 >
                   {productOptions.map((opt, idx) => (
                     <option key={idx} value={idx === 0 ? '' : opt} disabled={idx === 0}>
@@ -398,62 +442,39 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                 </select>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div className="form-group" style={{ marginBottom: '14px' }}>
-                  <label className="form-label">
-                    {t('modal.quantityLabel', 'Estimated Volume')}
-                  </label>
-                  <input
-                    type="text"
-                    name="quantity"
-                    value={formData.quantity}
-                    onChange={handleChange}
-                    maxLength={80}
-                    placeholder={t('modal.quantityPlaceholder', 'e.g. 1 FCL 20ft / 5 tons')}
-                    className="form-input"
-                  />
-                </div>
-
-                <div className="form-group" style={{ marginBottom: '14px' }}>
-                  <label className="form-label">
-                    {t('modal.destLabel', 'Destination Port / Country')}
-                  </label>
-                  <input
-                    type="text"
-                    name="destination"
-                    value={formData.destination}
-                    onChange={handleChange}
-                    maxLength={120}
-                    placeholder={t('modal.destPlaceholder', 'e.g. Port of Long Beach, USA')}
-                    className="form-input"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group" style={{ marginBottom: '20px' }}>
-                <label className="form-label">
-                  {t('modal.messageLabel', 'Specific Inquiries & Requirements')}
+              {/* Row 4: Specifications & Requirements */}
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <label className="form-label" style={{ fontSize: '0.8125rem', marginBottom: '5px' }}>
+                  {t('modal.messageLabel', 'Estimated Volume & Specific Requirements')}
                 </label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  maxLength={3000}
-                  placeholder={t(
-                    'modal.messagePlaceholder',
-                    'Describe your packaging preferences (pouch size, retail or bulk), private labeling needs, or certifications required...'
-                  )}
+                  maxLength={2000}
+                  placeholder={
+                    language === 'vi'
+                      ? 'Sản lượng dự kiến (VD: 1 cont 20ft), cảng đích, quy cách đóng gói OEM hoặc ghi chú...'
+                      : 'Estimated volume (e.g. 1x20ft FCL), target destination, OEM packing or requirements...'
+                  }
                   className="form-textarea"
-                  style={{ minHeight: '80px' }}
+                  style={{
+                    minHeight: '62px',
+                    padding: '9px 12px',
+                    fontSize: '0.9rem',
+                    resize: 'vertical',
+                  }}
+                  rows={2}
                 />
               </div>
 
+              {/* Footer Actions */}
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  gap: '16px',
+                  gap: '12px',
                   flexWrap: 'wrap',
                 }}
               >
@@ -462,16 +483,15 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    fontSize: '0.8rem',
+                    fontSize: '0.78rem',
                     color: 'var(--color-muted)',
                   }}
                 >
-                  <ShieldCheck size={16} color="var(--primary-green)" />
+                  <ShieldCheck size={15} color="var(--primary-green)" />
                   <span>
-                    {t(
-                      'modal.note',
-                      'Direct factory supply • BRCGS Grade B & OCOP Certified'
-                    )}
+                    {language === 'vi'
+                      ? 'Bảo mật thông tin thương mại B2B'
+                      : 'Protected B2B confidentiality'}
                   </span>
                 </div>
 
@@ -479,7 +499,8 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                   type="submit"
                   variant="primary"
                   disabled={isSubmitting}
-                  icon={<Send size={16} />}
+                  icon={<Send size={15} />}
+                  style={{ padding: '10px 20px', fontSize: '0.9rem' }}
                 >
                   {isSubmitting
                     ? language === 'vi'
