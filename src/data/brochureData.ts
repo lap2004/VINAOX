@@ -11,6 +11,55 @@ export const BROCHURE_DOCUMENT = {
   format: 'PDF',
 } as const;
 
+export interface BrochurePageAsset {
+  pageNumber: number;
+  webp: string;
+  jpg: string;
+  width: number;
+  height: number;
+  titleEn: string;
+  titleVi: string;
+}
+
+export const BROCHURE_PAGES: readonly BrochurePageAsset[] = [
+  {
+    pageNumber: 1,
+    webp: '/brochures/pages/brochure-page-1.webp',
+    jpg: '/brochures/pages/brochure-page-1.jpg',
+    width: 1655,
+    height: 2340,
+    titleEn: 'Page 1 — Company Cover',
+    titleVi: 'Trang 1 — Trang bìa giới thiệu',
+  },
+  {
+    pageNumber: 2,
+    webp: '/brochures/pages/brochure-page-2.webp',
+    jpg: '/brochures/pages/brochure-page-2.jpg',
+    width: 1655,
+    height: 2340,
+    titleEn: 'Page 2 — Product Range',
+    titleVi: 'Trang 2 — Danh mục sản phẩm',
+  },
+  {
+    pageNumber: 3,
+    webp: '/brochures/pages/brochure-page-3.webp',
+    jpg: '/brochures/pages/brochure-page-3.jpg',
+    width: 1655,
+    height: 2340,
+    titleEn: 'Page 3 — About VINAXO / Factory',
+    titleVi: 'Trang 3 — Giới thiệu & Nhà máy',
+  },
+  {
+    pageNumber: 4,
+    webp: '/brochures/pages/brochure-page-4.webp',
+    jpg: '/brochures/pages/brochure-page-4.jpg',
+    width: 1655,
+    height: 2340,
+    titleEn: 'Page 4 — Certifications / Contact',
+    titleVi: 'Trang 4 — Chứng nhận & Liên hệ',
+  },
+] as const;
+
 export interface ComplianceBadge {
   id: string;
   pillLabel: string;

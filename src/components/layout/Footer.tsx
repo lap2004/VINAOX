@@ -285,18 +285,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenQuote }) => {
               ? `${COMPANY_INFO.legalNameVi} · MST: ${COMPANY_INFO.taxCode} · Bảo lưu mọi quyền.`
               : `${COMPANY_INFO.shortName} (${COMPANY_INFO.legalNameEn}) · Tax ID: ${COMPANY_INFO.taxCode} · All rights reserved.`}
           </div>
-
-          <div className="footer-attribution">
-            <span>{isVi ? 'Website bởi ' : 'Website by '}</span>
-            <a
-              href="https://sonai.vn"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer-attribution-link"
-            >
-              SONAI
-            </a>
-          </div>
         </div>
       </div>
     </footer>

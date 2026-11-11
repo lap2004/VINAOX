@@ -174,53 +174,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             fontSize: '0.86rem',
             color: 'var(--color-body)',
             lineHeight: 1.55,
-            marginBottom: '16px',
+            marginBottom: '20px',
             flex: 1,
           }}
         >
           {isVi ? (product.shortDescriptionVi || info.desc) : (product.shortDescription || info.desc)}
         </p>
-
-        {/* Key Specs Pills */}
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '6px',
-            marginBottom: '18px',
-            paddingTop: '10px',
-            borderTop: '1px solid var(--color-border-subtle)',
-          }}
-        >
-          <span
-            style={{
-              fontSize: '0.72rem',
-              backgroundColor: 'var(--cream-bg)',
-              color: 'var(--color-body-dark)',
-              padding: '3px 8px',
-              borderRadius: 'var(--radius-xs)',
-              border: '1px solid var(--color-border)',
-              fontWeight: 500,
-            }}
-          >
-            {isVi ? 'Độ ẩm: ' : 'Moisture: '}
-            {product.specs.moisture}
-          </span>
-          <span
-            style={{
-              fontSize: '0.72rem',
-              backgroundColor: 'var(--cream-bg)',
-              color: 'var(--color-body-dark)',
-              padding: '3px 8px',
-              borderRadius: 'var(--radius-xs)',
-              border: '1px solid var(--color-border)',
-              fontWeight: 500,
-            }}
-          >
-            {isVi ? 'HSD: ' : 'Shelf Life: '}
-            {isVi ? product.specs.shelfLifeVi : product.specs.shelfLifeEn}
-          </span>
-        </div>
 
         {/* Action Buttons: Stacked Vertically with 100% Width to Prevent Text Squishing */}
         <div
