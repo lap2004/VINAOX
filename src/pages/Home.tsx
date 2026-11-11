@@ -307,9 +307,8 @@ export const Home: React.FC = () => {
                           ? 'Xoài sấy dẻo VINAXO vàng óng tự nhiên'
                           : 'VINAXO golden soft-dried mango slices'
                       }
-                      style={{ objectPosition: '58% center' }}
-                      width={400}
-                      height={500}
+                      width={1026}
+                      height={869}
                     />
                   </picture>
                 </div>
@@ -324,9 +323,8 @@ export const Home: React.FC = () => {
                           ? 'Thanh long tươi và thanh long sấy tự nhiên VINAXO'
                           : 'Vietnamese fresh dragon fruit paired with dehydrated slices'
                       }
-                      style={{ objectPosition: 'center 42%' }}
-                      width={400}
-                      height={500}
+                      width={1026}
+                      height={869}
                     />
                   </picture>
                 </div>
