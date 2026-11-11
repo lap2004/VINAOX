@@ -13,6 +13,7 @@ export const vi: Translations = {
     "globalMarket": "Thị trường",
     "news": "Báo chí & Tin tức",
     "contact": "Liên hệ",
+    "brochure": "Brochure Công Ty",
     "getQuote": "Nhận báo giá"
   },
   "hero": {
@@ -779,5 +780,38 @@ export const vi: Translations = {
     "terms": "Điều khoản sử dụng",
     "sitemap": "Sơ đồ trang",
     "rights": "© 2026 CÔNG TY TNHH VINAXO. Bản quyền được bảo lưu."
+  },
+  "brochure": {
+    "showcaseLabel": "TÀI LIỆU DOANH NGHIỆP CHÍNH THỨC 2026",
+    "showcaseHeading": "KHÁM PHÁ BROCHURE DOANH NGHIỆP",
+    "showcaseDesc": "Khám phá bộ sưu tập trái cây sấy nhiệt đới, năng lực sản xuất nhà máy 25.000 m², hệ thống chứng nhận an toàn thực phẩm quốc tế và dịch vụ gia công nhãn riêng của VINAXO.",
+    "viewCta": "Xem Brochure",
+    "downloadCta": "Tải PDF",
+    "eyebrow": "HỒ SƠ NĂNG LỰC VINAXO",
+    "pageTitle": "VINAXO BROCHURE 2026",
+    "pageDesc": "Tìm hiểu tổng quan doanh nghiệp, các dòng sản phẩm, năng lực sản xuất và hệ thống tiêu chuẩn chất lượng quốc tế của VINAXO.",
+    "downloadFull": "Tải Brochure Công Ty (PDF)",
+    "openNewTab": "Mở PDF Ở Tab Mới",
+    "formatLabel": "Định dạng",
+    "formatVal": "PDF",
+    "editionLabel": "Phiên bản",
+    "editionVal": "2026",
+    "pagesLabel": "Số trang",
+    "pagesVal": "4",
+    "languageLabel": "Ngôn ngữ",
+    "languageVal": "Tiếng Anh (Bản gốc)",
+    "pageWord": "Trang",
+    "ofWord": "/",
+    "prevPage": "Trang trước",
+    "nextPage": "Trang sau",
+    "zoomOut": "Thu nhỏ",
+    "zoomIn": "Phóng to",
+    "zoomFit": "Vừa khung",
+    "fullscreenEnter": "Toàn màn hình",
+    "fullscreenExit": "Thoát toàn màn hình",
+    "fallbackPrompt": "Trình duyệt chưa hiển thị được PDF nhúng trực tiếp?",
+    "mobilePrompt": "Để xem đầy đủ 4 trang sắc nét và phóng to thuận tiện trên điện thoại, quý khách có thể mở PDF trực tiếp hoặc tải file gốc bên dưới.",
+    "showInlineMobile": "Mở khung xem PDF trực tiếp",
+    "hideInlineMobile": "Thu gọn khung xem PDF"
   }
 };

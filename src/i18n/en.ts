@@ -11,6 +11,7 @@ export const en = {
     "globalMarket": "Global Market",
     "news": "Press & Media",
     "contact": "Contact",
+    "brochure": "Company Brochure",
     "getQuote": "Request a Quote"
   },
   "hero": {
@@ -777,6 +778,39 @@ export const en = {
     "terms": "Terms of Use",
     "sitemap": "Sitemap",
     "rights": "© 2026 VINAXO COMPANY LIMITED. All rights reserved."
+  },
+  "brochure": {
+    "showcaseLabel": "OFFICIAL COMPANY BROCHURE",
+    "showcaseHeading": "EXPLORE OUR COMPANY BROCHURE",
+    "showcaseDesc": "Discover VINAXO's tropical dried fruit collections, manufacturing capabilities, international quality standards and private-label solutions.",
+    "viewCta": "View Brochure",
+    "downloadCta": "Download PDF",
+    "eyebrow": "VINAXO COMPANY PROFILE",
+    "pageTitle": "VINAXO BROCHURE 2026",
+    "pageDesc": "Explore our company, product collections, manufacturing capabilities and international quality standards.",
+    "downloadFull": "Download Company Brochure (PDF)",
+    "openNewTab": "Open PDF in New Tab",
+    "formatLabel": "Format",
+    "formatVal": "PDF",
+    "editionLabel": "Edition",
+    "editionVal": "2026",
+    "pagesLabel": "Pages",
+    "pagesVal": "4",
+    "languageLabel": "Language",
+    "languageVal": "English",
+    "pageWord": "Page",
+    "ofWord": "of",
+    "prevPage": "Previous page",
+    "nextPage": "Next page",
+    "zoomOut": "Zoom out",
+    "zoomIn": "Zoom in",
+    "zoomFit": "Fit width",
+    "fullscreenEnter": "Fullscreen",
+    "fullscreenExit": "Exit Fullscreen",
+    "fallbackPrompt": "Having trouble viewing the embedded PDF in this browser?",
+    "mobilePrompt": "For optimal multi-page reading on mobile screens, open the original PDF directly or download a copy below.",
+    "showInlineMobile": "Load inline PDF viewer",
+    "hideInlineMobile": "Hide inline PDF viewer"
   }
 };
 

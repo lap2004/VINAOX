@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Download } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { COMPANY_INFO } from '../data/company';
+import { BROCHURE_DOCUMENT } from '../data/brochureData';
 import { PageHero } from '../components/ui/PageHero';
 import { CorporateCTA } from '../components/ui/CorporateCTA';
 import { MainLayoutContext } from '../components/layout/MainLayout';
@@ -98,10 +99,13 @@ export const About: React.FC = () => {
                 <em>{t('about.titleLine2')}</em>
               </h2>
               <p>{t('about.description')}</p>
-              <div style={{ marginTop: '16px' }}>
+              <div style={{ marginTop: '16px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <Link to="/contact" className="btn btn-primary">
                   <span>{isVi ? 'Liên Hệ Phòng Xuất Khẩu' : 'Contact Export Dept'}</span>
                   <ArrowRight size={16} />
+                </Link>
+                <Link to="/brochure" className="btn btn-secondary">
+                  <span>{t('nav.brochure', 'Company Brochure')}</span>
                 </Link>
               </div>
             </div>
@@ -156,6 +160,86 @@ export const About: React.FC = () => {
                 <span className="metric-label">{t('aboutPage.metrics.m4Label')}</span>
                 <span className="metric-note">{t('aboutPage.metrics.m4Note')}</span>
                 <span className="metric-source">{t('aboutPage.metrics.m4Source')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================
+          SECTION 1B: OFFICIAL 2026 COMPANY BROCHURE SHOWCASE
+          ======================================================================== */}
+      <section className="about-brochure-showcase-section" id="company-brochure">
+        <div className="container">
+          <div className="about-brochure-grid">
+            <Link
+              to="/brochure"
+              className="about-brochure-cover-link"
+              aria-label={t('brochure.viewCta', 'View Brochure')}
+            >
+              <div className="about-brochure-cover-frame">
+                <picture>
+                  <source srcSet={BROCHURE_DOCUMENT.coverWebp} type="image/webp" />
+                  <img
+                    src={BROCHURE_DOCUMENT.coverJpg}
+                    alt={
+                      isVi
+                        ? 'Ảnh bìa Brochure Công ty TNHH VINAXO 2026'
+                        : 'Official VINAXO Company Brochure 2026 cover'
+                    }
+                    className="about-brochure-cover-img"
+                    loading="lazy"
+                  />
+                </picture>
+              </div>
+            </Link>
+
+            <div className="about-brochure-content">
+              <span className="section-label">
+                {t('brochure.showcaseLabel', 'OFFICIAL COMPANY BROCHURE')}
+              </span>
+              <h2 className="about-brochure-heading">
+                {t('brochure.showcaseHeading', 'EXPLORE OUR COMPANY BROCHURE')}
+              </h2>
+              <p className="about-brochure-desc">
+                {t(
+                  'brochure.showcaseDesc',
+                  "Discover VINAXO's tropical dried fruit collections, manufacturing capabilities, international quality standards and private-label solutions."
+                )}
+              </p>
+
+              <dl className="about-brochure-meta">
+                <div className="about-brochure-meta-item">
+                  <dt>{t('brochure.formatLabel', 'Format')}</dt>
+                  <dd>{t('brochure.formatVal', BROCHURE_DOCUMENT.format)}</dd>
+                </div>
+                <div className="about-brochure-meta-item">
+                  <dt>{t('brochure.editionLabel', 'Edition')}</dt>
+                  <dd>{t('brochure.editionVal', BROCHURE_DOCUMENT.edition)}</dd>
+                </div>
+                <div className="about-brochure-meta-item">
+                  <dt>{t('brochure.pagesLabel', 'Pages')}</dt>
+                  <dd>{t('brochure.pagesVal', String(BROCHURE_DOCUMENT.totalPages))}</dd>
+                </div>
+                <div className="about-brochure-meta-item">
+                  <dt>{t('brochure.languageLabel', 'Language')}</dt>
+                  <dd>{t('brochure.languageVal', 'English')}</dd>
+                </div>
+              </dl>
+
+              <div className="about-brochure-actions">
+                <Link to="/brochure" className="brochure-view-btn">
+                  <span>{t('brochure.viewCta', 'View Brochure')}</span>
+                  <ArrowRight size={17} aria-hidden="true" />
+                </Link>
+                <a
+                  href={BROCHURE_DOCUMENT.pdfUrl}
+                  download={BROCHURE_DOCUMENT.downloadFilename}
+                  className="brochure-download-btn"
+                >
+                  <span>{t('brochure.downloadCta', 'Download PDF')}</span>
+                  <Download size={16} aria-hidden="true" />
+                </a>
               </div>
             </div>
           </div>

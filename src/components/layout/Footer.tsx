@@ -22,6 +22,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenQuote }) => {
     { to: '/quality', label: t('nav.quality', 'Our Quality') },
     { to: '/markets', label: t('nav.globalMarket', 'Global Market') },
     { to: '/news', label: t('nav.news', 'Press & Media') },
+    { to: '/brochure', label: t('nav.brochure', 'Company Brochure') },
     { to: '/contact', label: t('nav.contact', 'Contact') },
   ];
 

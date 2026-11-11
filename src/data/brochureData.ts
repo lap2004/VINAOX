@@ -1,3 +1,16 @@
+/**
+ * Shared immutable metadata and verified public URLs for the official 2026 Company Brochure PDF.
+ */
+export const BROCHURE_DOCUMENT = {
+  pdfUrl: '/brochures/vinaxo-company-brochure-2026.pdf',
+  downloadFilename: 'Vinaxo-Company-Brochure-2026.pdf',
+  coverWebp: '/assets/images/brochure-2026-cover.webp',
+  coverJpg: '/assets/images/brochure-2026-cover.jpg',
+  totalPages: 4,
+  edition: '2026',
+  format: 'PDF',
+} as const;
+
 export interface ComplianceBadge {
   id: string;
   pillLabel: string;

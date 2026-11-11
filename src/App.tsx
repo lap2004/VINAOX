@@ -10,6 +10,7 @@ const Quality = lazy(() => import('./pages/Quality'));
 const GlobalMarket = lazy(() => import('./pages/GlobalMarket'));
 const PressMedia = lazy(() => import('./pages/PressMedia'));
 const Contact = lazy(() => import('./pages/Contact'));
+const Brochure = lazy(() => import('./pages/Brochure'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Fallback loader during code-split chunk loading
@@ -122,6 +123,14 @@ export const App: React.FC = () => {
             </Suspense>
           }
         />
+        <Route
+          path="/brochure"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <Brochure />
+            </Suspense>
+          }
+        />
 
         {/* Legacy .html redirects to maintain backwards compatibility & preserve incoming external links */}
         <Route path="/index.html" element={<Navigate to="/" replace />} />
@@ -131,6 +140,7 @@ export const App: React.FC = () => {
         <Route path="/markets.html" element={<Navigate to="/markets" replace />} />
         <Route path="/news.html" element={<Navigate to="/news" replace />} />
         <Route path="/contact.html" element={<Navigate to="/contact" replace />} />
+        <Route path="/brochure.html" element={<Navigate to="/brochure" replace />} />
 
         {/* 404 Not Found Catch-All */}
         <Route
