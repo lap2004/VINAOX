@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Send } from 'lucide-react';
+import {
+  Anchor,
+  Building2,
+  Clock,
+  Factory,
+  Globe,
+  Mail,
+  MessageCircle,
+  Package,
+  Phone,
+  Send,
+} from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { productsData } from '../data/products';
 import { COMPANY_INFO } from '../data/company';
@@ -99,173 +110,185 @@ export const Contact: React.FC = () => {
         <section className="subpage-section">
           <div className="container">
             <div className="contact-page-grid">
-              {/* Left Column (40%): Verified Corporate Credentials & Direct Channels */}
-              <div className="contact-info-panel">
-                {/* Card 1: Legal Entity & Head Office */}
-                <div className="contact-card-box">
-                  <div className="contact-card-header">
-                    <div className="contact-card-icon">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                      </svg>
-                    </div>
-                    <div className="contact-card-title">
-                      {t('contactPage.cardLegalTitle') || (isVi ? 'Pháp Nhân & Trụ Sở Doanh Nghiệp' : 'Corporate Identity & Headquarters')}
-                    </div>
-                  </div>
-                  <div className="contact-card-text">
-                    <p><strong>{isVi ? COMPANY_INFO.legalNameVi : COMPANY_INFO.shortName}</strong></p>
-                    <p>
-                      <strong>{t('contactPage.cards.taxLabel') || (isVi ? 'Mã số thuế:' : 'Tax Code:')}</strong>{' '}
-                      <span>{COMPANY_INFO.taxCode}</span>
-                    </p>
-                    <p>
-                      <strong>{t('contactPage.cards.hqLabel') || (isVi ? 'Trụ sở & Nhà máy:' : 'Headquarters:')}</strong>{' '}
-                      <span>{isVi ? COMPANY_INFO.headquarters.addressVi : COMPANY_INFO.headquarters.addressEn}</span>
-                    </p>
-                    <p>
-                      <strong>{t('contactPage.cards.repLabel') || (isVi ? 'Đại diện kinh doanh:' : 'Commercial Contact:')}</strong>{' '}
-                      <span>{isVi ? 'Ông Hoàng Mạnh Cường (Jimmy)' : 'Mr. Hoang Manh Cuong (Jimmy)'}</span>
-                    </p>
-                  </div>
-                </div>
+              {/* Left Column (42%): Editorial Corporate Dossier (3 Clean Sections) */}
+              <aside className="contact-info-panel" aria-label={isVi ? 'Thông tin doanh nghiệp và liên hệ VINAXO' : 'VINAXO Corporate Profile & Direct Contacts'}>
+                <div className="contact-panel-accent" aria-hidden="true" />
 
-                {/* Card 2: Factory & Sourcing Hubs */}
-                <div className="contact-card-box">
-                  <div className="contact-card-header">
-                    <div className="contact-card-icon">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-                        <line x1="6" y1="6" x2="6.01" y2="6"></line>
-                        <line x1="6" y1="18" x2="6.01" y2="18"></line>
-                      </svg>
-                    </div>
-                    <div className="contact-card-title">
-                      {t('contactPage.cardFacilityTitle') || (isVi ? 'Tổ Hợp Nhà Máy & Vùng Nguyên Liệu' : 'Processing Facility & Sourcing Hubs')}
-                    </div>
-                  </div>
-                  <div className="contact-card-text">
-                    <p>
-                      <strong>{t('contactPage.cards.areaLabel') || (isVi ? 'Tổng quy mô nhà máy:' : 'Total Factory Area:')}</strong>{' '}
-                      <span>25,000 m²</span>
-                    </p>
-                    <p>
-                      <strong>{t('contactPage.cards.capLabel') || (isVi ? 'Sản lượng thành phẩm:' : 'Monthly Output:')}</strong>{' '}
-                      <span>{isVi ? '300 tấn thành phẩm / tháng' : '300 tons / month'}</span>
-                    </p>
-                    <p>
-                      <strong>{t('contactPage.cards.hubLabel') || (isVi ? 'Vùng nguyên liệu Mekong:' : 'Mekong Sourcing Hubs:')}</strong>{' '}
-                      <span>{isVi ? COMPANY_INFO.headquarters.sourcingHubVi : COMPANY_INFO.headquarters.sourcingHubEn}</span>
-                    </p>
-                  </div>
-                </div>
+                {/* SECTION A — COMPANY & LEGAL INFORMATION */}
+                <section className="contact-editorial-section">
+                  <h2 className="contact-editorial-heading">
+                    <Building2 size={18} className="contact-section-icon" aria-hidden="true" />
+                    <span>{isVi ? 'Thông tin doanh nghiệp' : 'Company & Legal Information'}</span>
+                  </h2>
 
-                {/* Card 3: Direct Hotline & Commercial Contacts */}
-                <div className="contact-card-box">
-                  <div className="contact-card-header">
-                    <div className="contact-card-icon">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                      </svg>
-                    </div>
-                    <div className="contact-card-title">
-                      {t('contactPage.cardHotlineTitle') || (isVi ? 'Đường Dây Nóng & Liên Hệ Trực Tiếp' : 'Direct Hotline & Business Contacts')}
-                    </div>
+                  <div className="contact-company-name">
+                    {isVi ? COMPANY_INFO.legalNameVi : `${COMPANY_INFO.legalNameEn} (${COMPANY_INFO.shortName})`}
                   </div>
-                  <div className="contact-card-text">
-                    <p>
-                      <strong>{t('contactPage.cards.hotlineLabel') || (isVi ? 'Hotline B2B:' : 'B2B Hotline:')}</strong>{' '}
-                      <a href={`tel:${COMPANY_INFO.contacts.hotline}`} style={{ color: 'var(--vinaxo-red)', fontWeight: 700 }}>
-                        {COMPANY_INFO.contacts.phoneDisplay}
-                      </a>
-                    </p>
-                    <p>
-                      <strong>{t('contactPage.cards.emailLabel') || (isVi ? 'Email chính thức:' : 'Official Email:')}</strong>{' '}
-                      <a href={`mailto:${COMPANY_INFO.contacts.email}`} style={{ color: 'var(--vinaxo-red)', fontWeight: 700 }}>
-                        {COMPANY_INFO.contacts.email}
-                      </a>
-                    </p>
-                    <p>
-                      <strong>{t('contactPage.cards.webLabel') || (isVi ? 'Website:' : 'Website:')}</strong>{' '}
-                      <a href={COMPANY_INFO.contacts.website} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--dark-chocolate)', fontWeight: 600 }}>
-                        {COMPANY_INFO.contacts.websiteDisplay}
-                      </a>
-                    </p>
-                    <p>
-                      <strong>{t('contactPage.cards.hoursLabel') || (isVi ? 'Giờ làm việc:' : 'Working Hours:')}</strong>{' '}
-                      <span>{t('contactPage.cards.hoursVal') || (isVi ? 'Thứ Hai – Thứ Bảy: 07:30 – 17:00 (GMT+7)' : 'Monday – Saturday: 07:30 – 17:00 (GMT+7)')}</span>
-                    </p>
-                    <div
-                      style={{
-                        marginTop: '14px',
-                        paddingTop: '12px',
-                        borderTop: '1px dashed var(--soft-border)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '12px',
-                      }}
-                    >
-                      <picture style={{ width: '66px', height: '66px', flexShrink: 0 }}>
-                        <source srcSet="/assets/images/contact-qr-jimmy.webp" type="image/webp" />
-                        <img
-                          src="/assets/images/contact-qr-jimmy.jpg"
-                          alt="Mạnh Cường (Jimmy) QR Code"
-                          width={66}
-                          height={66}
-                          style={{
-                            width: '66px',
-                            height: '66px',
-                            objectFit: 'contain',
-                            display: 'block',
-                            borderRadius: '8px',
-                            border: '1px solid var(--soft-border)',
-                            backgroundColor: '#FFFFFF',
-                          }}
-                          loading="lazy"
-                        />
-                      </picture>
-                      <div style={{ fontSize: '0.78rem', lineHeight: 1.4, color: 'var(--color-body)' }}>
-                        <strong style={{ display: 'block', color: 'var(--dark-chocolate)' }}>Mạnh Cường (Jimmy)</strong>
-                        <span>{isVi ? 'Quét mã QR để thêm danh bạ liên hệ trực tiếp' : 'Scan official QR card to save direct sales contact'}</span>
+
+                  <dl className="contact-detail-list">
+                    <div className="contact-detail-row">
+                      <dt>{isVi ? 'Mã số thuế' : 'Tax ID'}</dt>
+                      <dd>{COMPANY_INFO.taxCode}</dd>
+                    </div>
+                    <div className="contact-detail-row">
+                      <dt>{isVi ? 'Trụ sở' : 'Headquarters'}</dt>
+                      <dd>{isVi ? COMPANY_INFO.headquarters.addressVi : COMPANY_INFO.headquarters.addressEn}</dd>
+                    </div>
+                    <div className="contact-detail-row">
+                      <dt>{isVi ? 'Đại diện pháp luật' : 'Legal Representative'}</dt>
+                      <dd>{isVi ? 'Ông Hoàng Mạnh Cường (Jimmy)' : 'Mr. Hoang Manh Cuong (Jimmy)'}</dd>
+                    </div>
+                  </dl>
+                </section>
+
+                {/* SECTION B — FACTORY & PRODUCTION CAPACITY */}
+                <section className="contact-editorial-section">
+                  <h2 className="contact-editorial-heading">
+                    <Factory size={18} className="contact-section-icon" aria-hidden="true" />
+                    <span>{isVi ? 'Năng lực sản xuất' : 'Factory & Production Capacity'}</span>
+                  </h2>
+
+                  <div className="contact-cap-pair">
+                    <div className="contact-cap-stat">
+                      <div className="contact-cap-value">25,000 m²</div>
+                      <div className="contact-cap-label">
+                        {isVi ? 'Quy mô nhà máy' : 'Total factory area'}
+                      </div>
+                    </div>
+
+                    <div className="contact-cap-stat contact-cap-stat-divider">
+                      <div className="contact-cap-value">
+                        300 <span className="contact-cap-unit">{isVi ? 'tấn / tháng' : 'tons / mo'}</span>
+                      </div>
+                      <div className="contact-cap-label">
+                        {isVi ? 'Năng lực chế biến thành phẩm' : 'Finished output capacity'}
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Card 4: International Trade & Export Support */}
-                <div className="contact-card-box">
-                  <div className="contact-card-header">
-                    <div className="contact-card-icon">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                      </svg>
+                  <dl className="contact-detail-list">
+                    <div className="contact-detail-row">
+                      <dt>{isVi ? 'Vùng nguyên liệu Mekong' : 'Mekong Sourcing Region'}</dt>
+                      <dd>{isVi ? COMPANY_INFO.headquarters.sourcingHubVi : COMPANY_INFO.headquarters.sourcingHubEn}</dd>
                     </div>
-                    <div className="contact-card-title">
-                      {t('contactPage.cardExportTitle') || (isVi ? 'Kênh Xuất Khẩu & Hỗ Trợ Quốc Tế' : 'Export Desk & International Trade')}
+                  </dl>
+                </section>
+
+                {/* SECTION C — DIRECT CONTACT & EXPORT SUPPORT */}
+                <section className="contact-editorial-section contact-editorial-section-last">
+                  <h2 className="contact-editorial-heading">
+                    <Phone size={18} className="contact-section-icon" aria-hidden="true" />
+                    <span>{isVi ? 'Liên hệ & Hỗ trợ xuất khẩu' : 'Direct Contact & Export Support'}</span>
+                  </h2>
+
+                  <div className="contact-direct-list">
+                    <div className="contact-direct-item">
+                      <Phone size={16} className="contact-line-icon" aria-hidden="true" />
+                      <div className="contact-direct-body">
+                        <span className="contact-direct-label">{isVi ? 'Hotline B2B:' : 'B2B Hotline:'}</span>{' '}
+                        <a href={`tel:${COMPANY_INFO.contacts.hotline}`} className="contact-link-emphasis">
+                          {COMPANY_INFO.contacts.phoneDisplay}
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="contact-direct-item">
+                      <Mail size={16} className="contact-line-icon" aria-hidden="true" />
+                      <div className="contact-direct-body">
+                        <span className="contact-direct-label">{isVi ? 'Email chính thức:' : 'Official Email:'}</span>{' '}
+                        <a href={`mailto:${COMPANY_INFO.contacts.email}`} className="contact-link-emphasis">
+                          {COMPANY_INFO.contacts.email}
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="contact-direct-item">
+                      <Globe size={16} className="contact-line-icon" aria-hidden="true" />
+                      <div className="contact-direct-body">
+                        <span className="contact-direct-label">Website:</span>{' '}
+                        <a
+                          href={COMPANY_INFO.contacts.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="contact-link-plain"
+                        >
+                          {COMPANY_INFO.contacts.websiteDisplay}
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="contact-direct-item">
+                      <Clock size={16} className="contact-line-icon" aria-hidden="true" />
+                      <div className="contact-direct-body">
+                        <span className="contact-direct-label">{isVi ? 'Giờ làm việc:' : 'Business Hours:'}</span>{' '}
+                        <span>
+                          {t('contactPage.cards.hoursVal') ||
+                            (isVi ? 'Thứ Hai – Thứ Bảy: 07:30 – 17:00 (GMT+7)' : 'Monday – Saturday: 07:30 – 17:00 (GMT+7)')}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="contact-direct-item">
+                      <MessageCircle size={16} className="contact-line-icon" aria-hidden="true" />
+                      <div className="contact-direct-body">
+                        <span className="contact-direct-label">{isVi ? 'Hỗ trợ trực tuyến:' : 'Online Support:'}</span>{' '}
+                        <a href="https://wa.me/84984815016" target="_blank" rel="noopener noreferrer" className="contact-link-plain">
+                          WhatsApp (+84 984 815 016)
+                        </a>
+                        {' • '}
+                        <a href="https://zalo.me/0984815016" target="_blank" rel="noopener noreferrer" className="contact-link-plain">
+                          Zalo (0984 815 016)
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="contact-direct-item">
+                      <Anchor size={16} className="contact-line-icon" aria-hidden="true" />
+                      <div className="contact-direct-body">
+                        <span className="contact-direct-label">{isVi ? 'Điều kiện thương mại:' : 'Trade Incoterms:'}</span>{' '}
+                        <span>
+                          {isVi ? 'CIF, FOB, CFR cảng Cát Lái, Hiệp Phước, Cái Mép' : 'CIF, FOB, CFR Cat Lai, Hiep Phuoc, Cai Mep Ports'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="contact-direct-item">
+                      <Package size={16} className="contact-line-icon" aria-hidden="true" />
+                      <div className="contact-direct-body">
+                        <span className="contact-direct-label">{isVi ? 'Chính sách mẫu thử:' : 'Sample Policy:'}</span>{' '}
+                        <span>
+                          {t('contactPage.cards.sampleVal') ||
+                            (isVi
+                              ? 'Duyệt mẫu trước khi sản xuất đại trà (chuyển phát nhanh DHL / FedEx)'
+                              : 'Approved samples first (express courier DHL / FedEx)')}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="contact-card-text">
-                    <p>
-                      <strong>{t('contactPage.cards.supportLabel') || (isVi ? 'Hỗ trợ trực tuyến:' : 'Instant Messaging:')}</strong>{' '}
-                      <a href="https://wa.me/84984815016" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 700, textDecoration: 'underline' }}>WhatsApp (+84 984 815 016)</a>
-                      {' • '}
-                      <a href="https://zalo.me/0984815016" target="_blank" rel="noopener noreferrer" style={{ color: '#0068FF', fontWeight: 700, textDecoration: 'underline' }}>Zalo (0984 815 016)</a>
-                    </p>
-                    <p>
-                      <strong>{t('contactPage.cards.incotermsLabel') || (isVi ? 'Điều kiện thương mại:' : 'Trade Incoterms:')}</strong>{' '}
-                      <span>{t('contactPage.cards.incotermsVal') || (isVi ? 'CIF, FOB, CFR các cảng Cát Lái, Hiệp Phước, Cái Mép' : 'CIF, FOB, CFR Cat Lai, Hiep Phuoc, Cai Mep ports')}</span>
-                    </p>
-                    <p>
-                      <strong>{t('contactPage.cards.sampleLabel') || (isVi ? 'Chính sách mẫu thử:' : 'Sample Policy:')}</strong>{' '}
-                      <span>{t('contactPage.cards.sampleVal') || (isVi ? 'Cung cấp mẫu miễn phí cho đối tác doanh nghiệp (chuyển phát nhanh DHL / FedEx)' : 'Free commercial sample kits for qualifying B2B partners via DHL / FedEx')}</span>
-                    </p>
+
+                  {/* Integrated Compact Scannable QR Sub-block */}
+                  <div className="contact-qr-subblock">
+                    <picture className="contact-qr-thumb">
+                      <source srcSet="/assets/images/contact-qr-jimmy.webp" type="image/webp" />
+                      <img
+                        src="/assets/images/contact-qr-jimmy.jpg"
+                        alt={isVi ? 'Mã QR liên hệ trực tiếp Mạnh Cường (Jimmy)' : 'Mạnh Cường (Jimmy) direct contact QR code'}
+                        width={72}
+                        height={72}
+                        loading="lazy"
+                      />
+                    </picture>
+                    <div className="contact-qr-meta">
+                      <div className="contact-qr-name">Mạnh Cường (Jimmy)</div>
+                      <div className="contact-qr-caption">
+                        {isVi
+                          ? 'Quét mã QR để lưu danh bạ liên hệ xuất khẩu trực tiếp'
+                          : 'Scan QR code to save direct B2B export contact'}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </section>
+              </aside>
 
               {/* Right Column (60%): Single Unified Contact & Quote Form */}
               <div className="contact-form-panel" id="quote-form">

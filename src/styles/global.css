@@ -2626,76 +2626,245 @@ h1, h2, h3, h4, h5, h6 {
    ========================================================================== */
 .contact-page-grid {
   display: grid;
-  grid-template-columns: 4.2fr 5.8fr;
-  gap: clamp(32px, 4vw, 56px);
+  grid-template-columns: minmax(0, 4.3fr) minmax(0, 5.7fr);
+  gap: clamp(36px, 4.5vw, 64px);
   align-items: flex-start;
 }
 
 .contact-info-panel {
+  --vinaxo-cream: #FFF7EC;
+  --vinaxo-orange: #F4A83A;
+  --vinaxo-chocolate: #3A251B;
+  --vinaxo-terracotta: #AC3E31;
+  --vinaxo-muted: #6E6259;
+  --vinaxo-border: #EADFCC;
+
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  padding-top: 4px;
 }
 
-.contact-card-box {
-  background-color: var(--white);
-  border: 1px solid var(--soft-border);
-  border-radius: var(--radius-md);
-  padding: 22px 24px;
-  box-shadow: var(--shadow-xs);
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+.contact-panel-accent {
+  width: 52px;
+  height: 3px;
+  border-radius: 999px;
+  background-color: var(--vinaxo-orange);
+  margin-bottom: 20px;
 }
 
-.contact-card-box:hover {
-  border-color: var(--brand-orange);
-  box-shadow: var(--shadow-sm);
-  transform: translateY(-2px);
+.contact-editorial-section {
+  padding-bottom: 28px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--vinaxo-border);
 }
 
-.contact-card-header {
+.contact-editorial-section-last {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.contact-editorial-heading {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.contact-card-icon {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  border-radius: 10px;
-  background-color: var(--brand-orange-soft);
-  color: var(--dark-chocolate);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.contact-card-icon svg {
-  width: 20px;
-  height: 20px;
-  stroke: var(--dark-chocolate);
-}
-
-.contact-card-title {
-  font-size: 0.95rem;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.38vw, 1.45rem); /* 20–23px */
   font-weight: 700;
-  color: var(--dark-chocolate);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--vinaxo-terracotta);
+  line-height: 1.2;
+  margin: 0 0 16px 0;
 }
 
-.contact-card-text {
-  font-size: 0.875rem;
-  color: var(--color-body);
+.contact-section-icon {
+  color: var(--vinaxo-terracotta);
+  flex-shrink: 0;
+}
+
+.contact-company-name {
+  font-size: clamp(1.25rem, 1.35vw, 1.45rem); /* 20–23px */
+  font-weight: 700;
+  color: var(--vinaxo-chocolate);
+  line-height: 1.3;
+  margin-bottom: 14px;
+}
+
+.contact-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+}
+
+.contact-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contact-detail-row dt {
+  font-size: 0.875rem; /* ~14px */
+  font-weight: 600;
+  color: var(--vinaxo-muted);
+  line-height: 1.45;
+}
+
+.contact-detail-row dd {
+  margin: 0;
+  font-size: 0.96875rem; /* 15.5px */
+  font-weight: 500;
+  color: var(--vinaxo-chocolate);
   line-height: 1.65;
 }
 
-.contact-card-text p + p {
-  margin-top: 6px;
+/* Typographic Production Metrics Pair (non-card editorial look) */
+.contact-cap-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+  margin: 4px 0 18px 0;
 }
 
-.contact-card-text strong {
-  color: var(--dark-chocolate);
+.contact-cap-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contact-cap-stat-divider {
+  border-left: 1px solid var(--vinaxo-border);
+  padding-left: 22px;
+}
+
+.contact-cap-value {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 2.15vw, 2.2rem); /* 28–35px */
+  font-weight: 700;
+  color: var(--vinaxo-chocolate);
+  line-height: 1.08;
+  font-variant-numeric: tabular-nums;
+}
+
+.contact-cap-unit {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
   font-weight: 600;
+  color: var(--vinaxo-terracotta);
+}
+
+.contact-cap-label {
+  font-size: 0.875rem;
+  color: var(--vinaxo-muted);
+  line-height: 1.5;
+}
+
+/* Section C Direct Contact Rows (restrained line icons, no boxes) */
+.contact-direct-list {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.contact-direct-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  font-size: 0.95rem; /* ~15.2px */
+  line-height: 1.6;
+  color: var(--vinaxo-chocolate);
+}
+
+.contact-line-icon {
+  color: var(--vinaxo-terracotta);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.contact-direct-body {
+  min-width: 0;
+  word-break: break-word;
+}
+
+.contact-direct-label {
+  font-weight: 600;
+  color: var(--vinaxo-muted);
+}
+
+.contact-link-emphasis {
+  font-weight: 700;
+  color: var(--vinaxo-terracotta);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.contact-link-emphasis:hover,
+.contact-link-emphasis:focus-visible {
+  color: var(--vinaxo-chocolate);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.contact-link-plain {
+  font-weight: 600;
+  color: var(--vinaxo-chocolate);
+  text-decoration: underline;
+  text-decoration-color: rgba(58, 37, 27, 0.28);
+  text-underline-offset: 3px;
+  transition: color var(--transition-fast), text-decoration-color var(--transition-fast);
+}
+
+.contact-link-plain:hover,
+.contact-link-plain:focus-visible {
+  color: var(--vinaxo-terracotta);
+  text-decoration-color: var(--vinaxo-terracotta);
+}
+
+/* Integrated Compact QR Sub-block inside Section C */
+.contact-qr-subblock {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--vinaxo-border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.contact-qr-thumb {
+  display: block;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  padding: 4px;
+  background-color: var(--white);
+  border: 1px solid var(--vinaxo-border);
+  border-radius: 8px;
+}
+
+.contact-qr-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.contact-qr-meta {
+  min-width: 0;
+}
+
+.contact-qr-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--vinaxo-chocolate);
+  line-height: 1.35;
+}
+
+.contact-qr-caption {
+  font-size: 0.875rem;
+  color: var(--vinaxo-muted);
+  line-height: 1.5;
+  margin-top: 2px;
 }
 
 .contact-form-panel {

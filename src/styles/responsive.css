@@ -896,6 +896,18 @@
     gap: 12px !important;
   }
 
+  .contact-cap-pair {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .contact-cap-stat-divider {
+    border-left: none !important;
+    padding-left: 0 !important;
+    padding-top: 14px !important;
+    border-top: 1px solid var(--vinaxo-border) !important;
+  }
+
   .brand-name { font-size: 1.15rem !important; }
   .brand-tagline { font-size: 0.4rem !important; }
   .hero-image-card img { height: 220px !important; }
