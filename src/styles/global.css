@@ -3009,15 +3009,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
-   VINAXO FINAL APPROVED 3-COLUMN EDITORIAL FOOTER
+   VINAXO FINAL MINIMAL PREMIUM CORPORATE FOOTER
    ========================================================================== */
 .site-footer {
-  --vinaxo-cream: var(--brand-bg);
-  --vinaxo-orange: var(--brand-orange);
-  --vinaxo-chocolate: var(--dark-chocolate-ink);
+  --vinaxo-cream: #FFF7EC;
+  --vinaxo-orange: #F4A83A;
+  --vinaxo-chocolate: #3A251B;
   --vinaxo-terracotta: #AC3E31;
-  --vinaxo-muted: var(--muted-text);
-  --vinaxo-border: var(--soft-border);
+  --vinaxo-muted: #6E6259;
+  --vinaxo-border: #EADFCC;
 
   background-color: var(--vinaxo-cream);
   color: var(--vinaxo-chocolate);
@@ -3029,31 +3029,34 @@ h1, h2, h3, h4, h5, h6 {
 .footer-organic-curve {
   position: absolute;
   left: 0;
-  bottom: 58px;
+  bottom: 54px;
   width: 100%;
-  height: 150px;
+  height: 120px;
   pointer-events: none;
   z-index: 1;
 }
 
-.footer-deco-mango {
+.footer-deco-leaf-top {
   position: absolute;
-  bottom: 42px;
-  left: -18px;
-  width: 96px;
-  opacity: 0.25;
-  transform: rotate(-10deg);
+  top: 24px;
+  right: 20px;
+  width: 64px;
+  height: auto;
+  opacity: 0.32;
+  transform: rotate(14deg);
   pointer-events: none;
   user-select: none;
   z-index: 1;
 }
 
-.footer-deco-leaves {
+.footer-deco-mango-bottom {
   position: absolute;
-  bottom: 48px;
-  right: -8px;
-  width: 128px;
+  bottom: 46px;
+  right: 22px;
+  width: 98px;
   height: auto;
+  opacity: 0.3;
+  transform: rotate(-6deg);
   pointer-events: none;
   user-select: none;
   z-index: 1;
@@ -3062,18 +3065,18 @@ h1, h2, h3, h4, h5, h6 {
 .footer-main-container {
   position: relative;
   z-index: 2;
-  max-width: 1400px;
-  padding-top: clamp(84px, 6.6vw, 104px);
-  padding-bottom: clamp(76px, 6vw, 94px);
+  max-width: 1440px;
+  padding-top: clamp(88px, 7.2vw, 112px);
+  padding-bottom: clamp(96px, 7.8vw, 120px);
 }
 
-/* 3-Column Editorial Grid: VINAXO Brand (33%) | Explore VINAXO (20%) | Let's Work Together (47%) */
+/* 3-Region Minimal Grid: Brand (32%) | Explore Navigation (33%) | Get in Touch (35%) */
 .footer-three-col-grid {
   display: grid;
-  grid-template-columns: minmax(0, 33fr) minmax(0, 20fr) minmax(0, 47fr);
+  grid-template-columns: minmax(0, 32fr) minmax(0, 33fr) minmax(0, 35fr);
   grid-template-areas: 'brand nav contact';
-  column-gap: clamp(28px, 2.8vw, 40px);
-  align-items: stretch;
+  column-gap: clamp(32px, 3.6vw, 60px);
+  align-items: start;
 }
 
 .footer-col-brand {
@@ -3081,12 +3084,18 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  min-width: 0;
+}
+
+.footer-col-brand .brand-text-wrap {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .footer-col-nav {
   grid-area: nav;
   border-left: 1px solid var(--vinaxo-border);
-  padding-left: clamp(28px, 2.8vw, 40px);
+  padding-left: clamp(36px, 3.6vw, 56px);
   display: flex;
   flex-direction: column;
 }
@@ -3094,7 +3103,7 @@ h1, h2, h3, h4, h5, h6 {
 .footer-col-contact {
   grid-area: contact;
   border-left: 1px solid var(--vinaxo-border);
-  padding-left: clamp(28px, 2.8vw, 40px);
+  padding-left: clamp(36px, 3.6vw, 56px);
   display: flex;
   flex-direction: column;
 }
@@ -3126,140 +3135,113 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.62rem;
   color: var(--vinaxo-muted);
   opacity: 1;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  white-space: normal;
 }
 
 .footer-brand-desc {
-  font-size: clamp(1rem, 1.08vw, 1.08rem);
-  line-height: 1.62;
+  font-size: clamp(1rem, 1.1vw, 1.125rem); /* 16–18px */
+  line-height: 1.65;
   color: var(--vinaxo-chocolate);
-  max-width: 370px;
-  margin: 22px 0 30px 0;
+  max-width: 400px;
+  margin: 22px 0 24px 0;
 }
 
-.footer-cta-row {
-  display: flex;
+.footer-verified-icons {
+  display: inline-flex;
   align-items: center;
+  gap: 12px;
 }
 
-.footer-primary-cta {
+.footer-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  height: 54px;
-  padding: 0 32px;
-  border-radius: var(--radius-pill);
-  background-color: var(--vinaxo-orange);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(58, 37, 27, 0.28);
+  background-color: transparent;
   color: var(--vinaxo-chocolate);
-  font-size: 0.98rem;
-  font-weight: 700;
-  border: 1.5px solid transparent;
-  cursor: pointer;
   text-decoration: none;
-  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
 }
 
-.footer-primary-cta svg {
-  transition: transform var(--transition-fast);
-}
-
-.footer-primary-cta:hover {
-  background-color: var(--brand-orange-hover);
-  color: var(--vinaxo-chocolate);
+.footer-icon-btn:hover {
+  color: var(--vinaxo-terracotta);
+  border-color: var(--vinaxo-terracotta);
+  background-color: rgba(244, 168, 58, 0.12);
   transform: translateY(-1px);
 }
 
-.footer-primary-cta:hover svg {
-  transform: translateX(3px);
-}
-
-.footer-primary-cta:focus-visible {
-  outline: 2px solid var(--vinaxo-chocolate);
+.footer-icon-btn:focus-visible {
+  outline: 2px solid var(--vinaxo-orange);
   outline-offset: 3px;
 }
 
-/* Center Column — EXPLORE VINAXO */
-.footer-explore-heading {
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.09em;
+/* Shared Terracotta Section Headings: EXPLORE & GET IN TOUCH */
+.footer-section-heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.38vw, 1.5rem); /* 20–24px */
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--vinaxo-terracotta);
-  margin: 0 0 22px 0;
+  line-height: 1.2;
+  margin: 0 0 24px 0;
 }
 
-.footer-nav-vertical {
+/* Two-Column Explore Navigation */
+.footer-nav-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(20px, 2.2vw, 32px);
+  align-items: start;
+}
+
+.footer-nav-col {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
 }
 
 .footer-nav-link {
   display: inline-block;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: clamp(0.95rem, 1vw, 1.04rem); /* 15–17px */
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
   color: var(--vinaxo-chocolate);
   text-decoration: none;
-  padding: 2px 0;
-  border-bottom: 1.5px solid transparent;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
+  transition: color var(--transition-fast);
 }
 
-.footer-nav-link:hover,
+.footer-nav-link:hover {
+  color: var(--vinaxo-terracotta);
+}
+
 .footer-nav-link:focus-visible {
   color: var(--vinaxo-terracotta);
-  border-bottom-color: var(--vinaxo-terracotta);
-  outline: none;
-}
-
-.footer-nav-link:focus-visible {
   outline: 2px solid var(--vinaxo-orange);
   outline-offset: 4px;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
-/* Right Column — LET'S WORK TOGETHER */
-.footer-contact-heading {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 2.45vw, 2.45rem); /* 32px -> ~39px */
-  font-weight: 700;
-  letter-spacing: -0.005em;
-  text-transform: uppercase;
-  color: var(--vinaxo-chocolate);
-  line-height: 1.05;
-  margin: 0;
-}
-
-.footer-heading-rule {
-  width: 56px;
-  height: 3px;
-  border-radius: 999px;
-  background-color: var(--vinaxo-orange);
-  margin: 12px 0 26px 0;
-}
-
-.footer-contact-layout {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: clamp(20px, 2.4vw, 36px);
-}
-
+/* Right Column — GET IN TOUCH */
 .footer-contact-details {
   display: flex;
   flex-direction: column;
-  gap: 13px;
-  flex: 1;
+  gap: 14px;
+  width: 100%;
   min-width: 0;
 }
 
 .footer-contact-company {
-  font-size: 1.04rem;
+  font-size: 1.02rem;
   font-weight: 700;
   color: var(--vinaxo-chocolate);
   margin-bottom: 2px;
@@ -3268,8 +3250,8 @@ h1, h2, h3, h4, h5, h6 {
 .footer-contact-item {
   display: flex;
   align-items: flex-start;
-  gap: 11px;
-  font-size: 0.9375rem;
+  gap: 12px;
+  font-size: clamp(0.95rem, 1vw, 1rem);
   line-height: 1.55;
   color: var(--vinaxo-chocolate);
 }
@@ -3296,47 +3278,10 @@ h1, h2, h3, h4, h5, h6 {
   outline: none;
 }
 
-.footer-qr-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  flex-shrink: 0;
-  width: 156px;
-  padding: 12px;
-  background-color: var(--white);
-  border: 1px solid var(--vinaxo-border);
-  border-radius: 14px;
-}
-
-.footer-qr-frame {
-  width: 108px;
-  height: 108px;
-  background-color: var(--white);
-  margin-bottom: 8px;
-}
-
-.footer-qr-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-.footer-qr-name {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--vinaxo-chocolate);
-  line-height: 1.3;
-}
-
-.footer-qr-note {
-  display: block;
-  font-size: 0.72rem;
-  color: var(--vinaxo-muted);
-  line-height: 1.35;
-  margin-top: 2px;
+.footer-contact-link:focus-visible {
+  outline: 2px solid var(--vinaxo-orange);
+  outline-offset: 3px;
+  border-radius: 3px;
 }
 
 /* Bottom Mango-Orange Copyright Strip */
@@ -3350,14 +3295,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .footer-bottom-inner {
-  max-width: 1400px;
+  max-width: 1440px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   flex-wrap: wrap;
   gap: 8px 20px;
-  font-size: 0.84rem;
+  font-size: 0.875rem;
   line-height: 1.5;
 }
 

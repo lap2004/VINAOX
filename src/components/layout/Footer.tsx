@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, MapPin, Phone, Mail, Globe } from 'lucide-react';
+import { MapPin, Phone, Mail, Globe } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { COMPANY_INFO } from '../../data/company';
 
@@ -8,18 +8,21 @@ interface FooterProps {
   onOpenQuote?: (product?: string) => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenQuote }) => {
+export const Footer: React.FC<FooterProps> = () => {
   const { t, language } = useLanguage();
   const location = useLocation();
   const currentYear = new Date().getFullYear();
 
   const isVi = language === 'vi';
 
-  const navItems = [
+  const navColumnA = [
     { to: '/', label: t('nav.home', 'Home') },
     { to: '/about', label: t('nav.about', 'About Us') },
     { to: '/products', label: t('nav.products', 'Products') },
     { to: '/quality', label: t('nav.quality', 'Our Quality') },
+  ];
+
+  const navColumnB = [
     { to: '/markets', label: t('nav.globalMarket', 'Global Market') },
     { to: '/news', label: t('nav.news', 'Press & Media') },
     { to: '/brochure', label: t('nav.brochure', 'Company Brochure') },
@@ -58,65 +61,49 @@ export const Footer: React.FC<FooterProps> = ({ onOpenQuote }) => {
 
   return (
     <footer className="site-footer" id="site-footer">
-      {/* Subtle organic curve accents near section edges */}
+      {/* Subtle warm organic wave near lower boundary */}
       <svg
         className="footer-organic-curve"
-        viewBox="0 0 1440 160"
+        viewBox="0 0 1440 120"
         fill="none"
         preserveAspectRatio="none"
         aria-hidden="true"
       >
         <path
-          d="M0 120C280 54 640 164 1020 96C1220 60 1360 28 1440 48"
+          d="M0 92C320 42 740 116 1120 72C1270 54 1370 38 1440 48"
           stroke="#EADFCC"
-          strokeWidth="1.5"
+          strokeWidth="1.25"
         />
         <path
-          d="M0 144C340 88 720 158 1120 112C1270 95 1375 78 1440 86"
+          d="M0 108C360 66 780 118 1180 86C1310 75 1385 64 1440 70"
           stroke="#F4A83A"
-          strokeOpacity="0.28"
-          strokeWidth="1.2"
+          strokeOpacity="0.22"
+          strokeWidth="1"
         />
       </svg>
 
-      {/* Restrained approved mango artwork near lower-left edge */}
+      {/* Restrained botanical leaf near upper-right edge */}
       <img
-        src="/assets/illustrations/mango-whole.webp"
+        src="/assets/illustrations-2026/palm-frond-2026.webp"
         alt=""
         aria-hidden="true"
-        className="footer-deco-mango"
+        className="footer-deco-leaf-top"
         loading="lazy"
       />
 
-      {/* Restrained tropical green leaf sprig near lower-right edge */}
-      <svg
-        className="footer-deco-leaves"
-        viewBox="0 0 140 120"
-        fill="none"
+      {/* Restrained mango slice & leaf near lower-right edge */}
+      <img
+        src="/assets/illustrations-2026/mango-leaf-2026.webp"
+        alt=""
         aria-hidden="true"
-      >
-        <path
-          d="M126 112C96 86 82 54 90 18C118 42 132 76 126 112Z"
-          fill="#4B7851"
-          fillOpacity="0.24"
-        />
-        <path
-          d="M120 114C80 104 46 84 22 54C62 52 98 74 120 114Z"
-          fill="#3E6743"
-          fillOpacity="0.2"
-        />
-        <path
-          d="M90 22C94 58 106 88 125 110"
-          stroke="#FFF7EC"
-          strokeOpacity="0.55"
-          strokeWidth="1.2"
-        />
-      </svg>
+        className="footer-deco-mango-bottom"
+        loading="lazy"
+      />
 
       <div className="container footer-main-container">
-        {/* Approved 3-Column Editorial Grid: VINAXO Brand (33%) | Explore VINAXO (20%) | Let's Work Together (47%) */}
+        {/* Minimal 3-Region Composition: VINAXO Brand (32%) | Explore (32%) | Get in Touch (36%) */}
         <div className="footer-three-col-grid">
-          {/* Column 1: Left — Prominent VINAXO Brand Identity */}
+          {/* LEFT REGION — VINAXO BRAND */}
           <div className="footer-col footer-col-brand">
             <Link
               to="/"
@@ -150,133 +137,131 @@ export const Footer: React.FC<FooterProps> = ({ onOpenQuote }) => {
                 : 'Premium Vietnamese tropical dried fruit and wholesome snacks, crafted for global retail, food-service and private-label partners.'}
             </p>
 
-            <div className="footer-cta-row">
-              {onOpenQuote ? (
-                <button
-                  type="button"
-                  onClick={() => onOpenQuote()}
-                  className="footer-primary-cta"
-                >
-                  <span>{isVi ? 'Yêu Cầu Báo Giá' : 'Request a Quote'}</span>
-                  <ArrowRight size={17} aria-hidden="true" />
-                </button>
-              ) : (
-                <Link
-                  to="/contact"
-                  onClick={() => handleFooterLinkClick('/contact')}
-                  className="footer-primary-cta"
-                >
-                  <span>{isVi ? 'Yêu Cầu Báo Giá' : 'Request a Quote'}</span>
-                  <ArrowRight size={17} aria-hidden="true" />
-                </Link>
-              )}
+            {/* Verified direct contact/website icon links only (zero invented social URLs) */}
+            <div
+              className="footer-verified-icons"
+              aria-label={isVi ? 'Kênh liên hệ trực tiếp VINAXO' : 'VINAXO verified contact links'}
+            >
+              <a
+                href={COMPANY_INFO.contacts.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-icon-btn"
+                aria-label={isVi ? 'Website chính thức VINAXO' : 'VINAXO Official Website'}
+                title={COMPANY_INFO.contacts.websiteDisplay}
+              >
+                <Globe size={17} aria-hidden="true" />
+              </a>
+              <a
+                href={`mailto:${COMPANY_INFO.contacts.email}`}
+                className="footer-icon-btn"
+                aria-label={isVi ? 'Gửi email đến VINAXO' : 'Email VINAXO'}
+                title={COMPANY_INFO.contacts.email}
+              >
+                <Mail size={17} aria-hidden="true" />
+              </a>
+              <a
+                href={`tel:${COMPANY_INFO.contacts.hotline}`}
+                className="footer-icon-btn"
+                aria-label={isVi ? 'Gọi hotline VINAXO' : 'Call VINAXO Hotline'}
+                title={COMPANY_INFO.contacts.phoneDisplay}
+              >
+                <Phone size={17} aria-hidden="true" />
+              </a>
             </div>
           </div>
 
-          {/* Column 2: Center — EXPLORE VINAXO Vertical Navigation */}
+          {/* CENTER REGION — EXPLORE NAVIGATION (Two Columns) */}
           <nav
             className="footer-col footer-col-nav"
             aria-label={isVi ? 'Khám phá VINAXO' : 'Explore VINAXO'}
           >
-            <h2 className="footer-explore-heading">
-              {isVi ? 'KHÁM PHÁ VINAXO' : 'EXPLORE VINAXO'}
+            <h2 className="footer-section-heading">
+              {isVi ? 'KHÁM PHÁ' : 'EXPLORE'}
             </h2>
-            <ul className="footer-nav-vertical">
-              {navItems.map((item) => (
-                <li key={item.to}>
-                  <Link
-                    to={item.to}
-                    onClick={() => handleFooterLinkClick(item.to)}
-                    className="footer-nav-link"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+
+            <div className="footer-nav-columns">
+              <ul className="footer-nav-col">
+                {navColumnA.map((item) => (
+                  <li key={item.to}>
+                    <Link
+                      to={item.to}
+                      onClick={() => handleFooterLinkClick(item.to)}
+                      className="footer-nav-link"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+
+              <ul className="footer-nav-col">
+                {navColumnB.map((item) => (
+                  <li key={item.to}>
+                    <Link
+                      to={item.to}
+                      onClick={() => handleFooterLinkClick(item.to)}
+                      className="footer-nav-link"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </nav>
 
-          {/* Column 3: Right — LET'S WORK TOGETHER + Contact Info & QR */}
+          {/* RIGHT REGION — GET IN TOUCH */}
           <div className="footer-col footer-col-contact">
-            <h2 className="footer-contact-heading">
-              {isVi ? 'HỢP TÁC CÙNG VINAXO' : "LET'S WORK TOGETHER"}
+            <h2 className="footer-section-heading">
+              {isVi ? 'LIÊN HỆ' : 'GET IN TOUCH'}
             </h2>
-            <div className="footer-heading-rule" aria-hidden="true" />
 
-            <div className="footer-contact-layout">
-              <div className="footer-contact-details">
-                <div className="footer-contact-company">
-                  {isVi ? COMPANY_INFO.legalNameVi : COMPANY_INFO.shortName}
-                </div>
-
-                <div className="footer-contact-item">
-                  <MapPin size={17} className="footer-contact-icon" aria-hidden="true" />
-                  <span>
-                    {isVi
-                      ? COMPANY_INFO.headquarters.addressVi
-                      : COMPANY_INFO.headquarters.addressEn}
-                  </span>
-                </div>
-
-                <div className="footer-contact-item">
-                  <Phone size={17} className="footer-contact-icon" aria-hidden="true" />
-                  <a href={`tel:${COMPANY_INFO.contacts.hotline}`} className="footer-contact-link">
-                    {COMPANY_INFO.contacts.phoneDisplay}
-                  </a>
-                </div>
-
-                <div className="footer-contact-item">
-                  <Mail size={17} className="footer-contact-icon" aria-hidden="true" />
-                  <a href={`mailto:${COMPANY_INFO.contacts.email}`} className="footer-contact-link">
-                    {COMPANY_INFO.contacts.email}
-                  </a>
-                </div>
-
-                <div className="footer-contact-item">
-                  <Globe size={17} className="footer-contact-icon" aria-hidden="true" />
-                  <a
-                    href={COMPANY_INFO.contacts.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="footer-contact-link"
-                  >
-                    {COMPANY_INFO.contacts.websiteDisplay}
-                  </a>
-                </div>
+            <div className="footer-contact-details">
+              <div className="footer-contact-company">
+                {isVi ? COMPANY_INFO.legalNameVi : COMPANY_INFO.shortName}
               </div>
 
-              {/* Approved Scannable Contact QR Card */}
-              <div className="footer-qr-card">
-                <div className="footer-qr-frame">
-                  <picture>
-                    <source srcSet="/assets/images/contact-qr-jimmy.webp" type="image/webp" />
-                    <img
-                      src="/assets/images/contact-qr-jimmy.jpg"
-                      alt={
-                        isVi
-                          ? 'Mã QR danh bạ kinh doanh Mạnh Cường (Jimmy)'
-                          : 'Scan QR code for direct sales contact Mạnh Cường (Jimmy)'
-                      }
-                      width={104}
-                      height={104}
-                      className="footer-qr-img"
-                      loading="lazy"
-                    />
-                  </picture>
-                </div>
-                <div className="footer-qr-caption">
-                  <span className="footer-qr-name">Mạnh Cường (Jimmy)</span>
-                  <span className="footer-qr-note">
-                    {isVi ? 'Quét mã để lưu danh bạ' : 'Scan QR to save contact'}
-                  </span>
-                </div>
+              <div className="footer-contact-item">
+                <MapPin size={17} className="footer-contact-icon" aria-hidden="true" />
+                <span>
+                  {isVi
+                    ? COMPANY_INFO.headquarters.addressVi
+                    : COMPANY_INFO.headquarters.addressEn}
+                </span>
+              </div>
+
+              <div className="footer-contact-item">
+                <Phone size={17} className="footer-contact-icon" aria-hidden="true" />
+                <a href={`tel:${COMPANY_INFO.contacts.hotline}`} className="footer-contact-link">
+                  {COMPANY_INFO.contacts.phoneDisplay}
+                </a>
+              </div>
+
+              <div className="footer-contact-item">
+                <Mail size={17} className="footer-contact-icon" aria-hidden="true" />
+                <a href={`mailto:${COMPANY_INFO.contacts.email}`} className="footer-contact-link">
+                  {COMPANY_INFO.contacts.email}
+                </a>
+              </div>
+
+              <div className="footer-contact-item">
+                <Globe size={17} className="footer-contact-icon" aria-hidden="true" />
+                <a
+                  href={COMPANY_INFO.contacts.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer-contact-link"
+                >
+                  {COMPANY_INFO.contacts.websiteDisplay}
+                </a>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Mango-Orange Full-Width Copyright Strip */}
+      {/* Full-Width Mango-Orange Copyright Strip */}
       <div className="footer-bottom-strip">
         <div className="container footer-bottom-inner">
           <div className="footer-legal-line">
