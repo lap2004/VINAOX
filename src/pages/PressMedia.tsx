@@ -46,7 +46,7 @@ export const PressMedia: React.FC = () => {
       {/* ======================================================================
           FEATURED PRESS ARTICLE
           ====================================================================== */}
-      <section className="section section-white" style={{ paddingBottom: '32px' }}>
+      <section className="section section-white" style={{ paddingBottom: '40px' }}>
         <div className="container">
           <div
             className="card grid-mobile-1"
@@ -148,7 +148,7 @@ export const PressMedia: React.FC = () => {
       {/* ======================================================================
           NEWS ARCHIVE WITH FILTER TABS
           ====================================================================== */}
-      <section className="section section-white" style={{ paddingTop: '24px' }}>
+      <section className="section section-white" style={{ paddingTop: '36px' }}>
         <div className="container">
           {/* Category Filter Tabs */}
           <NewsFilter
@@ -177,7 +177,7 @@ export const PressMedia: React.FC = () => {
           {/* ========================================================================
               SECTION 2: MEDIA KIT & PRESS RELATIONS CONTACT BOX (MATCHING HTML 1:1)
               ======================================================================== */}
-          <div className="media-relations-card" style={{ marginTop: '56px' }}>
+          <div className="media-relations-card" style={{ marginTop: '64px' }}>
             <div>
               <span className="section-label">{t('newsPage.mediaCard.label')}</span>
               <h2 className="title-serif" style={{ fontSize: '1.625rem', color: 'var(--forest-green)', marginBottom: '12px' }}>
@@ -201,23 +201,23 @@ export const PressMedia: React.FC = () => {
               </div>
             </div>
 
-            <div style={{ backgroundColor: 'var(--light-sage)', padding: '28px', borderRadius: 'var(--radius-md)', border: '1px solid #D5E2D9' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--forest-green)', marginBottom: '12px' }}>
+            <div style={{ backgroundColor: 'var(--brand-orange-soft)', padding: '28px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(244, 168, 58, 0.45)' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--dark-chocolate)', marginBottom: '12px' }}>
                 {t('newsPage.mediaCard.boxTitle')}
               </h3>
-              <p style={{ fontSize: '0.875rem', color: '#374151', marginBottom: '8px' }}>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-body)', marginBottom: '8px' }}>
                 <strong>{t('newsPage.mediaCard.spokespersonLabel')} </strong>
                 <span>{t('newsPage.mediaCard.spokespersonVal')}</span>
               </p>
-              <p style={{ fontSize: '0.875rem', color: '#374151', marginBottom: '8px' }}>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-body)', marginBottom: '8px' }}>
                 <strong>{t('newsPage.mediaCard.emailLabel')} </strong>
                 <span>{COMPANY_INFO.contacts.email}</span>
               </p>
-              <p style={{ fontSize: '0.875rem', color: '#374151', marginBottom: '8px' }}>
+              <p style={{ fontSize: '0.875rem', color: 'var(--color-body)', marginBottom: '8px' }}>
                 <strong>{t('newsPage.mediaCard.hotlineLabel')} </strong>
-                <span>{COMPANY_INFO.contacts.hotline}</span>
+                <span>{COMPANY_INFO.contacts.phoneDisplay}</span>
               </p>
-              <p style={{ fontSize: '0.8125rem', color: '#6B7280', marginTop: '12px', lineHeight: 1.5 }}>
+              <p style={{ fontSize: '0.8125rem', color: 'var(--muted-text)', marginTop: '12px', lineHeight: 1.5 }}>
                 {t('newsPage.mediaCard.copyrightNote')}
               </p>
             </div>

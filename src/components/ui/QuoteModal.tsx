@@ -124,10 +124,10 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
       `Specifications & Requirements:`,
       trimmedMessage || 'Standard export CIF/FOB quotation requested.',
       `----------------------------------------`,
-      `Dispatched via VINAXO Corporate Portal (https://vinaxo.vn)`,
+      `Dispatched via VINAXO B2B Export Portal (https://www.vinaxo.net)`,
     ].join('\n');
 
-    const mailtoUrl = `mailto:thaovinaxo@gmail.com?subject=${subject}&body=${encodeURIComponent(bodyContent)}`;
+    const mailtoUrl = `mailto:cuonghoang0710@gmail.com?subject=${subject}&body=${encodeURIComponent(bodyContent)}`;
 
     // Trigger authentic mailto dispatch
     try {
@@ -144,23 +144,21 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     language === 'vi'
       ? [
           '-- Chọn dòng sản phẩm quan tâm --',
-          'Xoài sấy dẻo tự nhiên (Dried Mango)',
-          'Mít sấy dẻo & sấy chân không (Dried Jackfruit)',
-          'Thanh long sấy dẻo (Dried Dragon Fruit)',
-          'Thơm (Dứa) sấy dẻo (Dried Pineapple)',
-          'Chuối sấy dẻo tự nhiên (Dried Banana)',
-          'Trái cây nhúng Sô-cô-la & Thanh năng lượng (Energy Bar)',
-          'Gia công OEM / Đóng gói xuất khẩu theo yêu cầu',
+          'Trái cây sấy dẻo (Xoài, Mít, Thanh long đỏ, Đu đủ)',
+          'Trái cây sấy giòn & Thập cẩm (Chuối, Xoài, Mít, Rau củ)',
+          'Hạt dinh dưỡng & Hạt sen (Hạt điều, Mắc ca, Óc chó, Hạt sen)',
+          'Trái cây sấy tẩm mật ong / Phủ Sô-cô-la',
+          'Viên năng lượng Trái cây & Hạt / Granola',
+          'Gia công OEM / ODM & Đóng gói Nhãn riêng (Private Label)',
         ]
       : [
           '-- Select product of interest --',
-          'Naturally Soft-Dried Mango',
-          'Soft-Dried & Vacuum Jackfruit',
-          'Soft-Dried Dragon Fruit',
-          'Naturally Soft-Dried Pineapple',
-          'Naturally Soft-Dried Banana',
-          'Chocolate-Coated Fruit & Energy Bar',
-          'OEM Private Label / Custom Bulk Packaging',
+          'Soft Dried Fruit (Mango, Jackfruit, Red Dragonfruit, Papaya)',
+          'Natural Dried Fruit / Fruit Chips & Mixed Produce',
+          'Nuts & Seeds (Cashew, Macadamia, Walnuts, Lotus Seeds)',
+          'Honey-Infused & Chocolate-Dipped Dried Fruit',
+          'Fruit & Nut Balls / Tropical Granola',
+          'OEM / ODM & Private Label Project',
         ];
 
   return (
@@ -398,7 +396,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     value={formData.phone}
                     onChange={handleChange}
                     maxLength={30}
-                    placeholder={t('modal.phonePlaceholder', '+84 907 494 177')}
+                    placeholder={t('modal.phonePlaceholder', '(+84) 984 815 016')}
                     className="form-input"
                     style={{ padding: '9px 12px', fontSize: '0.9rem' }}
                     required

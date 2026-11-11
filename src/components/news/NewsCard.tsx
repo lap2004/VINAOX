@@ -67,7 +67,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
         style={{
           position: 'relative',
           paddingTop: '58%',
-          backgroundColor: '#EEF2EE',
+          backgroundColor: 'var(--soft-beige)',
           overflow: 'hidden',
         }}
       >
@@ -108,9 +108,9 @@ export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
             bottom: '12px',
             right: '12px',
             zIndex: 2,
-            backgroundColor: 'rgba(16, 61, 42, 0.88)',
+            backgroundColor: 'rgba(58, 37, 27, 0.9)',
             backdropFilter: 'blur(4px)',
-            color: '#FFFFFF',
+            color: 'var(--brand-orange)',
             padding: '3px 10px',
             borderRadius: 'var(--radius-pill)',
             fontSize: '0.72rem',

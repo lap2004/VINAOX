@@ -47,25 +47,25 @@ export const About: React.FC = () => {
 
   const galleryItems = [
     {
-      tag: t('aboutPage.gallery.card1Tag'),
+      tag: isVi ? 'TỔ HỢP NHÀ MÁY 25.000 M²' : '25,000 M² FACILITY COMPLEX',
       title: t('aboutPage.gallery.card1Title'),
       desc: t('aboutPage.gallery.card1Desc'),
-      img: '/assets/images/news/fruit-processing.webp',
-      imgFallback: '/assets/images/news/fruit-processing.jpg',
+      img: '/assets/images/factory-2026/factory-featured.webp',
+      imgFallback: '/assets/images/factory-2026/factory-featured.jpg',
     },
     {
-      tag: t('aboutPage.gallery.card2Tag'),
+      tag: isVi ? 'XẾP KHAY & SẤY VÔ TRÙNG' : 'HYGIENIC TRAY RACKING',
       title: t('aboutPage.gallery.card2Title'),
       desc: t('aboutPage.gallery.card2Desc'),
-      img: '/assets/images/news/tet-oem-production.webp',
-      imgFallback: '/assets/images/news/tet-oem-production.jpg',
+      img: '/assets/images/factory-2026/factory-sub-1.webp',
+      imgFallback: '/assets/images/factory-2026/factory-sub-1.jpg',
     },
     {
-      tag: t('aboutPage.gallery.card3Tag'),
+      tag: isVi ? 'HỆ THỐNG KHAY SẤY & SƠ CHẾ' : 'DRYING & WASHING INFRASTRUCTURE',
       title: t('aboutPage.gallery.card3Title'),
       desc: t('aboutPage.gallery.card3Desc'),
-      img: '/assets/images/news/mango-procurement.webp',
-      imgFallback: '/assets/images/news/mango-procurement.jpg',
+      img: '/assets/images/factory-2026/factory-sub-2.webp',
+      imgFallback: '/assets/images/factory-2026/factory-sub-2.jpg',
     },
   ];
 
@@ -87,7 +87,7 @@ export const About: React.FC = () => {
       {/* ========================================================================
           SECTION 1: COMPANY STORY & CORE METRICS (MATCHING HTML 3-COLUMN GRID)
           ======================================================================== */}
-      <section className="subpage-section" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
+      <section className="subpage-section">
         <div className="container">
           <div className="about-grid">
             {/* Column 1: Story & Mission */}
@@ -171,12 +171,10 @@ export const About: React.FC = () => {
           backgroundColor: 'var(--cream-bg)',
           borderTop: '1px solid var(--color-border)',
           borderBottom: '1px solid var(--color-border)',
-          paddingTop: '80px',
-          paddingBottom: '80px',
         }}
       >
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 40px auto' }}>
+          <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 48px auto' }}>
             <span className="section-label">{t('aboutPage.timeline.label')}</span>
             <h2 className="section-title">
               {t('aboutPage.timeline.title')}
@@ -201,7 +199,7 @@ export const About: React.FC = () => {
       {/* ========================================================================
           SECTION 3: INFRASTRUCTURE & PROCESSING CAPACITY (MATCHING HTML 1:1)
           ======================================================================== */}
-      <section className="subpage-section" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
+      <section className="subpage-section">
         <div className="container">
           <div className="facility-overview-grid">
             <div>
@@ -253,13 +251,16 @@ export const About: React.FC = () => {
             </div>
 
             <div>
-              <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', border: '1px solid var(--color-border)' }}>
-                <img
-                  src="/assets/images/about_vietnam.jpg"
-                  alt="VINAXO Tien Giang facility"
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                  loading="lazy"
-                />
+              <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', border: '1px solid var(--soft-border)' }}>
+                <picture>
+                  <source srcSet="/assets/images/factory-2026/factory-sub-3.webp" type="image/webp" />
+                  <img
+                    src="/assets/images/factory-2026/factory-sub-3.jpg"
+                    alt="VINAXO fresh processing line"
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                    loading="lazy"
+                  />
+                </picture>
               </div>
             </div>
           </div>
@@ -275,12 +276,10 @@ export const About: React.FC = () => {
           backgroundColor: 'var(--cream-bg)',
           borderTop: '1px solid var(--color-border)',
           borderBottom: '1px solid var(--color-border)',
-          paddingTop: '80px',
-          paddingBottom: '80px',
         }}
       >
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto 40px auto' }}>
+          <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto 48px auto' }}>
             <span className="section-label">{t('aboutPage.gallery.label')}</span>
             <h2 className="section-title">
               {t('aboutPage.gallery.title')}
@@ -341,9 +340,9 @@ export const About: React.FC = () => {
       {/* ========================================================================
           SECTION 5: LEADERSHIP (MATCHING HTML 1:1)
           ======================================================================== */}
-      <section className="subpage-section" style={{ paddingTop: '80px', paddingBottom: '80px' }} id="leadership">
+      <section className="subpage-section" id="leadership">
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto 40px auto' }}>
+          <div style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto 48px auto' }}>
             <span className="section-label">{t('leadership.label')}</span>
             <h2 className="section-title">
               {t('leadership.title')}
@@ -355,63 +354,63 @@ export const About: React.FC = () => {
 
           <div className="leadership-grid">
             {/* Nguyễn Anh Khoa */}
-            <div style={{ background: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '32px 24px', textAlign: 'center' }}>
-              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--light-sage)', color: 'var(--forest-green)', fontSize: '1.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto' }}>
+            <div style={{ background: '#FFFFFF', border: '1px solid var(--soft-border)', borderRadius: 'var(--radius-md)', padding: '32px 24px', textAlign: 'center', boxShadow: 'var(--shadow-xs)' }}>
+              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--brand-orange-soft)', color: 'var(--dark-chocolate)', fontFamily: 'var(--font-display)', fontSize: '1.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto', border: '2px solid var(--brand-orange)' }}>
                 K
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-heading)', marginBottom: '4px' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--dark-chocolate)', marginBottom: '4px' }}>
                 {COMPANY_INFO.leadership[0]?.name || 'Nguyễn Anh Khoa'}
               </h3>
-              <p style={{ fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--accent-gold)', letterSpacing: '0.05em', marginBottom: '12px' }}>
+              <p style={{ fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--vinaxo-red)', letterSpacing: '0.05em', marginBottom: '12px' }}>
                 {t('leadership.khoa.role')}
               </p>
               <p style={{ fontSize: '0.875rem', color: 'var(--color-body)', lineHeight: 1.6 }}>
                 {t('leadership.khoa.desc')}
               </p>
               <div style={{ marginTop: '14px' }}>
-                <span className="badge badge-green" style={{ fontSize: '0.72rem' }}>
+                <span className="badge badge-gold" style={{ fontSize: '0.72rem' }}>
                   {t('leadership.khoa.stamp')}
                 </span>
               </div>
             </div>
 
             {/* Hoàng Thị Thu Thảo */}
-            <div style={{ background: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '32px 24px', textAlign: 'center' }}>
-              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--light-sage)', color: 'var(--forest-green)', fontSize: '1.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto' }}>
+            <div style={{ background: '#FFFFFF', border: '1px solid var(--soft-border)', borderRadius: 'var(--radius-md)', padding: '32px 24px', textAlign: 'center', boxShadow: 'var(--shadow-xs)' }}>
+              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--brand-orange-soft)', color: 'var(--dark-chocolate)', fontFamily: 'var(--font-display)', fontSize: '1.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto', border: '2px solid var(--brand-orange)' }}>
                 T
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-heading)', marginBottom: '4px' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--dark-chocolate)', marginBottom: '4px' }}>
                 {COMPANY_INFO.leadership[1]?.name || 'Hoàng Thị Thu Thảo'}
               </h3>
-              <p style={{ fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--accent-gold)', letterSpacing: '0.05em', marginBottom: '12px' }}>
+              <p style={{ fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--vinaxo-red)', letterSpacing: '0.05em', marginBottom: '12px' }}>
                 {t('leadership.thao.role')}
               </p>
               <p style={{ fontSize: '0.875rem', color: 'var(--color-body)', lineHeight: 1.6 }}>
                 {t('leadership.thao.desc')}
               </p>
               <div style={{ marginTop: '14px' }}>
-                <span className="badge badge-green" style={{ fontSize: '0.72rem' }}>
+                <span className="badge badge-gold" style={{ fontSize: '0.72rem' }}>
                   {t('leadership.thao.stamp')}
                 </span>
               </div>
             </div>
 
             {/* Hoàng Mạnh Cường */}
-            <div style={{ background: '#FFFFFF', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '32px 24px', textAlign: 'center' }}>
-              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--light-sage)', color: 'var(--forest-green)', fontSize: '1.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto' }}>
+            <div style={{ background: '#FFFFFF', border: '1px solid var(--soft-border)', borderRadius: 'var(--radius-md)', padding: '32px 24px', textAlign: 'center', boxShadow: 'var(--shadow-xs)' }}>
+              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--brand-orange-soft)', color: 'var(--dark-chocolate)', fontFamily: 'var(--font-display)', fontSize: '1.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto', border: '2px solid var(--brand-orange)' }}>
                 C
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-heading)', marginBottom: '4px' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--dark-chocolate)', marginBottom: '4px' }}>
                 {COMPANY_INFO.leadership[2]?.name || 'Hoàng Mạnh Cường'}
               </h3>
-              <p style={{ fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--accent-gold)', letterSpacing: '0.05em', marginBottom: '12px' }}>
+              <p style={{ fontSize: '0.8125rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--vinaxo-red)', letterSpacing: '0.05em', marginBottom: '12px' }}>
                 {t('leadership.cuong.role')}
               </p>
               <p style={{ fontSize: '0.875rem', color: 'var(--color-body)', lineHeight: 1.6 }}>
                 {t('leadership.cuong.desc')}
               </p>
               <div style={{ marginTop: '14px' }}>
-                <span className="badge badge-green" style={{ fontSize: '0.72rem' }}>
+                <span className="badge badge-gold" style={{ fontSize: '0.72rem' }}>
                   {t('leadership.cuong.stamp')}
                 </span>
               </div>
@@ -430,8 +429,8 @@ export const About: React.FC = () => {
             title={isVi ? 'Đồng Hành Cùng VINAXO Nâng Tầm Nông Sản Việt' : 'Partner with VINAXO for Global Agricultural Growth'}
             description={
               isVi
-                ? 'Nhà máy chế biến 4.000 m² tại Tiền Giang sẵn sàng cung ứng sản phẩm sấy dẻo xuất khẩu chất lượng cao và gia công nhãn riêng OEM cho đối tác toàn cầu.'
-                : 'Our 4,000 m² processing facility in Tien Giang is ready to deliver export-grade dried fruits and OEM private labeling for global partners.'
+                ? 'Tổ hợp nhà máy 25.000 m² tại Xã Vĩnh Bình, Đồng Tháp với sản lượng 300 tấn/tháng sẵn sàng đáp ứng đơn hàng xuất khẩu và gia công OEM (MOQ từ 200 kg).'
+                : 'Our 25,000 m² processing complex in Dong Thap Province (300 t monthly output) is ready for bulk export orders and OEM private labeling from 200 kg MOQ.'
             }
             primaryText={isVi ? 'Yêu Cầu Báo Giá Ngay' : 'Request Quotation'}
             onPrimaryClick={() => onOpenQuote()}

@@ -6,6 +6,7 @@ export const ScrollToTop: React.FC = () => {
   const location = useLocation();
   const navigationType = useNavigationType();
   const [visible, setVisible] = useState(false);
+  const [footerVisible, setFooterVisible] = useState(false);
   const scrollPositions = useRef<Map<string, number>>(new Map());
 
   // Disable browser automatic scroll restoration to avoid conflicting jumps
@@ -15,7 +16,7 @@ export const ScrollToTop: React.FC = () => {
     }
   }, []);
 
-  // Track scroll position for Back/Forward and floating button visibility
+  // Track scroll position and avoid sitting over the bottom brand strip when footer enters view
   useEffect(() => {
     const handleScroll = () => {
       setVisible(window.scrollY > 400);
@@ -27,6 +28,20 @@ export const ScrollToTop: React.FC = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location.key]);
+
+  useEffect(() => {
+    const footerEl = document.getElementById('site-footer');
+    if (!footerEl || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setFooterVisible(entries.some((entry) => entry.isIntersecting));
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(footerEl);
+    return () => observer.disconnect();
+  }, [location.pathname]);
 
   // Main scroll management on route/hash changes
   useLayoutEffect(() => {
@@ -107,32 +122,10 @@ export const ScrollToTop: React.FC = () => {
     <button
       onClick={scrollToTopSmooth}
       aria-label="Back to top"
-      style={{
-        position: 'fixed',
-        bottom: '28px',
-        right: '28px',
-        width: '46px',
-        height: '46px',
-        borderRadius: '50%',
-        backgroundColor: 'var(--primary-green)',
-        color: '#FFFFFF',
-        border: 'none',
-        boxShadow: '0 6px 20px rgba(16, 61, 42, 0.25)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        zIndex: 900,
-        transition: 'transform 0.2s ease, background-color 0.2s ease',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-3px)';
-        e.currentTarget.style.backgroundColor = 'var(--forest-green)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.backgroundColor = 'var(--primary-green)';
-      }}
+      aria-hidden={footerVisible}
+      tabIndex={footerVisible ? -1 : 0}
+      className={`scroll-to-top-btn${footerVisible ? ' in-footer-view' : ''}`}
+      title="Cuộn lên đầu trang / Back to top"
     >
       <ArrowUp size={20} />
     </button>

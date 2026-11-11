@@ -61,32 +61,32 @@ export const NewsFilter: React.FC<NewsFilterProps> = ({
               padding: '8px 18px',
               borderRadius: 'var(--radius-pill)',
               fontSize: '0.86rem',
-              fontWeight: isActive ? 700 : 500,
+              fontWeight: isActive ? 700 : 600,
               backgroundColor: isActive
-                ? 'var(--primary-green)'
-                : 'var(--cream-bg)',
-              color: isActive ? '#FFFFFF' : 'var(--color-heading)',
+                ? 'var(--dark-chocolate)'
+                : 'var(--white)',
+              color: isActive ? '#FFFFFF' : 'var(--dark-chocolate)',
               border: isActive
-                ? '1px solid var(--primary-green)'
-                : '1px solid var(--color-border)',
+                ? '1.5px solid var(--dark-chocolate)'
+                : '1.5px solid var(--soft-border)',
               cursor: 'pointer',
               transition: 'all 0.18s ease',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              boxShadow: isActive ? '0 4px 12px rgba(23, 77, 50, 0.2)' : 'none',
+              boxShadow: isActive ? '0 4px 12px rgba(58, 37, 27, 0.2)' : 'none',
             }}
           >
             <span>{tab.label}</span>
             <span
               style={{
                 fontSize: '0.74rem',
-                padding: '2px 6px',
+                padding: '2px 7px',
                 borderRadius: 'var(--radius-pill)',
                 backgroundColor: isActive
-                  ? 'rgba(255, 255, 255, 0.2)'
-                  : 'var(--light-sage)',
-                color: isActive ? '#FFFFFF' : 'var(--forest-green)',
+                  ? 'var(--brand-orange)'
+                  : 'var(--brand-orange-soft)',
+                color: 'var(--dark-chocolate)',
                 fontWeight: 700,
               }}
             >

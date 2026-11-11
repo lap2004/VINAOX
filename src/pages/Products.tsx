@@ -19,88 +19,47 @@ export const Products: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
 
-  // Check URL slug or ?product= query param
+  // Check URL slug or ?product= or ?category= query param
   useEffect(() => {
+    const targetCategory = searchParams.get('category') || searchParams.get('cat');
+    if (targetCategory && ['all', 'soft-dried', 'chips', 'nuts-seeds', 'mixed'].includes(targetCategory)) {
+      setActiveCategory(targetCategory);
+    }
     const targetSlug = slug || searchParams.get('product');
     if (targetSlug) {
-      const match = productsData.find((p) => p.slug === targetSlug || p.id === targetSlug);
+      const match = productsData.find(
+        (p) => p.slug === targetSlug || p.id === targetSlug || p.aliases?.includes(targetSlug)
+      );
       if (match) {
         setSelectedProduct(match);
       }
     }
   }, [slug, searchParams]);
 
+  const categories = [
+    { key: 'all', labelEn: 'All Products', labelVi: 'Tất cả sản phẩm', count: productsData.length },
+    { key: 'soft-dried', labelEn: 'Soft-Dried Fruits', labelVi: 'Trái cây sấy dẻo', count: productsData.filter((p) => p.category === 'soft-dried').length },
+    { key: 'chips', labelEn: 'Fruit Chips', labelVi: 'Trái cây sấy giòn', count: productsData.filter((p) => p.category === 'chips').length },
+    { key: 'nuts-seeds', labelEn: 'Nuts & Seeds', labelVi: 'Hạt dinh dưỡng', count: productsData.filter((p) => p.category === 'nuts-seeds').length },
+    { key: 'mixed', labelEn: 'Mixed Products', labelVi: 'Sản phẩm thập cẩm', count: productsData.filter((p) => p.category === 'mixed').length },
+  ];
+
   // Filter products by category
   const filteredProducts =
     activeCategory === 'all'
       ? productsData
-      : productsData.filter((p) => {
-          if (activeCategory === 'ocop') return Boolean(p.ocop);
-          return p.category === activeCategory;
-        });
+      : productsData.filter((p) => p.category === activeCategory);
 
-  const specRows = [
-    {
-      name: t('productsPage.section3.row1Name'),
-      origin: t('productsPage.section3.row1Origin'),
-      moisture: '< 15%',
-      shelfLife: t('productsPage.section3.months12'),
-      cert: t('productsPage.section3.certOcop'),
-      certColor: '#92400E',
-      certBg: '#FEF3C7',
-      productQuery: 'dried-mango',
-    },
-    {
-      name: t('productsPage.section3.row2Name'),
-      origin: t('productsPage.section3.row2Origin'),
-      moisture: '< 14%',
-      shelfLife: t('productsPage.section3.months12'),
-      cert: t('productsPage.section3.certOcop'),
-      certColor: '#92400E',
-      certBg: '#FEF3C7',
-      productQuery: 'dried-jackfruit',
-    },
-    {
-      name: t('productsPage.section3.row3Name'),
-      origin: t('productsPage.section3.row3Origin'),
-      moisture: '< 16%',
-      shelfLife: t('productsPage.section3.months12'),
-      cert: t('productsPage.section3.certOcop'),
-      certColor: '#92400E',
-      certBg: '#FEF3C7',
-      productQuery: 'dried-dragon-fruit',
-    },
-    {
-      name: t('productsPage.section3.row4Name'),
-      origin: t('productsPage.section3.row4Origin'),
-      moisture: '< 15%',
-      shelfLife: t('productsPage.section3.months12'),
-      cert: t('productsPage.section3.certNatural'),
-      certColor: '#065F46',
-      certBg: '#D1FAE5',
-      productQuery: 'dried-pineapple',
-    },
-    {
-      name: t('productsPage.section3.row5Name'),
-      origin: t('productsPage.section3.row5Origin'),
-      moisture: '< 18%',
-      shelfLife: t('productsPage.section3.months12'),
-      cert: t('productsPage.section3.certNatural'),
-      certColor: '#065F46',
-      certBg: '#D1FAE5',
-      productQuery: 'dried-banana',
-    },
-    {
-      name: t('productsPage.section3.row6Name'),
-      origin: t('productsPage.section3.row6Origin'),
-      moisture: '< 12%',
-      shelfLife: t('productsPage.section3.months12'),
-      cert: t('productsPage.section3.certEudr'),
-      certColor: '#1E40AF',
-      certBg: '#DBEAFE',
-      productQuery: 'energy-bar',
-    },
-  ];
+  const specRows = productsData.map((p) => ({
+    name: isVi ? p.nameVi : p.name,
+    origin: isVi ? (p.originVi || p.origin || '') : (p.origin || ''),
+    moisture: p.specs.moisture,
+    shelfLife: isVi ? p.specs.shelfLifeVi : p.specs.shelfLifeEn,
+    cert: isVi ? p.specs.certificationsVi : p.specs.certificationsEn,
+    certColor: p.ocop.includes('OCOP') ? '#3A2417' : '#2D4E32',
+    certBg: p.ocop.includes('OCOP') ? '#FBEBC9' : '#E7F3DF',
+    productQuery: p.slug,
+  }));
 
   return (
     <div className="products-page">
@@ -120,9 +79,9 @@ export const Products: React.FC = () => {
       {/* ========================================================================
           SECTION 1: PRODUCT INTRO & SPEC HIGHLIGHTS (MATCHING HTML 1:1)
           ======================================================================== */}
-      <section className="subpage-section" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
+      <section className="subpage-section">
         <div className="container">
-          <div className="text-center" style={{ maxWidth: '820px', margin: '0 auto 40px auto' }}>
+          <div className="text-center" style={{ maxWidth: '820px', margin: '0 auto 48px auto' }}>
             <span className="section-label">{t('productsPage.section1.label') || (isVi ? 'NÔNG SẢN SẤY CAO CẤP' : 'PREMIUM DRIED FRUITS')}</span>
             <h2 className="section-title">
               {t('productsPage.section1.title') || (isVi ? 'Nông Sản Nhiệt Đới Chọn Lọc Từ Vùng Trồng Đạt Chuẩn' : 'Selected Tropical Fruits from Certified Mekong Orchards')}
@@ -134,62 +93,17 @@ export const Products: React.FC = () => {
 
           {/* Product Category Filter Pills */}
           <div className="product-category-pills" role="tablist" aria-label="Product categories">
-            <button
-              className={`product-cat-pill ${activeCategory === 'all' ? 'active' : ''}`}
-              onClick={() => setActiveCategory('all')}
-              role="tab"
-            >
-              {t('productFilterTabs.all')}
-            </button>
-            <button
-              className={`product-cat-pill ${activeCategory === 'mango' ? 'active' : ''}`}
-              onClick={() => setActiveCategory('mango')}
-              role="tab"
-            >
-              {t('productFilterTabs.mango')}
-            </button>
-            <button
-              className={`product-cat-pill ${activeCategory === 'jackfruit' ? 'active' : ''}`}
-              onClick={() => setActiveCategory('jackfruit')}
-              role="tab"
-            >
-              {t('productFilterTabs.jackfruit')}
-            </button>
-            <button
-              className={`product-cat-pill ${activeCategory === 'dragon' ? 'active' : ''}`}
-              onClick={() => setActiveCategory('dragon')}
-              role="tab"
-            >
-              {t('productFilterTabs.dragon')}
-            </button>
-            <button
-              className={`product-cat-pill ${activeCategory === 'pineapple' ? 'active' : ''}`}
-              onClick={() => setActiveCategory('pineapple')}
-              role="tab"
-            >
-              {t('productFilterTabs.pineapple')}
-            </button>
-            <button
-              className={`product-cat-pill ${activeCategory === 'banana' ? 'active' : ''}`}
-              onClick={() => setActiveCategory('banana')}
-              role="tab"
-            >
-              {t('productFilterTabs.banana')}
-            </button>
-            <button
-              className={`product-cat-pill ${activeCategory === 'energy-bar' ? 'active' : ''}`}
-              onClick={() => setActiveCategory('energy-bar')}
-              role="tab"
-            >
-              {t('productFilterTabs.energyBar')}
-            </button>
-            <button
-              className={`product-cat-pill ${activeCategory === 'ocop' ? 'active' : ''}`}
-              onClick={() => setActiveCategory('ocop')}
-              role="tab"
-            >
-              {t('productFilterTabs.ocop')}
-            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.key}
+                className={`product-cat-pill ${activeCategory === cat.key ? 'active' : ''}`}
+                onClick={() => setActiveCategory(cat.key)}
+                role="tab"
+                aria-selected={activeCategory === cat.key}
+              >
+                {isVi ? cat.labelVi : cat.labelEn} ({cat.count})
+              </button>
+            ))}
           </div>
 
           {/* Dynamic Product Grid */}
@@ -197,8 +111,7 @@ export const Products: React.FC = () => {
             className="products-grid home-products-grid"
             style={{
               display: 'grid',
-              gap: '24px',
-              marginTop: '40px',
+              marginTop: '48px',
             }}
           >
             {filteredProducts.map((p) => (
@@ -222,8 +135,6 @@ export const Products: React.FC = () => {
           backgroundColor: 'var(--cream-bg)',
           borderTop: '1px solid var(--color-border)',
           borderBottom: '1px solid var(--color-border)',
-          paddingTop: '80px',
-          paddingBottom: '80px',
         }}
       >
         <div className="container">
@@ -253,7 +164,7 @@ export const Products: React.FC = () => {
                 boxShadow: 'var(--shadow-xs)',
               }}
             >
-              <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: 'var(--light-sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-green)', marginBottom: '16px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: 'var(--brand-orange-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--dark-chocolate)', marginBottom: '16px' }}>
                 <FileText size={22} />
               </div>
               <h3 style={{ fontSize: '1.25rem', color: 'var(--color-heading)', marginBottom: '10px' }}>
@@ -273,7 +184,7 @@ export const Products: React.FC = () => {
                 boxShadow: 'var(--shadow-xs)',
               }}
             >
-              <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: 'var(--light-sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-green)', marginBottom: '16px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: 'var(--brand-orange-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--dark-chocolate)', marginBottom: '16px' }}>
                 <Package size={22} />
               </div>
               <h3 style={{ fontSize: '1.25rem', color: 'var(--color-heading)', marginBottom: '10px' }}>
@@ -293,7 +204,7 @@ export const Products: React.FC = () => {
                 boxShadow: 'var(--shadow-xs)',
               }}
             >
-              <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: 'var(--light-sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-green)', marginBottom: '16px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', backgroundColor: 'var(--brand-orange-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--dark-chocolate)', marginBottom: '16px' }}>
                 <ShieldCheck size={22} />
               </div>
               <h3 style={{ fontSize: '1.25rem', color: 'var(--color-heading)', marginBottom: '10px' }}>
@@ -310,9 +221,9 @@ export const Products: React.FC = () => {
       {/* ========================================================================
           SECTION 3: SPECIFICATIONS COMPARISON TABLE (MATCHING HTML 1:1)
           ======================================================================== */}
-      <section className="subpage-section" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
+      <section className="subpage-section">
         <div className="container">
-          <div className="text-center" style={{ maxWidth: '800px', margin: '0 auto 40px auto' }}>
+          <div className="text-center" style={{ maxWidth: '800px', margin: '0 auto 48px auto' }}>
             <span className="section-label">{t('productsPage.section3.label')}</span>
             <h2 className="section-title">
               {t('productsPage.section3.title')}
@@ -335,7 +246,7 @@ export const Products: React.FC = () => {
           >
             <table style={{ width: '100%', minWidth: '640px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
               <thead>
-                <tr style={{ backgroundColor: 'var(--light-sage)', color: 'var(--forest-green)', borderBottom: '2px solid var(--color-border)' }}>
+                <tr style={{ backgroundColor: 'var(--brand-orange-soft)', color: 'var(--dark-chocolate)', borderBottom: '2px solid var(--brand-orange)' }}>
                   <th style={{ padding: '16px 20px', fontWeight: 700 }}>{t('productsPage.section3.colName')}</th>
                   <th style={{ padding: '16px 20px', fontWeight: 700 }}>{t('productsPage.section3.colOrigin')}</th>
                   <th style={{ padding: '16px 20px', fontWeight: 700 }}>{t('productsPage.section3.colMoisture')}</th>
@@ -349,17 +260,17 @@ export const Products: React.FC = () => {
                   <tr
                     key={idx}
                     style={{
-                      borderBottom: '1px solid #EEF2EE',
-                      backgroundColor: idx % 2 === 1 ? '#FAFCFA' : '#FFFFFF',
+                      borderBottom: '1px solid var(--soft-border-subtle)',
+                      backgroundColor: idx % 2 === 1 ? '#FFFBF4' : '#FFFFFF',
                     }}
                   >
-                    <td style={{ padding: '16px 20px', fontWeight: 600, color: 'var(--color-heading)' }}>
+                    <td style={{ padding: '16px 20px', fontWeight: 600, color: 'var(--dark-chocolate)' }}>
                       {r.name}
                     </td>
                     <td style={{ padding: '16px 20px', color: 'var(--color-body)' }}>
                       {r.origin}
                     </td>
-                    <td style={{ padding: '16px 20px', color: 'var(--forest-green)', fontWeight: 600 }}>
+                    <td style={{ padding: '16px 20px', color: 'var(--vinaxo-red)', fontWeight: 700 }}>
                       {r.moisture}
                     </td>
                     <td style={{ padding: '16px 20px', color: 'var(--color-body)' }}>

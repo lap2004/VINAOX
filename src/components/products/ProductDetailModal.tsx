@@ -41,12 +41,15 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   if (!product) return null;
 
   const isVi = language === 'vi';
-  const info = isVi ? product.vi : product.en;
+  const name = isVi ? product.nameVi : product.name;
+  const origin = isVi ? (product.originVi || product.vi.origin) : (product.origin || product.en.origin);
+  const desc = isVi ? (product.shortDescriptionVi || product.vi.desc) : (product.shortDescription || product.en.desc);
+  const fullDesc = isVi ? (product.descriptionVi || product.vi.features) : (product.description || product.en.features);
   const specs = product.specs;
 
   const handleQuoteClick = () => {
     onClose();
-    onRequestQuote(info.name);
+    onRequestQuote(name);
   };
 
   return (
@@ -79,13 +82,25 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             backgroundColor: 'var(--cream-bg)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span className="badge badge-gold">
-              <Sparkles size={13} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <span className={product.ocop.includes('OCOP') ? 'badge badge-gold' : 'badge badge-green'}>
+              {product.ocop.includes('OCOP') ? <Sparkles size={13} /> : <Check size={13} />}
               {product.ocop}
             </span>
+            <span
+              className="badge"
+              style={{
+                backgroundColor: 'var(--white)',
+                border: '1px solid var(--color-border)',
+                color: 'var(--forest-green)',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+              }}
+            >
+              {isVi ? product.categoryLabelVi : product.categoryLabelEn}
+            </span>
             <span style={{ fontSize: '0.8rem', color: 'var(--color-muted)' }}>
-              • {info.origin}
+              • {origin}
             </span>
           </div>
 
@@ -121,8 +136,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'minmax(260px, 1fr) 1.25fr',
-              gap: '28px',
+              gridTemplateColumns: 'minmax(240px, 1fr) 1.35fr',
+              gap: '24px',
               marginBottom: '28px',
             }}
             className="product-modal-top-grid"
@@ -132,16 +147,17 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               style={{
                 borderRadius: 'var(--radius-lg)',
                 overflow: 'hidden',
-                border: '1px solid var(--color-border)',
-                backgroundColor: '#F8FAF8',
-                aspectRatio: '4/3',
+                border: '1px solid var(--soft-border)',
+                backgroundColor: 'var(--soft-beige)',
+                aspectRatio: '1/1',
+                maxHeight: '280px',
               }}
             >
               <picture>
                 <source srcSet={product.imageWebp} type="image/webp" />
                 <img
                   src={product.imageJpg}
-                  alt={info.name}
+                  alt={name}
                   style={{
                     width: '100%',
                     height: '100%',
@@ -157,13 +173,13 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 id="product-modal-title"
                 className="title-serif"
                 style={{
-                  fontSize: 'clamp(1.5rem, 2.5vw, 1.85rem)',
+                  fontSize: 'clamp(1.4rem, 2.2vw, 1.75rem)',
                   color: 'var(--color-heading)',
                   marginBottom: '10px',
                   lineHeight: 1.25,
                 }}
               >
-                {info.name}
+                {name}
               </h2>
 
               <p
@@ -171,24 +187,24 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   fontSize: '0.92rem',
                   lineHeight: 1.65,
                   color: 'var(--color-body)',
-                  marginBottom: '16px',
+                  marginBottom: '14px',
                 }}
               >
-                {info.desc}
+                {desc}
               </p>
 
               <p
                 style={{
-                  fontSize: '0.88rem',
+                  fontSize: '0.86rem',
                   lineHeight: 1.6,
-                  color: 'var(--color-body-dark)',
-                  backgroundColor: 'var(--light-sage)',
+                  color: 'var(--dark-chocolate)',
+                  backgroundColor: 'var(--brand-orange-soft)',
                   padding: '12px 14px',
                   borderRadius: 'var(--radius-md)',
-                  border: '1px solid var(--sage-border)',
+                  border: '1px solid rgba(244, 168, 58, 0.35)',
                 }}
               >
-                {info.features}
+                {fullDesc}
               </p>
             </div>
           </div>

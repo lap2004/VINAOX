@@ -30,9 +30,9 @@ export const GlobalMarket: React.FC = () => {
       {/* ========================================================================
           SECTION 1: OVERVIEW & 4 VERIFIED EXPORT PILLARS (MATCHING HTML 1:1)
           ======================================================================== */}
-      <section className="subpage-section" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
+      <section className="subpage-section">
         <div className="container">
-          <div className="text-center" style={{ maxWidth: '820px', margin: '0 auto 40px auto' }}>
+          <div className="text-center" style={{ maxWidth: '820px', margin: '0 auto 48px auto' }}>
             <span className="section-label">{t('marketsPage.section1.label')}</span>
             <h2 className="section-title">
               {t('marketsPage.section1.title')}
@@ -152,12 +152,10 @@ export const GlobalMarket: React.FC = () => {
           backgroundColor: 'var(--cream-bg)',
           borderTop: '1px solid var(--color-border)',
           borderBottom: '1px solid var(--color-border)',
-          paddingTop: '80px',
-          paddingBottom: '80px',
         }}
       >
         <div className="container">
-          <div className="text-center" style={{ maxWidth: '800px', margin: '0 auto 40px auto' }}>
+          <div className="text-center" style={{ maxWidth: '800px', margin: '0 auto 48px auto' }}>
             <span className="section-label">{t('marketsPage.section2.label')}</span>
             <h2 className="section-title">
               {t('marketsPage.section2.title')}
@@ -212,7 +210,7 @@ export const GlobalMarket: React.FC = () => {
       {/* ========================================================================
           SECTION 3: B2B COOPERATION STEPS (MATCHING HTML 1:1)
           ======================================================================== */}
-      <section className="subpage-section" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
+      <section className="subpage-section">
         <div className="container">
           <div className="text-center" style={{ maxWidth: '780px', margin: '0 auto 48px auto' }}>
             <span className="section-label">{t('marketsPage.section3.label')}</span>
@@ -233,16 +231,16 @@ export const GlobalMarket: React.FC = () => {
           >
             <div
               style={{
-                backgroundColor: 'var(--cream-bg)',
+                backgroundColor: 'var(--brand-bg)',
                 borderRadius: 'var(--radius-lg)',
                 padding: '32px 28px',
-                border: '1px solid var(--color-border)',
+                border: '1px solid var(--soft-border)',
               }}
             >
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--forest-green)', fontFamily: 'var(--font-serif)', marginBottom: '8px', display: 'block' }}>
+              <span style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--vinaxo-red)', fontFamily: 'var(--font-display)', marginBottom: '8px', display: 'block' }}>
                 {t('marketsPage.section3.step1Num')}
               </span>
-              <h3 style={{ fontSize: '1.15rem', color: 'var(--color-heading)', marginBottom: '8px' }}>
+              <h3 style={{ fontSize: '1.15rem', color: 'var(--dark-chocolate)', marginBottom: '8px' }}>
                 {t('marketsPage.section3.step1Title')}
               </h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--color-body)', lineHeight: 1.6 }}>
@@ -252,16 +250,16 @@ export const GlobalMarket: React.FC = () => {
 
             <div
               style={{
-                backgroundColor: 'var(--cream-bg)',
+                backgroundColor: 'var(--brand-bg)',
                 borderRadius: 'var(--radius-lg)',
                 padding: '32px 28px',
-                border: '1px solid var(--color-border)',
+                border: '1px solid var(--soft-border)',
               }}
             >
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--forest-green)', fontFamily: 'var(--font-serif)', marginBottom: '8px', display: 'block' }}>
+              <span style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--vinaxo-red)', fontFamily: 'var(--font-display)', marginBottom: '8px', display: 'block' }}>
                 {t('marketsPage.section3.step2Num')}
               </span>
-              <h3 style={{ fontSize: '1.15rem', color: 'var(--color-heading)', marginBottom: '8px' }}>
+              <h3 style={{ fontSize: '1.15rem', color: 'var(--dark-chocolate)', marginBottom: '8px' }}>
                 {t('marketsPage.section3.step2Title')}
               </h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--color-body)', lineHeight: 1.6 }}>
@@ -271,16 +269,16 @@ export const GlobalMarket: React.FC = () => {
 
             <div
               style={{
-                backgroundColor: 'var(--cream-bg)',
+                backgroundColor: 'var(--brand-bg)',
                 borderRadius: 'var(--radius-lg)',
                 padding: '32px 28px',
-                border: '1px solid var(--color-border)',
+                border: '1px solid var(--soft-border)',
               }}
             >
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--forest-green)', fontFamily: 'var(--font-serif)', marginBottom: '8px', display: 'block' }}>
+              <span style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--vinaxo-red)', fontFamily: 'var(--font-display)', marginBottom: '8px', display: 'block' }}>
                 {t('marketsPage.section3.step3Num')}
               </span>
-              <h3 style={{ fontSize: '1.15rem', color: 'var(--color-heading)', marginBottom: '8px' }}>
+              <h3 style={{ fontSize: '1.15rem', color: 'var(--dark-chocolate)', marginBottom: '8px' }}>
                 {t('marketsPage.section3.step3Title')}
               </h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--color-body)', lineHeight: 1.6 }}>

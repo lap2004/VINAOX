@@ -137,11 +137,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
       window.clearTimeout(langTimerRef.current);
       langTimerRef.current = null;
     }
-    setIsLangOpen((prev) => {
-      const next = !prev;
-      wasOpenedByClickRef.current = next;
-      return next;
-    });
+    if (!isLangOpen || !wasOpenedByClickRef.current) {
+      wasOpenedByClickRef.current = true;
+      setIsLangOpen(true);
+    } else {
+      wasOpenedByClickRef.current = false;
+      setIsLangOpen(false);
+    }
   };
 
   const handleSelectLang = (lang: Language) => {
@@ -152,29 +154,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
 
   return (
     <>
-      <header
-        className={`site-header ${isScrolled ? 'is-sticky' : ''}`}
-        style={{
-          position: 'sticky',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 'var(--header-height)',
-          zIndex: 800,
-          backgroundColor: isScrolled
-            ? 'rgba(255, 255, 255, 0.94)'
-            : 'rgba(255, 255, 255, 0.98)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          borderBottom: isScrolled
-            ? '1px solid var(--sage-border)'
-            : '1px solid var(--color-border-subtle)',
-          boxShadow: isScrolled
-            ? '0 4px 20px rgba(16, 61, 42, 0.06)'
-            : 'none',
-          transition: 'all 0.25s ease',
-        }}
-      >
+      <header className={`site-header ${isScrolled ? 'is-sticky' : ''}`}>
         <div className="header-container">
           {/* Zone 1: Brand Logo Left */}
           <div className="header-logo-zone">
@@ -184,18 +164,22 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
               className="brand-logo"
               aria-label="VINAXO - Home"
             >
-              <div className="brand-icon">
-                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6 26C8 16 16 8 26 6C24 16 16 24 6 26Z" fill="#174D32" />
-                  <path d="M12 20C14 14 18 10 24 8" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
-                </svg>
+              <div className="brand-icon" style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(58, 36, 23, 0.14)' }}>
+                <picture style={{ display: 'block', width: '100%', height: '100%' }}>
+                  <source srcSet="/assets/logo/vinaxo-brochure-badge.webp" type="image/webp" />
+                  <img
+                    src="/assets/logo/vinaxo-brochure-badge.png"
+                    alt="VINAXO official mark"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                </picture>
               </div>
               <div className="brand-text-wrap">
                 <span className="brand-name">VINAXO</span>
                 <span className="brand-tagline">
                   {language === 'vi'
-                    ? 'HƯƠNG VỊ TỰ NHIÊN | VƯƠN TẦM QUỐC TẾ'
-                    : 'NATURAL GOODNESS | GLOBAL REACH'}
+                    ? 'NHÀ SẢN XUẤT TRÁI CÂY SẤY NHIỆT ĐỚI'
+                    : 'TROPICAL DRIED FRUIT MANUFACTURER'}
                 </span>
               </div>
             </Link>
@@ -243,9 +227,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                   borderRadius: 'var(--radius-pill)',
                   border: '1px solid var(--color-border)',
                   backgroundColor: isLangOpen
-                    ? 'var(--light-sage)'
-                    : 'transparent',
-                  color: 'var(--color-heading)',
+                    ? 'var(--brand-orange-soft)'
+                    : 'var(--white)',
+                  color: 'var(--dark-chocolate)',
                   fontSize: '0.82rem',
                   fontWeight: 700,
                   cursor: 'pointer',
@@ -255,7 +239,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                   flexShrink: 0,
                 }}
               >
-                <Globe size={14} color="var(--primary-green)" />
+                <Globe size={14} color="var(--vinaxo-red)" />
                 <span>{language.toUpperCase()}</span>
                 <ChevronDown
                   size={13}
@@ -306,11 +290,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                         border: 'none',
                         backgroundColor:
                           language === 'vi'
-                            ? 'var(--light-sage)'
+                            ? 'var(--brand-orange-soft)'
                             : 'transparent',
                         color:
                           language === 'vi'
-                            ? 'var(--forest-green)'
+                            ? 'var(--dark-chocolate)'
                             : 'var(--color-heading)',
                         fontWeight: language === 'vi' ? 700 : 600,
                         fontSize: '0.82rem',
@@ -321,7 +305,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                     >
                       <span>VI</span>
                       {language === 'vi' && (
-                        <Check size={13} strokeWidth={2.5} color="var(--forest-green)" />
+                        <Check size={13} strokeWidth={2.5} color="var(--vinaxo-red)" />
                       )}
                     </button>
                     <button
@@ -338,11 +322,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                         border: 'none',
                         backgroundColor:
                           language === 'en'
-                            ? 'var(--light-sage)'
+                            ? 'var(--brand-orange-soft)'
                             : 'transparent',
                         color:
                           language === 'en'
-                            ? 'var(--forest-green)'
+                            ? 'var(--dark-chocolate)'
                             : 'var(--color-heading)',
                         fontWeight: language === 'en' ? 700 : 600,
                         fontSize: '0.82rem',
@@ -353,7 +337,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                     >
                       <span>EN</span>
                       {language === 'en' && (
-                        <Check size={13} strokeWidth={2.5} color="var(--forest-green)" />
+                        <Check size={13} strokeWidth={2.5} color="var(--vinaxo-red)" />
                       )}
                     </button>
                   </div>
@@ -402,7 +386,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(12, 39, 23, 0.6)',
+            backgroundColor: 'rgba(41, 24, 16, 0.65)',
             backdropFilter: 'blur(4px)',
             zIndex: 850,
             display: 'flex',
@@ -416,7 +400,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
               width: '85%',
               maxWidth: '340px',
               height: '100%',
-              backgroundColor: 'var(--white)',
+              backgroundColor: 'var(--brand-bg)',
               padding: '28px 24px',
               display: 'flex',
               flexDirection: 'column',
@@ -445,18 +429,22 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                 style={{ width: 'auto', minWidth: 'auto', textDecoration: 'none' }}
                 aria-label="VINAXO - Home"
               >
-                <div className="brand-icon" style={{ width: '28px', height: '28px' }}>
-                  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6 26C8 16 16 8 26 6C24 16 16 24 6 26Z" fill="#174D32" />
-                    <path d="M12 20C14 14 18 10 24 8" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
+                <div className="brand-icon" style={{ width: '30px', height: '30px', borderRadius: '7px', overflow: 'hidden', border: '1px solid rgba(58, 36, 23, 0.14)' }}>
+                  <picture style={{ display: 'block', width: '100%', height: '100%' }}>
+                    <source srcSet="/assets/logo/vinaxo-brochure-badge.webp" type="image/webp" />
+                    <img
+                      src="/assets/logo/vinaxo-brochure-badge.png"
+                      alt="VINAXO official mark"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    />
+                  </picture>
                 </div>
                 <div className="brand-text-wrap">
                   <span className="brand-name" style={{ fontSize: '1.25rem' }}>VINAXO</span>
                   <span className="brand-tagline" style={{ fontSize: '0.44rem' }}>
                     {language === 'vi'
-                      ? 'HƯƠNG VỊ TỰ NHIÊN | VƯƠN TẦM QUỐC TẾ'
-                      : 'NATURAL GOODNESS | GLOBAL REACH'}
+                      ? 'NHÀ SẢN XUẤT TRÁI CÂY SẤY NHIỆT ĐỚI'
+                      : 'TROPICAL DRIED FRUIT MANUFACTURER'}
                   </span>
                 </div>
               </Link>
@@ -496,12 +484,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                     padding: '12px 16px',
                     borderRadius: 'var(--radius-md)',
                     fontSize: '0.95rem',
-                    fontWeight: isActive ? 700 : 500,
+                    fontWeight: isActive ? 700 : 600,
                     color: isActive
-                      ? 'var(--forest-green)'
+                      ? 'var(--dark-chocolate)'
                       : 'var(--color-heading)',
                     backgroundColor: isActive
-                      ? 'var(--light-sage)'
+                      ? 'var(--brand-orange-soft)'
                       : 'transparent',
                     textDecoration: 'none',
                     display: 'block',
@@ -532,10 +520,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                     borderRadius: 'var(--radius-sm)',
                     border:
                       language === 'vi'
-                        ? '1px solid var(--primary-green)'
+                        ? '1.5px solid var(--dark-chocolate)'
                         : '1px solid var(--color-border)',
                     backgroundColor:
-                      language === 'vi' ? 'var(--primary-green)' : 'transparent',
+                      language === 'vi' ? 'var(--dark-chocolate)' : 'var(--white)',
                     color: language === 'vi' ? '#FFFFFF' : 'var(--color-heading)',
                     fontWeight: 700,
                     fontSize: '0.88rem',
@@ -558,10 +546,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                     borderRadius: 'var(--radius-sm)',
                     border:
                       language === 'en'
-                        ? '1px solid var(--primary-green)'
+                        ? '1.5px solid var(--dark-chocolate)'
                         : '1px solid var(--color-border)',
                     backgroundColor:
-                      language === 'en' ? 'var(--primary-green)' : 'transparent',
+                      language === 'en' ? 'var(--dark-chocolate)' : 'var(--white)',
                     color: language === 'en' ? '#FFFFFF' : 'var(--color-heading)',
                     fontWeight: 700,
                     fontSize: '0.88rem',

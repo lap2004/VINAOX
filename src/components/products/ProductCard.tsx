@@ -38,8 +38,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <div
         style={{
           position: 'relative',
-          paddingTop: '64%',
-          backgroundColor: '#F5F8F5',
+          paddingTop: '72%',
+          backgroundColor: 'var(--soft-beige)',
           overflow: 'hidden',
         }}
       >
@@ -47,7 +47,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <source srcSet={product.imageWebp} type="image/webp" />
           <img
             src={product.imageJpg}
-            alt={info.name}
+            alt={isVi ? product.nameVi : product.name}
             loading="lazy"
             style={{
               position: 'absolute',
@@ -61,13 +61,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           />
         </picture>
 
-        {/* OCOP / Line Badge (Compact, elegant pill) */}
+        {/* Top Overlay Badges Bar (Flex prevents overlap at any card width) */}
         <div
           style={{
             position: 'absolute',
             top: '10px',
             left: '10px',
+            right: '10px',
             zIndex: 2,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            gap: '6px',
+            flexWrap: 'wrap',
+            pointerEvents: 'none',
           }}
         >
           {product.ocop.includes('OCOP') ? (
@@ -99,28 +106,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {product.ocop}
             </span>
           )}
-        </div>
 
-        {/* Brix Indicator Top Right */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            zIndex: 2,
-            backgroundColor: 'rgba(255, 255, 255, 0.94)',
-            backdropFilter: 'blur(6px)',
-            WebkitBackdropFilter: 'blur(6px)',
-            padding: '3px 8px',
-            borderRadius: 'var(--radius-pill)',
-            fontSize: '0.70rem',
-            fontWeight: 700,
-            color: 'var(--forest-green)',
-            border: '1px solid rgba(0,0,0,0.08)',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
-          }}
-        >
-          {product.specs.brix}
+          <span
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.94)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              padding: '3px 8px',
+              borderRadius: 'var(--radius-pill)',
+              fontSize: '0.70rem',
+              fontWeight: 700,
+              color: 'var(--forest-green)',
+              border: '1px solid rgba(0,0,0,0.08)',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {product.specs.brix.includes('Brix')
+              ? product.specs.brix
+              : isVi
+              ? product.categoryLabelVi
+              : product.categoryLabelEn}
+          </span>
         </div>
       </div>
 
@@ -144,21 +151,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             marginBottom: '6px',
           }}
         >
-          {info.origin}
+          {isVi ? (product.originVi || info.origin) : info.origin}
         </div>
 
         {/* Product Name */}
         <h3
           className="title-serif"
           style={{
-            fontSize: '1.2rem',
+            fontSize: '1.15rem',
             fontWeight: 700,
             color: 'var(--color-heading)',
             marginBottom: '8px',
             lineHeight: 1.3,
           }}
         >
-          {info.name}
+          {isVi ? product.nameVi : product.name}
         </h3>
 
         {/* Short Description */}
@@ -171,7 +178,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             flex: 1,
           }}
         >
-          {info.desc}
+          {isVi ? (product.shortDescriptionVi || info.desc) : (product.shortDescription || info.desc)}
         </p>
 
         {/* Key Specs Pills */}
@@ -227,11 +234,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* Primary Action: Request a Quote */}
           <button
             type="button"
-            onClick={() => onRequestQuote(info.name)}
+            onClick={() => onRequestQuote(isVi ? product.nameVi : product.name)}
             className="btn btn-primary"
             style={{
               width: '100%',
-              height: '38px',
+              height: '40px',
               padding: '0 16px',
               borderRadius: 'var(--radius-pill)',
               fontSize: '0.84rem',
@@ -243,7 +250,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               whiteSpace: 'nowrap',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(23, 77, 50, 0.2)',
+              boxShadow: '0 3px 10px rgba(244, 168, 58, 0.28)',
             }}
           >
             <span>{isVi ? 'Nhận báo giá xuất khẩu' : 'Request B2B Quote'}</span>
@@ -256,14 +263,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             onClick={() => onViewDetails(product)}
             style={{
               width: '100%',
-              height: '36px',
+              height: '38px',
               padding: '0 14px',
               borderRadius: 'var(--radius-pill)',
-              border: '1px solid var(--sage-border)',
-              backgroundColor: 'var(--light-sage)',
-              color: 'var(--forest-green)',
+              border: '1.5px solid var(--soft-border)',
+              backgroundColor: 'var(--brand-bg)',
+              color: 'var(--dark-chocolate)',
               fontSize: '0.82rem',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -273,10 +280,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               transition: 'all 0.18s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#d8e7d8';
+              e.currentTarget.style.backgroundColor = 'var(--brand-orange-soft)';
+              e.currentTarget.style.borderColor = 'var(--brand-orange)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--light-sage)';
+              e.currentTarget.style.backgroundColor = 'var(--brand-bg)';
+              e.currentTarget.style.borderColor = 'var(--soft-border)';
             }}
           >
             <FileText size={13} />

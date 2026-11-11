@@ -45,11 +45,11 @@ export const PageHero: React.FC<PageHeroProps> = ({
                 fontWeight: 700,
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
-                color: '#D4AF37',
-                backgroundColor: 'rgba(212, 175, 55, 0.12)',
+                color: '#F4A83A',
+                backgroundColor: 'rgba(244, 168, 58, 0.14)',
                 padding: '4px 14px',
                 borderRadius: '9999px',
-                border: '1px solid rgba(212, 175, 55, 0.28)',
+                border: '1px solid rgba(244, 168, 58, 0.35)',
               }}
             >
               {badge}
@@ -67,7 +67,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
               {titleLine2 && (
                 <>
                   {' '}
-                  <span style={{ color: '#A6C9AD', fontStyle: 'italic', fontWeight: 600 }}>
+                  <span style={{ color: '#F4A83A', fontWeight: 700 }}>
                     {titleLine2}
                   </span>
                 </>

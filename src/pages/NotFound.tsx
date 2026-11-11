@@ -27,9 +27,9 @@ export const NotFound: React.FC = () => {
       }}>
         <div style={{
           fontSize: '5rem',
-          fontWeight: 800,
-          fontFamily: 'var(--font-serif)',
-          color: 'var(--primary-green)',
+          fontWeight: 700,
+          fontFamily: 'var(--font-display)',
+          color: 'var(--vinaxo-red)',
           lineHeight: 1,
           marginBottom: '1rem'
         }}>
@@ -37,9 +37,12 @@ export const NotFound: React.FC = () => {
         </div>
 
         <h1 style={{
-          fontSize: '1.75rem',
+          fontFamily: 'var(--font-display)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.02em',
+          fontSize: '2.1rem',
           fontWeight: 700,
-          color: 'var(--forest-green)',
+          color: 'var(--dark-chocolate)',
           marginBottom: '1rem'
         }}>
           {language === 'vi' ? 'Không tìm thấy trang' : 'Page Not Found'}

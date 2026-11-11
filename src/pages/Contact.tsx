@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Send } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { productsData } from '../data/products';
+import { COMPANY_INFO } from '../data/company';
+import { BROCHURE_FAQS } from '../data/brochureData';
 
 export const Contact: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -62,7 +65,7 @@ export const Contact: React.FC = () => {
       `Nội dung / Message:\n${trimmedMessage}`
     );
 
-    window.location.href = `mailto:thaovinaxo@gmail.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:cuonghoang0710@gmail.com?subject=${subject}&body=${body}`;
     setSubmitted(true);
   };
 
@@ -76,7 +79,7 @@ export const Contact: React.FC = () => {
           <div className="container page-banner-container">
             <div className="page-banner-breadcrumbs">
               <Link to="/">{t('pageBanners.contact.home') || (isVi ? 'Trang chủ' : 'Home')}</Link>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '14px', height: '14px', flexShrink: 0 }}>
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
               <span>{t('pageBanners.contact.current') || (isVi ? 'Liên hệ' : 'Contact')}</span>
@@ -112,18 +115,18 @@ export const Contact: React.FC = () => {
                     </div>
                   </div>
                   <div className="contact-card-text">
-                    <p><strong>{t('contactPage.cards.legalName') || 'CÔNG TY TNHH VINAXO'}</strong></p>
+                    <p><strong>{isVi ? COMPANY_INFO.legalNameVi : COMPANY_INFO.shortName}</strong></p>
                     <p>
                       <strong>{t('contactPage.cards.taxLabel') || (isVi ? 'Mã số thuế:' : 'Tax Code:')}</strong>{' '}
-                      <span>{t('contactPage.cards.taxVal') || (isVi ? '1201611681 do Sở KH&ĐT Tiền Giang cấp' : '1201611681 issued by DPI of Tien Giang Province')}</span>
+                      <span>{COMPANY_INFO.taxCode}</span>
                     </p>
                     <p>
-                      <strong>{t('contactPage.cards.hqLabel') || (isVi ? 'Trụ sở:' : 'Headquarters:')}</strong>{' '}
-                      <span>{t('contactPage.cards.hqVal') || (isVi ? 'Khu phố 5, Thị trấn Vĩnh Bình, Huyện Gò Công Tây, Tỉnh Tiền Giang, Việt Nam' : 'Quarter 5, Vinh Binh Town, Go Cong Tay District, Tien Giang Province, Vietnam')}</span>
+                      <strong>{t('contactPage.cards.hqLabel') || (isVi ? 'Trụ sở & Nhà máy:' : 'Headquarters:')}</strong>{' '}
+                      <span>{isVi ? COMPANY_INFO.headquarters.addressVi : COMPANY_INFO.headquarters.addressEn}</span>
                     </p>
                     <p>
-                      <strong>{t('contactPage.cards.repLabel') || (isVi ? 'Đại diện pháp luật:' : 'Legal Representative:')}</strong>{' '}
-                      <span>{t('contactPage.cards.repVal') || (isVi ? 'Ông Nguyễn Anh Khoa (Giám đốc)' : 'Mr. Nguyen Anh Khoa (Director)')}</span>
+                      <strong>{t('contactPage.cards.repLabel') || (isVi ? 'Đại diện kinh doanh:' : 'Commercial Contact:')}</strong>{' '}
+                      <span>{isVi ? 'Ông Hoàng Mạnh Cường (Jimmy)' : 'Mr. Hoang Manh Cuong (Jimmy)'}</span>
                     </p>
                   </div>
                 </div>
@@ -140,21 +143,21 @@ export const Contact: React.FC = () => {
                       </svg>
                     </div>
                     <div className="contact-card-title">
-                      {t('contactPage.cardFacilityTitle') || (isVi ? 'Cơ Sở Sản Xuất & Vùng Chuyên Canh' : 'Processing Facility & Sourcing Hubs')}
+                      {t('contactPage.cardFacilityTitle') || (isVi ? 'Tổ Hợp Nhà Máy & Vùng Nguyên Liệu' : 'Processing Facility & Sourcing Hubs')}
                     </div>
                   </div>
                   <div className="contact-card-text">
                     <p>
-                      <strong>{t('contactPage.cards.areaLabel') || (isVi ? 'Quy mô nhà máy:' : 'Factory Area:')}</strong>{' '}
-                      <span>{t('contactPage.cards.areaVal') || (isVi ? '4.000 m² tại Huyện Gò Công Tây, Tiền Giang' : '4,000 m² in Go Cong Tay District, Tien Giang')}</span>
+                      <strong>{t('contactPage.cards.areaLabel') || (isVi ? 'Tổng quy mô nhà máy:' : 'Total Factory Area:')}</strong>{' '}
+                      <span>25,000 m²</span>
                     </p>
                     <p>
-                      <strong>{t('contactPage.cards.capLabel') || (isVi ? 'Năng lực chế biến:' : 'Processing Capacity:')}</strong>{' '}
-                      <span>{t('contactPage.cards.capVal') || (isVi ? '1.000+ tấn trái cây tươi/tháng' : '1,000+ metric tons of fresh fruit / month')}</span>
+                      <strong>{t('contactPage.cards.capLabel') || (isVi ? 'Sản lượng thành phẩm:' : 'Monthly Output:')}</strong>{' '}
+                      <span>{isVi ? '300 tấn thành phẩm / tháng' : '300 tons / month'}</span>
                     </p>
                     <p>
                       <strong>{t('contactPage.cards.hubLabel') || (isVi ? 'Vùng nguyên liệu Mekong:' : 'Mekong Sourcing Hubs:')}</strong>{' '}
-                      <span>{t('contactPage.cards.hubVal') || (isVi ? 'Đồng Tháp (vùng xoài Cát Chu), Tiền Giang (thơm Tân Phước, thanh long Chợ Gạo), Vĩnh Long' : 'Dong Thap (Cat Chu mango), Tien Giang (Tan Phuoc pineapple, Cho Gao dragon fruit), Vinh Long')}</span>
+                      <span>{isVi ? COMPANY_INFO.headquarters.sourcingHubVi : COMPANY_INFO.headquarters.sourcingHubEn}</span>
                     </p>
                   </div>
                 </div>
@@ -174,27 +177,60 @@ export const Contact: React.FC = () => {
                   <div className="contact-card-text">
                     <p>
                       <strong>{t('contactPage.cards.hotlineLabel') || (isVi ? 'Hotline B2B:' : 'B2B Hotline:')}</strong>{' '}
-                      <a href="tel:+84907494177" style={{ color: 'var(--forest-green)', fontWeight: 700 }}>
-                        0907 494 177
-                      </a>{' '}
-                      (+84 907 494 177)
+                      <a href={`tel:${COMPANY_INFO.contacts.hotline}`} style={{ color: 'var(--vinaxo-red)', fontWeight: 700 }}>
+                        {COMPANY_INFO.contacts.phoneDisplay}
+                      </a>
                     </p>
                     <p>
                       <strong>{t('contactPage.cards.emailLabel') || (isVi ? 'Email chính thức:' : 'Official Email:')}</strong>{' '}
-                      <a href="mailto:thaovinaxo@gmail.com" style={{ color: 'var(--forest-green)', fontWeight: 700 }}>
-                        thaovinaxo@gmail.com
+                      <a href={`mailto:${COMPANY_INFO.contacts.email}`} style={{ color: 'var(--vinaxo-red)', fontWeight: 700 }}>
+                        {COMPANY_INFO.contacts.email}
                       </a>
                     </p>
                     <p>
                       <strong>{t('contactPage.cards.webLabel') || (isVi ? 'Website:' : 'Website:')}</strong>{' '}
-                      <a href="https://vinaxo.vn/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--forest-green)', fontWeight: 600 }}>
-                        https://vinaxo.vn/
+                      <a href={COMPANY_INFO.contacts.website} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--dark-chocolate)', fontWeight: 600 }}>
+                        {COMPANY_INFO.contacts.websiteDisplay}
                       </a>
                     </p>
                     <p>
                       <strong>{t('contactPage.cards.hoursLabel') || (isVi ? 'Giờ làm việc:' : 'Working Hours:')}</strong>{' '}
                       <span>{t('contactPage.cards.hoursVal') || (isVi ? 'Thứ Hai – Thứ Bảy: 07:30 – 17:00 (GMT+7)' : 'Monday – Saturday: 07:30 – 17:00 (GMT+7)')}</span>
                     </p>
+                    <div
+                      style={{
+                        marginTop: '14px',
+                        paddingTop: '12px',
+                        borderTop: '1px dashed var(--soft-border)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                      }}
+                    >
+                      <picture style={{ width: '66px', height: '66px', flexShrink: 0 }}>
+                        <source srcSet="/assets/images/contact-qr-jimmy.webp" type="image/webp" />
+                        <img
+                          src="/assets/images/contact-qr-jimmy.jpg"
+                          alt="Mạnh Cường (Jimmy) QR Code"
+                          width={66}
+                          height={66}
+                          style={{
+                            width: '66px',
+                            height: '66px',
+                            objectFit: 'contain',
+                            display: 'block',
+                            borderRadius: '8px',
+                            border: '1px solid var(--soft-border)',
+                            backgroundColor: '#FFFFFF',
+                          }}
+                          loading="lazy"
+                        />
+                      </picture>
+                      <div style={{ fontSize: '0.78rem', lineHeight: 1.4, color: 'var(--color-body)' }}>
+                        <strong style={{ display: 'block', color: 'var(--dark-chocolate)' }}>Mạnh Cường (Jimmy)</strong>
+                        <span>{isVi ? 'Quét mã QR để thêm danh bạ liên hệ trực tiếp' : 'Scan official QR card to save direct sales contact'}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -215,7 +251,9 @@ export const Contact: React.FC = () => {
                   <div className="contact-card-text">
                     <p>
                       <strong>{t('contactPage.cards.supportLabel') || (isVi ? 'Hỗ trợ trực tuyến:' : 'Instant Messaging:')}</strong>{' '}
-                      WhatsApp / Zalo / WeChat (+84 907 494 177)
+                      <a href="https://wa.me/84984815016" target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 700, textDecoration: 'underline' }}>WhatsApp (+84 984 815 016)</a>
+                      {' • '}
+                      <a href="https://zalo.me/0984815016" target="_blank" rel="noopener noreferrer" style={{ color: '#0068FF', fontWeight: 700, textDecoration: 'underline' }}>Zalo (0984 815 016)</a>
                     </p>
                     <p>
                       <strong>{t('contactPage.cards.incotermsLabel') || (isVi ? 'Điều kiện thương mại:' : 'Trade Incoterms:')}</strong>{' '}
@@ -320,7 +358,7 @@ export const Contact: React.FC = () => {
                         id="contactPhone"
                         name="phone"
                         className="form-input"
-                        placeholder="+84 907 494 177"
+                        placeholder="(+84) 984 815 016"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         maxLength={30}
@@ -380,23 +418,18 @@ export const Contact: React.FC = () => {
                         <option value="Tất cả sản phẩm / Chưa xác định">
                           {isVi ? 'Tất cả sản phẩm / Chưa xác định' : 'All Products / Undecided'}
                         </option>
-                        <option value="Xoài sấy dẻo tự nhiên">
-                          {isVi ? 'Xoài sấy dẻo tự nhiên' : 'Soft-Dried Mango'}
+                        {productsData.map((p) => (
+                          <option key={p.id} value={isVi ? p.nameVi : p.name}>
+                            {isVi ? p.nameVi : p.name}
+                          </option>
+                        ))}
+                        <option value="Honey-Infused & Chocolate-Dipped / Fruit & Nut Balls / Granola">
+                          {isVi
+                            ? 'Trái cây mật ong / Phủ sô-cô-la / Granola & Viên hạt'
+                            : 'Honey-Infused / Chocolate-Dipped / Granola & Fruit Balls'}
                         </option>
-                        <option value="Mít sấy dẻo & sấy chân không">
-                          {isVi ? 'Mít sấy dẻo & sấy chân không' : 'Soft-Dried & Vacuum Jackfruit'}
-                        </option>
-                        <option value="Thanh long sấy dẻo">
-                          {isVi ? 'Thanh long sấy dẻo' : 'Soft-Dried Dragon Fruit'}
-                        </option>
-                        <option value="Thơm (Dứa) sấy dẻo tự nhiên">
-                          {isVi ? 'Thơm (Dứa) sấy dẻo tự nhiên' : 'Soft-Dried Pineapple'}
-                        </option>
-                        <option value="Trái cây bọc sô-cô-la & Thanh năng lượng">
-                          {isVi ? 'Trái cây bọc sô-cô-la & Thanh năng lượng' : 'Chocolate Fruit & Energy Bars'}
-                        </option>
-                        <option value="Gia công theo quy cách riêng (OEM)">
-                          {isVi ? 'Gia công theo quy cách riêng (OEM)' : 'Custom OEM Specification'}
+                        <option value="Gia công OEM / Đóng gói Nhãn riêng">
+                          {isVi ? 'Gia công theo quy cách riêng (OEM / ODM)' : 'Custom OEM / Private Label Project'}
                         </option>
                       </select>
                     </div>
@@ -458,35 +491,35 @@ export const Contact: React.FC = () => {
                       style={{
                         marginTop: '16px',
                         padding: '12px 16px',
-                        backgroundColor: 'var(--light-sage)',
-                        border: '1px solid #A6C9AD',
+                        backgroundColor: 'var(--brand-orange-soft)',
+                        border: '1px solid var(--brand-orange)',
                         borderRadius: 'var(--radius-sm)',
-                        color: 'var(--forest-green)',
+                        color: 'var(--dark-chocolate)',
                         fontWeight: 600,
                         fontSize: '0.875rem',
                       }}
                     >
-                      ✓ {isVi ? 'Đang mở ứng dụng email của bạn để gửi yêu cầu đến thaovinaxo@gmail.com...' : 'Launching your mail client to dispatch your inquiry to thaovinaxo@gmail.com...'}
+                      ✓ {isVi ? `Đang mở ứng dụng email của bạn để gửi yêu cầu đến ${COMPANY_INFO.contacts.email}...` : `Launching your mail client to dispatch your inquiry to ${COMPANY_INFO.contacts.email}...`}
                     </div>
                   )}
 
                   <div
                     style={{
                       marginTop: '16px',
-                      fontSize: '0.75rem',
-                      color: '#76857D',
+                      fontSize: '0.78rem',
+                      color: 'var(--muted-text)',
                       lineHeight: 1.5,
-                      borderTop: '1px dashed #E2E8E4',
+                      borderTop: '1px dashed var(--soft-border)',
                       paddingTop: '12px',
                     }}
                   >
                     {isVi ? (
                       <>
-                        <em>Kết nối thực tế:</em> Sau khi nhấn gửi, hệ thống sẽ mở ứng dụng email của bạn với tiêu đề và nội dung được tạo tự động để gửi trực tiếp tới <strong>thaovinaxo@gmail.com</strong>. Quý khách cũng có thể liên hệ trực tiếp qua Zalo/Hotline <strong>0907 494 177</strong> để nhận báo giá nhanh nhất.
+                        <em>Kết nối thực tế:</em> Sau khi nhấn gửi, hệ thống sẽ mở ứng dụng email của bạn với tiêu đề và nội dung được tạo tự động để gửi trực tiếp tới <strong>{COMPANY_INFO.contacts.email}</strong>. Quý khách cũng có thể liên hệ trực tiếp qua WhatsApp/Zalo <strong>{COMPANY_INFO.contacts.phoneDisplay}</strong> để nhận báo giá nhanh nhất.
                       </>
                     ) : (
                       <>
-                        <em>Direct connection:</em> Upon submitting, your default email client opens with prefilled commercial details to <strong>thaovinaxo@gmail.com</strong>. You may also call directly via Hotline <strong>+84 907 494 177</strong>.
+                        <em>Direct connection:</em> Upon submitting, your default email client opens with prefilled commercial details to <strong>{COMPANY_INFO.contacts.email}</strong>. You may also call directly via Hotline <strong>{COMPANY_INFO.contacts.phoneDisplay}</strong>.
                       </>
                     )}
                   </div>
@@ -517,7 +550,7 @@ export const Contact: React.FC = () => {
               <div className="contact-map-bar">
                 <div>
                   <div className="contact-map-coords">
-                    {t('contactPage.mapCoords') || (isVi ? 'Tọa độ: 10.380295, 106.516139 • Thị trấn Vĩnh Bình, Huyện Gò Công Tây, Tiền Giang' : 'Coordinates: 10.380295, 106.516139 • Vinh Binh Town, Go Cong Tay District, Tien Giang')}
+                    {t('contactPage.mapCoords') || (isVi ? 'Tọa độ: 10.380295, 106.516139 • Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp' : 'Coordinates: 10.380295, 106.516139 • Quarter 5, Vinh Binh Commune, Dong Thap Province')}
                   </div>
                   <div className="contact-map-address">
                     {t('contactPage.mapDistance') || (isVi ? 'Cách TP. Hồ Chí Minh ~65 km • Thuận tiện vận chuyển container xuất khẩu đường bộ và đường thủy' : '~65 km from Ho Chi Minh City • Seamless highway and waterway container logistics')}
@@ -537,7 +570,7 @@ export const Contact: React.FC = () => {
                   </svg>
                 </a>
               </div>
-              <div style={{ position: 'relative', width: '100%', height: '400px', backgroundColor: '#EEF4F0' }}>
+              <div style={{ position: 'relative', width: '100%', height: '400px', backgroundColor: 'var(--brand-bg)' }}>
                 {/* Fallback card underlay — rendered in DOM underneath the iframe.
                     If iframe is blocked by an ad-blocker or strict browser privacy shield,
                     this fallback provides full GPS details and an instant button to open Maps */}
@@ -551,22 +584,20 @@ export const Contact: React.FC = () => {
                     justifyContent: 'center',
                     padding: '24px',
                     textAlign: 'center',
-                    backgroundColor: '#F3F7F4'
+                    backgroundColor: 'var(--brand-bg)'
                   }}
                 >
-                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#D7E8DC', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px', color: '#1B5E39' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--brand-orange-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px', color: 'var(--vinaxo-red)' }}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '24px', height: '24px' }}>
                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                       <circle cx="12" cy="10" r="3"></circle>
                     </svg>
                   </div>
-                  <h4 style={{ margin: '0 0 6px', fontSize: '1rem', fontWeight: 700, color: '#103D2A' }}>
-                    {isVi ? 'Nhà Máy Chế Biến VINAXO Tiền Giang' : 'VINAXO Processing Plant Tien Giang'}
+                  <h4 style={{ margin: '0 0 6px', fontSize: '1rem', fontWeight: 700, color: 'var(--dark-chocolate)' }}>
+                    {isVi ? 'Nhà Máy Chế Biến VINAXO' : 'VINAXO Processing Plant'}
                   </h4>
-                  <p style={{ margin: '0 0 16px', fontSize: '0.875rem', color: '#55635C', maxWidth: '480px' }}>
-                    {isVi
-                      ? 'Thị trấn Vĩnh Bình, Huyện Gò Công Tây, Tỉnh Tiền Giang (Tọa độ: 10.380295, 106.516139)'
-                      : 'Vinh Binh Town, Go Cong Tay District, Tien Giang Province (Coords: 10.380295, 106.516139)'}
+                  <p style={{ margin: '0 0 16px', fontSize: '0.875rem', color: 'var(--color-body)', maxWidth: '480px' }}>
+                    {isVi ? COMPANY_INFO.headquarters.addressVi : COMPANY_INFO.headquarters.addressEn}
                   </p>
                   <a
                     href="https://www.google.com/maps/search/?api=1&query=V%C4%A9nh+B%C3%ACnh+G%C3%B2+C%C3%B4ng+T%C3%A2y+Ti%E1%BB%81n+Giang"
@@ -589,7 +620,7 @@ export const Contact: React.FC = () => {
                   allowFullScreen={false}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Bản đồ chỉ đường đến nhà máy VINAXO Tiền Giang"
+                  title="Bản đồ chỉ đường đến nhà máy VINAXO"
                   style={{ position: 'relative', zIndex: 1, width: '100%', height: '400px', border: 0 }}
                 ></iframe>
               </div>
@@ -600,10 +631,10 @@ export const Contact: React.FC = () => {
         {/* ========================================================================
              SECTION 4: PARTNERSHIP CTA BAR
              ======================================================================== */}
-        <section className="container" style={{ paddingBottom: '64px' }}>
+        <section className="container" style={{ paddingBottom: 'var(--section-space)' }}>
           <div className="contact-partnership-cta">
             <div className="contact-partnership-content">
-              <span className="section-label" style={{ color: '#A6C9AD', marginBottom: '6px', display: 'inline-block' }}>
+              <span className="section-label" style={{ color: 'var(--brand-orange)', marginBottom: '6px', display: 'inline-block' }}>
                 {t('contactPage.ctaLabel') || (isVi ? 'HỢP TÁC BỀN VỮNG' : 'SUSTAINABLE PARTNERSHIP')}
               </span>
               <h3 className="contact-partnership-title font-serif">
@@ -617,16 +648,14 @@ export const Contact: React.FC = () => {
               <a
                 href="#quote-form"
                 className="btn btn-primary"
-                style={{ backgroundColor: '#FFFFFF', color: 'var(--forest-green)', borderColor: '#FFFFFF' }}
               >
                 <span>{t('contactPage.ctaQuoteBtn') || (isVi ? 'Nhận Báo Giá Ngay' : 'Request a Quote Now')}</span>
               </a>
               <a
-                href="tel:+84907494177"
-                className="btn btn-outline"
-                style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#FFFFFF' }}
+                href={`tel:${COMPANY_INFO.contacts.hotline}`}
+                className="btn btn-outline-white"
               >
-                <span>Hotline: 0907 494 177</span>
+                <span>Hotline: {COMPANY_INFO.contacts.phoneDisplay}</span>
               </a>
             </div>
           </div>
@@ -644,38 +673,22 @@ export const Contact: React.FC = () => {
               <h2 className="section-title font-serif">
                 {t('contactPage.faqTitle') || (isVi ? 'Câu Hỏi Thường Gặp Về Giao Thương B2B' : 'Frequently Asked Questions About B2B Trade')}
               </h2>
-              <p className="section-desc mx-auto" style={{ maxWidth: '760px' }}>
-                {t('contactPage.faqDesc') || (isVi ? 'Giải đáp nhanh các thắc mắc về số lượng đặt hàng tối thiểu, mẫu thử và thủ tục thanh toán quốc tế.' : 'Quick answers regarding minimum order quantities, commercial samples, and international trade payment terms.')}
+              <p className="section-desc mx-auto" style={{ maxWidth: '760px', margin: '0 auto' }}>
+                {t('contactPage.faqDesc') || (isVi ? 'Giải đáp nhanh các thắc mắc về số lượng đặt hàng tối thiểu, mẫu thử và thời gian giao hàng quốc tế.' : 'Quick answers regarding minimum order quantities, complimentary commercial samples, and typical production lead times.')}
               </p>
             </div>
 
-            <div className="cards-grid-3" style={{ marginTop: '48px' }}>
-              <div className="subpage-feature-card">
-                <h3 className="feature-card-title" style={{ fontSize: '1.0625rem' }}>
-                  {t('contactPage.faqQ1') || (isVi ? 'Số lượng đặt hàng tối thiểu (MOQ) là bao nhiêu?' : 'What is the Minimum Order Quantity (MOQ)?')}
-                </h3>
-                <p className="feature-card-desc">
-                  {t('contactPage.faqA1') || (isVi ? 'Đối với đơn hàng xuất khẩu nhãn riêng (OEM), MOQ tiêu chuẩn là 1 tấn cho mỗi loại sản phẩm. Với đơn hàng đóng thùng master carton xuất khẩu nguyên liệu, MOQ linh hoạt từ 500 kg.' : 'For OEM private label export orders, standard MOQ is 1 metric ton per SKU. For bulk raw material export in master cartons, MOQ is flexible from 500 kg.')}
-                </p>
-              </div>
-
-              <div className="subpage-feature-card">
-                <h3 className="feature-card-title" style={{ fontSize: '1.0625rem' }}>
-                  {t('contactPage.faqQ2') || (isVi ? 'Thời gian gửi mẫu thử (Sample) mất bao lâu?' : 'How long does sample delivery take?')}
-                </h3>
-                <p className="feature-card-desc">
-                  {t('contactPage.faqA2') || (isVi ? 'VINAXO cung cấp mẫu thử miễn phí cho đối tác doanh nghiệp. Mẫu được đóng gói và chuyển phát nhanh quốc tế qua DHL/FedEx, thông thường tới tay đối tác trong vòng 3 – 5 ngày làm việc.' : 'VINAXO provides free commercial sample kits for business partners via DHL/FedEx express delivery, typically arriving within 3 – 5 business days worldwide.')}
-                </p>
-              </div>
-
-              <div className="subpage-feature-card">
-                <h3 className="feature-card-title" style={{ fontSize: '1.0625rem' }}>
-                  {t('contactPage.faqQ3') || (isVi ? 'Điều khoản thanh toán quốc tế áp dụng là gì?' : 'What payment terms are accepted?')}
-                </h3>
-                <p className="feature-card-desc">
-                  {t('contactPage.faqA3') || (isVi ? 'VINAXO chấp nhận các phương thức thanh toán thương mại quốc tế thông dụng bao gồm T/T (Telegraphic Transfer) và L/C không hủy ngang mở tại ngân hàng uy tín hàng đầu.' : 'VINAXO accepts standard international trade instruments including T/T (Telegraphic Transfer) and irrevocable Letter of Credit (L/C at sight) opened at Tier-1 banks.')}
-                </p>
-              </div>
+            <div className="faq-grid-2" style={{ marginTop: '48px' }}>
+              {BROCHURE_FAQS.map((faq) => (
+                <div key={faq.id} className="subpage-feature-card">
+                  <h3 className="feature-card-title" style={{ fontSize: '1.08rem', color: 'var(--vinaxo-red)' }}>
+                    {isVi ? faq.qVi : faq.qEn}
+                  </h3>
+                  <p className="feature-card-desc">
+                    {isVi ? faq.aVi : faq.aEn}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </section>

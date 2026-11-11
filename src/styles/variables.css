@@ -1,62 +1,90 @@
 /* ==========================================================================
    VINAXO DESIGN SYSTEM TOKENS & VARIABLES
-   Premium Agricultural Corporate Website
+   Official Brand Identity aligned with Vinaxo Brochure 2026
    ========================================================================== */
 
 :root {
-  /* Brand Color Palette */
-  --primary-green: #174D32;
-  --primary-light: #2D6A4F;
-  --forest-green: #103D2A;
-  --dark-green: #0C2717;
-  --light-sage: #E8F0E8;
-  --sage-border: #D2DFD2;
-  --cream-bg: #FAFAF5;
-  --soft-beige: #F4F1EA;
+  /* Core Official Palette Extracted from Vinaxo Brochure 2026.pdf */
+  --brand-bg: #FFF7EC;
+  --brand-orange: #F4A83A;
+  --brand-orange-badge: #F8AF46;
+  --brand-orange-hover: #E19325;
+  --brand-orange-soft: #FBEBC9;
+  --brand-orange-tint: #FCE6C0;
+  --brand-orange-border: #EBCB96;
+  --dark-chocolate: #3A2417;
+  --dark-chocolate-ink: #3A251B;
+  --dark-chocolate-deep: #28170D;
+  --vinaxo-red: #B9321F;
+  --vinaxo-red-soft: #FCECE9;
+  --tropical-green: #4B7851;
+  --tropical-green-soft: #E7F3DF;
   --white: #FFFFFF;
+  --muted-text: #5C4E45;
+  --soft-border: #EADFCC;
+  --soft-border-subtle: #F3EADF;
+
+  /* Unified Semantic Palette Aliases */
+  --primary-orange: var(--brand-orange);
+  --primary-green: var(--tropical-green);
+  --primary-light: #5D8B63;
+  --forest-green: var(--dark-chocolate);
+  --dark-green: var(--dark-chocolate-deep);
+  --light-sage: var(--tropical-green-soft);
+  --sage-border: #C4DFB6;
+  --cream-bg: var(--brand-bg);
+  --soft-beige: #FAF0E1;
 
   /* Accent & Status Colors */
-  --color-accent: #34A853;
-  --color-gold: #D4A373;
-  --color-gold-light: #FBF4EC;
-  --color-blue-badge: #1D4ED8;
-  --color-blue-bg: #EFF6FF;
+  --color-accent: var(--brand-orange);
+  --color-gold: var(--brand-orange);
+  --color-gold-light: var(--brand-orange-soft);
+  --color-blue-badge: var(--vinaxo-red);
+  --color-blue-bg: var(--vinaxo-red-soft);
 
-  /* Neutral & Text Colors */
-  --color-heading: #18271F;
-  --color-body: #505F56;
-  --color-body-dark: #2C3B33;
-  --color-muted: #839188;
-  --color-border: #E3E9E2;
-  --color-border-subtle: #EDF2EC;
+  /* Typography & Text Colors */
+  --color-heading: var(--dark-chocolate);
+  --color-body: #50433B;
+  --color-body-dark: var(--dark-chocolate);
+  --color-muted: var(--muted-text);
+  --color-text: #50433B;
+  --color-border: var(--soft-border);
+  --color-border-subtle: var(--soft-border-subtle);
+  --border-light: var(--soft-border);
+  --accent-gold: var(--vinaxo-red);
+  --sage-green: var(--tropical-green);
 
-  /* Typography */
-  --font-serif: 'Playfair Display', Georgia, serif;
-  --font-sans: 'Plus Jakarta Sans', 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  /* Typography System (Brochure Bold Condensed Display + Clean Readable Sans) */
+  --font-display: 'Oswald', 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Oswald', 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, sans-serif;
   --font-script: 'Caveat', cursive;
 
   /* Layout & Spacing */
-  --container-max: 1320px;
-  --page-gutter: clamp(16px, 3.5vw, 40px);
-  --section-space: clamp(48px, 6vw, 96px);
-  --header-height: 80px;
-  --header-logo-w: 260px;
+  --container-max: 1400px;
+  --page-gutter: clamp(20px, 3.5vw, 48px);
+  --section-space: clamp(88px, 7.5vw, 124px);
+  --hero-space-y: clamp(72px, 6.5vw, 112px);
+  --content-gap: clamp(48px, 4.6vw, 80px);
+  --card-gap: 28px;
+  --header-height: 82px;
+  --header-logo-w: 250px;
 
   /* Border Radii */
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
   --radius-pill: 9999px;
 
-  /* Elevation & Shadows */
-  --shadow-xs: 0 1px 3px rgba(16, 61, 42, 0.04);
-  --shadow-sm: 0 4px 12px rgba(16, 61, 42, 0.06);
-  --shadow-md: 0 10px 25px -4px rgba(16, 61, 42, 0.08), 0 4px 10px -2px rgba(16, 61, 42, 0.04);
-  --shadow-lg: 0 20px 35px -5px rgba(16, 61, 42, 0.10), 0 8px 16px -3px rgba(16, 61, 42, 0.05);
-  --shadow-xl: 0 25px 50px -12px rgba(16, 61, 42, 0.18);
-  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.04);
+  /* Elevation & Warm Chocolate Shadows */
+  --shadow-xs: 0 1px 3px rgba(58, 36, 23, 0.05);
+  --shadow-sm: 0 4px 12px rgba(58, 36, 23, 0.06);
+  --shadow-md: 0 10px 26px -4px rgba(58, 36, 23, 0.09), 0 4px 10px -2px rgba(58, 36, 23, 0.04);
+  --shadow-lg: 0 20px 36px -6px rgba(58, 36, 23, 0.12), 0 8px 16px -4px rgba(58, 36, 23, 0.06);
+  --shadow-xl: 0 25px 50px -12px rgba(58, 36, 23, 0.22);
+  --shadow-inner: inset 0 2px 4px 0 rgba(58, 36, 23, 0.04);
 
   /* Transitions */
   --transition-fast: 160ms cubic-bezier(0.16, 1, 0.3, 1);

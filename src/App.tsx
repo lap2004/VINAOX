@@ -30,8 +30,8 @@ const PageLoader: React.FC = () => (
       <div style={{
         width: '40px',
         height: '40px',
-        border: '3px solid var(--light-sage)',
-        borderTopColor: 'var(--primary-green)',
+        border: '3px solid var(--brand-orange-soft)',
+        borderTopColor: 'var(--brand-orange)',
         borderRadius: '50%',
         animation: 'spin 0.8s linear infinite'
       }} />

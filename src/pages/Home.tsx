@@ -1,12 +1,32 @@
 import React, { useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
-import { ArrowRight, Leaf, MapPin, Globe } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Leaf,
+  MapPin,
+  Globe,
+  Award,
+  CheckCircle2,
+  PackageCheck,
+  Sparkles,
+  Factory,
+} from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { productsData, ProductItem } from '../data/products';
+import {
+  COMPLIANCE_ITEMS,
+  BROCHURE_CATEGORIES,
+  FACTORY_GALLERY,
+  QUALITY_PROMISE_CARDS,
+  BrochureCategory,
+  ComplianceBadge,
+} from '../data/brochureData';
 import { newsData } from '../data/news';
 import { Button } from '../components/ui/Button';
 import { ProductCard } from '../components/products/ProductCard';
 import { ProductDetailModal } from '../components/products/ProductDetailModal';
+import { CertificatePreviewModal } from '../components/ui/CertificatePreviewModal';
 import { NewsCard } from '../components/news/NewsCard';
 import { WorldMapSvg } from '../components/markets/WorldMapSvg';
 import { MainLayoutContext } from '../components/layout/MainLayout';
@@ -17,196 +37,326 @@ export const Home: React.FC = () => {
   const isVi = language === 'vi';
 
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
+  const [selectedLine, setSelectedLine] = useState<BrochureCategory | null>(null);
+  const [previewCert, setPreviewCert] = useState<ComplianceBadge | null>(null);
 
-  // Top 5 featured products for Homepage
-  const featuredProducts = productsData.slice(0, 5);
+  const getComplianceClassLabel = (item: ComplianceBadge) => {
+    if (item.id === 'fda') {
+      return isVi ? 'Đăng ký Cơ sở FDA' : 'Facility Registration';
+    }
+    if (item.id === 'smeta') {
+      return isVi ? 'Kiểm toán Đạo đức' : 'Ethical Trade Audit';
+    }
+    if (item.id === 'costco') {
+      return isVi ? 'Kiểm toán Nhà cung cấp' : 'Retail Supplier Audit';
+    }
+    return isVi ? 'Chứng nhận' : 'Certification';
+  };
 
-  // Top 3 verified news articles for Homepage
+  const renderCollectionTile = (line: BrochureCategory, variant: 'featured' | 'standard') => {
+    const title = isVi ? line.titleVi : line.titleEn;
+    const summary = isVi ? (line.summaryVi || line.descVi) : (line.summaryEn || line.descEn);
+    const linkLabel =
+      variant === 'featured'
+        ? isVi
+          ? 'Khám phá bộ sưu tập'
+          : 'Explore Collection'
+        : isVi
+        ? 'Xem chi tiết dòng sản phẩm'
+        : 'Discover Products';
+    const mediaPosition = line.id === 'natural-dried-fruit' ? 'center 56%' : 'center 50%';
+
+    const inner = (
+      <>
+        <div className="collection-media">
+          <picture>
+            <source srcSet={line.imageWebp} type="image/webp" />
+            <img
+              src={line.imageJpg}
+              alt={title}
+              className="collection-img"
+              style={{ objectPosition: mediaPosition }}
+              loading="lazy"
+            />
+          </picture>
+        </div>
+
+        <div className="collection-meta">
+          <h3 className="collection-item-title">{title}</h3>
+          <p className="collection-item-desc">{summary}</p>
+          <span className="collection-item-link">
+            <span>{linkLabel}</span>
+            <ArrowRight size={15} />
+          </span>
+        </div>
+      </>
+    );
+
+    if (line.catalogFilter) {
+      return (
+        <Link
+          key={line.id}
+          to={`/products?category=${line.catalogFilter}`}
+          className={`collection-item collection-item-${variant}`}
+        >
+          {inner}
+        </Link>
+      );
+    }
+
+    return (
+      <button
+        key={line.id}
+        type="button"
+        onClick={() => setSelectedLine(line)}
+        className={`collection-item collection-item-${variant}`}
+      >
+        {inner}
+      </button>
+    );
+  };
+
+  // Preserve 8 featured products from the verified 12-item catalog in 2 full 4-column rows
+  const featuredProducts = productsData.slice(0, 8);
   const featuredNews = newsData.slice(0, 3);
 
-  // Safely render translated text with line breaks without dangerouslySetInnerHTML
-  const renderSafeText = (text: string) => {
-    return text.split(/<br\s*\/?>/i).map((part, i) => (
-      <React.Fragment key={i}>
-        {i > 0 && <br />}
-        {part}
-      </React.Fragment>
-    ));
-  };
+  const featuredFactory = FACTORY_GALLERY[0];
+  const supportingFactory = FACTORY_GALLERY.slice(1, 4);
+
+  const manufacturingCapabilities = [
+    {
+      valueEn: '300 t',
+      valueVi: '300 tấn',
+      labelEn: 'Monthly production output',
+      labelVi: 'Sản lượng sản xuất mỗi tháng',
+      detailEn: 'Growing year on year',
+      detailVi: 'Tăng trưởng qua từng năm',
+    },
+    {
+      valueEn: '200 kg',
+      valueVi: '200 kg',
+      labelEn: 'Minimum order quantity',
+      labelVi: 'Đơn hàng tối thiểu (MOQ)',
+      detailEn: 'Varies by product up to 1 ton',
+      detailVi: 'Linh hoạt đến 1 tấn tùy mặt hàng',
+    },
+    {
+      valueEn: '2–4 weeks',
+      valueVi: '2–4 tuần',
+      labelEn: 'Typical lead time',
+      labelVi: 'Thời gian sản xuất tiêu chuẩn',
+      detailEn: 'Depends on volume & packaging',
+      detailVi: 'Tùy sản lượng và quy cách đóng gói',
+    },
+    {
+      valueEn: '25,000 m²',
+      valueVi: '25.000 m²',
+      labelEn: 'Total factory area',
+      labelVi: 'Tổng diện tích nhà máy',
+      detailEn: 'Dong Thap Province, Vietnam',
+      detailVi: 'Tại tỉnh Đồng Tháp, Việt Nam',
+    },
+  ];
+
+  const oemCapabilities = isVi
+    ? [
+        'Tùy chỉnh công thức độ ẩm, độ ngọt Brix & hương vị theo thị trường',
+        'Thiết kế & in ấn bao bì theo bộ nhận diện thương hiệu riêng (OEM/ODM)',
+        'Đáp ứng đa dạng đóng gói từ túi bán lẻ (50g–500g) đến thùng xuất khẩu (5kg–20kg)',
+        'Hỗ trợ mẫu thử chuẩn đánh giá chất lượng trước khi sản xuất đại trà',
+        'Hồ sơ xuất khẩu đồng bộ cho chuỗi bán lẻ tại Mỹ, Châu Âu, Nga & Châu Á',
+      ]
+    : [
+        'Custom recipes tailored to regional sweetness, moisture, and texture preferences',
+        'Custom retail & private-label packaging engineered to buyer artwork',
+        'Bulk master cartons (5kg–20kg) and finished retail pouches (50g–500g)',
+        'Complimentary evaluation sample kits & pre-shipment standard verification',
+        'Proven international collaboration across US, European, and Asian retail channels',
+      ];
 
   return (
     <div className="home-page">
       {/* ======================================================================
-          SECTION 1 — HERO SECTION (MATCHING ORIGINAL HTML DESIGN 1:1)
+          SECTION 4.2 — HERO SECTION (OFFICIAL BROCHURE 2026 PAGE 1 IDENTITY)
           ====================================================================== */}
-      <section
-        className="hero-section"
-        style={{
-          position: 'relative',
-          paddingTop: 'clamp(40px, 5vw, 68px)',
-          paddingBottom: 'clamp(56px, 7vw, 88px)',
-          backgroundColor: 'var(--cream-bg)',
-          borderBottom: '1px solid var(--color-border)',
-          overflow: 'hidden',
-        }}
-      >
+      <section className="hero-section">
+        {/* Subtle Botanical Fruit Illustrations extracted from Official Brochure 2026 */}
+        <img
+          src="/assets/illustrations-2026/pineapple-2026.webp"
+          alt=""
+          aria-hidden="true"
+          className="tropical-deco"
+          style={{
+            top: '-18px',
+            right: '-24px',
+            width: '150px',
+            transform: 'rotate(-14deg)',
+            opacity: 0.22,
+          }}
+        />
+        <img
+          src="/assets/illustrations-2026/mango-leaf-2026.webp"
+          alt=""
+          aria-hidden="true"
+          className="tropical-deco"
+          style={{
+            bottom: '-18px',
+            left: '-14px',
+            width: '130px',
+            transform: 'rotate(10deg)',
+            opacity: 0.24,
+          }}
+        />
+
         <div className="container">
-          <div
-            className="hero-grid"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1.15fr 0.85fr',
-              gap: 'clamp(32px, 5vw, 56px)',
-              alignItems: 'center',
-            }}
-          >
-            {/* Left Column: Narrative, Actions & Features */}
+          <div className="hero-grid">
+            {/* Left Column: Brochure Page 1 Eyebrow, Display Headline, Intro & CTAs */}
             <div className="hero-copy">
-              {/* Eyebrow Pill */}
-              <div style={{ marginBottom: '14px' }}>
-                <span className="section-label tag-pill">
-                  {t('hero.eyebrow')}
+              <div style={{ marginBottom: '18px' }}>
+                <span className="section-label">
+                  {isVi
+                    ? 'VINAXO CO., LTD · SẢN XUẤT TẠI VIỆT NAM'
+                    : 'VINAXO CO., LTD · MADE IN VIETNAM'}
                 </span>
               </div>
 
-              {/* Serif Title */}
-              <h1 className="hero-title" style={{ marginBottom: '18px' }}>
-                <span style={{ display: 'block', fontSize: 'clamp(1.75rem, 5.2vw, 3.6rem)', fontWeight: 700, lineHeight: 1.2, color: 'var(--color-heading)' }}>
-                  {t('hero.titleLine1')}
-                </span>
-                <em style={{ display: 'block', fontSize: 'clamp(1.75rem, 5.2vw, 3.6rem)', fontStyle: 'italic', color: 'var(--primary-green)', fontWeight: 400, lineHeight: 1.2 }}>
-                  {t('hero.titleLine2')}
-                </em>
+              <h1 className="hero-headline-condensed">
+                {isVi ? (
+                  <>
+                    <span className="hero-headline-line">TRÁI CÂY SẤY</span>
+                    <span className="hero-headline-line">NHIỆT ĐỚI</span>
+                    <span className="hero-headline-line hero-headline-highlight">
+                      &amp; ĐỒ ĂN NHẸ CAO CẤP
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="hero-headline-line">PREMIUM TROPICAL</span>
+                    <span className="hero-headline-line">DRIED FRUIT</span>
+                    <span className="hero-headline-line hero-headline-highlight">
+                      &amp; HEALTHY SNACKS
+                    </span>
+                  </>
+                )}
               </h1>
 
-              {/* Subtitle / Description */}
-              <p
-                className="hero-desc"
-                style={{
-                  fontSize: '1rem',
-                  lineHeight: 1.65,
-                  color: '#55635C',
-                  marginBottom: '28px',
-                  maxWidth: '520px',
-                }}
-              >
-                {t('hero.description')}
+              <p className="hero-desc">
+                {isVi
+                  ? 'Tuyển chọn trái cây tươi ngon Việt Nam, sấy nhẹ giữ trọn vị ngon tự nhiên thành món ăn nhẹ lành mạnh — được các đối tác bán lẻ, dịch vụ ẩm thực và nhãn hàng riêng tại hơn 15 quốc gia tin tưởng.'
+                  : 'Carefully selected Vietnamese fruit, gently dried and crafted into wholesome snacks — trusted by retail, food-service and private-label partners in over 15 countries.'}
               </p>
 
-              {/* Dual Actions */}
-              <div className="hero-actions" style={{ marginBottom: '32px' }}>
+              {/* Primary Orange CTA & Secondary Dark Chocolate Outline CTA */}
+              <div className="hero-actions">
                 <Link to="/products">
-                  <Button variant="primary" size="lg" icon={<ArrowRight size={16} />}>
-                    {t('hero.primaryCta')}
+                  <Button variant="primary" size="lg" icon={<ArrowRight size={17} />}>
+                    {isVi ? 'Khám Phá Sản Phẩm' : 'Explore Products'}
                   </Button>
                 </Link>
 
-                <Link to="/about">
-                  <Button variant="secondary" size="lg">
-                    {t('hero.secondaryCta')}
-                  </Button>
-                </Link>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  onClick={() => onOpenQuote()}
+                >
+                  {isVi ? 'Yêu Cầu Báo Giá' : 'Request a Quote'}
+                </Button>
               </div>
 
-              {/* 3 Key Trust Features Row (Desktop: inside hero-copy) */}
+              {/* 3 Key Highlights (Desktop) */}
               <div className="hero-features hero-features-desktop">
                 <div className="feature-item">
                   <div className="feature-icon-circle">
-                    <Leaf size={15} />
+                    <Leaf size={16} />
                   </div>
                   <div className="feature-text">
-                    {renderSafeText(t('hero.features.0.title'))}
+                    {isVi ? '100% Trái Cây Chọn Lọc\nChế Biến Lành Mạnh' : 'Selected Vietnamese Fruit\nWholesome Craft'}
                   </div>
                 </div>
 
                 <div className="feature-item">
                   <div className="feature-icon-circle">
-                    <MapPin size={15} />
+                    <MapPin size={16} />
                   </div>
                   <div className="feature-text">
-                    {renderSafeText(t('hero.features.1.title'))}
+                    {isVi ? 'Nhà Máy 25.000 m²\nVĩnh Bình, Đồng Tháp' : '25,000 m² Factory\nDong Thap, Vietnam'}
                   </div>
                 </div>
 
                 <div className="feature-item">
                   <div className="feature-icon-circle">
-                    <Globe size={15} />
+                    <Globe size={16} />
                   </div>
                   <div className="feature-text">
-                    {renderSafeText(t('hero.features.2.title'))}
+                    {isVi ? 'Đối Tác Trên 15 Quốc Gia\nRetail • Food-Service • OEM' : '15+ Export Countries\nRetail • Food-Service • OEM'}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Hero Visual Frame, Script Accent & Origin Stamp */}
+            {/* Right Column: Official Brochure Page 1 Dual Rounded Studio Visual Pair */}
             <div className="hero-visual-wrap">
-              {/* Handwritten Script Accent Top Right */}
-              <div className="hero-script-accent" aria-hidden="true">
-                <p>
-                  <span>{t('hero.scriptAccent.line1')}</span><br />
-                  <span><span>{t('hero.scriptAccent.line2')}</span></span><br />
-                  <span>{t('hero.scriptAccent.line3')}</span><br />
-                  <span>{t('hero.scriptAccent.line4')}</span>
-                </p>
-              </div>
-
-              {/* Main Wooden Platter Fruit Image */}
-              <div className="hero-image-card">
-                <picture>
-                  <source srcSet="/assets/images/hero_fruits.webp" type="image/webp" />
-                  <img
-                    src="/assets/images/hero_fruits.jpg"
-                    alt={isVi ? "Trái cây sấy dẻo VINAXO trên khay gỗ" : "Artisanal Vietnamese dried fruits on wooden platter"}
-                    width={600}
-                    height={440}
-                  />
-                </picture>
-              </div>
-
-              {/* Circular Origin Stamp Badge Bottom Right */}
-              <div className="hero-origin-stamp" aria-label="From Vietnam to the World certification badge">
-                <div className="stamp-inner">
-                  <span className="stamp-from">{t('hero.badge.top')}</span>
-                  <span className="stamp-country">{t('hero.badge.country')}</span>
-                  <span className="stamp-world">{t('hero.badge.bottom')}</span>
-                  <svg className="stamp-icon" viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      fillRule="evenodd"
-                      d="M10 2a8 8 0 100 16 8 8 0 000-16zm3.707 6.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
+              <div className="hero-dual-photos">
+                <div className="hero-photo-tile">
+                  <picture>
+                    <source srcSet="/assets/images/hero-brochure-mango.webp" type="image/webp" />
+                    <img
+                      src="/assets/images/hero-brochure-mango.jpg"
+                      alt={
+                        isVi
+                          ? 'Xoài sấy dẻo VINAXO vàng óng tự nhiên'
+                          : 'VINAXO golden soft-dried mango slices'
+                      }
+                      style={{ objectPosition: '58% center' }}
+                      width={400}
+                      height={500}
                     />
-                  </svg>
+                  </picture>
+                </div>
+
+                <div className="hero-photo-tile">
+                  <picture>
+                    <source srcSet="/assets/images/hero-brochure-dragonfruit.webp" type="image/webp" />
+                    <img
+                      src="/assets/images/hero-brochure-dragonfruit.jpg"
+                      alt={
+                        isVi
+                          ? 'Thanh long tươi và thanh long sấy tự nhiên VINAXO'
+                          : 'Vietnamese fresh dragon fruit paired with dehydrated slices'
+                      }
+                      style={{ objectPosition: 'center 42%' }}
+                      width={400}
+                      height={500}
+                    />
+                  </picture>
                 </div>
               </div>
             </div>
 
-            {/* 3 Key Trust Features Row (Mobile: reflowed directly below hero-visual-wrap) */}
+            {/* Mobile Features Reflow */}
             <div className="hero-features hero-features-mobile">
               <div className="feature-item">
                 <div className="feature-icon-circle">
-                  <Leaf size={15} />
+                  <Leaf size={16} />
                 </div>
                 <div className="feature-text">
-                  {renderSafeText(t('hero.features.0.title'))}
+                  {isVi ? '100% Trái Cây Chọn Lọc • Chế Biến Lành Mạnh' : 'Selected Vietnamese Fruit • Wholesome Craft'}
                 </div>
               </div>
-
               <div className="feature-item">
                 <div className="feature-icon-circle">
-                  <MapPin size={15} />
+                  <MapPin size={16} />
                 </div>
                 <div className="feature-text">
-                  {renderSafeText(t('hero.features.1.title'))}
+                  {isVi ? 'Nhà Máy 25.000 m² • Vĩnh Bình, Đồng Tháp' : '25,000 m² Complex • Vinh Binh, Dong Thap'}
                 </div>
               </div>
-
               <div className="feature-item">
                 <div className="feature-icon-circle">
-                  <Globe size={15} />
+                  <Globe size={16} />
                 </div>
                 <div className="feature-text">
-                  {renderSafeText(t('hero.features.2.title'))}
+                  {isVi ? 'Đối Tác Hơn 15 Quốc Gia • Retail & OEM' : '15+ Countries • Retail, Food-Service & OEM'}
                 </div>
               </div>
             </div>
@@ -215,106 +365,246 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ======================================================================
-          SECTION 2 — ABOUT VINAXO (MATCHING ORIGINAL HTML 3-COLUMN GRID)
+          SECTION 4.3 — EDITORIAL CERTIFICATIONS & INTERNATIONAL COMPLIANCE (BROCHURE PAGE 4)
           ====================================================================== */}
-      <section className="about-section" id="about">
-        <div className="container">
-          <div className="about-grid">
-            {/* Column 1: Story & Mission */}
-            <div className="about-story">
-              <span className="section-label">{t('about.label')}</span>
-              <h2 className="section-title">
-                <span>{t('about.titleLine1')}</span><br />
-                <em>{t('about.titleLine2')}</em>
+      <section
+        className="certifications-showcase-section"
+        aria-label={isVi ? 'Chứng nhận và tiêu chuẩn quốc tế' : 'Certifications and international compliance'}
+      >
+        <img
+          src="/assets/illustrations-2026/palm-frond-2026.webp"
+          alt=""
+          aria-hidden="true"
+          className="tropical-deco cert-botanical-accent"
+        />
+
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+          <div className="cert-showcase-header">
+            <div className="cert-showcase-intro">
+              <span className="section-label">
+                {isVi ? 'CHẤT LƯỢNG & TUÂN THỦ QUỐC TẾ' : 'QUALITY & COMPLIANCE'}
+              </span>
+              <h2 className="cert-showcase-title">
+                {isVi
+                  ? 'CHỨNG NHẬN & TIÊU CHUẨN QUỐC TẾ'
+                  : 'CERTIFICATIONS & INTERNATIONAL COMPLIANCE'}
               </h2>
-              <p>{t('about.description')}</p>
-              <Link to="/about" className="btn btn-primary">
-                <span>{t('about.cta')}</span>
-                <ArrowRight size={16} />
-              </Link>
+              <div className="cert-heading-accent" aria-hidden="true" />
+              <p className="cert-showcase-desc">
+                {isVi
+                  ? 'Cam kết tuân thủ các hệ thống an toàn thực phẩm, quản lý chất lượng và đạo đức kinh doanh quốc tế, tạo nền tảng tin cậy cho đối tác toàn cầu.'
+                  : 'Committed to internationally recognised food safety, quality and ethical standards, supporting trusted partnerships across global markets.'}
+              </p>
             </div>
 
-            {/* Column 2: Vietnamese Landscape Visual */}
-            <div className="about-visual-card">
-              <picture>
-                <source srcSet="/assets/images/about_vietnam.webp" type="image/webp" />
-                <img
-                  src="/assets/images/about_vietnam.jpg"
-                  alt={isVi ? "Vùng nguyên liệu nông sản sông nước Việt Nam" : "Lush karst mountains and river valleys in Vietnam"}
-                  loading="lazy"
-                  width={512}
-                  height={300}
-                />
-              </picture>
-              <div className="about-visual-overlay">
-                <span className="overlay-tag">{t('about.imageOverlay.tag')}</span>
-                <h3 className="overlay-title">
-                  <span>{t('about.imageOverlay.line1')}</span><br />
-                  <em>{t('about.imageOverlay.line2')}</em>
-                </h3>
-                <div className="overlay-divider"></div>
-              </div>
-            </div>
+            <Link to="/quality#certificates" className="arrow-link cert-showcase-cta">
+              <span>{isVi ? 'Xem Bản Chụp Chứng Nhận & Kiểm Toán' : 'View Certificates & Audits'}</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
 
-            {/* Column 3: 2x2 Corporate Metrics Grid (Verified) */}
-            <div className="about-metrics">
-              <div className="metric-item">
-                <span className="metric-number">70%</span>
-                <span className="metric-label">{t('about.stats.0.label')}</span>
-                <span className="metric-note">{t('about.stats.0.note')}</span>
-                <span className="metric-source">{t('about.stats.0.source')}</span>
-              </div>
+          <div className="cert-showcase-grid">
+            {COMPLIANCE_ITEMS.map((item) => {
+              const classLabel = getComplianceClassLabel(item);
+              const hasDocumentScan = Boolean(item.certImageWebp);
+              const cardContent = (
+                <>
+                  <div className="cert-doc-frame">
+                    {hasDocumentScan ? (
+                      <picture>
+                        <source srcSet={item.certImageWebp} type="image/webp" />
+                        <img
+                          src={item.certImageJpg}
+                          alt={`${item.name} — VINAXO`}
+                          className="cert-doc-img"
+                          loading="lazy"
+                        />
+                      </picture>
+                    ) : item.isHalalPlaceholder ? (
+                      <div className="cert-typographic-mark is-halal" aria-hidden="true">
+                        <span className="cert-mark-primary">HALAL</span>
+                        <span className="cert-mark-sub">{isVi ? 'TIÊU CHUẨN' : 'COMPLIANCE'}</span>
+                      </div>
+                    ) : (
+                      <div className="cert-typographic-mark is-audit" aria-hidden="true">
+                        <span className="cert-mark-kicker">COSTCO</span>
+                        <span className="cert-mark-primary">GMP</span>
+                        <span className="cert-mark-sub">{isVi ? 'KIỂM TOÁN' : 'AUDIT'}</span>
+                      </div>
+                    )}
+                  </div>
 
-              <div className="metric-item">
-                <span className="metric-number">20%</span>
-                <span className="metric-label">{t('about.stats.1.label')}</span>
-                <span className="metric-note">{t('about.stats.1.note')}</span>
-                <span className="metric-source">{t('about.stats.1.source')}</span>
-              </div>
+                  <div className="cert-card-body">
+                    <div>
+                      <span className="cert-class-kicker">{classLabel}</span>
+                      <h3 className="cert-card-name">{item.name}</h3>
+                      <p className="cert-card-scope">{isVi ? item.scopeVi : item.scopeEn}</p>
+                    </div>
 
-              <div className="metric-item">
-                <span className="metric-number">1,000+</span>
-                <span className="metric-label">{t('about.stats.2.label')}</span>
-                <span className="metric-note">{t('about.stats.2.note')}</span>
-                <span className="metric-source">{t('about.stats.2.source')}</span>
-              </div>
+                    {hasDocumentScan && (
+                      <span className="cert-doc-action">
+                        <span>{isVi ? 'Xem bản chụp' : 'View document'}</span>
+                        <ArrowUpRight size={13} />
+                      </span>
+                    )}
+                  </div>
+                </>
+              );
 
-              <div className="metric-item">
-                <span className="metric-number">BRCGS</span>
-                <span className="metric-label">{t('about.stats.3.label')}</span>
-                <span className="metric-note">{t('about.stats.3.note')}</span>
-                <span className="metric-source">{t('about.stats.3.source')}</span>
-              </div>
-            </div>
+              if (hasDocumentScan) {
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setPreviewCert(item)}
+                    className="cert-showcase-card is-interactive"
+                    aria-label={isVi ? `Xem bản chụp ${item.name}` : `Preview ${item.name} document`}
+                  >
+                    {cardContent}
+                  </button>
+                );
+              }
+
+              return (
+                <div key={item.id} className="cert-showcase-card">
+                  {cardContent}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* ======================================================================
-          SECTION 3 — FEATURED PRODUCTS SHOWCASE
+          SECTION 4.4A — EDITORIAL TROPICAL PRODUCT RANGE (BROCHURE PAGE 2)
           ====================================================================== */}
-      <section className="products-section" id="products">
+      <section
+        className="product-range-showcase-section"
+        aria-label={isVi ? 'Bộ sưu tập sản phẩm VINAXO' : 'VINAXO Product Range'}
+      >
+        <img
+          src="/assets/illustrations-2026/guava-2026.webp"
+          alt=""
+          aria-hidden="true"
+          className="tropical-deco"
+          style={{ top: '28px', left: '-14px', width: '105px', opacity: 0.16 }}
+        />
+        <img
+          src="/assets/illustrations-2026/jackfruit-2026.webp"
+          alt=""
+          aria-hidden="true"
+          className="tropical-deco"
+          style={{ bottom: '28px', right: '-24px', width: '126px', opacity: 0.16 }}
+        />
+
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+          <div className="collection-header">
+            <div className="collection-header-intro">
+              <span className="section-label">
+                {isVi ? 'BỘ SƯU TẬP VINAXO' : 'VINAXO COLLECTION'}
+              </span>
+              <h2 className="collection-title">
+                {isVi ? (
+                  <>
+                    DÒNG SẢN PHẨM <em>CHỦ LỰC</em>
+                  </>
+                ) : (
+                  <>
+                    OUR PRODUCT <em>RANGE</em>
+                  </>
+                )}
+              </h2>
+              <p className="collection-desc">
+                {isVi
+                  ? 'Sáu dòng sản phẩm đặc trưng chế biến từ trái cây nhiệt đới thượng hạng Việt Nam phục vụ thị trường quốc tế.'
+                  : 'Six distinctive product lines, crafted from premium Vietnamese tropical fruit for international markets.'}
+              </p>
+            </div>
+
+            <Link to="/products" className="arrow-link collection-header-cta">
+              <span>{isVi ? 'Khám Phá Toàn Bộ Danh Mục' : 'Explore Full Product Catalog'}</span>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          {/* Row 1: Two Featured Image-Led Collection Anchors */}
+          <div className="collection-featured-grid">
+            {BROCHURE_CATEGORIES.slice(0, 2).map((line) => renderCollectionTile(line, 'featured'))}
+          </div>
+
+          {/* Row 2: Four Supporting Export & Value-Added Collections */}
+          <div className="collection-supporting-grid">
+            {BROCHURE_CATEGORIES.slice(2, 6).map((line) => renderCollectionTile(line, 'standard'))}
+          </div>
+
+          {/* Official Brochure Page 2 Bottom OEM Bar */}
+          <div className="oem-strip-banner">
+            <div>
+              <div
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '1.35rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.03em',
+                  color: 'var(--brand-orange)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {isVi ? 'GIA CÔNG OEM / ODM & NHÃN RIÊNG' : 'OEM / ODM & PRIVATE LABEL WELCOME'}
+              </div>
+              <div style={{ fontSize: '0.9rem', color: 'rgba(255, 247, 236, 0.9)', marginTop: '2px' }}>
+                {isVi
+                  ? 'Tùy chỉnh công thức, quy cách đóng gói và thiết kế nhãn mác theo yêu cầu.'
+                  : 'Custom recipes, packaging and labelling on request.'}
+              </div>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => onOpenQuote(isVi ? 'Gia công OEM / ODM & Nhãn riêng' : 'OEM / ODM & Private Label Inquiry')}
+              icon={<ArrowRight size={15} />}
+            >
+              {isVi ? 'Yêu Cầu Gia Công OEM' : 'Request OEM Quote'}
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ======================================================================
+          SECTION 4.4B — PRESERVED VERIFIED 12-PRODUCT EXPORT CATALOG PREVIEW
+          ====================================================================== */}
+      <section className="section section-white" style={{ borderTop: '1px solid var(--soft-border)' }}>
         <div className="container">
           <div className="section-header-bar">
             <div>
-              <span className="section-label">{t('productsSection.label')}</span>
-              <h2 className="section-title">
-                <span>{t('productsSection.titleLine1')}</span><br />
-                <em>{t('productsSection.titleLine2')}</em>
+              <span className="section-label">
+                {isVi ? 'DANH MỤC 12 SẢN PHẨM XUẤT KHẨU' : 'EXPORT SKU CATALOG'}
+              </span>
+              <h2 className="section-title" style={{ marginBottom: '10px' }}>
+                {isVi ? (
+                  <>
+                    SẢN PHẨM TIÊU BIỂU <em>CHUẨN B2B</em>
+                  </>
+                ) : (
+                  <>
+                    FEATURED EXPORT <em>FRUIT &amp; NUT SKUS</em>
+                  </>
+                )}
               </h2>
-              <p className="section-desc" style={{ maxWidth: '580px' }}>
-                {t('productsSection.description')}
+              <p className="section-desc">
+                {isVi
+                  ? 'Các sản phẩm trái cây sấy dẻo, trái cây sấy giòn và hạt dinh dưỡng chủ lực trong danh mục 12 mặt hàng chính thức của VINAXO.'
+                  : 'Core soft-dried fruits, crunchy fruit chips, and premium nuts & seeds from our verified 12-product B2B export catalog.'}
               </p>
             </div>
             <div>
-              <Link to="/products" className="arrow-link">
-                <span>{t('productsSection.viewAll')}</span>
-                <ArrowRight size={16} />
+              <Link to="/products" className="btn btn-chocolate btn-sm">
+                <span>{isVi ? 'Xem toàn bộ 12 sản phẩm' : 'View All 12 Products'}</span>
+                <ArrowRight size={15} />
               </Link>
             </div>
           </div>
 
-          {/* 5 Dynamic Product Cards (Rendered 1:1) */}
           <div className="products-grid">
             {featuredProducts.map((p) => (
               <ProductCard
@@ -329,75 +619,515 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ======================================================================
-          SECTION 4 & 5 — QUALITY & GLOBAL MARKET (ORIGINAL 2-COLUMN SECTION)
+          SECTION 4.5 — ABOUT VINAXO EDITORIAL PROFILE & CAPABILITIES (BROCHURE PAGE 3)
           ====================================================================== */}
-      <section className="quality-global-section">
+      <section className="about-editorial-section" id="about">
         <div className="container">
-          <div className="quality-global-grid">
-            {/* Left Column: Quality Assurance Standards */}
-            <div className="quality-col" id="quality">
-              <span className="section-label">{t('qualitySection.label')}</span>
-              <h2 className="section-title">
-                <span>{t('qualitySection.titleLine1')}</span><br />
-                <span>{t('qualitySection.titleLine2')}</span>
+          {/* AREA A — Company Introduction & Authentic Factory Photo */}
+          <div className="about-intro-grid">
+            <div className="about-intro-copy">
+              <span className="section-label">
+                {isVi ? 'CHÚNG TÔI LÀ AI' : 'WHO WE ARE'}
+              </span>
+
+              <h2 className="about-editorial-heading">
+                {isVi ? (
+                  <>
+                    BẮT NGUỒN TỪ VIỆT NAM.
+                    <br />
+                    <span className="about-heading-accent">VƯƠN TẦM THẾ GIỚI.</span>
+                  </>
+                ) : (
+                  <>
+                    ROOTED IN VIETNAM.
+                    <br />
+                    <span className="about-heading-accent">CRAFTED FOR THE WORLD.</span>
+                  </>
+                )}
               </h2>
-              <p className="section-desc">{t('qualitySection.description')}</p>
 
-              {/* Verified Certification Badges */}
-              <div className="certifications-list">
-                {/* BRCGS Grade B Badge */}
-                <div className="cert-badge cert-brcgs" title="BRCGS Food Safety Grade B Certified Facility">
-                  <span className="cert-main">BRCGS</span>
-                  <span className="cert-sub">{t('qualitySection.certifications.0.subtitle')}</span>
-                  <span className="cert-extra">{t('qualitySection.certifications.0.status')}</span>
-                </div>
+              <p className="about-editorial-lead">
+                {isVi
+                  ? 'Công ty TNHH VINAXO là nhà sản xuất trái cây sấy nhiệt đới và đồ ăn nhẹ lành mạnh tại Việt Nam. Chúng tôi kết hợp nguồn trái cây nhiệt đới tuyển chọn cùng các chuẩn mực sản xuất và an toàn thực phẩm quốc tế để đồng hành cùng đối tác bán lẻ, dịch vụ ẩm thực và nhãn hàng riêng toàn cầu.'
+                  : 'Vinaxo Co., Ltd. is a Vietnamese manufacturer of premium dried tropical fruit and wholesome snacks. We combine carefully selected Vietnamese fruit with internationally recognised food safety and manufacturing standards to serve retail, food-service and private-label partners worldwide.'}
+              </p>
 
-                {/* OCOP 3-Star Badge */}
-                <div className="cert-badge cert-ocop" title="OCOP 3-Star Provincial Produce Certified">
-                  <span className="cert-main">OCOP</span>
-                  <span className="cert-sub">{t('qualitySection.certifications.1.subtitle')}</span>
-                  <span className="cert-extra">{t('qualitySection.certifications.1.status')}</span>
-                </div>
+              <Link to="/about" className="about-editorial-cta">
+                <span>{isVi ? 'Tìm Hiểu Về Công Ty' : 'Discover Our Company'}</span>
+                <ArrowRight size={17} />
+              </Link>
+            </div>
 
-                {/* BSCI & ESG Social Compliance */}
-                <div className="cert-badge cert-bsci" title="BSCI Social Compliance & ESG Sustainable Practices">
-                  <span className="cert-main">BSCI / ESG</span>
-                  <span className="cert-sub">{t('qualitySection.certifications.2.subtitle')}</span>
-                  <span className="cert-sub" style={{ fontSize: '0.4375rem', color: '#2563EB' }}>
-                    {t('qualitySection.certifications.2.status')}
-                  </span>
-                </div>
-
-                {/* Clean Label 100% Natural Badge */}
-                <div className="cert-badge cert-clean" title="100% Natural Tropical Dried Fruit - Clean Label">
-                  <span className="cert-main">100%</span>
-                  <span className="cert-sub">{t('qualitySection.certifications.3.subtitle')}</span>
-                </div>
+            <div className="about-intro-media">
+              <div className="about-factory-frame">
+                <picture>
+                  <source
+                    srcSet="/assets/images/factory/factory-quality-sorting.webp"
+                    type="image/webp"
+                  />
+                  <img
+                    src="/assets/images/factory/factory-quality-sorting.jpg"
+                    alt={
+                      isVi
+                        ? 'Đội ngũ công nhân VINAXO kiểm tra chất lượng và định lượng xoài sấy trên bàn inox tại nhà máy ở Đồng Tháp'
+                        : 'Vinaxo production team weighing and inspecting dried tropical mango slices on stainless steel tables inside the Dong Thap factory'
+                    }
+                    className="about-factory-img"
+                    loading="lazy"
+                  />
+                </picture>
               </div>
+            </div>
+          </div>
 
-              <p className="quality-notice-text">{t('qualitySection.notice')}</p>
+          {/* AREA B — Minimalist Manufacturing Capabilities Strip */}
+          <div
+            className="about-capabilities-strip"
+            aria-label={isVi ? 'Năng lực sản xuất nhà máy VINAXO' : 'Vinaxo manufacturing capabilities'}
+          >
+            <div className="about-capabilities-grid">
+              {manufacturingCapabilities.map((item, idx) => (
+                <div key={idx} className="about-capability-item">
+                  <span className="capability-accent-rule" aria-hidden="true" />
+                  <div className="capability-value">
+                    {isVi ? item.valueVi : item.valueEn}
+                  </div>
+                  <div className="capability-label">
+                    {isVi ? item.labelVi : item.labelEn}
+                  </div>
+                  <div className="capability-detail">
+                    {isVi ? item.detailVi : item.detailEn}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-              <div style={{ paddingTop: '8px' }}>
-                <Link to="/quality" className="arrow-link">
-                  <span>{t('qualitySection.cta')}</span>
-                  <ArrowRight size={16} />
-                </Link>
+          {/* AREA C — Manufacturing Storytelling Transition */}
+          <div className="about-story-bridge">
+            <h3 className="about-story-heading">
+              {isVi ? 'CHẤT LƯỢNG BẮT ĐẦU TỪ NGUỒN NGUYÊN LIỆU' : 'QUALITY BEGINS AT THE SOURCE'}
+            </h3>
+            <p className="about-story-copy">
+              {isVi
+                ? 'Từ khâu tuyển chọn trái cây tươi đạt chuẩn đến mẫu duyệt trước khi sản xuất và quy trình vận hành được chứng nhận quốc tế, chất lượng luôn dẫn dắt mọi công đoạn tại nhà máy VINAXO.'
+                : 'From carefully selected ingredients to approved production samples and certified processes, quality guides every stage of our manufacturing workflow.'}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ======================================================================
+          SECTION 4.6 — AUTHENTIC FACTORY SHOWCASE (1 FEATURED + 3 SUPPORTING)
+          ====================================================================== */}
+      <section className="section section-white" style={{ borderTop: '1px solid var(--soft-border)' }}>
+        <div className="container">
+          <div className="section-header-bar">
+            <div>
+              <span className="section-label">
+                {isVi ? 'HÌNH ẢNH NHÀ MÁY THỰC TẾ' : 'MANUFACTURING CREDIBILITY'}
+              </span>
+              <h2 className="section-title" style={{ marginBottom: '10px' }}>
+                {isVi ? (
+                  <>
+                    DÂY CHUYỀN CHẾ BIẾN &amp; <em>KIỂM SOÁT VỆ SINH</em>
+                  </>
+                ) : (
+                  <>
+                    INSIDE THE VINAXO <em>PROCESSING FACILITY</em>
+                  </>
+                )}
+              </h2>
+              <p className="section-desc">
+                {isVi
+                  ? 'Hình ảnh vận hành thực tế tại phân xưởng VINAXO với quy trình khép kín đạt chuẩn an toàn thực phẩm, khu sơ chế inox 304 và dây chuyền đóng gói nhãn riêng.'
+                  : 'Authentic photography from Vinaxo’s processing floors highlighting cleanroom hygiene uniforms, calibrated batch weighing, and export-ready retail pouch packing lines.'}
+              </p>
+            </div>
+            <div>
+              <Link to="/quality" className="arrow-link">
+                <span>{isVi ? 'Xem quy trình sản xuất 6 bước' : 'Explore 6-Step Process'}</span>
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+
+          <div className="factory-showcase-grid">
+            {/* Large Featured Factory Image */}
+            <div className="factory-featured-card">
+              <picture style={{ display: 'block', width: '100%', height: '100%' }}>
+                <source srcSet={featuredFactory.imageWebp} type="image/webp" />
+                <img
+                  src={featuredFactory.imageJpg}
+                  alt={isVi ? featuredFactory.captionVi : featuredFactory.captionEn}
+                  loading="lazy"
+                />
+              </picture>
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background:
+                    'linear-gradient(180deg, rgba(41, 24, 16, 0.05) 35%, rgba(41, 24, 16, 0.88) 100%)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-end',
+                  padding: '28px',
+                }}
+              >
+                <span
+                  style={{
+                    display: 'inline-block',
+                    alignSelf: 'flex-start',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.1em',
+                    color: 'var(--dark-chocolate)',
+                    backgroundColor: 'var(--brand-orange)',
+                    padding: '4px 12px',
+                    borderRadius: 'var(--radius-pill)',
+                    marginBottom: '10px',
+                  }}
+                >
+                  {isVi ? featuredFactory.tagVi : featuredFactory.tagEn}
+                </span>
+                <p
+                  style={{
+                    color: '#FFFFFF',
+                    fontSize: '0.96rem',
+                    lineHeight: 1.55,
+                    margin: 0,
+                    maxWidth: '520px',
+                  }}
+                >
+                  {isVi ? featuredFactory.captionVi : featuredFactory.captionEn}
+                </p>
               </div>
             </div>
 
-            {/* Right Column: Global Market & SVG World Map */}
-            <div className="global-col" id="markets">
+            {/* 3 Supporting Factory Images */}
+            <div className="factory-supporting-stack">
+              {supportingFactory.map((item) => (
+                <div key={item.id} className="factory-supporting-card">
+                  <div style={{ overflow: 'hidden', position: 'relative' }}>
+                    <picture style={{ display: 'block', width: '100%', height: '100%' }}>
+                      <source srcSet={item.imageWebp} type="image/webp" />
+                      <img
+                        src={item.imageJpg}
+                        alt={isVi ? item.captionVi : item.captionEn}
+                        loading="lazy"
+                      />
+                    </picture>
+                  </div>
+                  <div
+                    style={{
+                      padding: '16px 18px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 800,
+                        letterSpacing: '0.1em',
+                        color: 'var(--vinaxo-red)',
+                        textTransform: 'uppercase',
+                        marginBottom: '4px',
+                      }}
+                    >
+                      {isVi ? item.tagVi : item.tagEn}
+                    </span>
+                    <p
+                      style={{
+                        fontSize: '0.84rem',
+                        color: 'var(--color-body)',
+                        lineHeight: 1.45,
+                        margin: 0,
+                      }}
+                    >
+                      {isVi ? item.captionVi : item.captionEn}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ======================================================================
+          SECTION 4.7 — QUALITY PROMISE (3 STRUCTURED CARDS — BROCHURE PAGE 3)
+          ====================================================================== */}
+      <section className="section section-cream" style={{ borderTop: '1px solid var(--soft-border)' }}>
+        <div className="container">
+          <div className="text-center" style={{ maxWidth: '760px', margin: '0 auto 44px auto' }}>
+            <span className="section-label">
+              {isVi ? 'CAM KẾT CHẤT LƯỢNG B2B' : 'QUALITY PROMISE'}
+            </span>
+            <h2 className="section-title">
+              {isVi ? (
+                <>
+                  3 NGUYÊN TẮC BẢO CHỨNG <em>UY TÍN XUẤT KHẨU</em>
+                </>
+              ) : (
+                <>
+                  OUR THREE-PILLAR <em>QUALITY COMMITMENT</em>
+                </>
+              )}
+            </h2>
+            <p className="section-desc section-desc-center">
+              {isVi
+                ? 'Mỗi đơn hàng xuất khẩu của VINAXO đều đi kèm quy trình kiểm soát nghiêm ngặt từ mẫu thử đầu tiên tới giám định độc lập trước khi xuất cảng.'
+                : 'Every export shipment follows a disciplined verification protocol built around buyer sign-off, international compliance, and third-party accountability.'}
+            </p>
+          </div>
+
+          <div className="quality-promise-grid">
+            {QUALITY_PROMISE_CARDS.map((card) => (
+              <div key={card.number} className="quality-promise-card">
+                <div className="promise-number">{card.number}</div>
+                <h3 className="promise-title">
+                  {isVi ? card.titleVi : card.titleEn}
+                </h3>
+                <p className="promise-desc">
+                  {isVi ? card.descVi : card.descEn}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ======================================================================
+          SECTION 4.8 — OEM / ODM & PRIVATE LABEL DARK CHOCOLATE FEATURE PANEL
+          ====================================================================== */}
+      <section className="section section-white" style={{ borderTop: '1px solid var(--soft-border)' }}>
+        <div className="container">
+          <div className="oem-feature-panel">
+            {/* Subtle accent glow */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '-60px',
+                right: '-60px',
+                width: '320px',
+                height: '320px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(244, 168, 58, 0.22) 0%, transparent 70%)',
+                pointerEvents: 'none',
+              }}
+            />
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1.2fr 0.8fr',
+                gap: '40px',
+                alignItems: 'center',
+                position: 'relative',
+                zIndex: 2,
+              }}
+              className="grid-mobile-1"
+            >
+              <div>
+                <span className="section-eyebrow section-eyebrow-light">
+                  {isVi ? 'GIA CÔNG OEM / ODM & NHÃN RIÊNG' : 'OEM / ODM & PRIVATE LABEL'}
+                </span>
+                <h2
+                  className="section-title section-title-light"
+                  style={{ marginBottom: '14px' }}
+                >
+                  {isVi ? (
+                    <>
+                      ĐỐI TÁC SẢN XUẤT <em>NHÃN RIÊNG CHUYÊN NGHIỆP</em>
+                    </>
+                  ) : (
+                    <>
+                      CUSTOM PRIVATE LABEL{' '}
+                      <span style={{ color: 'var(--brand-orange)' }}>
+                        SOLUTIONS
+                      </span>
+                    </>
+                  )}
+                </h2>
+                <p
+                  style={{
+                    fontSize: '0.98rem',
+                    color: 'rgba(255, 247, 236, 0.88)',
+                    lineHeight: 1.65,
+                    marginBottom: '24px',
+                    maxWidth: '600px',
+                  }}
+                >
+                  {isVi
+                    ? 'VINAXO đồng hành cùng các chuỗi siêu thị, nhà nhập khẩu và thương hiệu thực phẩm quốc tế từ khâu nghiên cứu công thức, thiết kế bao bì đến xuất khẩu container hoàn chỉnh.'
+                    : 'Partner with an experienced tropical fruit manufacturer equipped for custom flavor formulation, retail branding, flexible bulk-to-pouch formats, and long-term export supply.'}
+                </p>
+
+                <ul
+                  style={{
+                    listStyle: 'none',
+                    padding: 0,
+                    margin: '0 0 28px 0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px',
+                  }}
+                >
+                  {oemCapabilities.map((item, i) => (
+                    <li
+                      key={i}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '10px',
+                        fontSize: '0.92rem',
+                        color: 'rgba(255, 247, 236, 0.94)',
+                      }}
+                    >
+                      <CheckCircle2
+                        size={18}
+                        style={{ color: 'var(--brand-orange)', flexShrink: 0, marginTop: '2px' }}
+                      />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    onClick={() =>
+                      onOpenQuote(
+                        isVi
+                          ? 'Dự án gia công nhãn riêng OEM / ODM'
+                          : 'OEM / ODM Private Label Project'
+                      )
+                    }
+                    icon={<ArrowRight size={17} />}
+                  >
+                    {isVi
+                      ? 'Thảo Luận Dự Án Nhãn Riêng'
+                      : 'Discuss Your Private Label Project'}
+                  </Button>
+                  <Link to="/contact">
+                    <Button variant="outline-white" size="lg">
+                      {isVi ? 'Liên Hệ Bộ Phận Xuất Khẩu' : 'Contact Export Desk'}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right Packaging & Capabilities Card Grid */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '18px',
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: 'rgba(255, 247, 236, 0.08)',
+                    border: '1px solid rgba(244, 168, 58, 0.28)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '20px 18px',
+                  }}
+                >
+                  <Sparkles size={22} color="#F4A83A" style={{ marginBottom: '10px' }} />
+                  <h4 style={{ color: '#FFFFFF', fontSize: '1.05rem', marginBottom: '6px' }}>
+                    {isVi ? 'Công Thức Riêng' : 'Custom Recipes'}
+                  </h4>
+                  <p style={{ fontSize: '0.8rem', color: 'rgba(255, 247, 236, 0.78)', margin: 0 }}>
+                    {isVi
+                      ? 'Tùy chỉnh độ ẩm, lát cắt, tẩm mật ong hoặc phủ sô-cô-la.'
+                      : 'Tailored Brix sweetness, cut style, honey infusion, or cocoa dip.'}
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    backgroundColor: 'rgba(255, 247, 236, 0.08)',
+                    border: '1px solid rgba(244, 168, 58, 0.28)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '20px 18px',
+                  }}
+                >
+                  <PackageCheck size={22} color="#F4A83A" style={{ marginBottom: '10px' }} />
+                  <h4 style={{ color: '#FFFFFF', fontSize: '1.05rem', marginBottom: '6px' }}>
+                    {isVi ? 'Bao Bì Đóng Gói' : 'Custom Packaging'}
+                  </h4>
+                  <p style={{ fontSize: '0.8rem', color: 'rgba(255, 247, 236, 0.78)', margin: 0 }}>
+                    {isVi
+                      ? 'Túi zip bán lẻ, hộp quà hoặc thùng carton xá công nghiệp.'
+                      : 'Retail pouches, upright bags, canisters, and 5–20kg bulk cartons.'}
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    backgroundColor: 'rgba(255, 247, 236, 0.08)',
+                    border: '1px solid rgba(244, 168, 58, 0.28)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '20px 18px',
+                  }}
+                >
+                  <Award size={22} color="#F4A83A" style={{ marginBottom: '10px' }} />
+                  <h4 style={{ color: '#FFFFFF', fontSize: '1.05rem', marginBottom: '6px' }}>
+                    {isVi ? 'Nhãn Riêng OEM' : 'Private Label'}
+                  </h4>
+                  <p style={{ fontSize: '0.8rem', color: 'rgba(255, 247, 236, 0.78)', margin: 0 }}>
+                    {isVi
+                      ? 'Sản xuất mang thương hiệu của chuỗi siêu thị và đối tác phân phối.'
+                      : 'Contract production ready for supermarket & global retail brands.'}
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    backgroundColor: 'rgba(255, 247, 236, 0.08)',
+                    border: '1px solid rgba(244, 168, 58, 0.28)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '20px 18px',
+                  }}
+                >
+                  <Factory size={22} color="#F4A83A" style={{ marginBottom: '10px' }} />
+                  <h4 style={{ color: '#FFFFFF', fontSize: '1.05rem', marginBottom: '6px' }}>
+                    {isVi ? 'Hợp Tác Toàn Cầu' : 'Global Export'}
+                  </h4>
+                  <p style={{ fontSize: '0.8rem', color: 'rgba(255, 247, 236, 0.78)', margin: 0 }}>
+                    {isVi
+                      ? 'Giao thương minh bạch tới Mỹ (~70%), EU (~20%), Nga & Đông Á.'
+                      : 'Direct FCL/LCL export supply supporting US, EU, Russia & East Asia.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ======================================================================
+          PRESERVED FEATURE: GLOBAL MARKET MAP & VERIFIED PRESS ARCHIVE
+          ====================================================================== */}
+      <section className="section section-cream" id="markets" style={{ borderTop: '1px solid var(--soft-border)' }}>
+        <div className="container">
+          <div className="quality-global-grid">
+            {/* Left Column: Global Market Network Summary */}
+            <div>
               <span className="section-label">{t('globalSection.label')}</span>
               <h2 className="section-title">
-                <span>{t('globalSection.titleLine1')}</span><br />
-                <span>{t('globalSection.titleLine2')}</span>
+                <span>{t('globalSection.titleLine1')}</span>
+                <br />
+                <em>{t('globalSection.titleLine2')}</em>
               </h2>
-              <p className="section-desc">{t('globalSection.description')}</p>
+              <p className="section-desc" style={{ marginBottom: '24px' }}>
+                {t('globalSection.description')}
+              </p>
 
-              {/* Scalable SVG World Map with radiating routes & stats badge */}
-              <WorldMapSvg variant="compact" interactive={true} />
-
-              {/* Verified Key Export Markets Grid (2x2) */}
               <div className="market-pills-grid">
                 <div className="market-pill-item">
                   <div className="market-pill-header">
@@ -432,27 +1162,30 @@ export const Home: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{ paddingTop: '14px' }}>
+              <div style={{ paddingTop: '20px' }}>
                 <Link to="/markets" className="arrow-link">
                   <span>{t('globalSection.cta')}</span>
                   <ArrowRight size={16} />
                 </Link>
               </div>
             </div>
+
+            {/* Right Column: Re-Themed Interactive SVG Export Map */}
+            <div>
+              <WorldMapSvg variant="compact" interactive={true} />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ======================================================================
-          SECTION 6 — LATEST VERIFIED PRESS & MEDIA
-          ====================================================================== */}
-      <section className="section section-white" id="news">
+      {/* Press & News Showcase */}
+      <section className="section section-white" id="news" style={{ borderTop: '1px solid var(--soft-border)' }}>
         <div className="container">
           <div className="section-header-bar">
             <div>
               <span className="section-label">{t('newsSection.label')}</span>
-              <h2 className="section-title">
-                <span>{t('newsSection.titleLine1')}</span><br />
+              <h2 className="section-title" style={{ marginBottom: '10px' }}>
+                <span>{t('newsSection.titleLine1')}</span>{' '}
                 <em>{t('newsSection.titleLine2')}</em>
               </h2>
               <p className="section-desc" style={{ maxWidth: '580px' }}>
@@ -467,13 +1200,12 @@ export const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* 3 Featured News Cards */}
           <div
             className="grid-3"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '24px',
+              gap: '28px',
             }}
           >
             {featuredNews.map((n) => (
@@ -483,112 +1215,87 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* ======================================================================
-          SECTION 7 — CONTACT CTA BANNER
-          ====================================================================== */}
-      <section className="section" style={{ paddingTop: '20px', paddingBottom: 'var(--section-space)' }}>
-        <div className="container">
-          <div
-            className="home-cta-card"
-            style={{
-              position: 'relative',
-              borderRadius: 'var(--radius-xl)',
-              overflow: 'hidden',
-              padding: 'clamp(48px, 6vw, 80px) clamp(24px, 5vw, 64px)',
-              backgroundColor: 'var(--forest-green)',
-              color: '#FFFFFF',
-              boxShadow: 'var(--shadow-xl)',
-              textAlign: 'center',
-            }}
-          >
-            {/* Background Landscape Picture */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                opacity: 0.22,
-                mixBlendMode: 'overlay',
-              }}
-            >
-              <picture>
-                <source srcSet="/assets/images/cta_landscape.webp" type="image/webp" />
-                <img
-                  src="/assets/images/cta_landscape.jpg"
-                  alt="Mekong Delta Landscape"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </picture>
-            </div>
-
-            <div style={{ position: 'relative', zIndex: 2, maxWidth: '720px', margin: '0 auto' }}>
-              <span className="section-eyebrow section-eyebrow-light">
-                {isVi ? 'HỢP TÁC XUẤT KHẨU & OEM B2B' : 'B2B PARTNERSHIP & EXPORT'}
-              </span>
-
-              <h2
-                className="title-serif"
-                style={{
-                  fontSize: 'clamp(2rem, 3.8vw, 3.2rem)',
-                  color: '#FFFFFF',
-                  fontWeight: 700,
-                  lineHeight: 1.2,
-                  marginTop: '12px',
-                  marginBottom: '18px',
-                }}
-              >
-                <span>{isVi ? 'Đưa Tinh Hoa Nông Sản Việt' : "Let's Bring Vietnamese Goodness"}</span>
-                <br />
-                <em style={{ color: '#A3E6B8' }}>{isVi ? 'Vươn Tầm Thế Giới' : 'to the Global Market'}</em>
-              </h2>
-
-              <p
-                style={{
-                  fontSize: 'clamp(0.95rem, 1.1vw, 1.1rem)',
-                  lineHeight: 1.7,
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  marginBottom: '36px',
-                }}
-              >
-                {isVi
-                  ? 'Nhà máy chế biến 4.000 m² tại TT. Vĩnh Bình, H. Gò Công Tây, tỉnh Tiền Giang sẵn sàng cung ứng sản phẩm sấy dẻo xuất khẩu chất lượng cao và gia công nhãn riêng OEM cho đối tác toàn cầu.'
-                  : 'Our 4,000 m² processing facility in Go Cong Tây, Tien Giang is primed to deliver export-grade dried fruits and OEM private labeling for global buyers.'}
-              </p>
-
-              <div
-                className="home-cta-actions"
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: '14px',
-                  flexWrap: 'wrap',
-                }}
-              >
-                <Button
-                  variant="white"
-                  size="lg"
-                  onClick={() => onOpenQuote()}
-                  icon={<ArrowRight size={16} />}
-                >
-                  {isVi ? 'Yêu Cầu Báo Giá Ngay' : 'Request a Quote Now'}
-                </Button>
-
-                <Link to="/contact">
-                  <Button variant="outline-white" size="lg">
-                    {isVi ? 'Liên Hệ Ban Lãnh Đạo' : 'Contact Leadership'}
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Product Detail Modal */}
+      {/* Individual Product Detail Modal */}
       <ProductDetailModal
         product={selectedProduct}
         onClose={() => setSelectedProduct(null)}
         onRequestQuote={(productName) => onOpenQuote(productName)}
       />
+
+      {/* Scanned Certificate High-Res Document Preview */}
+      <CertificatePreviewModal
+        certificate={previewCert}
+        isVi={isVi}
+        onClose={() => setPreviewCert(null)}
+      />
+
+      {/* Brochure Product Line Detail Modal (for Honey-Infused & Chocolate-Dipped OEM lines) */}
+      {selectedLine && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setSelectedLine(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={isVi ? selectedLine.titleVi : selectedLine.titleEn}
+        >
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '640px', padding: '0', overflow: 'hidden' }}
+          >
+            <div style={{ position: 'relative', aspectRatio: '16/9', backgroundColor: 'var(--soft-beige)' }}>
+              <img
+                src={selectedLine.imageWebp}
+                alt={isVi ? selectedLine.titleVi : selectedLine.titleEn}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
+            <div style={{ padding: '28px' }}>
+              <span className="section-label" style={{ marginBottom: '6px' }}>
+                {isVi ? 'DÒNG CHẾ BIẾN OEM / ODM' : 'VALUE-ADDED OEM / ODM LINE'}
+              </span>
+              <h3
+                className="title-display"
+                style={{
+                  fontSize: '1.75rem',
+                  color: 'var(--dark-chocolate)',
+                  textTransform: 'uppercase',
+                  marginBottom: '12px',
+                }}
+              >
+                {isVi ? selectedLine.titleVi : selectedLine.titleEn}
+              </h3>
+              <p style={{ fontSize: '0.95rem', color: 'var(--color-body)', lineHeight: 1.65, marginBottom: '16px' }}>
+                {isVi ? selectedLine.descVi : selectedLine.descEn}
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
+                {(isVi ? selectedLine.highlightsVi : selectedLine.highlightsEn).map((tag, i) => (
+                  <span key={i} className="badge badge-gold">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', flexWrap: 'wrap' }}>
+                <Button variant="secondary" size="sm" onClick={() => setSelectedLine(null)}>
+                  {isVi ? 'Đóng' : 'Close'}
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  icon={<ArrowRight size={14} />}
+                  onClick={() => {
+                    const lineTitle = isVi ? selectedLine.titleVi : selectedLine.titleEn;
+                    setSelectedLine(null);
+                    onOpenQuote(lineTitle);
+                  }}
+                >
+                  {isVi ? 'Yêu Cầu Báo Giá & Mẫu Thử' : 'Request Line Samples & Quote'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

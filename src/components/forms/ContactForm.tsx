@@ -30,23 +30,37 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '' })
   const productOptions = isVi
     ? [
         '-- Chọn sản phẩm hoặc dịch vụ B2B --',
-        'Xoài sấy dẻo tự nhiên (Dried Mango) - OCOP 3 Sao',
-        'Mít sấy dẻo & sấy chân không (Dried Jackfruit) - OCOP 3 Sao',
-        'Thanh long sấy dẻo ruột đỏ (Dried Dragon Fruit) - OCOP 3 Sao',
-        'Thơm (Dứa) sấy dẻo Tân Phước (Dried Pineapple)',
-        'Chuối sấy dẻo tự nhiên (Dried Banana)',
-        'Trái cây nhúng Sô-cô-la & Thanh năng lượng xuất khẩu EU',
-        'Gia công OEM nhãn riêng / Đóng gói xuất khẩu theo yêu cầu',
+        '01. Thanh long ruột đỏ sấy dẻo (Soft Dried Red Dragonfruit)',
+        '02. Chuối sấy giòn (Banana Chips)',
+        '03. Hạt điều (Cashew)',
+        '04. Mít sấy dẻo (Soft Dried Jackfruit)',
+        '05. Xoài sấy giòn (Mango Chips)',
+        '06. Hạt mắc ca (Macadamia Nuts)',
+        '07. Xoài sấy dẻo (Soft Dried Mango)',
+        '08. Mít sấy giòn (Jackfruit Chips)',
+        '09. Hạt óc chó (Walnuts)',
+        '10. Đu đủ sấy dẻo (Soft Dried Papaya)',
+        '11. Trái cây và rau củ sấy thập cẩm (Mix Fruits & Vegetables)',
+        '12. Hạt sen (Lotus Seeds)',
+        'Dòng giá trị gia tăng: Trái cây sấy mật ong / Sô-cô-la / Granola / Viên trái cây hạt',
+        'Gia công OEM nhãn riêng / Đóng gói xuất khẩu (MOQ từ 200 kg)',
       ]
     : [
         '-- Select Product or B2B Requirement --',
-        'Naturally Soft-Dried Mango (3-Star OCOP)',
-        'Soft-Dried & Vacuum Jackfruit (3-Star OCOP)',
-        'Naturally Soft-Dried Dragon Fruit (3-Star OCOP)',
-        'Tan Phuoc Soft-Dried Pineapple',
-        'Naturally Soft-Dried Banana',
-        'Chocolate-Coated Fruit & EU Energy Bar',
-        'OEM Private Label / Export Packaging Service',
+        '01. Soft Dried Red Dragonfruit',
+        '02. Banana Chips',
+        '03. Cashew',
+        '04. Soft Dried Jackfruit',
+        '05. Mango Chips',
+        '06. Macadamia Nuts',
+        '07. Soft Dried Mango',
+        '08. Jackfruit Chips',
+        '09. Walnuts',
+        '10. Soft Dried Papaya',
+        '11. Mix Fruits and Vegetables',
+        '12. Lotus Seeds',
+        'Brochure Value-Added Lines: Honey-Infused / Chocolate-Dipped / Fruit & Nut Balls / Granola',
+        'OEM / ODM Private Label Formulation & Packaging (MOQ from 200 kg)',
       ];
 
   const handleChange = (
@@ -105,10 +119,10 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '' })
           <CheckCircle2 size={36} />
         </div>
         <h3
-          className="title-serif"
+          className="title-display"
           style={{
             fontSize: '1.8rem',
-            color: 'var(--forest-green)',
+            color: 'var(--dark-chocolate)',
             marginBottom: '12px',
           }}
         >
@@ -161,9 +175,9 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '' })
     >
       <div style={{ marginBottom: '24px' }}>
         <h3
-          className="title-serif"
+          className="title-display"
           style={{
-            fontSize: '1.5rem',
+            fontSize: '1.55rem',
             color: 'var(--color-heading)',
             marginBottom: '8px',
           }}
@@ -260,7 +274,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '' })
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder="+84 907 494 177"
+            placeholder="(+84) 984 815 016"
             className="form-input"
             required
           />
@@ -367,8 +381,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '' })
           <ShieldCheck size={18} color="var(--primary-green)" />
           <span>
             {isVi
-              ? 'Thông tin bảo mật • Nhà máy 4.000 m² tại TT. Vĩnh Bình, Gò Công Tây'
-              : 'Direct from Factory • 4,000 m² facility in Go Cong Tay, Tien Giang'}
+              ? 'Thông tin bảo mật • Tổ hợp nhà máy 25.000 m² tại Xã Vĩnh Bình, Tỉnh Đồng Tháp'
+              : 'Direct from Factory • 25,000 m² facility in Vinh Binh Commune, Dong Thap Province'}
           </span>
         </div>
 

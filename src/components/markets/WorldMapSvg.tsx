@@ -68,7 +68,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            {/* Subtle Grid Pattern from original HTML */}
+            {/* Subtle Grid Pattern */}
             <pattern
               id="vinaxoMapGrid"
               width="48"
@@ -78,14 +78,14 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
               <path
                 d="M 48 0 L 0 0 0 48"
                 fill="none"
-                stroke="#DDEAE1"
+                stroke="#EADFCC"
                 strokeWidth="0.5"
                 strokeDasharray="2,4"
                 opacity="0.7"
               />
             </pattern>
 
-            {/* Drop Shadow Filter for Badges from original HTML */}
+            {/* Drop Shadow Filter for Badges */}
             <filter
               id="vinaxoMarkerShadow"
               x="-20%"
@@ -97,12 +97,12 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 dx="0"
                 dy="2"
                 stdDeviation="2.5"
-                floodColor="#0E3722"
-                floodOpacity="0.14"
+                floodColor="#3A2417"
+                floodOpacity="0.16"
               />
             </filter>
 
-            {/* Hub Glow Filter from original HTML */}
+            {/* Hub Glow Filter */}
             <filter
               id="vinaxoHubGlow"
               x="-30%"
@@ -114,14 +114,14 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 dx="0"
                 dy="0"
                 stdDeviation="5"
-                floodColor="#174D32"
-                floodOpacity="0.4"
+                floodColor="#B9321F"
+                floodOpacity="0.45"
               />
             </filter>
           </defs>
 
-          {/* Background Plate (Soft Sage #F0F6F1) */}
-          <rect width="960" height="480" rx="10" fill="#F0F6F1" />
+          {/* Background Plate (Warm Cream #FAF0E1) */}
+          <rect width="960" height="480" rx="10" fill="#FAF0E1" />
           <rect width="960" height="480" rx="10" fill="url(#vinaxoMapGrid)" />
 
           {/* Tropic / Latitude Reference Lines */}
@@ -130,82 +130,78 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
             y1="160"
             x2="960"
             y2="160"
-            stroke="#E2ECE5"
+            stroke="#EADFCC"
             strokeWidth="0.75"
             strokeDasharray="4,6"
-            opacity="0.6"
+            opacity="0.7"
           />
           <line
             x1="0"
             y1="245"
             x2="960"
             y2="245"
-            stroke="#D7E7DC"
+            stroke="#E2D3BA"
             strokeWidth="1"
             strokeDasharray="6,6"
-            opacity="0.7"
+            opacity="0.8"
           />
           <line
             x1="0"
             y1="330"
             x2="960"
             y2="330"
-            stroke="#E2ECE5"
+            stroke="#EADFCC"
             strokeWidth="0.75"
             strokeDasharray="4,6"
-            opacity="0.6"
+            opacity="0.7"
           />
 
-          {/* Continents Layer (#C7DDCF, stroke #B0CEBC) - Authentic HTML Geographic Paths */}
+          {/* Continents Layer (Warm Terracotta Sand #E5D4BA) */}
           <path
             className="continents-layer"
             d={CONTINENTS_SVG_PATH}
-            fill="#C7DDCF"
-            stroke="#B0CEBC"
-            strokeWidth="0.5"
+            fill="#E5D4BA"
+            stroke="#D2BCA0"
+            strokeWidth="0.6"
           />
 
           {/* Export Route Curves (Smooth Bezier Arcs from Vietnam Hub 764, 245) */}
-          {/* 1. Vietnam -> United States (764,245) to (218,146) via northern great circle arc */}
           <path
             className="export-route route-us"
             d="M 764,245 C 640,15 360,15 218,146"
             fill="none"
-            stroke="#174D32"
+            stroke="#B9321F"
             strokeWidth={activeMarket === 'usa' ? '3.6' : '2.6'}
             strokeDasharray="7,4"
             strokeLinecap="round"
           />
 
-          {/* 2. Vietnam -> European Union (764,245) to (506,98) */}
           <path
             className="export-route route-eu"
             d="M 764,245 Q 618,135 506,98"
             fill="none"
-            stroke="#174D32"
+            stroke="#B9321F"
             strokeWidth={activeMarket === 'eu' ? '3.6' : '2.6'}
             strokeDasharray="7,4"
             strokeLinecap="round"
           />
 
-          {/* 3. Vietnam -> Russia & Eastern Europe (764,245) to (580,90) */}
           <path
             className="export-route route-russia"
             d="M 764,245 Q 695,142 580,90"
             fill="none"
-            stroke="#174D32"
+            stroke="#4B7851"
             strokeWidth={activeMarket === 'russia' ? '3.2' : '2.2'}
             strokeDasharray="6,4"
             strokeLinecap="round"
             opacity="0.9"
           />
 
-          {/* 4. Vietnam -> Korea & East Asia (764,245) to (819,153) */}
           <path
             className="export-route route-korea"
             d="M 764,245 Q 808,198 819,153"
             fill="none"
-            stroke="#174D32"
+            stroke="#4B7851"
             strokeWidth={activeMarket === 'korea' ? '3.2' : '2.2'}
             strokeDasharray="6,4"
             strokeLinecap="round"
@@ -221,8 +217,8 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
             tabIndex={interactive ? 0 : undefined}
             aria-label="USA Export Market"
           >
-            <circle r="14" fill="#174D32" opacity="0.12" />
-            <circle r="5" fill="#174D32" stroke="#FFFFFF" strokeWidth="1.8" />
+            <circle r="14" fill="#B9321F" opacity="0.14" />
+            <circle r="5" fill="#B9321F" stroke="#FFFFFF" strokeWidth="1.8" />
             <g transform="translate(0, -20)" filter="url(#vinaxoMarkerShadow)">
               <rect
                 x="-65"
@@ -230,17 +226,17 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 width="130"
                 height="26"
                 rx="13"
-                fill={activeMarket === 'usa' ? '#174D32' : '#FFFFFF'}
-                stroke="#C2DCD0"
+                fill={activeMarket === 'usa' ? '#3A2417' : '#FFFFFF'}
+                stroke="#EADFCC"
                 strokeWidth="1.2"
               />
               <text
                 x="0"
                 y="4"
-                fontFamily="'Plus Jakarta Sans', system-ui, sans-serif"
+                fontFamily="'Be Vietnam Pro', system-ui, sans-serif"
                 fontSize="11"
                 fontWeight="700"
-                fill={activeMarket === 'usa' ? '#FFFFFF' : '#174D32'}
+                fill={activeMarket === 'usa' ? '#F4A83A' : '#3A2417'}
                 textAnchor="middle"
               >
                 {isVi ? 'Hoa Kỳ (~70%)' : 'USA (~70%)'}
@@ -257,8 +253,8 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
             tabIndex={interactive ? 0 : undefined}
             aria-label="European Union Export Market"
           >
-            <circle r="14" fill="#174D32" opacity="0.12" />
-            <circle r="5" fill="#174D32" stroke="#FFFFFF" strokeWidth="1.8" />
+            <circle r="14" fill="#B9321F" opacity="0.14" />
+            <circle r="5" fill="#B9321F" stroke="#FFFFFF" strokeWidth="1.8" />
             <g transform="translate(-24, -20)" filter="url(#vinaxoMarkerShadow)">
               <rect
                 x="-56"
@@ -266,17 +262,17 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 width="112"
                 height="26"
                 rx="13"
-                fill={activeMarket === 'eu' ? '#174D32' : '#FFFFFF'}
-                stroke="#C2DCD0"
+                fill={activeMarket === 'eu' ? '#3A2417' : '#FFFFFF'}
+                stroke="#EADFCC"
                 strokeWidth="1.2"
               />
               <text
                 x="0"
                 y="4"
-                fontFamily="'Plus Jakarta Sans', system-ui, sans-serif"
+                fontFamily="'Be Vietnam Pro', system-ui, sans-serif"
                 fontSize="10.5"
                 fontWeight="700"
-                fill={activeMarket === 'eu' ? '#FFFFFF' : '#174D32'}
+                fill={activeMarket === 'eu' ? '#F4A83A' : '#3A2417'}
                 textAnchor="middle"
               >
                 {isVi ? 'Châu Âu (~20%)' : 'EU (~20%)'}
@@ -293,8 +289,8 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
             tabIndex={interactive ? 0 : undefined}
             aria-label="Russia and Eastern Europe Export Market"
           >
-            <circle r="12" fill="#174D32" opacity="0.1" />
-            <circle r="4.5" fill="#174D32" stroke="#FFFFFF" strokeWidth="1.6" />
+            <circle r="12" fill="#4B7851" opacity="0.14" />
+            <circle r="4.5" fill="#4B7851" stroke="#FFFFFF" strokeWidth="1.6" />
             <g transform="translate(48, -20)" filter="url(#vinaxoMarkerShadow)">
               <rect
                 x="-56"
@@ -302,17 +298,17 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 width="112"
                 height="24"
                 rx="12"
-                fill={activeMarket === 'russia' ? '#174D32' : '#FFFFFF'}
-                stroke="#C2DCD0"
+                fill={activeMarket === 'russia' ? '#3A2417' : '#FFFFFF'}
+                stroke="#EADFCC"
                 strokeWidth="1.2"
               />
               <text
                 x="0"
                 y="3.5"
-                fontFamily="'Plus Jakarta Sans', system-ui, sans-serif"
+                fontFamily="'Be Vietnam Pro', system-ui, sans-serif"
                 fontSize="9.5"
                 fontWeight="700"
-                fill={activeMarket === 'russia' ? '#FFFFFF' : '#2E5C43'}
+                fill={activeMarket === 'russia' ? '#F4A83A' : '#3A2417'}
                 textAnchor="middle"
               >
                 {isVi ? 'NGA & ĐÔNG ÂU' : 'RUSSIA & E. EUROPE'}
@@ -329,8 +325,8 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
             tabIndex={interactive ? 0 : undefined}
             aria-label="Korea and East Asia Export Market"
           >
-            <circle r="12" fill="#174D32" opacity="0.1" />
-            <circle r="4.5" fill="#174D32" stroke="#FFFFFF" strokeWidth="1.6" />
+            <circle r="12" fill="#4B7851" opacity="0.14" />
+            <circle r="4.5" fill="#4B7851" stroke="#FFFFFF" strokeWidth="1.6" />
             <g transform="translate(54, -2)" filter="url(#vinaxoMarkerShadow)">
               <rect
                 x="-52"
@@ -338,17 +334,17 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 width="104"
                 height="24"
                 rx="12"
-                fill={activeMarket === 'korea' ? '#174D32' : '#FFFFFF'}
-                stroke="#C2DCD0"
+                fill={activeMarket === 'korea' ? '#3A2417' : '#FFFFFF'}
+                stroke="#EADFCC"
                 strokeWidth="1.2"
               />
               <text
                 x="0"
                 y="3.5"
-                fontFamily="'Plus Jakarta Sans', system-ui, sans-serif"
+                fontFamily="'Be Vietnam Pro', system-ui, sans-serif"
                 fontSize="10"
                 fontWeight="700"
-                fill={activeMarket === 'korea' ? '#FFFFFF' : '#2E5C43'}
+                fill={activeMarket === 'korea' ? '#F4A83A' : '#3A2417'}
                 textAnchor="middle"
               >
                 {isVi ? 'HÀN QUỐC & ĐÔNG Á' : 'KOREA & E. ASIA'}
@@ -356,7 +352,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
             </g>
           </g>
 
-          {/* Vietnam Origin Hub (Prominent with Pulsing Radar Rings & Gold Center) */}
+          {/* Vietnam Origin Hub */}
           <g
             className="map-node node-vietnam"
             transform="translate(764, 245)"
@@ -366,7 +362,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
               className="radar-pulse"
               r="26"
               fill="none"
-              stroke="#174D32"
+              stroke="#B9321F"
               strokeWidth="2"
               opacity="0.5"
             />
@@ -374,12 +370,12 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
               className="radar-pulse-2"
               r="16"
               fill="none"
-              stroke="#174D32"
+              stroke="#F4A83A"
               strokeWidth="2"
               opacity="0.7"
             />
-            <circle r="8" fill="#174D32" stroke="#FFFFFF" strokeWidth="2.5" />
-            <circle r="3" fill="#FFE27A" />
+            <circle r="8" fill="#3A2417" stroke="#FFFFFF" strokeWidth="2.5" />
+            <circle r="3.5" fill="#F4A83A" />
             <g transform="translate(0, 26)" filter="url(#vinaxoMarkerShadow)">
               <rect
                 x="-85"
@@ -387,22 +383,22 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 width="170"
                 height="28"
                 rx="14"
-                fill="#174D32"
-                stroke="#FFFFFF"
+                fill="#3A2417"
+                stroke="#F4A83A"
                 strokeWidth="1.6"
               />
-              <circle cx="-68" cy="0" r="4" fill="#FFE27A" />
+              <circle cx="-68" cy="0" r="4" fill="#F4A83A" />
               <text
                 x="8"
                 y="4"
-                fontFamily="'Plus Jakarta Sans', system-ui, sans-serif"
+                fontFamily="'Be Vietnam Pro', system-ui, sans-serif"
                 fontSize="11"
                 fontWeight="800"
                 fill="#FFFFFF"
                 textAnchor="middle"
                 letterSpacing="0.3"
               >
-                {isVi ? 'VINAXO (TIỀN GIANG)' : 'VINAXO (TIEN GIANG)'}
+                {isVi ? 'VINAXO (ĐBSCL)' : 'VINAXO (VIETNAM HUB)'}
               </text>
             </g>
           </g>
@@ -435,8 +431,8 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
             borderRadius: 'var(--radius-md)',
-            border: '1px solid #C2DCD0',
-            boxShadow: '0 12px 32px rgba(16, 61, 42, 0.16)',
+            border: '1px solid var(--soft-border)',
+            boxShadow: '0 12px 32px rgba(58, 37, 27, 0.16)',
             padding: '16px 20px',
             zIndex: 10,
             display: 'flex',
@@ -450,7 +446,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              borderBottom: '1px solid #E2EDE5',
+              borderBottom: '1px solid var(--soft-border)',
               paddingBottom: '8px',
             }}
           >
@@ -459,7 +455,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 style={{
                   fontSize: '0.95rem',
                   fontWeight: 800,
-                  color: 'var(--forest-green)',
+                  color: 'var(--dark-chocolate)',
                 }}
               >
                 {marketDetails[activeMarket].title}
@@ -469,8 +465,8 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                   marginLeft: '10px',
                   fontSize: '0.78rem',
                   fontWeight: 700,
-                  color: 'var(--primary-green)',
-                  backgroundColor: '#E8F5EE',
+                  color: 'var(--vinaxo-red)',
+                  backgroundColor: 'var(--vinaxo-red-soft)',
                   padding: '2px 8px',
                   borderRadius: '10px',
                 }}
@@ -484,7 +480,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                color: '#6C7A72',
+                color: 'var(--muted-text)',
                 padding: '4px',
                 display: 'flex',
                 alignItems: 'center',
@@ -501,19 +497,19 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
               gap: '12px',
               fontSize: '0.82rem',
-              color: '#3C4B42',
+              color: 'var(--color-body)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Anchor size={14} color="#174D32" />
+              <Anchor size={14} color="#B9321F" />
               <span>{marketDetails[activeMarket].port}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Clock size={14} color="#174D32" />
+              <Clock size={14} color="#B9321F" />
               <span>{marketDetails[activeMarket].transit}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Package size={14} color="#174D32" />
+              <Package size={14} color="#B9321F" />
               <span>{marketDetails[activeMarket].products}</span>
             </div>
           </div>
