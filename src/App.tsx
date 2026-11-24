@@ -1,8 +1,11 @@
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from './components/layout/MainLayout';
+import { AdminAuthProvider } from './admin/context/AdminAuthContext';
+import { AdminProtectedRoute } from './admin/components/AdminProtectedRoute';
+import { AdminLayout } from './admin/components/AdminLayout';
 
-// Route-level code splitting for performance optimization
+// Public pages - Route-level code splitting
 const Home = lazy(() => import('./pages/Home'));
 const About = lazy(() => import('./pages/About'));
 const Products = lazy(() => import('./pages/Products'));
@@ -13,6 +16,15 @@ const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Brochure = lazy(() => import('./pages/Brochure'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+
+// Admin pages - Lazy loaded
+const AdminLogin = lazy(() => import('./admin/pages/AdminLogin'));
+const AdminDashboard = lazy(() => import('./admin/pages/AdminDashboard'));
+const AdminNewsList = lazy(() => import('./admin/pages/AdminNewsList'));
+const AdminNewsEditor = lazy(() => import('./admin/pages/AdminNewsEditor'));
+const AdminMedia = lazy(() => import('./admin/pages/AdminMedia'));
+const AdminProducts = lazy(() => import('./admin/pages/AdminProducts'));
+const AdminSettings = lazy(() => import('./admin/pages/AdminSettings'));
 
 // Fallback loader during code-split chunk loading
 const PageLoader: React.FC = () => (
@@ -56,9 +68,89 @@ const PageLoader: React.FC = () => (
 
 export const App: React.FC = () => {
   return (
-    <Routes>
-      {/* Main Layout containing Header, Footer, and Global Quote Modal */}
-      <Route element={<MainLayout />}>
+    <AdminAuthProvider>
+      <Routes>
+        {/* VINAXO Custom Admin Portal */}
+        <Route
+          path="/admin/login"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <AdminLogin />
+            </Suspense>
+          }
+        />
+        <Route path="/admin" element={<AdminProtectedRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route
+              path="dashboard"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminDashboard />
+                </Suspense>
+              }
+            />
+            <Route
+              path="news"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminNewsList />
+                </Suspense>
+              }
+            />
+            <Route
+              path="news/new"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminNewsEditor />
+                </Suspense>
+              }
+            />
+            <Route
+              path="news/:slug/edit"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminNewsEditor />
+                </Suspense>
+              }
+            />
+            <Route
+              path="products"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminProducts />
+                </Suspense>
+              }
+            />
+            <Route
+              path="media"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminMedia />
+                </Suspense>
+              }
+            />
+            <Route
+              path="brochure"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminSettings />
+                </Suspense>
+              }
+            />
+            <Route
+              path="settings"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminSettings />
+                </Suspense>
+              }
+            />
+          </Route>
+        </Route>
+
+        {/* Main Layout containing Header, Footer, and Global Quote Modal */}
+        <Route element={<MainLayout />}>
         {/* Core Multi-Page Routes */}
         <Route
           path="/"
@@ -186,7 +278,8 @@ export const App: React.FC = () => {
         />
       </Route>
     </Routes>
-  );
+  </AdminAuthProvider>
+);
 };
 
 export default App;

@@ -43,4 +43,6 @@ id_rsa*
 *.njsproj
 *.sln
 *.sw?
-.DS_Store
+# Local reference documents in root
+/*.pdf
+/*.pdf.pdf

@@ -1,0 +1,374 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { 
+  Plus, 
+  Search, 
+  Edit3, 
+  Trash2, 
+  Newspaper, 
+  AlertCircle,
+  CheckCircle,
+  Eye
+} from 'lucide-react';
+import { getAllArticles } from '../../services/contentService';
+import { ArticleContent } from '../../types/content';
+
+export const AdminNewsList: React.FC = () => {
+  const [articles, setArticles] = useState<ArticleContent[]>(getAllArticles());
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
+  const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Filter articles
+  const filteredArticles = articles.filter(item => {
+    const matchesSearch = 
+      item.title_vi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.source.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.title_en && item.title_en.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesCat = selectedCategory === 'all' || item.category === selectedCategory;
+    return matchesSearch && matchesCat;
+  });
+
+  const handleDelete = async (slug: string) => {
+    try {
+      setIsDeleting(true);
+      setStatusMsg(null);
+      const res = await fetch('/api/admin/news', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug })
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setArticles(prev => prev.filter(a => a.slug !== slug));
+        setStatusMsg({ type: 'success', text: `Đã xóa bài viết ${slug} thành công.` });
+      } else {
+        setStatusMsg({ type: 'error', text: data.error || 'Không thể xóa bài viết.' });
+      }
+    } catch {
+      setStatusMsg({ type: 'error', text: 'Lỗi kết nối khi gửi yêu cầu xóa bài.' });
+    } finally {
+      setIsDeleting(false);
+      setDeletingSlug(null);
+    }
+  };
+
+  return (
+    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Header Bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
+        <div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#3A251B', margin: '0 0 4px 0' }}>
+            Quản lý Bài viết & Báo chí
+          </h1>
+          <p style={{ fontSize: '0.88rem', color: '#6E6259', margin: 0 }}>
+            Tổng số: {articles.length} bài viết đã lưu trữ trong hệ thống Git
+          </p>
+        </div>
+
+        <Link
+          to="/admin/news/new"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            backgroundColor: '#F4A83A',
+            color: '#3A251B',
+            padding: '10px 18px',
+            borderRadius: '8px',
+            fontWeight: 700,
+            fontSize: '0.9rem',
+            textDecoration: 'none',
+            boxShadow: '0 2px 6px rgba(244, 168, 58, 0.3)'
+          }}
+        >
+          <Plus size={18} />
+          <span>Tạo bài viết mới</span>
+        </Link>
+      </div>
+
+      {/* Status Feedback Alert */}
+      {statusMsg && (
+        <div style={{
+          padding: '12px 16px',
+          borderRadius: '8px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontSize: '0.88rem',
+          backgroundColor: statusMsg.type === 'success' ? '#ECFDF5' : '#FEF2F2',
+          color: statusMsg.type === 'success' ? '#065F46' : '#991B1B',
+          border: `1px solid ${statusMsg.type === 'success' ? '#A7F3D0' : '#FECACA'}`
+        }}>
+          {statusMsg.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+          <span>{statusMsg.text}</span>
+        </div>
+      )}
+
+      {/* Filter and Search Bar */}
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '12px',
+        padding: '16px',
+        border: '1.5px solid #EADFCC',
+        marginBottom: '20px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '12px'
+      }}>
+        {/* Search Input */}
+        <div style={{ position: 'relative', flex: '1 1 300px' }}>
+          <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#8C827A' }}>
+            <Search size={16} />
+          </span>
+          <input
+            type="text"
+            placeholder="Tìm theo tiêu đề, nguồn báo..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: '9px 12px 9px 38px',
+              borderRadius: '8px',
+              border: '1.5px solid #D1C7BD',
+              fontSize: '0.9rem',
+              outline: 'none'
+            }}
+          />
+        </div>
+
+        {/* Category Filter Pills */}
+        <div style={{ display: 'flex', gap: '6px' }}>
+          {[
+            { id: 'all', label: 'Tất cả' },
+            { id: 'press', label: 'Báo chí đưa tin' },
+            { id: 'company', label: 'Hoạt động nội bộ' }
+          ].map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              style={{
+                padding: '8px 14px',
+                borderRadius: '6px',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                border: '1px solid',
+                cursor: 'pointer',
+                backgroundColor: selectedCategory === cat.id ? '#3A251B' : '#FAF7F2',
+                color: selectedCategory === cat.id ? '#FFFFFF' : '#6E6259',
+                borderColor: selectedCategory === cat.id ? '#3A251B' : '#D1C7BD'
+              }}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Articles Table */}
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '12px',
+        border: '1.5px solid #EADFCC',
+        overflow: 'hidden',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+      }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#FAF7F2', borderBottom: '1px solid #EADFCC', color: '#6E6259' }}>
+                <th style={{ padding: '14px 18px', fontWeight: 600 }}>Ảnh</th>
+                <th style={{ padding: '14px 18px', fontWeight: 600 }}>Tiêu đề & Slug</th>
+                <th style={{ padding: '14px 18px', fontWeight: 600 }}>Danh mục / Nguồn</th>
+                <th style={{ padding: '14px 18px', fontWeight: 600 }}>Ngày xuất bản</th>
+                <th style={{ padding: '14px 18px', fontWeight: 600, textAlign: 'right' }}>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredArticles.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ padding: '36px', textAlign: 'center', color: '#8C827A' }}>
+                    <Newspaper size={32} style={{ margin: '0 auto 8px', opacity: 0.5 }} />
+                    <p style={{ margin: 0 }}>Không tìm thấy bài viết nào phù hợp.</p>
+                  </td>
+                </tr>
+              ) : (
+                filteredArticles.map((a) => (
+                  <tr key={a.id} style={{ borderBottom: '1px solid #F0EAE1' }}>
+                    <td style={{ padding: '12px 18px', width: '60px' }}>
+                      <img
+                        src={a.cover_image}
+                        alt={a.title_vi}
+                        style={{ width: '54px', height: '40px', objectFit: 'cover', borderRadius: '4px', backgroundColor: '#EADFCC' }}
+                      />
+                    </td>
+                    <td style={{ padding: '12px 18px', maxWidth: '380px' }}>
+                      <div style={{ fontWeight: 600, color: '#3A251B', marginBottom: '2px', lineHeight: 1.35 }}>
+                        {a.title_vi}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#8C827A', fontFamily: 'monospace' }}>
+                        /{a.slug}
+                      </div>
+                    </td>
+                    <td style={{ padding: '12px 18px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                        <span style={{
+                          display: 'inline-block',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          backgroundColor: a.category === 'press' ? '#EFF6FF' : '#ECFDF5',
+                          color: a.category === 'press' ? '#1D4ED8' : '#047857',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
+                          width: 'fit-content'
+                        }}>
+                          {a.category === 'press' ? 'Báo chí đưa tin' : 'Doanh nghiệp'}
+                        </span>
+                        <span style={{ fontSize: '0.76rem', color: '#6E6259' }}>
+                          Nguồn: {a.source}
+                        </span>
+                      </div>
+                    </td>
+                    <td style={{ padding: '12px 18px', color: '#6E6259', fontSize: '0.82rem' }}>
+                      {a.dateVi || a.published_at}
+                    </td>
+                    <td style={{ padding: '12px 18px', textAlign: 'right' }}>
+                      <div style={{ display: 'inline-flex', gap: '6px' }}>
+                        <Link
+                          to={`/tin-tuc/${a.slug}`}
+                          target="_blank"
+                          title="Xem bài viết trên web"
+                          style={{
+                            padding: '6px 8px',
+                            borderRadius: '6px',
+                            backgroundColor: '#FAF7F2',
+                            color: '#6E6259',
+                            border: '1px solid #D1C7BD',
+                            display: 'inline-flex',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <Eye size={14} />
+                        </Link>
+
+                        <Link
+                          to={`/admin/news/${a.slug}/edit`}
+                          title="Chỉnh sửa bài viết"
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            backgroundColor: '#FFF7EC',
+                            color: '#3A251B',
+                            border: '1px solid #EADFCC',
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            textDecoration: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          <Edit3 size={13} />
+                          <span>Sửa</span>
+                        </Link>
+
+                        <button
+                          onClick={() => setDeletingSlug(a.slug)}
+                          title="Xóa bài viết"
+                          style={{
+                            padding: '6px 8px',
+                            borderRadius: '6px',
+                            backgroundColor: '#FEF2F2',
+                            color: '#DC2626',
+                            border: '1px solid #FECACA',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      {deletingSlug && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          padding: '16px'
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '12px',
+            padding: '24px',
+            maxWidth: '420px',
+            width: '100%',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.15)'
+          }}>
+            <h3 style={{ margin: '0 0 12px 0', color: '#DC2626', fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle size={20} />
+              <span>Xác nhận xóa bài viết?</span>
+            </h3>
+            <p style={{ fontSize: '0.88rem', color: '#3A251B', lineHeight: 1.5, margin: '0 0 20px 0' }}>
+              Bạn có chắc chắn muốn xóa bài viết <strong>"{deletingSlug}"</strong>? Thao tác này sẽ xóa file JSON tương ứng trong kho dữ liệu Git.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                onClick={() => setDeletingSlug(null)}
+                disabled={isDeleting}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: '1px solid #D1C7BD',
+                  backgroundColor: '#FAF7F2',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: '0.86rem'
+                }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                onClick={() => handleDelete(deletingSlug)}
+                disabled={isDeleting}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: '#DC2626',
+                  color: '#FFFFFF',
+                  cursor: isDeleting ? 'not-allowed' : 'pointer',
+                  fontWeight: 600,
+                  fontSize: '0.86rem'
+                }}
+              >
+                {isDeleting ? 'Đang xóa...' : 'Xác nhận xóa'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AdminNewsList;

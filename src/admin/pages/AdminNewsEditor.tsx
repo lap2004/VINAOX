@@ -1,0 +1,524 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { 
+  ArrowLeft, 
+  CheckCircle, 
+  AlertCircle,
+  Send,
+  Bold,
+  Italic,
+  Heading1,
+  Heading2,
+  List,
+  Quote,
+  Link2
+} from 'lucide-react';
+import { getArticleBySlug } from '../../services/contentService';
+import { ArticleContent } from '../../types/content';
+
+export const AdminNewsEditor: React.FC = () => {
+  const { id, slug } = useParams<{ id?: string; slug?: string }>();
+  const navigate = useNavigate();
+  const editIdentifier = id || slug;
+  const isEditing = Boolean(editIdentifier);
+
+  const [formData, setFormData] = useState<Partial<ArticleContent>>({
+    id: '',
+    slug: '',
+    title_vi: '',
+    title_en: '',
+    excerpt_vi: '',
+    excerpt_en: '',
+    body_vi: '',
+    body_en: '',
+    cover_image: '/assets/images/news/dried-fruit-export.webp',
+    cover_image_alt_vi: '',
+    cover_image_alt_en: '',
+    category: 'press',
+    badgeType: 'quote',
+    badgeTextVi: 'Tin tức',
+    badgeTextEn: 'News',
+    source: 'VINAXO',
+    sourceUrl: '',
+    author: 'Ban Biên Tập VINAXO',
+    published_at: new Date().toISOString().split('T')[0],
+    featured: false,
+    tags: ['press'],
+    verified: true,
+    seo_title_vi: '',
+    seo_description_vi: '',
+    seo_title_en: '',
+    seo_description_en: ''
+  });
+
+  const [activeTab, setActiveTab] = useState<'vi' | 'en' | 'seo'>('vi');
+  const [isSaving, setIsSaving] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // Load existing article if editing
+  useEffect(() => {
+    if (editIdentifier) {
+      const existing = getArticleBySlug(editIdentifier);
+      if (existing) {
+        setFormData(existing);
+      }
+    }
+  }, [editIdentifier]);
+
+  // Auto-generate slug from Vietnamese title if new
+  const handleTitleChange = (val: string) => {
+    setFormData(prev => {
+      const updated = { ...prev, title_vi: val };
+      if (!isEditing && !prev.slug) {
+        const generatedSlug = val
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/đ/g, 'd')
+          .replace(/[^a-z0-9\s-]/g, '')
+          .trim()
+          .replace(/\s+/g, '-');
+        updated.slug = generatedSlug;
+        updated.id = generatedSlug;
+      }
+      return updated;
+    });
+  };
+
+  const insertMarkdown = (syntax: string) => {
+    const currentBody = activeTab === 'en' ? (formData.body_en || '') : (formData.body_vi || '');
+    let newBody = currentBody;
+
+    if (syntax === 'b') newBody += ' **in đậm** ';
+    else if (syntax === 'i') newBody += ' *in nghiêng* ';
+    else if (syntax === 'h2') newBody += '\n## Tiêu đề đoạn\n';
+    else if (syntax === 'h3') newBody += '\n### Tiêu đề phụ\n';
+    else if (syntax === 'list') newBody += '\n- Mục danh sách 1\n- Mục danh sách 2\n';
+    else if (syntax === 'quote') newBody += '\n> Trích dẫn quan trọng\n';
+    else if (syntax === 'link') newBody += ' [Tên liên kết](https://...) ';
+
+    if (activeTab === 'en') {
+      setFormData(prev => ({ ...prev, body_en: newBody }));
+    } else {
+      setFormData(prev => ({ ...prev, body_vi: newBody }));
+    }
+  };
+
+  const handleSave = async (isDraft = false) => {
+    if (!formData.title_vi || !formData.slug) {
+      setFeedback({ type: 'error', message: 'Vui lòng nhập Tiêu đề tiếng Việt và Đường dẫn (slug)!' });
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      setFeedback(null);
+
+      const articlePayload = {
+        ...formData,
+        tags: isDraft 
+          ? Array.from(new Set([...(formData.tags || []), 'draft']))
+          : (formData.tags || []).filter(t => t !== 'draft')
+      };
+
+      const res = await fetch('/api/admin/news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(articlePayload)
+      });
+
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setFeedback({ 
+          type: 'success', 
+          message: isDraft ? 'Đã lưu bản nháp thành công!' : 'Đã xuất bản bài viết thành công!' 
+        });
+        setTimeout(() => {
+          navigate('/admin/news');
+        }, 1200);
+      } else {
+        setFeedback({ type: 'error', message: data.error || 'Không thể lưu bài viết.' });
+      }
+    } catch {
+      setFeedback({ type: 'error', message: 'Lỗi mạng khi kết nối máy chủ.' });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '60px' }}>
+      {/* Header bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link
+            to="/admin/news"
+            style={{
+              padding: '8px',
+              borderRadius: '8px',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #D1C7BD',
+              color: '#3A251B',
+              display: 'inline-flex',
+              alignItems: 'center'
+            }}
+          >
+            <ArrowLeft size={16} />
+          </Link>
+          <div>
+            <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#3A251B', margin: 0 }}>
+              {isEditing ? 'Chỉnh sửa bài viết' : 'Viết bài bài báo / tin tức mới'}
+            </h1>
+            <p style={{ fontSize: '0.8rem', color: '#6E6259', margin: '2px 0 0 0' }}>
+              Nội dung lưu trực tiếp vào Git repository và cập nhật tự động lên website
+            </p>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            type="button"
+            onClick={() => handleSave(true)}
+            disabled={isSaving}
+            style={{
+              padding: '9px 16px',
+              borderRadius: '8px',
+              backgroundColor: '#FAF7F2',
+              color: '#3A251B',
+              border: '1.5px solid #D1C7BD',
+              fontWeight: 600,
+              fontSize: '0.88rem',
+              cursor: isSaving ? 'not-allowed' : 'pointer'
+            }}
+          >
+            Lưu bản nháp
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSave(false)}
+            disabled={isSaving}
+            style={{
+              padding: '9px 20px',
+              borderRadius: '8px',
+              backgroundColor: '#F4A83A',
+              color: '#3A251B',
+              border: 'none',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              cursor: isSaving ? 'not-allowed' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 2px 6px rgba(244, 168, 58, 0.3)'
+            }}
+          >
+            <Send size={15} />
+            <span>{isSaving ? 'Đang lưu...' : 'Xuất bản bài viết'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Feedback Alert */}
+      {feedback && (
+        <div style={{
+          padding: '12px 16px',
+          borderRadius: '8px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontSize: '0.88rem',
+          backgroundColor: feedback.type === 'success' ? '#ECFDF5' : '#FEF2F2',
+          color: feedback.type === 'success' ? '#065F46' : '#991B1B',
+          border: `1px solid ${feedback.type === 'success' ? '#A7F3D0' : '#FECACA'}`
+        }}>
+          {feedback.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+          <span>{feedback.message}</span>
+        </div>
+      )}
+
+      {/* Main Form Cards */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {/* Card 1: Thông tin cơ bản & Phân loại */}
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '24px', border: '1.5px solid #EADFCC' }}>
+          <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#3A251B', margin: '0 0 16px 0' }}>
+            1. Thông tin chung & Nguồn bài viết
+          </h2>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                Đường dẫn tĩnh (Slug) *
+              </label>
+              <input
+                type="text"
+                value={formData.slug || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value, id: e.target.value }))}
+                placeholder="vi-du-xoai-say-deo-vinaxo"
+                style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                Danh mục bài viết
+              </label>
+              <select
+                value={formData.category || 'press'}
+                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as any }))}
+                style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem', backgroundColor: '#FFFFFF' }}
+              >
+                <option value="press">Báo chí đưa tin (Press Coverage)</option>
+                <option value="company">Hoạt động doanh nghiệp (Company Operations)</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                Tên nguồn báo chí / Cơ quan
+              </label>
+              <input
+                type="text"
+                value={formData.source || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, source: e.target.value }))}
+                placeholder="CafeF / Người Lao Động / VINAXO"
+                style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                Link bài báo gốc (nếu có)
+              </label>
+              <input
+                type="url"
+                value={formData.sourceUrl || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, sourceUrl: e.target.value }))}
+                placeholder="https://cafef.vn/..."
+                style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                Ngày xuất bản
+              </label>
+              <input
+                type="date"
+                value={formData.published_at || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, published_at: e.target.value }))}
+                style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                Tác giả / Nhân vật phát biểu
+              </label>
+              <input
+                type="text"
+                value={formData.author || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
+                placeholder="Hoàng Mạnh Cường / Ban Biên Tập"
+                style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Card 2: Hình ảnh đại diện */}
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '24px', border: '1.5px solid #EADFCC' }}>
+          <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#3A251B', margin: '0 0 16px 0' }}>
+            2. Hình ảnh đại diện (Cover Image)
+          </h2>
+
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <img
+              src={formData.cover_image || '/assets/images/news/dried-fruit-export.webp'}
+              alt="Preview"
+              style={{ width: '140px', height: '90px', objectFit: 'cover', borderRadius: '8px', border: '1.5px solid #EADFCC', backgroundColor: '#FAF7F2' }}
+            />
+            <div style={{ flex: '1 1 300px' }}>
+              <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                Đường dẫn ảnh đại diện (URL)
+              </label>
+              <input
+                type="text"
+                value={formData.cover_image || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, cover_image: e.target.value }))}
+                placeholder="/uploads/news/anh-bai-viet.webp"
+                style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem', marginBottom: '8px' }}
+              />
+              <p style={{ fontSize: '0.78rem', color: '#6E6259', margin: 0 }}>
+                💡 Gợi ý: Bạn có thể vào mục <Link to="/admin/media" target="_blank" style={{ color: '#F4A83A', fontWeight: 600 }}>Thư viện hình ảnh</Link> để tải ảnh từ điện thoại/máy tính lên rồi copy đường dẫn dán vào đây.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Soạn thảo nội dung Song ngữ (Tabs) */}
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '24px', border: '1.5px solid #EADFCC' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1.5px solid #EADFCC', paddingBottom: '12px', marginBottom: '20px' }}>
+            <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#3A251B', margin: 0 }}>
+              3. Nội dung bài viết song ngữ
+            </h2>
+
+            {/* Language Switch Tabs */}
+            <div style={{ display: 'flex', gap: '4px' }}>
+              <button
+                type="button"
+                onClick={() => setActiveTab('vi')}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.84rem',
+                  fontWeight: 600,
+                  border: 'none',
+                  cursor: 'pointer',
+                  backgroundColor: activeTab === 'vi' ? '#3A251B' : '#FAF7F2',
+                  color: activeTab === 'vi' ? '#FFFFFF' : '#6E6259'
+                }}
+              >
+                🇻🇳 Tiếng Việt
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('en')}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.84rem',
+                  fontWeight: 600,
+                  border: 'none',
+                  cursor: 'pointer',
+                  backgroundColor: activeTab === 'en' ? '#3A251B' : '#FAF7F2',
+                  color: activeTab === 'en' ? '#FFFFFF' : '#6E6259'
+                }}
+              >
+                🇬🇧 Tiếng Anh
+              </button>
+            </div>
+          </div>
+
+          {/* Tab 1: Tiếng Việt */}
+          {activeTab === 'vi' && (
+            <div>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  Tiêu đề tiếng Việt *
+                </label>
+                <input
+                  type="text"
+                  value={formData.title_vi || ''}
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                  placeholder="Nhập tiêu đề bài viết tiếng Việt..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '1rem', fontWeight: 600 }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  Đoạn tóm tắt mở đầu (Excerpt)
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.excerpt_vi || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, excerpt_vi: e.target.value }))}
+                  placeholder="Tóm tắt nội dung chính trong 2-3 câu..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.9rem', lineHeight: 1.5 }}
+                />
+              </div>
+
+              {/* Rich Text Toolbar */}
+              <div style={{ marginBottom: '8px', display: 'flex', gap: '4px', flexWrap: 'wrap', backgroundColor: '#FAF7F2', padding: '6px', borderRadius: '6px', border: '1px solid #D1C7BD' }}>
+                <button type="button" onClick={() => insertMarkdown('h2')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Tiêu đề H2">
+                  <Heading1 size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('h3')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Tiêu đề H3">
+                  <Heading2 size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('b')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="In đậm">
+                  <Bold size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('i')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="In nghiêng">
+                  <Italic size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('list')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Danh sách">
+                  <List size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('quote')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Trích dẫn">
+                  <Quote size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('link')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Chèn link">
+                  <Link2 size={14} />
+                </button>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  Nội dung chi tiết bài viết (Hỗ trợ Markdown)
+                </label>
+                <textarea
+                  rows={14}
+                  value={formData.body_vi || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, body_vi: e.target.value }))}
+                  placeholder="Soạn thảo toàn văn bài viết..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.92rem', lineHeight: 1.6, fontFamily: 'monospace' }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Tab 2: Tiếng Anh */}
+          {activeTab === 'en' && (
+            <div>
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  English Title (Tiêu đề tiếng Anh)
+                </label>
+                <input
+                  type="text"
+                  value={formData.title_en || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, title_en: e.target.value }))}
+                  placeholder="Enter English article title..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '1rem', fontWeight: 600 }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  English Excerpt (Tóm tắt tiếng Anh)
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.excerpt_en || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, excerpt_en: e.target.value }))}
+                  placeholder="Short English summary..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.9rem', lineHeight: 1.5 }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  English Body Content
+                </label>
+                <textarea
+                  rows={14}
+                  value={formData.body_en || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, body_en: e.target.value }))}
+                  placeholder="Full English body content..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.92rem', lineHeight: 1.6, fontFamily: 'monospace' }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminNewsEditor;
