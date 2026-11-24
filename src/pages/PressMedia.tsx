@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ExternalLink, MessageSquareQuote, Mail } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { newsData, NewsItem } from '../data/news';
+import { NewsItem } from '../data/news';
+import { getAllNewsItems } from '../services/contentService';
 import { COMPANY_INFO } from '../data/company';
 import { PageHero } from '../components/ui/PageHero';
 import { NewsCard } from '../components/news/NewsCard';
@@ -13,6 +14,7 @@ export const PressMedia: React.FC = () => {
   const isVi = language === 'vi';
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const newsData = getAllNewsItems();
 
   // Filter news
   const filteredNews =

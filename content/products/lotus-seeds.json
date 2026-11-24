@@ -1,0 +1,20 @@
+{
+  "id": "lotus-seeds",
+  "slug": "lotus-seeds",
+  "name_vi": "Hạt sen",
+  "name_en": "Lotus Seeds",
+  "category": "nuts-seeds",
+  "image": "/images/products/lotus-seeds.webp",
+  "description_vi": "Được thu hoạch từ thủ phủ sen Đồng Tháp danh tiếng. Từng hạt sen tròn mẩy được bóc vỏ, tách tâm và sấy giòn xốp nhẹ tênh, vị ngọt bùi thanh tao tự nhiên, giàu protein thực vật và khoáng chất an thần bổ dưỡng.",
+  "description_en": "Harvested from the pristine lotus heartland of Dong Thap, Vietnam. Delicately dried to produce a light, powdery crispness and soothing sweet-nutty flavor, packed with plant protein and calming traditional nutritional qualities.",
+  "origin_vi": "Đồng Tháp, Việt Nam",
+  "origin_en": "Dong Thap, Vietnam",
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi zip / Lon nắp nhôm 150g, 250g, 500g / Thùng carton 10kg",
+  "certifications": [
+    "Dong Thap Specialty",
+    "BRCGS Facility",
+    "Clean Label"
+  ],
+  "order": 12
+}

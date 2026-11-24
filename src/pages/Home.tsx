@@ -22,7 +22,7 @@ import {
   BrochureCategory,
   ComplianceBadge,
 } from '../data/brochureData';
-import { newsData } from '../data/news';
+import { getAllNewsItems } from '../services/contentService';
 import { Button } from '../components/ui/Button';
 import { ProductCard } from '../components/products/ProductCard';
 import { ProductDetailModal } from '../components/products/ProductDetailModal';
@@ -117,6 +117,7 @@ export const Home: React.FC = () => {
   };
 
   // Preserve 8 featured products from the verified 12-item catalog in 2 full 4-column rows
+  const newsData = getAllNewsItems();
   const featuredProducts = productsData.slice(0, 8);
   const featuredNews = newsData.slice(0, 3);
 

@@ -1,0 +1,20 @@
+{
+  "id": "soft-dried-papaya",
+  "slug": "soft-dried-papaya",
+  "name_vi": "Đu đủ sấy dẻo",
+  "name_en": "Soft Dried Papaya",
+  "category": "soft-dried",
+  "image": "/images/products/soft-dried-papaya.webp",
+  "description_vi": "Tuyển chọn từ những trái đu đủ chín cây trên vùng đất phù sa trù phú ĐBSCL. Công nghệ sấy dẻo nhiệt thấp giúp lát đu đủ giữ trọn sắc cam đỏ rực rỡ, độ dẻo mềm mọng vị, giàu beta-carotene và enzym papain tự nhiên.",
+  "description_en": "Sourced from fertile Mekong Delta alluvial soil, our ripe papayas are gently low-temperature dehydrated to preserve their luscious color, dietary fiber, beta-carotene, and natural digestive papain enzymes.",
+  "origin_vi": "Vùng trồng ĐBSCL",
+  "origin_en": "Mekong Delta Orchards",
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg",
+  "certifications": [
+    "BRCGS Facility",
+    "Clean Label",
+    "Export Standard"
+  ],
+  "order": 10
+}

@@ -1,0 +1,20 @@
+{
+  "id": "walnuts",
+  "slug": "walnuts",
+  "name_vi": "Hạt óc chó",
+  "name_en": "Walnuts",
+  "category": "nuts-seeds",
+  "image": "/images/products/walnuts.webp",
+  "description_vi": "Nhân óc chó tuyển chọn đồng đều kích thước, được xử lý nhiệt nhẹ để giữ độ giòn thơm tự nhiên mà không làm biến tính các axit béo quý. Dồi dào Omega-3 thực vật, chất chống oxy hóa và khoáng chất.",
+  "description_en": "Carefully sorted and lightly roasted walnut halves providing clean, nutty richness. Abundant in plant-based Omega-3 ALA, polyphenols, and essential minerals for daily wellness.",
+  "origin_vi": "Nguồn nguyên liệu chọn lọc cao cấp",
+  "origin_en": "Selected Premium Grade",
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi nhôm nạp khí Nitơ / Lon 200g, 400g / Thùng carton 10kg",
+  "certifications": [
+    "Premium Grade",
+    "ISO 22000",
+    "Clean Label"
+  ],
+  "order": 9
+}

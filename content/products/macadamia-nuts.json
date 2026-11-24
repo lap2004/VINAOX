@@ -1,0 +1,20 @@
+{
+  "id": "macadamia-nuts",
+  "slug": "macadamia-nuts",
+  "name_vi": "Hạt mắc ca",
+  "name_en": "Macadamia Nuts",
+  "category": "nuts-seeds",
+  "image": "/images/products/macadamia-nuts.webp",
+  "description_vi": "Hạt mắc ca thượng hạng sinh trưởng trên đất đỏ bazan màu mỡ vùng Tây Nguyên. Hạt được sấy nứt vỏ tự nhiên, nhân trắng ngà tròn trịa, béo bùi thanh thoát và dồi dào axit béo Omega-7 quý giá.",
+  "description_en": "Harvested from volcanic basalt soil in Vietnam's Central Highlands, our premium macadamias feature smooth, creamy kernels packed with heart-healthy monounsaturated fats and essential antioxidants.",
+  "origin_vi": "Tây Nguyên, Việt Nam",
+  "origin_en": "Central Highlands, Vietnam",
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi zip / Hộp PET 250g, 500g / Thùng xuất khẩu 10kg",
+  "certifications": [
+    "Premium Grade",
+    "ISO 22000",
+    "Clean Label"
+  ],
+  "order": 6
+}

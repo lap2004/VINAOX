@@ -1,0 +1,20 @@
+{
+  "id": "mango-chips",
+  "slug": "mango-chips",
+  "name_vi": "Xoài sấy giòn",
+  "name_en": "Mango Chips",
+  "category": "chips",
+  "image": "/images/products/mango-chips.webp",
+  "description_vi": "Được sản xuất từ xoài tươi đồng bằng sông Cửu Long. Quy trình chiên sấy chân không hiện đại tạo nên lát xoài giòn xốp hấp dẫn, vị chua ngọt tự nhiên hài hòa và màu vàng tươi đẹp mắt.",
+  "description_en": "Crafted from fresh Mekong Delta mangoes, our mango chips undergo high-precision vacuum crisping that produces a clean, brittle snap while retaining true mango flavor and vibrant sunny color.",
+  "origin_vi": "Vùng xoài ĐBSCL",
+  "origin_en": "Mekong Delta Orchards",
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi nhôm zipper 50g, 100g, 200g / Thùng carton xuất khẩu 10kg",
+  "certifications": [
+    "BRCGS Facility",
+    "Clean Label",
+    "Export Standard"
+  ],
+  "order": 5
+}

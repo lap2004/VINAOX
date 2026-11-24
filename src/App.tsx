@@ -9,6 +9,7 @@ const Products = lazy(() => import('./pages/Products'));
 const Quality = lazy(() => import('./pages/Quality'));
 const GlobalMarket = lazy(() => import('./pages/GlobalMarket'));
 const PressMedia = lazy(() => import('./pages/PressMedia'));
+const ArticleDetail = lazy(() => import('./pages/ArticleDetail'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Brochure = lazy(() => import('./pages/Brochure'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -112,6 +113,38 @@ export const App: React.FC = () => {
           element={
             <Suspense fallback={<PageLoader />}>
               <PressMedia />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/press-media"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <PressMedia />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/tin-tuc/:slug"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <ArticleDetail />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/news/:slug"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <ArticleDetail />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/press-media/:slug"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <ArticleDetail />
             </Suspense>
           }
         />

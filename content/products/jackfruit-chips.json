@@ -1,0 +1,20 @@
+{
+  "id": "jackfruit-chips",
+  "slug": "jackfruit-chips",
+  "name_vi": "Mít sấy giòn",
+  "name_en": "Jackfruit Chips",
+  "category": "chips",
+  "image": "/images/products/jackfruit-chips.webp",
+  "description_vi": "Được sản xuất từ múi mít Thái tươi chín cây tại Tiền Giang. Công nghệ chiên sấy chân không kết hợp ly tâm tách dầu triệt để giúp từng múi mít giòn rụm, ngọt đậm đà tự nhiên mà không hề ngấy.",
+  "description_en": "Made from fresh ripe Thai jackfruit sourced from Tien Giang. Advanced vacuum frying and centrifugal oil extraction deliver an exceptionally crispy crunch with zero excess oil, capturing full authentic jackfruit flavor.",
+  "origin_vi": "Tiền Giang, Việt Nam",
+  "origin_en": "Tien Giang, Vietnam",
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 10kg",
+  "certifications": [
+    "BRCGS Facility",
+    "Clean Label",
+    "Export Standard"
+  ],
+  "order": 8
+}

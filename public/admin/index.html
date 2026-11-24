@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>VINAXO CMS | Hệ thống Quản trị Nội dung</title>
+  <link rel="icon" href="/assets/logo/vinaxo-brochure-badge.png" type="image/png" />
+  <style>
+    :root {
+      --brand-brown: #3A251B;
+      --brand-orange: #F4A83A;
+      --cream-bg: #FFF7EC;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--cream-bg);
+    }
+    #vinaxo-admin-header {
+      background-color: var(--brand-brown);
+      color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 3px solid var(--brand-orange);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+    }
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-left img {
+      height: 34px;
+      width: auto;
+      border-radius: 4px;
+    }
+    .brand-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #fff;
+    }
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--brand-orange);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .header-links a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background-color: rgba(255,255,255,0.12);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .header-links a:hover {
+      background-color: var(--brand-orange);
+      color: var(--brand-brown);
+    }
+  </style>
+</head>
+<body>
+  <!-- VINAXO Top Admin Bar -->
+  <div id="vinaxo-admin-header">
+    <div class="brand-left">
+      <img src="/assets/logo/vinaxo-brochure-badge.png" alt="VINAXO Logo" />
+      <div>
+        <div class="brand-title">VINAXO CONTENT MANAGER</div>
+        <div class="brand-subtitle">Hệ thống Quản trị Nội dung Doanh nghiệp</div>
+      </div>
+    </div>
+    <div class="header-links">
+      <a href="/" target="_blank" rel="noopener noreferrer">
+        <span>← Xem Website chính</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Pinned Decap CMS Release v3.1.2 -->
+  <script src="https://unpkg.com/decap-cms@3.1.2/dist/decap-cms.js"></script>
+</body>
+</html>

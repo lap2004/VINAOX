@@ -1,5 +1,6 @@
 import React from 'react';
-import { ExternalLink, Calendar, MessageSquareQuote, Newspaper, Building2, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ExternalLink, Calendar, MessageSquareQuote, Newspaper, Building2, Sparkles, ArrowRight } from 'lucide-react';
 import { NewsItem } from '../../data/news';
 import { useLanguage } from '../../i18n/LanguageContext';
 
@@ -71,23 +72,25 @@ export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
           overflow: 'hidden',
         }}
       >
-        <picture>
-          <source srcSet={news.imageWebp} type="image/webp" />
-          <img
-            src={news.imageJpg}
-            alt={info.title}
-            loading="lazy"
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              transition: 'transform 0.4s ease',
-            }}
-            className="news-card-img"
-          />
-        </picture>
+        <Link to={`/tin-tuc/${news.id}`} aria-label={info.title} style={{ display: 'block', position: 'absolute', inset: 0 }}>
+          <picture>
+            <source srcSet={news.imageWebp} type="image/webp" />
+            <img
+              src={news.imageJpg}
+              alt={info.title}
+              loading="lazy"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                transition: 'transform 0.4s ease',
+              }}
+              className="news-card-img"
+            />
+          </picture>
+        </Link>
 
         {/* Badge Overlay */}
         <div
@@ -162,7 +165,22 @@ export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
             marginBottom: '12px',
           }}
         >
-          {info.title}
+          <Link
+            to={`/tin-tuc/${news.id}`}
+            style={{
+              color: 'inherit',
+              textDecoration: 'none',
+              transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = 'var(--brand-orange)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = 'inherit';
+            }}
+          >
+            {info.title}
+          </Link>
         </h3>
 
         {/* Summary Excerpt */}
@@ -178,7 +196,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
           {info.summary}
         </p>
 
-        {/* External Read Original Link */}
+        {/* Card Links */}
         <div
           style={{
             paddingTop: '14px',
@@ -186,55 +204,51 @@ export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            gap: '8px',
+            flexWrap: 'wrap',
           }}
         >
-          <a
-            href={news.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to={`/tin-tuc/${news.id}`}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '4px',
               fontSize: '0.84rem',
               fontWeight: 700,
-              color: 'var(--primary-green)',
-              transition: 'color 0.18s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'var(--forest-green)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'var(--primary-green)';
+              color: 'var(--brand-orange)',
+              textDecoration: 'none',
+              transition: 'opacity 0.18s ease',
             }}
           >
-            <span>{info.readMore}</span>
-            <ExternalLink size={14} />
-          </a>
+            <span>{isVi ? 'Xem chi tiết' : 'View Article'}</span>
+            <ArrowRight size={14} />
+          </Link>
 
-          {/* Secondary Mirrors if any */}
-          {news.secondaryUrls && news.secondaryUrls.length > 0 && (
-            <div
+          {news.sourceUrl && (
+            <a
+              href={news.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
-                display: 'flex',
-                gap: '6px',
-                fontSize: '0.74rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: '0.80rem',
+                fontWeight: 600,
                 color: 'var(--color-muted)',
+                transition: 'color 0.18s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--primary-green)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--color-muted)';
               }}
             >
-              <span>{isVi ? 'Đăng lại trên:' : 'Also on:'}</span>
-              {news.secondaryUrls.map((s, idx) => (
-                <a
-                  key={idx}
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: 'var(--color-body-dark)', textDecoration: 'underline' }}
-                >
-                  {s.name}
-                </a>
-              ))}
-            </div>
+              <span>{info.readMore}</span>
+              <ExternalLink size={13} />
+            </a>
           )}
         </div>
       </div>

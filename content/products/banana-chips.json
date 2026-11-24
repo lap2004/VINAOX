@@ -1,0 +1,20 @@
+{
+  "id": "banana-chips",
+  "slug": "banana-chips",
+  "name_vi": "Chuối sấy giòn",
+  "name_en": "Banana Chips",
+  "category": "chips",
+  "image": "/images/products/banana-chips.webp",
+  "description_vi": "Được chế biến từ chuối chín tự nhiên của vùng đồng bằng sông Cửu Long. Công nghệ sấy giòn hiện đại giúp từng lát chuối giữ độ giòn xốp tự nhiên, mùi thơm ngọt ngào đặc trưng và giàu kali.",
+  "description_en": "Prepared from ripe Mekong Delta bananas, modern crisping technology ensures an irresistibly crunchy texture while preserving the fruit's natural sweetness, potassium, and wholesome minerals.",
+  "origin_vi": "Vùng chuối ĐBSCL",
+  "origin_en": "Mekong Delta Orchards",
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi zip 100g, 250g, 500g / Thùng xá 10kg",
+  "certifications": [
+    "BRCGS Facility",
+    "Clean Label",
+    "Export Standard"
+  ],
+  "order": 2
+}

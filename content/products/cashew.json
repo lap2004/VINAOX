@@ -1,0 +1,20 @@
+{
+  "id": "cashew",
+  "slug": "cashew",
+  "name_vi": "Hạt điều",
+  "name_en": "Cashew",
+  "category": "nuts-seeds",
+  "image": "/images/products/cashew.webp",
+  "description_vi": "Hạt điều chuẩn xuất khẩu từ thủ phủ Bình Phước. Từng mẻ hạt được phân loại kích thước đều đặn, rang chín tới giữ trọn độ giòn, béo bùi tự nhiên, dồi dào chất béo không bão hòa và khoáng chất.",
+  "description_en": "Renowned globally for superior flavor and texture, our Binh Phuoc whole cashews are carefully roasted to golden perfection, packed with heart-healthy monounsaturated fats, protein, and essential minerals.",
+  "origin_vi": "Bình Phước, Việt Nam",
+  "origin_en": "Binh Phuoc, Vietnam",
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi hút chân không / Lon nạp khí Nitơ 250g, 500g / Thùng chân không 10kg, 22.68kg",
+  "certifications": [
+    "BRCGS Facility",
+    "ISO 22000",
+    "Export Standard"
+  ],
+  "order": 3
+}

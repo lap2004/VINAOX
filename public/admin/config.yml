@@ -1,0 +1,153 @@
+backend:
+  name: github
+  repo: lap2004/VINAOX
+  branch: main
+  base_url: https://vinaxo.net
+  auth_endpoint: api/auth
+  site_domain: vinaxo.net
+
+# Enable Editorial Workflow for Drafts, Reviews, and Publishing
+publish_mode: editorial_workflow
+
+# Media and Image uploads
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+# Vietnamese localization for CMS interface
+locale: "vi"
+
+# Clean slug generation
+slug:
+  encoding: "ascii"
+  clean_accents: true
+  sanitize_replacement: "-"
+
+collections:
+  # ===========================================================================
+  # 1. NEWS & PRESS RELEASES (BÁO CHÍ & HOẠT ĐỘNG DOANH NGHIỆP)
+  # ===========================================================================
+  - name: "news"
+    label: "Tin tức & Báo chí"
+    label_singular: "Bài viết"
+    folder: "content/news"
+    create: true
+    slug: "{{fields.slug}}"
+    format: "json"
+    extension: "json"
+    summary: "{{title_vi}} ({{published_at}})"
+    sortable_fields: ["published_at", "title_vi"]
+    fields:
+      - { label: "Mã bài viết (ID)", name: "id", widget: "string", hint: "Mã định danh duy nhất (ví dụ: press-nld-2026)" }
+      - { label: "Đường dẫn bài viết (Slug)", name: "slug", widget: "string", hint: "Đường dẫn thân thiện (ví dụ: xu-huong-trai-cay-say)" }
+      
+      # Tiêu đề & Tóm tắt
+      - { label: "Tiêu đề tiếng Việt", name: "title_vi", widget: "string" }
+      - { label: "Tiêu đề tiếng Anh", name: "title_en", widget: "string", required: false }
+      - { label: "Tóm tắt tiếng Việt", name: "excerpt_vi", widget: "text", hint: "Đoạn giới thiệu ngắn gọn (2-3 câu)" }
+      - { label: "Tóm tắt tiếng Anh", name: "excerpt_en", widget: "text", required: false }
+
+      # Phân loại & Nguồn
+      - label: "Danh mục"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Báo chí đưa tin (Press)", value: "press" }
+          - { label: "Hoạt động doanh nghiệp (Company)", value: "company" }
+        default: "press"
+
+      - label: "Loại huy hiệu"
+        name: "badgeType"
+        widget: "select"
+        options:
+          - { label: "Trích dẫn phát biểu (Quote)", value: "quote" }
+          - { label: "Phỏng vấn độc quyền (Interview)", value: "interview" }
+          - { label: "Hoạt động sản xuất (Operation)", value: "operation" }
+          - { label: "Sự kiện & Trải nghiệm (Event)", value: "event" }
+        default: "quote"
+
+      - { label: "Huy hiệu tiếng Việt", name: "badgeTextVi", widget: "string", default: "Tin tức" }
+      - { label: "Huy hiệu tiếng Anh", name: "badgeTextEn", widget: "string", default: "News" }
+      - { label: "Tên nguồn báo", name: "source", widget: "string", default: "VINAXO" }
+      - { label: "Link bài báo gốc", name: "sourceUrl", widget: "string", required: false }
+      - { label: "Tác giả / Người phát biểu", name: "author", widget: "string", default: "Ban Biên Tập VINAXO" }
+      - { label: "Ngày xuất bản", name: "published_at", widget: "datetime", format: "YYYY-MM-DD", date_format: "DD/MM/YYYY", time_format: false }
+      - { label: "Bài viết nổi bật", name: "featured", widget: "boolean", default: false }
+
+      # Hình ảnh
+      - { label: "Ảnh đại diện (Cover Image)", name: "cover_image", widget: "image", choose_url: false }
+      - { label: "Mô tả ảnh tiếng Việt (Alt text)", name: "cover_image_alt_vi", widget: "string", required: false }
+      - { label: "Mô tả ảnh tiếng Anh (Alt text)", name: "cover_image_alt_en", widget: "string", required: false }
+      - { label: "Thư viện ảnh bổ sung", name: "gallery", widget: "list", field: { label: "Hình ảnh", name: "image", widget: "image" }, required: false }
+
+      # Nội dung bài viết (Markdown WYSIWYG)
+      - { label: "Nội dung bài viết (Tiếng Việt)", name: "body_vi", widget: "markdown" }
+      - { label: "Nội dung bài viết (Tiếng Anh)", name: "body_en", widget: "markdown", required: false }
+
+      # SEO & Thẻ tags
+      - { label: "Từ khóa (Tags)", name: "tags", widget: "list", field: { label: "Từ khóa", name: "tag", widget: "string" }, required: false }
+      - { label: "Tiêu đề SEO (VI)", name: "seo_title_vi", widget: "string", required: false }
+      - { label: "Mô tả SEO (VI)", name: "seo_description_vi", widget: "text", required: false }
+      - { label: "Tiêu đề SEO (EN)", name: "seo_title_en", widget: "string", required: false }
+      - { label: "Mô tả SEO (EN)", name: "seo_description_en", widget: "text", required: false }
+
+  # ===========================================================================
+  # 2. PRODUCTS (12 DÒNG SẢN PHẨM NHIỆT ĐỚI)
+  # ===========================================================================
+  - name: "products"
+    label: "Sản phẩm VINAXO"
+    label_singular: "Sản phẩm"
+    folder: "content/products"
+    create: true
+    slug: "{{fields.slug}}"
+    format: "json"
+    extension: "json"
+    summary: "{{name_vi}} ({{category}})"
+    fields:
+      - { label: "Mã sản phẩm (ID)", name: "id", widget: "string" }
+      - { label: "Đường dẫn (Slug)", name: "slug", widget: "string" }
+      - { label: "Tên sản phẩm tiếng Việt", name: "name_vi", widget: "string" }
+      - { label: "Tên sản phẩm tiếng Anh", name: "name_en", widget: "string" }
+      - label: "Danh mục sản phẩm"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Trái cây sấy dẻo (Soft-dried)", value: "soft-dried" }
+          - { label: "Trái cây sấy giòn (Crispy-dried)", value: "crispy" }
+          - { label: "Hạt dinh dưỡng sấy (Roasted nuts)", value: "nuts" }
+          - { label: "Thanh dinh dưỡng & Khác (Snacks)", value: "snacks" }
+      - { label: "Ảnh sản phẩm", name: "image", widget: "image" }
+      - { label: "Mô tả tiếng Việt", name: "description_vi", widget: "text" }
+      - { label: "Mô tả tiếng Anh", name: "description_en", widget: "text", required: false }
+      - { label: "Vùng nguyên liệu", name: "origin_vi", widget: "string", default: "Đồng bằng Sông Cửu Long, Việt Nam" }
+      - { label: "Quy cách đóng gói", name: "packaging", widget: "string", default: "Túi nhôm 100g, 500g, Thùng carton 10kg xuất khẩu" }
+      - { label: "Hạn sử dụng", name: "shelf_life", widget: "string", default: "12 tháng" }
+      - { label: "Thứ tự hiển thị", name: "order", widget: "number", value_type: "int", default: 1 }
+
+  # ===========================================================================
+  # 3. SETTINGS & COMPANY INFO (THÔNG TIN DOANH NGHIỆP & BROCHURE)
+  # ===========================================================================
+  - name: "settings"
+    label: "Cấu hình chung"
+    files:
+      - label: "Thông tin công ty & Trụ sở"
+        name: "company"
+        file: "content/settings/company.json"
+        fields:
+          - { label: "Tên công ty tiếng Việt", name: "company_name_vi", widget: "string", default: "CÔNG TY TNHH VINAXO" }
+          - { label: "Tên công ty tiếng Anh", name: "company_name_en", widget: "string", default: "VINAXO COMPANY LIMITED" }
+          - { label: "Mã số thuế", name: "tax_id", widget: "string", default: "1201611681" }
+          - { label: "Trụ sở chính", name: "address_vi", widget: "string", default: "Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp, Việt Nam" }
+          - { label: "Đại diện pháp luật", name: "legal_rep_vi", widget: "string", default: "Ông Hoàng Mạnh Cường (Jimmy)" }
+          - { label: "Hotline B2B", name: "hotline", widget: "string", default: "(+84) 984 815 016" }
+          - { label: "Email tiếp nhận báo giá", name: "email", widget: "string", default: "cuonghoang0710@gmail.com" }
+          - { label: "Website", name: "website", widget: "string", default: "www.vinaxo.net" }
+
+      - label: "Brochure & Hồ sơ năng lực"
+        name: "brochure"
+        file: "content/settings/brochure.json"
+        fields:
+          - { label: "Tên brochure tiếng Việt", name: "title_vi", widget: "string", default: "Hồ Sơ Năng Lực & Brochure VINAXO 2026" }
+          - { label: "Tên brochure tiếng Anh", name: "title_en", widget: "string", default: "VINAXO Company Profile & Brochure 2026" }
+          - { label: "Năm phát hành", name: "year", widget: "string", default: "2026" }
+          - { label: "File PDF Brochure", name: "pdf_file", widget: "file", default: "/brochures/vinaxo-company-brochure-2026.pdf" }
+          - { label: "Cho phép tải xuống", name: "download_enabled", widget: "boolean", default: true }
