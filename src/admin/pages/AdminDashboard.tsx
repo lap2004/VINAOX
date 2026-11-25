@@ -8,9 +8,15 @@ import {
   Edit3, 
   CheckCircle, 
   ArrowRight,
-  TrendingUp,
   FileText,
-  GitBranch
+  GitBranch,
+  Award,
+  Building,
+  Sparkles,
+  RefreshCw,
+  Clock,
+  AlertCircle,
+  Zap
 } from 'lucide-react';
 import { getAllArticles, isArticleDraft } from '../../services/contentService';
 import { productsData } from '../../data/products';
@@ -18,16 +24,46 @@ import { ArticleContent } from '../../types/content';
 import { adminFetch } from '../lib/adminFetch';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
+interface PublishHistoryItem {
+  id: string;
+  module: string;
+  moduleLabel: string;
+  requestedBy: string;
+  requestedAt: string;
+  commitSha?: string;
+  status: string;
+  message: string;
+}
+
 export const AdminDashboard: React.FC = () => {
   const { repoMeta } = useAdminAuth();
   const [articles, setArticles] = useState<ArticleContent[]>(() => getAllArticles({ includeDrafts: true }));
   const [productsCount, setProductsCount] = useState<number>(productsData.length);
   const [mediaCount, setMediaCount] = useState<number>(0);
+  const [certsCount, setCertsCount] = useState<number>(6);
+  
+  const [publishingModule, setPublishingModule] = useState<string | null>(null);
+  const [publishHistory, setPublishHistory] = useState<PublishHistoryItem[]>([]);
+  const [deployStatus, setDeployStatus] = useState<any>(null);
+  const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const publishedArticles = articles.filter(a => !isArticleDraft(a));
   const draftArticles = articles.filter(a => isArticleDraft(a));
 
-  useEffect(() => {
+  const loadData = async () => {
+    try {
+      const pubRes = await adminFetch('/api/admin/publish');
+      if (pubRes.ok) {
+        const pubData = await pubRes.json();
+        if (pubData.ok) {
+          if (Array.isArray(pubData.history)) setPublishHistory(pubData.history);
+          if (pubData.latestDeployStatus) setDeployStatus(pubData.latestDeployStatus);
+          if (pubData.stats?.certificates?.total) setCertsCount(pubData.stats.certificates.total);
+          if (pubData.stats?.media?.total) setMediaCount(pubData.stats.media.total);
+        }
+      }
+    } catch {}
+
     adminFetch('/api/admin/news')
       .then(res => res.json())
       .then(data => {
@@ -53,125 +89,389 @@ export const AdminDashboard: React.FC = () => {
           setMediaCount(data.media.length);
         }
       })
-      .catch(() => setMediaCount(0));
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
+
+  const handlePublish = async (moduleKey: string, moduleLabel: string) => {
+    const confirmText = moduleKey === 'all' 
+      ? 'Bạn có chắc chắn muốn xuất bản TOÀN BỘ website vinaxo.net?' 
+      : `Bạn có muốn xuất bản cập nhật nhóm [${moduleLabel}] lên website?`;
+    if (!window.confirm(confirmText)) return;
+
+    try {
+      setPublishingModule(moduleKey);
+      setStatusMsg(null);
+      const res = await adminFetch('/api/admin/publish', {
+        method: 'POST',
+        body: JSON.stringify({ module: moduleKey })
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setStatusMsg({
+          type: 'success',
+          text: data.message || `Đã kích hoạt xuất bản [${moduleLabel}] thành công!`
+        });
+        await loadData();
+      } else {
+        setStatusMsg({
+          type: 'error',
+          text: data.error || 'Không thể kích hoạt xuất bản.'
+        });
+      }
+    } catch {
+      setStatusMsg({
+        type: 'error',
+        text: 'Lỗi kết nối khi gửi yêu cầu xuất bản.'
+      });
+    } finally {
+      setPublishingModule(null);
+    }
+  };
+
+  const modulesList = [
+    {
+      key: 'news',
+      name: 'Tin tức & Báo chí',
+      desc: `${articles.length} bài viết (${publishedArticles.length} công khai, ${draftArticles.length} bản nháp)`,
+      icon: <Newspaper size={20} color="#D97706" />,
+      bg: '#FEF3C7',
+      link: '/admin/news',
+      manageLabel: 'Quản lý tin tức'
+    },
+    {
+      key: 'products',
+      name: 'Danh mục Sản phẩm',
+      desc: `${productsCount} sản phẩm nhiệt đới xuất khẩu`,
+      icon: <Package size={20} color="#059669" />,
+      bg: '#ECFDF5',
+      link: '/admin/products',
+      manageLabel: 'Quản lý sản phẩm'
+    },
+    {
+      key: 'certificates',
+      name: 'Chứng nhận Quốc tế',
+      desc: `${certsCount} chứng nhận (BRCGS, FDA, ISO 22000, HACCP, Kosher, SMETA)`,
+      icon: <Award size={20} color="#7C3AED" />,
+      bg: '#F5F3FF',
+      link: '/admin/certificates',
+      manageLabel: 'Quản lý chứng nhận'
+    },
+    {
+      key: 'media',
+      name: 'Thư viện Hình ảnh',
+      desc: `${mediaCount} hình ảnh đã tối ưu WebP/JPG trong hệ thống`,
+      icon: <Image size={20} color="#2563EB" />,
+      bg: '#EFF6FF',
+      link: '/admin/media',
+      manageLabel: 'Thư viện media'
+    },
+    {
+      key: 'brochure',
+      name: 'Hồ sơ năng lực Brochure',
+      desc: 'Cấu hình file PDF và năm ấn bản hồ sơ xuất khẩu',
+      icon: <FileText size={20} color="#EA580C" />,
+      bg: '#FFF7ED',
+      link: '/admin/brochure',
+      manageLabel: 'Cấu hình brochure'
+    },
+    {
+      key: 'company',
+      name: 'Thông tin Doanh nghiệp',
+      desc: 'Pháp nhân Công ty TNHH Vinaxo, MST, hotline, địa chỉ xưởng',
+      icon: <Building size={20} color="#475569" />,
+      bg: '#F1F5F9',
+      link: '/admin/settings',
+      manageLabel: 'Cài đặt chung'
+    }
+  ];
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       {/* Page Title & Greeting */}
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#3A251B', margin: '0 0 6px 0' }}>
-          Tổng quan Quản trị VINAXO
-        </h1>
-        <p style={{ fontSize: '0.9rem', color: '#6E6259', margin: 0 }}>
-          Hệ thống quản lý nội dung số, cập nhật bài viết báo chí và danh mục {productsCount} sản phẩm xuất khẩu.
-        </p>
+      <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+        <div>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#3A251B', margin: '0 0 6px 0' }}>
+            Tổng quan Quản trị VINAXO CMS
+          </h1>
+          <p style={{ fontSize: '0.9rem', color: '#6E6259', margin: 0 }}>
+            Hệ thống quản lý nội dung đa phân hệ (Module-based Publishing), lưu trữ Git bền vững và tự động triển khai Vercel.
+          </p>
+        </div>
+
+        <button
+          onClick={() => handlePublish('all', 'Toàn bộ website')}
+          disabled={publishingModule !== null}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            backgroundColor: '#10B981',
+            color: '#FFFFFF',
+            padding: '12px 22px',
+            borderRadius: '8px',
+            fontWeight: 700,
+            fontSize: '0.92rem',
+            border: 'none',
+            cursor: publishingModule ? 'not-allowed' : 'pointer',
+            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+          }}
+        >
+          <Zap size={18} />
+          <span>{publishingModule === 'all' ? 'Đang cập nhật website...' : 'Cập nhật TOÀN BỘ website'}</span>
+        </button>
       </div>
 
-      {/* Stats Counter Grid */}
+      {/* Status Feedback Alert */}
+      {statusMsg && (
+        <div style={{
+          padding: '14px 18px',
+          borderRadius: '8px',
+          marginBottom: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          fontSize: '0.9rem',
+          backgroundColor: statusMsg.type === 'success' ? '#ECFDF5' : '#FEF2F2',
+          color: statusMsg.type === 'success' ? '#065F46' : '#991B1B',
+          border: `1.5px solid ${statusMsg.type === 'success' ? '#A7F3D0' : '#FECACA'}`
+        }}>
+          {statusMsg.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+          <span>{statusMsg.text}</span>
+        </div>
+      )}
+
+      {/* Module Publishing Hub Grid */}
+      <div style={{ marginBottom: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div>
+            <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#3A251B', margin: 0 }}>
+              Cập nhật Website theo từng Phân hệ (Module Publishing Hub)
+            </h2>
+            <p style={{ fontSize: '0.82rem', color: '#6E6259', margin: '2px 0 0 0' }}>
+              Xuất bản độc lập cho từng nhóm nội dung mà không ảnh hưởng tới các dữ liệu khác
+            </p>
+          </div>
+          <button
+            onClick={loadData}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              border: '1px solid #D1C7BD',
+              backgroundColor: '#FFFFFF',
+              color: '#6E6259',
+              fontSize: '0.8rem',
+              cursor: 'pointer'
+            }}
+          >
+            <RefreshCw size={13} />
+            <span>Làm mới</span>
+          </button>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+          gap: '16px'
+        }}>
+          {modulesList.map((m) => (
+            <div
+              key={m.key}
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: '12px',
+                padding: '20px',
+                border: '1.5px solid #EADFCC',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ padding: '8px', borderRadius: '8px', backgroundColor: m.bg }}>
+                      {m.icon}
+                    </div>
+                    <span style={{ fontWeight: 700, fontSize: '0.98rem', color: '#3A251B' }}>
+                      {m.name}
+                    </span>
+                  </div>
+                  <Link
+                    to={m.link}
+                    style={{
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      color: '#F4A83A',
+                      textDecoration: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '2px'
+                    }}
+                  >
+                    <span>{m.manageLabel}</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                </div>
+
+                <p style={{ fontSize: '0.84rem', color: '#6E6259', margin: '0 0 16px 0', lineHeight: 1.4 }}>
+                  {m.desc}
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '14px', borderTop: '1px solid #F0EAE1' }}>
+                <span style={{ fontSize: '0.78rem', color: '#8C827A', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <GitBranch size={13} />
+                  <span>Git Branch: {repoMeta ? repoMeta.branch : 'main'}</span>
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => handlePublish(m.key, m.name)}
+                  disabled={publishingModule !== null}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 14px',
+                    borderRadius: '6px',
+                    border: '1px solid #10B981',
+                    backgroundColor: '#ECFDF5',
+                    color: '#065F46',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    cursor: publishingModule ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  <Sparkles size={14} />
+                  <span>{publishingModule === m.key ? 'Đang cập nhật...' : `Cập nhật ${m.name.split(' ')[0]} lên web`}</span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Deployment & Publish History */}
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '16px',
-        marginBottom: '28px'
+        backgroundColor: '#FFFFFF',
+        borderRadius: '12px',
+        border: '1.5px solid #EADFCC',
+        overflow: 'hidden',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+        marginBottom: '32px'
       }}>
-        {/* Card 1: Tin tức */}
         <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '12px',
-          padding: '20px',
-          border: '1.5px solid #EADFCC',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+          padding: '18px 20px',
+          borderBottom: '1px solid #EADFCC',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <span style={{ fontSize: '0.86rem', fontWeight: 600, color: '#6E6259' }}>Bài viết & Báo chí</span>
-            <div style={{ padding: '8px', borderRadius: '8px', backgroundColor: '#FEF3C7', color: '#D97706' }}>
-              <Newspaper size={20} />
-            </div>
+          <div>
+            <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#3A251B', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Clock size={18} color="#D97706" />
+              <span>Lịch sử Xuất bản & Trạng thái Triển khai (Vercel)</span>
+            </h2>
+            <p style={{ fontSize: '0.78rem', color: '#6E6259', margin: '2px 0 0 0' }}>
+              Theo dõi lịch sử cập nhật phân hệ, mã commit Git và tiến trình build tự động
+            </p>
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
-            {articles.length}
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#059669', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+
+          {deployStatus && (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 12px',
+              borderRadius: '20px',
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              backgroundColor: deployStatus.state === 'success' ? '#ECFDF5' : '#EFF6FF',
+              color: deployStatus.state === 'success' ? '#047857' : '#1D4ED8',
+              border: `1px solid ${deployStatus.state === 'success' ? '#A7F3D0' : '#BFDBFE'}`
+            }}>
               <CheckCircle size={13} />
-              {publishedArticles.length} công khai
-            </span>
-            {draftArticles.length > 0 && (
-              <span style={{ color: '#B45309' }}>• {draftArticles.length} bản nháp</span>
-            )}
-          </div>
+              <span>Vercel Deploy: {deployStatus.state?.toUpperCase()}</span>
+            </div>
+          )}
         </div>
 
-        {/* Card 2: Sản phẩm */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '12px',
-          padding: '20px',
-          border: '1.5px solid #EADFCC',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <span style={{ fontSize: '0.86rem', fontWeight: 600, color: '#6E6259' }}>Sản phẩm nhiệt đới</span>
-            <div style={{ padding: '8px', borderRadius: '8px', backgroundColor: '#ECFDF5', color: '#059669' }}>
-              <Package size={20} />
-            </div>
-          </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
-            {productsCount}
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#6E6259' }}>
-            <span>Đạt chuẩn xuất khẩu BRCGS</span>
-          </div>
-        </div>
-
-        {/* Card 3: Hình ảnh */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '12px',
-          padding: '20px',
-          border: '1.5px solid #EADFCC',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <span style={{ fontSize: '0.86rem', fontWeight: 600, color: '#6E6259' }}>Thư viện Media (Uploads)</span>
-            <div style={{ padding: '8px', borderRadius: '8px', backgroundColor: '#EFF6FF', color: '#2563EB' }}>
-              <Image size={20} />
-            </div>
-          </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
-            {mediaCount}
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#6E6259' }}>
-            <span>Tối ưu WebP / JPG / PNG</span>
-          </div>
-        </div>
-
-        {/* Card 4: Cơ chế lưu trữ */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '12px',
-          padding: '20px',
-          border: '1.5px solid #EADFCC',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <span style={{ fontSize: '0.86rem', fontWeight: 600, color: '#6E6259' }}>Hạ tầng CMS</span>
-            <div style={{ padding: '8px', borderRadius: '8px', backgroundColor: '#F5F3FF', color: '#7C3AED' }}>
-              <TrendingUp size={20} />
-            </div>
-          </div>
-          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
-            Git-Based
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#059669', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <GitBranch size={13} />
-            <span>{repoMeta ? `${repoMeta.repo} (${repoMeta.branch})` : 'Không phụ thuộc runtime DB'}</span>
-          </div>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.86rem' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#FAF7F2', borderBottom: '1px solid #EADFCC', color: '#6E6259' }}>
+                <th style={{ padding: '12px 18px', fontWeight: 600 }}>Thời gian</th>
+                <th style={{ padding: '12px 18px', fontWeight: 600 }}>Phân hệ / Module</th>
+                <th style={{ padding: '12px 18px', fontWeight: 600 }}>Người xuất bản</th>
+                <th style={{ padding: '12px 18px', fontWeight: 600 }}>Mã Commit</th>
+                <th style={{ padding: '12px 18px', fontWeight: 600 }}>Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              {publishHistory.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ padding: '28px', textAlign: 'center', color: '#8C827A' }}>
+                    Chưa có lịch sử xuất bản phân hệ nào được ghi nhận.
+                  </td>
+                </tr>
+              ) : (
+                publishHistory.map((item) => (
+                  <tr key={item.id} style={{ borderBottom: '1px solid #F0EAE1' }}>
+                    <td style={{ padding: '12px 18px', color: '#6E6259' }}>
+                      {new Date(item.requestedAt).toLocaleString('vi-VN')}
+                    </td>
+                    <td style={{ padding: '12px 18px', fontWeight: 600, color: '#3A251B' }}>
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '3px 8px',
+                        borderRadius: '4px',
+                        backgroundColor: '#FFF7EC',
+                        color: '#92400E',
+                        border: '1px solid #FDE68A',
+                        fontSize: '0.78rem'
+                      }}>
+                        {item.moduleLabel || item.module}
+                      </span>
+                    </td>
+                    <td style={{ padding: '12px 18px', color: '#6E6259' }}>
+                      {item.requestedBy}
+                    </td>
+                    <td style={{ padding: '12px 18px', fontFamily: 'monospace', fontSize: '0.8rem', color: '#2563EB' }}>
+                      {item.commitSha ? item.commitSha.substring(0, 7) : 'Auto'}
+                    </td>
+                    <td style={{ padding: '12px 18px' }}>
+                      <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        backgroundColor: '#ECFDF5',
+                        color: '#047857',
+                        fontSize: '0.75rem',
+                        fontWeight: 700
+                      }}>
+                        <CheckCircle size={12} />
+                        <span>Hoàn thành</span>
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Quick Action Buttons */}
+      {/* Quick Action Navigation Grid */}
       <div style={{
         display: 'flex',
         gap: '12px',
@@ -239,7 +539,7 @@ export const AdminDashboard: React.FC = () => {
         </Link>
 
         <Link
-          to="/admin/brochure"
+          to="/admin/certificates"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -254,12 +554,12 @@ export const AdminDashboard: React.FC = () => {
             textDecoration: 'none'
           }}
         >
-          <FileText size={18} />
-          <span>Cấu hình Brochure</span>
+          <Award size={18} />
+          <span>Quản lý {certsCount} chứng nhận</span>
         </Link>
       </div>
 
-      {/* Recent Articles Table */}
+      {/* Recent Articles Preview */}
       <div style={{
         backgroundColor: '#FFFFFF',
         borderRadius: '12px',

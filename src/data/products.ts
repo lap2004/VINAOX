@@ -697,10 +697,12 @@ export const productsData: ProductItem[] = BASE_PRODUCTS_DATA.map((base) => {
   const cms = cmsProductMap.get(base.slug) || cmsProductMap.get(base.id);
   if (!cms) return base;
 
-  const nameVi = cms.name_vi || base.nameVi;
-  const nameEn = cms.name_en || base.name;
+  const nameVi = cms.name_vi || cms.nameVi || base.nameVi;
+  const nameEn = cms.name_en || cms.name || base.name;
   const category = (cms.category as ProductCategory) || base.category;
-  const img = cms.image || base.imageWebp || base.image;
+  const img = cms.image || cms.imageWebp || base.imageWebp || base.image;
+  const imgWebp = cms.imageWebp || (img.endsWith('.webp') ? img : (img.endsWith('.jpg') ? img.replace(/\.jpe?g$/, '.webp') : img));
+  const imgJpg = cms.imageJpg || (img.endsWith('.webp') ? img.replace(/\.webp$/, '.jpg') : img);
 
   return {
     ...base,
@@ -708,8 +710,8 @@ export const productsData: ProductItem[] = BASE_PRODUCTS_DATA.map((base) => {
     name: nameEn,
     category,
     image: img,
-    imageWebp: img,
-    imageJpg: img,
+    imageWebp: imgWebp,
+    imageJpg: imgJpg,
     shortDescriptionVi: cms.description_vi || base.shortDescriptionVi,
     descriptionVi: cms.description_vi || base.descriptionVi,
     shortDescription: cms.description_en || base.shortDescription,

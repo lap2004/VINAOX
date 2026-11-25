@@ -25,6 +25,7 @@ const AdminNewsList = lazy(() => import('./admin/pages/AdminNewsList'));
 const AdminNewsEditor = lazy(() => import('./admin/pages/AdminNewsEditor'));
 const AdminMedia = lazy(() => import('./admin/pages/AdminMedia'));
 const AdminProducts = lazy(() => import('./admin/pages/AdminProducts'));
+const AdminCertificates = lazy(() => import('./admin/pages/AdminCertificates'));
 const AdminSettings = lazy(() => import('./admin/pages/AdminSettings'));
 
 // Fallback loader during code-split chunk loading
@@ -150,7 +151,7 @@ export const App: React.FC = () => {
               element={
                 <RouteErrorBoundary level="route" title="Quản lý chứng nhận">
                   <Suspense fallback={<PageLoader />}>
-                    <AdminMedia initialCategory="certificates" />
+                    <AdminCertificates />
                   </Suspense>
                 </RouteErrorBoundary>
               }

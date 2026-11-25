@@ -16,7 +16,9 @@ import {
   RotateCw,
   Scissors,
   BookmarkCheck,
-  ShieldCheck
+  ShieldCheck,
+  Trash2,
+  Sparkles
 } from 'lucide-react';
 import { adminFetch } from '../lib/adminFetch';
 import { productsData } from '../../data/products';
@@ -77,6 +79,32 @@ export const AdminMedia: React.FC<AdminMediaProps> = ({ initialCategory }) => {
   const [cropRotation, setCropRotation] = useState<number>(0);
   const [cropMaxDim, setCropMaxDim] = useState<number>(1920);
   const [isProcessingEdit, setIsProcessingEdit] = useState<boolean>(false);
+  const [itemToDelete, setItemToDelete] = useState<MediaItem | null>(null);
+  const [deleteReferences, setDeleteReferences] = useState<Array<{ type: string; title: string; file?: string }>>([]);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isPublishingMedia, setIsPublishingMedia] = useState<boolean>(false);
+
+  const handlePublishMediaModule = async () => {
+    if (!window.confirm('Bạn có muốn xuất bản cập nhật Thư viện hình ảnh lên website vinaxo.net?')) return;
+    try {
+      setIsPublishingMedia(true);
+      setStatusMsg(null);
+      const res = await adminFetch('/api/admin/publish', {
+        method: 'POST',
+        body: JSON.stringify({ module: 'media' })
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setStatusMsg({ type: 'success', text: data.message || 'Cập nhật Thư viện hình ảnh lên website thành công!' });
+      } else {
+        setStatusMsg({ type: 'error', text: data.error || 'Không thể cập nhật lên website.' });
+      }
+    } catch {
+      setStatusMsg({ type: 'error', text: 'Lỗi kết nối khi gửi yêu cầu xuất bản.' });
+    } finally {
+      setIsPublishingMedia(false);
+    }
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -130,6 +158,50 @@ export const AdminMedia: React.FC<AdminMediaProps> = ({ initialCategory }) => {
   useEffect(() => {
     fetchMedia();
   }, []);
+
+  // Handle safe media deletion with reference validation
+  const handleDeleteClick = async (item: MediaItem) => {
+    setItemToDelete(item);
+    setDeleteReferences([]);
+
+    const localRefs = getReferencingItems(item.url).map(ref => ({ type: 'Nội dung website', title: ref }));
+    try {
+      const res = await adminFetch(`/api/admin/media?checkUsage=${encodeURIComponent(item.url)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.references) && data.references.length > 0) {
+          setDeleteReferences(data.references);
+          return;
+        }
+      }
+    } catch {
+      // Fallback to local
+    }
+    setDeleteReferences(localRefs);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!itemToDelete) return;
+    try {
+      setIsDeleting(true);
+      const res = await adminFetch('/api/admin/media', {
+        method: 'DELETE',
+        body: JSON.stringify({ url: itemToDelete.url })
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setMediaList(prev => prev.filter(m => m.url !== itemToDelete.url));
+        setStatusMsg({ type: 'success', text: `Đã xóa ảnh "${itemToDelete.name}" thành công!` });
+        setItemToDelete(null);
+      } else {
+        setStatusMsg({ type: 'error', text: data.error || 'Không thể xóa ảnh.' });
+      }
+    } catch {
+      setStatusMsg({ type: 'error', text: 'Lỗi kết nối khi xóa ảnh.' });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   // Process crop, rotate, resize and save as optimized WebP directly to Git
   const handleApplyCropAndSave = async () => {
@@ -407,7 +479,12 @@ export const AdminMedia: React.FC<AdminMediaProps> = ({ initialCategory }) => {
 
   const filteredList = mediaList.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.url.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCat = selectedCategory === 'all' || item.category === selectedCategory;
+    let matchesCat = true;
+    if (selectedCategory === 'unused') {
+      matchesCat = getReferencingItems(item.url).length === 0;
+    } else if (selectedCategory !== 'all') {
+      matchesCat = item.category === selectedCategory;
+    }
     return matchesSearch && matchesCat;
   });
 
@@ -426,26 +503,50 @@ export const AdminMedia: React.FC<AdminMediaProps> = ({ initialCategory }) => {
           </p>
         </div>
 
-        <button
-          onClick={fetchMedia}
-          disabled={loading}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #EADCCE',
-            color: '#3A251B',
-            padding: '8px 14px',
-            borderRadius: '8px',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            cursor: 'pointer'
-          }}
-        >
-          <RefreshCw size={16} />
-          <span>Làm mới</span>
-        </button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            type="button"
+            onClick={handlePublishMediaModule}
+            disabled={isPublishingMedia}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              border: '1px solid #10B981',
+              backgroundColor: '#ECFDF5',
+              color: '#065F46',
+              fontWeight: 700,
+              fontSize: '0.86rem',
+              cursor: isPublishingMedia ? 'not-allowed' : 'pointer'
+            }}
+          >
+            <Sparkles size={16} />
+            <span>{isPublishingMedia ? 'Đang cập nhật...' : 'Cập nhật Thư viện ảnh lên web'}</span>
+          </button>
+
+          <button
+            onClick={fetchMedia}
+            disabled={loading}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #EADCCE',
+              color: '#3A251B',
+              padding: '8px 14px',
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '0.88rem',
+              cursor: 'pointer'
+            }}
+          >
+            <RefreshCw size={16} />
+            <span>Làm mới</span>
+          </button>
+        </div>
       </div>
 
       {/* Alert banner */}
@@ -589,9 +690,10 @@ export const AdminMedia: React.FC<AdminMediaProps> = ({ initialCategory }) => {
           <Filter size={15} color="#8C7E74" />
           {[
             { id: 'all', label: 'Tất cả' },
-            { id: 'news', label: 'Tin tức' },
             { id: 'products', label: 'Sản phẩm' },
-            { id: 'certificates', label: 'Chứng nhận' }
+            { id: 'news', label: 'Tin tức' },
+            { id: 'certificates', label: 'Chứng nhận' },
+            { id: 'unused', label: 'Chưa sử dụng' }
           ].map(cat => (
             <button
               key={cat.id}
@@ -786,6 +888,24 @@ export const AdminMedia: React.FC<AdminMediaProps> = ({ initialCategory }) => {
                 >
                   <ExternalLink size={13} />
                 </button>
+
+                {item.url.startsWith('/uploads/') && (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteClick(item)}
+                    title="Xóa hình ảnh này"
+                    style={{
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #FECACA',
+                      color: '#DC2626',
+                      padding: '6px 8px',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -1061,6 +1181,142 @@ export const AdminMedia: React.FC<AdminMediaProps> = ({ initialCategory }) => {
               >
                 {isProcessingEdit ? 'Đang nén & lưu Git...' : 'Lưu ảnh WebP mới'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Delete Confirmation & Reference Check Modal */}
+      {itemToDelete && (
+        <div
+          onClick={() => !isDeleting && setItemToDelete(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(20, 10, 5, 0.7)',
+            zIndex: 1200,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px'
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '12px',
+              maxWidth: '520px',
+              width: '100%',
+              overflow: 'hidden',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.25)'
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{
+              padding: '16px 20px',
+              backgroundColor: deleteReferences.length > 0 ? '#FEF2F2' : '#FFFBEB',
+              borderBottom: `1px solid ${deleteReferences.length > 0 ? '#FECACA' : '#FDE68A'}`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlertCircle size={20} color={deleteReferences.length > 0 ? '#DC2626' : '#D97706'} />
+                <h3 style={{
+                  margin: 0,
+                  fontSize: '1rem',
+                  fontWeight: 700,
+                  color: deleteReferences.length > 0 ? '#991B1B' : '#92400E'
+                }}>
+                  {deleteReferences.length > 0 ? 'Ảnh đang được sử dụng' : 'Xác nhận xóa ảnh'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setItemToDelete(null)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6E6259' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '20px' }}>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'center', marginBottom: '16px', padding: '12px', backgroundColor: '#FAF6F0', borderRadius: '8px' }}>
+                <img
+                  src={itemToDelete.url}
+                  alt={itemToDelete.name}
+                  style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #EADCCE' }}
+                />
+                <div style={{ overflow: 'hidden' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.88rem', color: '#3A251B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {itemToDelete.name}
+                  </div>
+                  <div style={{ fontSize: '0.76rem', color: '#8C827A' }}>
+                    Đường dẫn: {itemToDelete.url}
+                  </div>
+                </div>
+              </div>
+
+              {deleteReferences.length > 0 ? (
+                <div>
+                  <p style={{ fontSize: '0.86rem', color: '#DC2626', lineHeight: 1.5, margin: '0 0 12px 0' }}>
+                    ⚠️ Không thể xóa hình ảnh này vì đang được tham chiếu tại <strong>{deleteReferences.length}</strong> nội dung trên website. Để tránh lỗi vỡ ảnh trên trang công khai, vui lòng gỡ hoặc thay thế ảnh trước:
+                  </p>
+                  <div style={{ maxHeight: '180px', overflowY: 'auto', border: '1px solid #FECACA', borderRadius: '6px', backgroundColor: '#FEF2F2', padding: '8px 12px' }}>
+                    {deleteReferences.map((ref, idx) => (
+                      <div key={idx} style={{ fontSize: '0.8rem', color: '#991B1B', padding: '4px 0', borderBottom: idx < deleteReferences.length - 1 ? '1px dashed #FECACA' : 'none' }}>
+                        • <strong>{ref.type}:</strong> {ref.title}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p style={{ fontSize: '0.88rem', color: '#55473E', lineHeight: 1.5, margin: 0 }}>
+                  Ảnh này hiện <strong>chưa được sử dụng</strong> ở bài viết hay sản phẩm nào. Bạn có chắc chắn muốn xóa vĩnh viễn tệp này khỏi thư mục Git và website không?
+                </p>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '14px 20px', borderTop: '1px solid #EADCCE', display: 'flex', justifyContent: 'flex-end', gap: '10px', backgroundColor: '#FAF6F0' }}>
+              <button
+                type="button"
+                onClick={() => setItemToDelete(null)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: '1px solid #EADCCE',
+                  backgroundColor: '#FFFFFF',
+                  color: '#6E6259',
+                  fontSize: '0.86rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                {deleteReferences.length > 0 ? 'Đóng' : 'Hủy bỏ'}
+              </button>
+
+              {deleteReferences.length === 0 && (
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={handleConfirmDelete}
+                  style={{
+                    padding: '8px 18px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    backgroundColor: '#DC2626',
+                    color: '#FFFFFF',
+                    fontSize: '0.86rem',
+                    fontWeight: 700,
+                    cursor: isDeleting ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 2px 6px rgba(220, 38, 38, 0.3)'
+                  }}
+                >
+                  {isDeleting ? 'Đang xóa...' : 'Xóa vĩnh viễn'}
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -7,11 +7,13 @@ import {
   CheckCircle, 
   AlertCircle, 
   X,
-  Phone,
   ShieldCheck,
-  FileCheck
+  FileCheck,
+  Sparkles,
+  Upload
 } from 'lucide-react';
 import { adminFetch } from '../lib/adminFetch';
+import { MediaPicker } from '../components/MediaPicker';
 
 interface CompanySettings {
   company_name_vi: string;
@@ -64,7 +66,9 @@ export const AdminSettings: React.FC = () => {
   const [companySha, setCompanySha] = useState<string | undefined>(undefined);
   const [brochureSha, setBrochureSha] = useState<string | undefined>(undefined);
   const [isSaving, setIsSaving] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -105,7 +109,7 @@ export const AdminSettings: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.ok) {
         if (data.result?.sha) setCompanySha(data.result.sha);
-        setStatusMsg({ type: 'success', text: 'Cập nhật thông tin doanh nghiệp thành công!' });
+        setStatusMsg({ type: 'success', text: 'Lưu thông tin doanh nghiệp thành công!' });
       } else {
         setStatusMsg({ type: 'error', text: data.error || 'Không thể lưu cài đặt.' });
       }
@@ -113,6 +117,28 @@ export const AdminSettings: React.FC = () => {
       setStatusMsg({ type: 'error', text: 'Lỗi kết nối khi gửi cài đặt.' });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handlePublishCompany = async () => {
+    if (!window.confirm('Bạn có muốn xuất bản thông tin Doanh nghiệp lên website vinaxo.net?')) return;
+    try {
+      setIsPublishing(true);
+      setStatusMsg(null);
+      const res = await adminFetch('/api/admin/publish', {
+        method: 'POST',
+        body: JSON.stringify({ module: 'company' })
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setStatusMsg({ type: 'success', text: data.message || 'Cập nhật Doanh nghiệp lên website thành công!' });
+      } else {
+        setStatusMsg({ type: 'error', text: data.error || 'Không thể cập nhật lên website.' });
+      }
+    } catch {
+      setStatusMsg({ type: 'error', text: 'Lỗi kết nối khi xuất bản module.' });
+    } finally {
+      setIsPublishing(false);
     }
   };
 
@@ -128,7 +154,7 @@ export const AdminSettings: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.ok) {
         if (data.result?.sha) setBrochureSha(data.result.sha);
-        setStatusMsg({ type: 'success', text: 'Cập nhật cấu hình Brochure thành công!' });
+        setStatusMsg({ type: 'success', text: 'Lưu cấu hình Brochure thành công!' });
       } else {
         setStatusMsg({ type: 'error', text: data.error || 'Không thể lưu cài đặt.' });
       }
@@ -136,6 +162,28 @@ export const AdminSettings: React.FC = () => {
       setStatusMsg({ type: 'error', text: 'Lỗi kết nối khi gửi cài đặt.' });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handlePublishBrochure = async () => {
+    if (!window.confirm('Bạn có muốn xuất bản cấu hình Brochure lên website vinaxo.net?')) return;
+    try {
+      setIsPublishing(true);
+      setStatusMsg(null);
+      const res = await adminFetch('/api/admin/publish', {
+        method: 'POST',
+        body: JSON.stringify({ module: 'brochure' })
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setStatusMsg({ type: 'success', text: data.message || 'Cập nhật Brochure lên website thành công!' });
+      } else {
+        setStatusMsg({ type: 'error', text: data.error || 'Không thể cập nhật lên website.' });
+      }
+    } catch {
+      setStatusMsg({ type: 'error', text: 'Lỗi kết nối khi xuất bản module.' });
+    } finally {
+      setIsPublishing(false);
     }
   };
 
@@ -152,51 +200,49 @@ export const AdminSettings: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '8px', borderBottom: '2px solid #EADCCE', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', gap: '8px', borderBottom: '1.5px solid #EADCCE', marginBottom: '24px' }}>
         <button
           onClick={() => setActiveTab('company')}
           style={{
-            display: 'inline-flex',
+            display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            padding: '10px 18px',
-            backgroundColor: 'transparent',
+            padding: '12px 20px',
+            background: 'none',
             border: 'none',
             borderBottom: activeTab === 'company' ? '3px solid #E28D1B' : '3px solid transparent',
-            color: activeTab === 'company' ? '#3A251B' : '#8C7E74',
+            color: activeTab === 'company' ? '#3A251B' : '#8C827A',
             fontWeight: activeTab === 'company' ? 700 : 500,
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            marginBottom: '-2px'
+            fontSize: '0.92rem',
+            cursor: 'pointer'
           }}
         >
           <Building size={16} />
-          <span>Thông tin doanh nghiệp</span>
+          <span>Thông tin Doanh nghiệp</span>
         </button>
 
         <button
           onClick={() => setActiveTab('brochure')}
           style={{
-            display: 'inline-flex',
+            display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            padding: '10px 18px',
-            backgroundColor: 'transparent',
+            padding: '12px 20px',
+            background: 'none',
             border: 'none',
             borderBottom: activeTab === 'brochure' ? '3px solid #E28D1B' : '3px solid transparent',
-            color: activeTab === 'brochure' ? '#3A251B' : '#8C7E74',
+            color: activeTab === 'brochure' ? '#3A251B' : '#8C827A',
             fontWeight: activeTab === 'brochure' ? 700 : 500,
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            marginBottom: '-2px'
+            fontSize: '0.92rem',
+            cursor: 'pointer'
           }}
         >
           <FileText size={16} />
-          <span>Brochure & Hồ sơ năng lực</span>
+          <span>Hồ sơ năng lực (Brochure)</span>
         </button>
       </div>
 
-      {/* Alert */}
+      {/* Alert Messages */}
       {statusMsg && (
         <div style={{
           padding: '12px 16px',
@@ -205,16 +251,14 @@ export const AdminSettings: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           gap: '10px',
+          fontSize: '0.88rem',
           backgroundColor: statusMsg.type === 'success' ? '#ECFDF5' : '#FEF2F2',
-          border: `1px solid ${statusMsg.type === 'success' ? '#10B981' : '#EF4444'}`,
-          color: statusMsg.type === 'success' ? '#065F46' : '#991B1B'
+          color: statusMsg.type === 'success' ? '#065F46' : '#991B1B',
+          border: `1px solid ${statusMsg.type === 'success' ? '#A7F3D0' : '#FECACA'}`
         }}>
           {statusMsg.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-          <span style={{ fontSize: '0.88rem', fontWeight: 600 }}>{statusMsg.text}</span>
-          <button
-            onClick={() => setStatusMsg(null)}
-            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
-          >
+          <span style={{ flex: 1 }}>{statusMsg.text}</span>
+          <button onClick={() => setStatusMsg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}>
             <X size={16} />
           </button>
         </div>
@@ -231,7 +275,7 @@ export const AdminSettings: React.FC = () => {
         }}>
           <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#3A251B', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <ShieldCheck size={18} color="#E28D1B" />
-            <span>Pháp nhân & Địa chỉ</span>
+            <span>Pháp nhân & Liên hệ Công ty</span>
           </h3>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '16px' }}>
@@ -278,38 +322,20 @@ export const AdminSettings: React.FC = () => {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
-                Người đại diện pháp luật
+                Người đại diện pháp luật *
               </label>
               <input
                 type="text"
+                required
                 value={companyData.legal_rep_vi}
                 onChange={(e) => setCompanyData({ ...companyData, legal_rep_vi: e.target.value })}
                 style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
               />
             </div>
-          </div>
 
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
-              Địa chỉ trụ sở doanh nghiệp
-            </label>
-            <input
-              type="text"
-              value={companyData.address_vi}
-              onChange={(e) => setCompanyData({ ...companyData, address_vi: e.target.value })}
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
-            />
-          </div>
-
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#3A251B', margin: '24px 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Phone size={18} color="#E28D1B" />
-            <span>Kênh liên lạc & Website</span>
-          </h3>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
-                Đường dây nóng / Hotline *
+                Hotline / Đường dây nóng *
               </label>
               <input
                 type="text"
@@ -319,10 +345,25 @@ export const AdminSettings: React.FC = () => {
                 style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
               />
             </div>
+          </div>
 
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+              Địa chỉ trụ sở / Nhà máy *
+            </label>
+            <input
+              type="text"
+              required
+              value={companyData.address_vi}
+              onChange={(e) => setCompanyData({ ...companyData, address_vi: e.target.value })}
+              style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '24px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
-                Email liên hệ *
+                Email giao dịch chính thức *
               </label>
               <input
                 type="email"
@@ -346,7 +387,29 @@ export const AdminSettings: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={handlePublishCompany}
+              disabled={isPublishing}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                border: '1px solid #10B981',
+                backgroundColor: '#ECFDF5',
+                color: '#065F46',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                cursor: isPublishing ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <Sparkles size={16} />
+              <span>{isPublishing ? 'Đang cập nhật...' : 'Cập nhật Doanh nghiệp lên website'}</span>
+            </button>
+
             <button
               type="submit"
               disabled={isSaving}
@@ -430,15 +493,37 @@ export const AdminSettings: React.FC = () => {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
-                File PDF tài liệu (Đường dẫn tĩnh)
+                File PDF tài liệu (Đường dẫn tĩnh) *
               </label>
-              <input
-                type="text"
-                required
-                value={brochureData.pdf_file}
-                onChange={(e) => setBrochureData({ ...brochureData, pdf_file: e.target.value })}
-                style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
-              />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  required
+                  value={brochureData.pdf_file}
+                  onChange={(e) => setBrochureData({ ...brochureData, pdf_file: e.target.value })}
+                  style={{ flex: 1, padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowMediaPicker(true)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #D1C7BD',
+                    backgroundColor: '#FAF7F2',
+                    color: '#3A251B',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Upload size={14} />
+                  <span>Chọn file</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -453,7 +538,29 @@ export const AdminSettings: React.FC = () => {
             </label>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={handlePublishBrochure}
+              disabled={isPublishing}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                border: '1px solid #10B981',
+                backgroundColor: '#ECFDF5',
+                color: '#065F46',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                cursor: isPublishing ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <Sparkles size={16} />
+              <span>{isPublishing ? 'Đang cập nhật...' : 'Cập nhật Brochure lên website'}</span>
+            </button>
+
             <button
               type="submit"
               disabled={isSaving}
@@ -477,6 +584,18 @@ export const AdminSettings: React.FC = () => {
             </button>
           </div>
         </form>
+      )}
+
+      {showMediaPicker && (
+        <MediaPicker
+          isOpen={showMediaPicker}
+          title="Chọn hoặc tải lên tài liệu Brochure"
+          onSelect={(url) => {
+            setBrochureData(prev => ({ ...prev, pdf_file: url }));
+            setShowMediaPicker(false);
+          }}
+          onClose={() => setShowMediaPicker(false)}
+        />
       )}
     </div>
   );

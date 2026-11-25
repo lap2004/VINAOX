@@ -1,0 +1,30 @@
+[
+  {
+    "id": "pub-1795605739903",
+    "module": "products",
+    "moduleLabel": "Sản phẩm nhiệt đới",
+    "requestedBy": "admin",
+    "requestedAt": "2026-11-25T11:22:19.903Z",
+    "status": "QUEUED",
+    "message": "Cập nhật nhóm [Sản phẩm nhiệt đới] lên website vinaxo.net"
+  },
+  {
+    "id": "pub-1795605685323",
+    "module": "products",
+    "moduleLabel": "Sản phẩm nhiệt đới",
+    "requestedBy": "admin",
+    "requestedAt": "2026-11-25T11:21:25.323Z",
+    "status": "QUEUED",
+    "message": "Cập nhật nhóm [Sản phẩm nhiệt đới] lên website vinaxo.net"
+  },
+  {
+    "id": "pub-initial-20261125",
+    "module": "all",
+    "moduleLabel": "Toàn bộ website",
+    "requestedBy": "admin",
+    "requestedAt": "2026-11-25T17:30:00.000Z",
+    "commitSha": "f50887b",
+    "status": "READY",
+    "message": "Khởi tạo hệ thống Module Publishing V4"
+  }
+]

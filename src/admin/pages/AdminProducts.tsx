@@ -6,12 +6,19 @@ import {
   X, 
   CheckCircle, 
   AlertCircle, 
-  ExternalLink,
-  Layers,
-  Clock
+  Plus,
+  Trash2,
+  Copy,
+  ArrowUp,
+  ArrowDown,
+  Eye,
+  EyeOff,
+  Image as ImageIcon,
+  Sparkles
 } from 'lucide-react';
 import { productsData } from '../../data/products';
 import { adminFetch } from '../lib/adminFetch';
+import { MediaPicker } from '../components/MediaPicker';
 
 export interface ProductItemData {
   id: string;
@@ -20,6 +27,8 @@ export interface ProductItemData {
   name_en: string;
   category: string;
   image: string;
+  imageWebp?: string;
+  imageJpg?: string;
   description_vi: string;
   description_en: string;
   origin_vi?: string;
@@ -28,6 +37,8 @@ export interface ProductItemData {
   packaging?: string;
   certifications?: string[];
   order?: number;
+  published?: boolean;
+  status?: 'published' | 'draft';
 }
 
 export function normalizeProductItem(raw: any, idx = 0): ProductItemData {
@@ -41,7 +52,9 @@ export function normalizeProductItem(raw: any, idx = 0): ProductItemData {
       image: '/images/products/placeholder.webp',
       description_vi: '',
       description_en: '',
-      order: idx + 1
+      order: idx + 1,
+      published: true,
+      status: 'published'
     };
   }
 
@@ -59,6 +72,8 @@ export function normalizeProductItem(raw: any, idx = 0): ProductItemData {
   const packaging = String(raw.packaging || raw.specs?.packagingVi || raw.specs?.packagingEn || 'Túi zip / Thùng carton xuất khẩu').trim();
   const certifications = Array.isArray(raw.certifications) ? raw.certifications : [];
   const order = Number(raw.order) || idx + 1;
+  const published = raw.published !== undefined ? Boolean(raw.published) : raw.status !== 'draft';
+  const status = published ? 'published' : 'draft';
 
   return {
     id,
@@ -67,6 +82,8 @@ export function normalizeProductItem(raw: any, idx = 0): ProductItemData {
     name_en,
     category,
     image,
+    imageWebp: raw.imageWebp || image,
+    imageJpg: raw.imageJpg || image,
     description_vi,
     description_en,
     origin_vi,
@@ -74,9 +91,30 @@ export function normalizeProductItem(raw: any, idx = 0): ProductItemData {
     shelf_life,
     packaging,
     certifications,
-    order
+    order,
+    published,
+    status
   };
 }
+
+const EMPTY_PRODUCT: ProductItemData = {
+  id: '',
+  slug: '',
+  name_vi: '',
+  name_en: '',
+  category: 'soft-dried',
+  image: '/images/products/placeholder.webp',
+  description_vi: '',
+  description_en: '',
+  origin_vi: 'Đồng bằng Sông Cửu Long, Việt Nam',
+  origin_en: 'Mekong Delta, Vietnam',
+  shelf_life: '12 Tháng',
+  packaging: 'Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu',
+  certifications: ['BRCGS', 'Clean Label'],
+  order: 1,
+  published: true,
+  status: 'published'
+};
 
 export const AdminProducts: React.FC = () => {
   const initialProducts: ProductItemData[] = productsData.map((p, idx) => normalizeProductItem(p, idx));
@@ -85,35 +123,37 @@ export const AdminProducts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [editingProduct, setEditingProduct] = useState<ProductItemData | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<ProductItemData | null>(null);
+  const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPublishingModule, setIsPublishingModule] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchServerProducts = async () => {
-      try {
-        const res = await adminFetch('/api/admin/products');
-        if (res.ok && isMounted) {
-          const data = await res.json();
-          if (Array.isArray(data.products) && data.products.length > 0) {
-            setProducts(data.products.map((p: any, idx: number) => normalizeProductItem(p, idx)));
-          }
+  const fetchServerProducts = async () => {
+    try {
+      const res = await adminFetch('/api/admin/products');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.products) && data.products.length > 0) {
+          setProducts(data.products.map((p: any, idx: number) => normalizeProductItem(p, idx)));
         }
-      } catch {
-        // Keep fallback
       }
-    };
-    fetchServerProducts();
-    return () => { isMounted = false; };
-  }, []);
-
-  const handleEditClick = (prod: ProductItemData) => {
-    setEditingProduct({ ...prod });
+    } catch {
+      // Keep fallback
+    }
   };
 
+  useEffect(() => {
+    fetchServerProducts();
+  }, []);
+
+  // Save product (Add or Edit)
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingProduct) return;
+    const target = editingProduct;
+    if (!target) return;
 
     try {
       setIsSaving(true);
@@ -121,15 +161,23 @@ export const AdminProducts: React.FC = () => {
 
       const res = await adminFetch('/api/admin/products', {
         method: 'POST',
-        body: JSON.stringify(editingProduct)
+        body: JSON.stringify(target)
       });
 
       const data = await res.json();
       if (res.ok && data.ok) {
-        const updated = normalizeProductItem(data.product || editingProduct, editingProduct.order || 0);
-        setProducts(prev => prev.map(p => p.slug === editingProduct.slug ? updated : p));
+        const updated = normalizeProductItem(data.product || target, target.order || 0);
+        setProducts(prev => {
+          const exists = prev.some(p => p.slug === updated.slug);
+          if (exists) {
+            return prev.map(p => p.slug === updated.slug ? updated : p);
+          } else {
+            return [updated, ...prev];
+          }
+        });
         setStatusMsg({ type: 'success', text: `Cập nhật sản phẩm "${updated.name_vi}" thành công!` });
         setEditingProduct(null);
+        setIsCreating(false);
       } else {
         setStatusMsg({ type: 'error', text: data.error || 'Không thể lưu sản phẩm.' });
       }
@@ -137,6 +185,103 @@ export const AdminProducts: React.FC = () => {
       setStatusMsg({ type: 'error', text: 'Lỗi kết nối khi gửi thông tin cập nhật sản phẩm.' });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Delete product
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    try {
+      setIsDeleting(true);
+      const res = await adminFetch('/api/admin/products', {
+        method: 'DELETE',
+        body: JSON.stringify({ slug: productToDelete.slug })
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setProducts(prev => prev.filter(p => p.slug !== productToDelete.slug));
+        setStatusMsg({ type: 'success', text: `Đã xóa sản phẩm "${productToDelete.name_vi}" thành công!` });
+        setProductToDelete(null);
+      } else {
+        setStatusMsg({ type: 'error', text: data.error || 'Không thể xóa sản phẩm.' });
+      }
+    } catch {
+      setStatusMsg({ type: 'error', text: 'Lỗi mạng khi xóa sản phẩm.' });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Duplicate product
+  const handleDuplicateProduct = (prod: ProductItemData) => {
+    const copySlug = `${prod.slug}-copy`;
+    const copyNameVi = `${prod.name_vi} (Bản sao)`;
+    const copyNameEn = `${prod.name_en} (Copy)`;
+    const duplicated: ProductItemData = {
+      ...prod,
+      id: copySlug,
+      slug: copySlug,
+      name_vi: copyNameVi,
+      name_en: copyNameEn,
+      order: (prod.order || 0) + 1,
+      status: 'draft',
+      published: false
+    };
+    setEditingProduct(duplicated);
+    setIsCreating(true);
+  };
+
+  // Move product display order
+  const handleMoveOrder = async (prod: ProductItemData, direction: 'up' | 'down') => {
+    const idx = products.findIndex(p => p.slug === prod.slug);
+    if (idx === -1) return;
+    if (direction === 'up' && idx === 0) return;
+    if (direction === 'down' && idx === products.length - 1) return;
+
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    const newProducts = [...products];
+    const tempOrder = newProducts[idx].order || idx + 1;
+    newProducts[idx].order = newProducts[swapIdx].order || swapIdx + 1;
+    newProducts[swapIdx].order = tempOrder;
+
+    const tempItem = newProducts[idx];
+    newProducts[idx] = newProducts[swapIdx];
+    newProducts[swapIdx] = tempItem;
+
+    setProducts(newProducts);
+
+    // Save updated item order
+    try {
+      await adminFetch('/api/admin/products', {
+        method: 'POST',
+        body: JSON.stringify(newProducts[idx])
+      });
+      await adminFetch('/api/admin/products', {
+        method: 'POST',
+        body: JSON.stringify(newProducts[swapIdx])
+      });
+    } catch {}
+  };
+
+  // Publish products module to website
+  const handlePublishProductsModule = async () => {
+    try {
+      setIsPublishingModule(true);
+      setStatusMsg(null);
+      const res = await adminFetch('/api/admin/publish', {
+        method: 'POST',
+        body: JSON.stringify({ module: 'products' })
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setStatusMsg({ type: 'success', text: `Đã kích hoạt xuất bản toàn bộ ${products.length} sản phẩm lên website!` });
+      } else {
+        setStatusMsg({ type: 'error', text: data.error || 'Lỗi khi kích hoạt xuất bản nhóm sản phẩm.' });
+      }
+    } catch {
+      setStatusMsg({ type: 'error', text: 'Lỗi mạng khi xuất bản nhóm sản phẩm.' });
+    } finally {
+      setIsPublishingModule(false);
     }
   };
 
@@ -158,58 +303,115 @@ export const AdminProducts: React.FC = () => {
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#3A251B', margin: '0 0 4px 0' }}>
             Quản lý Danh mục Sản phẩm
           </h1>
-          <p style={{ fontSize: '0.88rem', color: '#6E6259', margin: 0 }}>
-            {products.length} dòng sản phẩm xuất khẩu chất lượng cao của VINAXO
+          <p style={{ fontSize: '0.86rem', color: '#6E6259', margin: 0 }}>
+            Hệ sinh thái {products.length} dòng sản phẩm trái cây sấy dẻo, sấy giòn và hạt dinh dưỡng xuất khẩu.
           </p>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={handlePublishProductsModule}
+            disabled={isPublishingModule}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '9px 16px',
+              borderRadius: '8px',
+              border: '1px solid #10B981',
+              backgroundColor: '#ECFDF5',
+              color: '#065F46',
+              fontWeight: 700,
+              fontSize: '0.86rem',
+              cursor: isPublishingModule ? 'not-allowed' : 'pointer'
+            }}
+          >
+            <Sparkles size={16} />
+            <span>{isPublishingModule ? 'Đang cập nhật...' : 'Cập nhật sản phẩm lên website'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              const nextOrder = products.length + 1;
+              setEditingProduct({ ...EMPTY_PRODUCT, order: nextOrder, slug: `san-pham-${nextOrder}` });
+              setIsCreating(true);
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '9px 18px',
+              borderRadius: '8px',
+              border: 'none',
+              backgroundColor: '#F4A83A',
+              color: '#3A251B',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(244, 168, 58, 0.3)'
+            }}
+          >
+            <Plus size={16} />
+            <span>Thêm sản phẩm mới</span>
+          </button>
         </div>
       </div>
 
-      {/* Alert */}
+      {/* Notification Toast */}
       {statusMsg && (
         <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
           padding: '12px 16px',
           borderRadius: '8px',
           marginBottom: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
           backgroundColor: statusMsg.type === 'success' ? '#ECFDF5' : '#FEF2F2',
-          border: `1px solid ${statusMsg.type === 'success' ? '#10B981' : '#EF4444'}`,
-          color: statusMsg.type === 'success' ? '#065F46' : '#991B1B'
+          border: `1px solid ${statusMsg.type === 'success' ? '#A7F3D0' : '#FECACA'}`,
+          color: statusMsg.type === 'success' ? '#065F46' : '#991B1B',
+          fontSize: '0.88rem'
         }}>
-          {statusMsg.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-          <span style={{ fontSize: '0.88rem', fontWeight: 600 }}>{statusMsg.text}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {statusMsg.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+            <span>{statusMsg.text}</span>
+          </div>
           <button
+            type="button"
             onClick={() => setStatusMsg(null)}
-            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
           >
             <X size={16} />
           </button>
         </div>
       )}
 
-      {/* Filter and Search */}
+      {/* Filter and Search Bar */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '12px',
-        marginBottom: '20px'
+        marginBottom: '20px',
+        backgroundColor: '#FFFFFF',
+        padding: '14px 18px',
+        borderRadius: '10px',
+        border: '1px solid #EADCCE'
       }}>
         <div style={{ position: 'relative', flex: '1 1 280px', maxWidth: '400px' }}>
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#8C7E74' }} />
           <input
             type="text"
-            placeholder="Tìm theo tên sản phẩm tiếng Việt hoặc tiếng Anh..."
+            placeholder="Tìm theo tên sản phẩm, slug..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%',
-              padding: '9px 12px 9px 36px',
-              borderRadius: '8px',
+              padding: '8px 12px 8px 36px',
+              borderRadius: '6px',
               border: '1px solid #EADCCE',
-              backgroundColor: '#FFFFFF',
               fontSize: '0.88rem',
               color: '#3A251B',
               outline: 'none',
@@ -218,7 +420,7 @@ export const AdminProducts: React.FC = () => {
           />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {[
             { id: 'all', label: 'Tất cả' },
             { id: 'soft-dried', label: 'Sấy dẻo' },
@@ -230,13 +432,13 @@ export const AdminProducts: React.FC = () => {
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
               style={{
-                backgroundColor: selectedCategory === cat.id ? '#3A251B' : '#FFFFFF',
-                color: selectedCategory === cat.id ? '#FFFFFF' : '#6E6259',
-                border: `1px solid ${selectedCategory === cat.id ? '#3A251B' : '#EADCCE'}`,
-                padding: '6px 12px',
+                padding: '6px 14px',
                 borderRadius: '20px',
                 fontSize: '0.82rem',
                 fontWeight: selectedCategory === cat.id ? 700 : 500,
+                border: `1px solid ${selectedCategory === cat.id ? '#3A251B' : '#EADCCE'}`,
+                backgroundColor: selectedCategory === cat.id ? '#3A251B' : '#FFFFFF',
+                color: selectedCategory === cat.id ? '#FFFFFF' : '#6E6259',
                 cursor: 'pointer'
               }}
             >
@@ -246,108 +448,191 @@ export const AdminProducts: React.FC = () => {
         </div>
       </div>
 
-      {/* Products Table */}
+      {/* Product Table */}
       <div style={{
         backgroundColor: '#FFFFFF',
         borderRadius: '12px',
         border: '1px solid #EADCCE',
         overflow: 'hidden',
-        boxShadow: '0 2px 8px rgba(58, 37, 27, 0.04)'
+        boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
       }}>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
             <thead>
-              <tr style={{ backgroundColor: '#FFF9F2', borderBottom: '1px solid #EADCCE' }}>
-                <th style={{ padding: '14px 16px', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B' }}>Hình ảnh & Tên sản phẩm</th>
-                <th style={{ padding: '14px 16px', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B' }}>Tên quốc tế (EN)</th>
-                <th style={{ padding: '14px 16px', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B' }}>Phân loại</th>
-                <th style={{ padding: '14px 16px', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B' }}>Hạn sử dụng</th>
-                <th style={{ padding: '14px 16px', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', textAlign: 'right' }}>Thao tác</th>
+              <tr style={{ backgroundColor: '#FAF6F0', borderBottom: '1px solid #EADCCE' }}>
+                <th style={{ padding: '12px 14px', fontWeight: 700, color: '#3A251B', width: '50px' }}>Thứ tự</th>
+                <th style={{ padding: '12px 14px', fontWeight: 700, color: '#3A251B', width: '80px' }}>Hình ảnh</th>
+                <th style={{ padding: '12px 14px', fontWeight: 700, color: '#3A251B' }}>Tên sản phẩm & Slug</th>
+                <th style={{ padding: '12px 14px', fontWeight: 700, color: '#3A251B' }}>Phân loại</th>
+                <th style={{ padding: '12px 14px', fontWeight: 700, color: '#3A251B' }}>Hạn dùng & Đóng gói</th>
+                <th style={{ padding: '12px 14px', fontWeight: 700, color: '#3A251B', width: '110px' }}>Trạng thái</th>
+                <th style={{ padding: '12px 14px', fontWeight: 700, color: '#3A251B', textAlign: 'right', width: '180px' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map((p) => (
-                <tr key={p.slug} style={{ borderBottom: '1px solid #F0E5D8', transition: 'background-color 0.15s ease' }}>
-                  <td style={{ padding: '14px 16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <img
-                        src={p.image}
-                        alt={p.name_vi}
-                        style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #EADCCE' }}
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/images/products/soft-dried-mango.webp';
-                        }}
-                      />
-                      <div>
-                        <div style={{ fontWeight: 700, color: '#3A251B', fontSize: '0.92rem' }}>{p.name_vi}</div>
-                        <div style={{ fontSize: '0.78rem', color: '#8C7E74' }}>slug: <code>{p.slug}</code></div>
+              {filteredProducts.map((p, idx) => (
+                <tr
+                  key={p.slug || idx}
+                  style={{
+                    borderBottom: '1px solid #F5EFE6',
+                    backgroundColor: idx % 2 === 0 ? '#FFFFFF' : '#FFFDF9'
+                  }}
+                >
+                  {/* Order & Reorder */}
+                  <td style={{ padding: '12px 14px', color: '#8C7E74', fontWeight: 600 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span>{p.order || idx + 1}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <button
+                          type="button"
+                          onClick={() => handleMoveOrder(p, 'up')}
+                          disabled={idx === 0}
+                          style={{ border: 'none', background: 'none', cursor: idx === 0 ? 'default' : 'pointer', padding: 0, opacity: idx === 0 ? 0.3 : 1 }}
+                        >
+                          <ArrowUp size={12} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleMoveOrder(p, 'down')}
+                          disabled={idx === products.length - 1}
+                          style={{ border: 'none', background: 'none', cursor: idx === products.length - 1 ? 'default' : 'pointer', padding: 0, opacity: idx === products.length - 1 ? 0.3 : 1 }}
+                        >
+                          <ArrowDown size={12} />
+                        </button>
                       </div>
                     </div>
                   </td>
-                  <td style={{ padding: '14px 16px', fontSize: '0.88rem', color: '#55473E', fontWeight: 500 }}>
-                    {p.name_en}
+
+                  {/* Thumbnail */}
+                  <td style={{ padding: '12px 14px' }}>
+                    <img
+                      src={p.image}
+                      alt={p.name_vi}
+                      style={{
+                        width: '54px',
+                        height: '54px',
+                        objectFit: 'cover',
+                        borderRadius: '6px',
+                        border: '1px solid #EADCCE',
+                        backgroundColor: '#F5EFE6'
+                      }}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/images/products/placeholder.webp';
+                      }}
+                    />
                   </td>
-                  <td style={{ padding: '14px 16px' }}>
+
+                  {/* Name & Slug */}
+                  <td style={{ padding: '12px 14px' }}>
+                    <div style={{ fontWeight: 700, color: '#3A251B', marginBottom: '2px' }}>
+                      {p.name_vi}
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#8C7E74', marginBottom: '2px' }}>
+                      {p.name_en}
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: '#D97706', fontFamily: 'monospace' }}>
+                      /{p.slug}
+                    </div>
+                  </td>
+
+                  {/* Category */}
+                  <td style={{ padding: '12px 14px' }}>
+                    <span style={{
+                      display: 'inline-block',
+                      padding: '3px 10px',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      backgroundColor: p.category === 'soft-dried' ? '#FEF3C7' : p.category === 'chips' ? '#E0F2FE' : '#F3E8FF',
+                      color: p.category === 'soft-dried' ? '#92400E' : p.category === 'chips' ? '#075985' : '#6B21A8'
+                    }}>
+                      {p.category === 'soft-dried' ? 'Sấy dẻo' : p.category === 'chips' ? 'Sấy giòn' : p.category === 'nuts-seeds' ? 'Hạt dinh dưỡng' : 'Hỗn hợp'}
+                    </span>
+                  </td>
+
+                  {/* Shelf Life & Packaging */}
+                  <td style={{ padding: '12px 14px', fontSize: '0.8rem', color: '#6E6259' }}>
+                    <div>{p.shelf_life || '12 Tháng'}</div>
+                    <div style={{ color: '#8C7E74', fontSize: '0.74rem' }}>{p.packaging || 'Túi zip / Thùng'}</div>
+                  </td>
+
+                  {/* Status Badge */}
+                  <td style={{ padding: '12px 14px' }}>
                     <span style={{
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '4px',
-                      padding: '4px 10px',
-                      borderRadius: '16px',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      backgroundColor: p.category.includes('soft') ? '#FFF5EA' : p.category.includes('nuts') ? '#F2F8F5' : '#FDF7EC',
-                      color: p.category.includes('soft') ? '#D95D39' : p.category.includes('nuts') ? '#1B6A4C' : '#B87A14',
-                      border: '1px solid #EADCCE'
+                      padding: '3px 8px',
+                      borderRadius: '12px',
+                      fontSize: '0.74rem',
+                      fontWeight: 600,
+                      backgroundColor: p.published !== false ? '#ECFDF5' : '#F3F4F6',
+                      color: p.published !== false ? '#065F46' : '#6B7280'
                     }}>
-                      <Layers size={12} />
-                      <span>{p.category}</span>
+                      {p.published !== false ? <Eye size={12} /> : <EyeOff size={12} />}
+                      {p.published !== false ? 'Công khai' : 'Bản nháp'}
                     </span>
                   </td>
-                  <td style={{ padding: '14px 16px', fontSize: '0.85rem', color: '#6E6259' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Clock size={14} color="#8C7E74" />
-                      <span>{p.shelf_life || '12 Tháng'}</span>
-                    </div>
-                  </td>
-                  <td style={{ padding: '14px 16px', textAlign: 'right' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+
+                  {/* Actions */}
+                  <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                    <div style={{ display: 'inline-flex', gap: '6px' }}>
                       <button
-                        onClick={() => handleEditClick(p)}
+                        type="button"
+                        onClick={() => {
+                          setEditingProduct({ ...p });
+                          setIsCreating(false);
+                        }}
+                        title="Chỉnh sửa sản phẩm"
                         style={{
+                          padding: '6px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #EADCCE',
+                          backgroundColor: '#FFFFFF',
+                          color: '#3A251B',
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '6px',
-                          backgroundColor: '#FFF9F2',
-                          border: '1px solid #EADCCE',
-                          color: '#3A251B',
-                          padding: '7px 12px',
+                          gap: '4px'
+                        }}
+                      >
+                        <Edit3 size={13} />
+                        <span>Sửa</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDuplicateProduct(p)}
+                        title="Nhân bản sản phẩm"
+                        style={{
+                          padding: '6px 8px',
                           borderRadius: '6px',
-                          fontSize: '0.82rem',
-                          fontWeight: 600,
+                          border: '1px solid #EADCCE',
+                          backgroundColor: '#FFFFFF',
+                          color: '#6E6259',
                           cursor: 'pointer'
                         }}
                       >
-                        <Edit3 size={14} />
-                        <span>Chỉnh sửa</span>
+                        <Copy size={13} />
                       </button>
-                      <a
-                        href={`/products/${p.slug}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        title="Xem trang sản phẩm"
+
+                      <button
+                        type="button"
+                        onClick={() => setProductToDelete(p)}
+                        title="Xóa sản phẩm"
                         style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          padding: '7px 8px',
+                          padding: '6px 8px',
                           borderRadius: '6px',
-                          border: '1px solid #EADCCE',
-                          color: '#6E6259',
-                          textDecoration: 'none'
+                          border: '1px solid #FECACA',
+                          backgroundColor: '#FFFFFF',
+                          color: '#DC2626',
+                          cursor: 'pointer'
                         }}
                       >
-                        <ExternalLink size={14} />
-                      </a>
+                        <Trash2 size={13} />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -357,46 +642,50 @@ export const AdminProducts: React.FC = () => {
         </div>
       </div>
 
-      {/* Edit Product Modal */}
+      {/* Edit & Create Modal */}
       {editingProduct && (
         <div style={{
           position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(20, 10, 5, 0.65)',
-          zIndex: 1000,
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(58, 37, 27, 0.6)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '20px'
+          zIndex: 999,
+          padding: '16px'
         }}>
           <div style={{
             backgroundColor: '#FFFFFF',
             borderRadius: '12px',
-            maxWidth: '750px',
             width: '100%',
+            maxWidth: '720px',
             maxHeight: '90vh',
-            display: 'flex',
-            flexDirection: 'column',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-            overflow: 'hidden'
+            overflowY: 'auto',
+            padding: '24px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
           }}>
-            <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #EADCCE', backgroundColor: '#FFF9F2' }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#3A251B' }}>
-                  Chỉnh sửa sản phẩm: {editingProduct.name_vi}
-                </h3>
-                <span style={{ fontSize: '0.8rem', color: '#6E6259' }}>slug: {editingProduct.slug}</span>
-              </div>
-              <button 
-                onClick={() => setEditingProduct(null)} 
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '1px solid #EADCCE', paddingBottom: '12px' }}>
+              <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#3A251B', margin: 0 }}>
+                {isCreating ? 'Thêm sản phẩm mới' : `Chỉnh sửa sản phẩm: ${editingProduct.name_vi}`}
+              </h2>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingProduct(null);
+                  setIsCreating(false);
+                }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6E6259' }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveProduct} style={{ overflowY: 'auto', padding: '20px', flex: 1 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+            <form onSubmit={handleSaveProduct}>
+              {/* Name Fields */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '16px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
                     Tên sản phẩm (Tiếng Việt) *
@@ -405,7 +694,11 @@ export const AdminProducts: React.FC = () => {
                     type="text"
                     required
                     value={editingProduct.name_vi}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, name_vi: e.target.value })}
+                    onChange={(e) => {
+                      const name = e.target.value;
+                      const slug = isCreating ? name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') : editingProduct.slug;
+                      setEditingProduct({ ...editingProduct, name_vi: name, slug: slug || editingProduct.slug });
+                    }}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
                   />
                 </div>
@@ -424,7 +717,21 @@ export const AdminProducts: React.FC = () => {
                 </div>
               </div>
 
+              {/* Slug & Category */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                    Đường dẫn tĩnh (Slug) *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editingProduct.slug}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, slug: e.target.value })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box', fontFamily: 'monospace' }}
+                  />
+                </div>
+
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
                     Phân loại danh mục
@@ -440,20 +747,53 @@ export const AdminProducts: React.FC = () => {
                     <option value="mixed">Hỗn hợp sấy (mixed)</option>
                   </select>
                 </div>
+              </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
-                    Đường dẫn hình ảnh (URL)
-                  </label>
-                  <input
-                    type="text"
-                    value={editingProduct.image}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, image: e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+              {/* Image Picker Section */}
+              <div style={{ marginBottom: '16px', padding: '14px', borderRadius: '8px', backgroundColor: '#FAF6F0', border: '1px solid #EADCCE' }}>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 700, color: '#3A251B', marginBottom: '8px' }}>
+                  Hình ảnh sản phẩm đại diện
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+                  <img
+                    src={editingProduct.image}
+                    alt={editingProduct.name_vi}
+                    style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #EADCCE', backgroundColor: '#FFFFFF' }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/images/products/placeholder.webp';
+                    }}
                   />
+                  <div style={{ flex: 1, minWidth: '220px' }}>
+                    <div style={{ fontSize: '0.8rem', color: '#6E6259', marginBottom: '6px', wordBreak: 'break-all' }}>
+                      Đường dẫn: <code>{editingProduct.image}</code>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setIsMediaPickerOpen(true)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '7px 14px',
+                          borderRadius: '6px',
+                          border: '1px solid #EADCCE',
+                          backgroundColor: '#FFFFFF',
+                          color: '#3A251B',
+                          fontWeight: 700,
+                          fontSize: '0.82rem',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <ImageIcon size={14} color="#D97706" />
+                        <span>Chọn từ thư viện ảnh</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
+              {/* Description Fields */}
               <div style={{ marginBottom: '16px' }}>
                 <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
                   Mô tả sản phẩm (Tiếng Việt)
@@ -478,6 +818,7 @@ export const AdminProducts: React.FC = () => {
                 />
               </div>
 
+              {/* Shelf Life & Packaging */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '16px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
@@ -506,10 +847,14 @@ export const AdminProducts: React.FC = () => {
                 </div>
               </div>
 
+              {/* Modal Actions */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '16px', borderTop: '1px solid #EADCCE' }}>
                 <button
                   type="button"
-                  onClick={() => setEditingProduct(null)}
+                  onClick={() => {
+                    setEditingProduct(null);
+                    setIsCreating(false);
+                  }}
                   style={{
                     padding: '9px 18px',
                     borderRadius: '6px',
@@ -549,6 +894,99 @@ export const AdminProducts: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      {productToDelete && (
+        <div
+          onClick={() => !isDeleting && setProductToDelete(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(20, 10, 5, 0.7)',
+            zIndex: 1200,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '16px'
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '12px',
+              maxWidth: '480px',
+              width: '100%',
+              padding: '24px',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.25)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px', color: '#DC2626' }}>
+              <AlertCircle size={22} />
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#3A251B' }}>
+                Xác nhận xóa sản phẩm
+              </h3>
+            </div>
+            <p style={{ fontSize: '0.88rem', color: '#6E6259', lineHeight: 1.5, margin: '0 0 20px 0' }}>
+              Bạn có chắc chắn muốn xóa sản phẩm <strong>"{productToDelete.name_vi}"</strong> ({productToDelete.slug}) khỏi hệ thống? Thao tác này sẽ xóa tệp dữ liệu khỏi Git và website.
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                type="button"
+                onClick={() => setProductToDelete(null)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: '1px solid #EADCCE',
+                  backgroundColor: '#FFFFFF',
+                  color: '#6E6259',
+                  fontSize: '0.86rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleConfirmDelete}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: '#DC2626',
+                  color: '#FFFFFF',
+                  fontSize: '0.86rem',
+                  fontWeight: 700,
+                  cursor: isDeleting ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {isDeleting ? 'Đang xóa...' : 'Xác nhận xóa'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shared MediaPicker Component Integration */}
+      <MediaPicker
+        isOpen={isMediaPickerOpen}
+        onClose={() => setIsMediaPickerOpen(false)}
+        initialCategory="products"
+        currentValue={editingProduct?.image || ''}
+        onSelect={(newUrl) => {
+          if (editingProduct) {
+            setEditingProduct({
+              ...editingProduct,
+              image: newUrl,
+              imageWebp: newUrl,
+              imageJpg: newUrl.endsWith('.webp') ? newUrl.replace(/\.webp$/, '.jpg') : newUrl
+            });
+          }
+        }}
+        title="Chọn hình ảnh cho sản phẩm"
+      />
     </div>
   );
 };

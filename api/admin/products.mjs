@@ -517,6 +517,42 @@ async function commitFile(filePath, contentStr, commitMessage, sha) {
     branch
   };
 }
+async function deleteRepoFile(filePath, commitMessage, sha) {
+  if (!validatePath(filePath)) {
+    throw new Error(`\u0110\u01B0\u1EDDng d\u1EABn kh\xF4ng h\u1EE3p l\u1EC7 ho\u1EB7c n\u1EB1m ngo\xE0i danh m\u1EE5c \u0111\u01B0\u1EE3c ph\xE9p: ${filePath}`);
+  }
+  const { owner, repo, branch, token } = getRepoConfig();
+  if (!token) {
+    throw new Error("GITHUB_TOKEN ch\u01B0a \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh trong Vercel Environment Variables.");
+  }
+  let fileSha = sha;
+  if (!fileSha) {
+    const existing = await getRepoFile(filePath);
+    if (!existing) {
+      throw new Error("Kh\xF4ng t\xECm th\u1EA5y b\xE0i vi\u1EBFt tr\xEAn kho l\u01B0u tr\u1EEF \u0111\u1EC3 x\xF3a.");
+    }
+    fileSha = existing.sha;
+  }
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "Accept": "application/vnd.github.v3+json",
+      "User-Agent": "VINAXO-CMS-Serverless"
+    },
+    body: JSON.stringify({
+      message: commitMessage,
+      sha: fileSha,
+      branch
+    })
+  });
+  if (!response.ok) {
+    throw new Error(mapGitHubError(response.status, "x\xF3a t\u1EC7p tin"));
+  }
+  return true;
+}
 
 // src/shared/schemas/newsSchema.ts
 function validateSlug(slug) {
@@ -563,7 +599,20 @@ function validateProduct(input) {
   const category = ALLOWED_CATEGORIES.includes(raw.category) ? raw.category : "soft-dried";
   let image = typeof raw.image === "string" ? raw.image.trim() : typeof raw.imageWebp === "string" ? raw.imageWebp.trim() : "";
   if (!image || !isValidUrl(image, true)) {
-    image = "/assets/images/products/placeholder.webp";
+    image = "/images/products/placeholder.webp";
+  }
+  let imageWebp = typeof raw.imageWebp === "string" && raw.imageWebp.trim() ? raw.imageWebp.trim() : image;
+  let imageJpg = typeof raw.imageJpg === "string" && raw.imageJpg.trim() ? raw.imageJpg.trim() : image;
+  if (image.endsWith(".webp")) {
+    imageWebp = image;
+    if (!raw.imageJpg || raw.imageJpg.includes("img_5608") || !raw.imageJpg.endsWith(".jpg")) {
+      imageJpg = image.replace(/\.webp$/, ".jpg");
+    }
+  } else if (image.endsWith(".jpg") || image.endsWith(".jpeg")) {
+    imageJpg = image;
+    if (!raw.imageWebp || raw.imageWebp.includes("img_5608") || !raw.imageWebp.endsWith(".webp")) {
+      imageWebp = image.replace(/\.jpe?g$/, ".webp");
+    }
   }
   const shortDescriptionVi = typeof raw.shortDescriptionVi === "string" ? raw.shortDescriptionVi.trim() : typeof raw.description_vi === "string" ? raw.description_vi.trim() : "";
   const shortDescription = typeof raw.shortDescription === "string" ? raw.shortDescription.trim() : typeof raw.description_en === "string" ? raw.description_en.trim() : shortDescriptionVi;
@@ -597,8 +646,8 @@ function validateProduct(input) {
     categoryLabelEn: typeof raw.categoryLabelEn === "string" ? raw.categoryLabelEn : "Tropical Dried Fruits",
     categoryLabelVi: typeof raw.categoryLabelVi === "string" ? raw.categoryLabelVi : "Tr\xE1i c\xE2y s\u1EA5y nhi\u1EC7t \u0111\u1EDBi",
     image,
-    imageWebp: image,
-    imageJpg: typeof raw.imageJpg === "string" ? raw.imageJpg : image,
+    imageWebp,
+    imageJpg,
     shortDescription,
     shortDescriptionVi,
     description: typeof raw.description === "string" ? raw.description.trim() : shortDescription,
@@ -641,6 +690,12 @@ function validateProduct(input) {
 function mergeProduct(existing, incoming) {
   const base = existing && typeof existing === "object" ? { ...existing } : {};
   const update = incoming && typeof incoming === "object" ? { ...incoming } : {};
+  if (update.image) {
+    if (!update.imageWebp) update.imageWebp = update.image;
+    if (!update.imageJpg) {
+      update.imageJpg = update.image.endsWith(".webp") ? update.image.replace(/\.webp$/, ".jpg") : update.image;
+    }
+  }
   const merged = {
     ...base,
     ...update,
@@ -782,6 +837,27 @@ var products_default = wrapHandler(async (req, res) => {
       product: validatedProduct,
       result
     });
+  }
+  if (req.method === "DELETE") {
+    const rawBody = await readJsonBody(req);
+    const rawSlug = rawBody.slug ?? req.query?.slug;
+    const requestSha = typeof rawBody.sha === "string" ? rawBody.sha : void 0;
+    const slug = sanitizeSlug(rawSlug);
+    if (!slug) {
+      return res.status(400).json({ error: "Slug s\u1EA3n ph\u1EA9m c\u1EA7n x\xF3a kh\xF4ng h\u1EE3p l\u1EC7." });
+    }
+    const filePath = `content/products/${slug}.json`;
+    if (useGitHub) {
+      await deleteRepoFile(filePath, `cms(product): delete "${slug}"`, requestSha);
+    } else {
+      const fullLocalPath = path.join(process.cwd(), filePath);
+      if (fs.existsSync(fullLocalPath)) {
+        fs.unlinkSync(fullLocalPath);
+      } else {
+        return res.status(404).json({ error: "Kh\xF4ng t\xECm th\u1EA5y s\u1EA3n ph\u1EA9m \u0111\u1EC3 x\xF3a." });
+      }
+    }
+    return res.status(200).json({ ok: true, message: `\u0110\xE3 x\xF3a s\u1EA3n ph\u1EA9m ${slug} th\xE0nh c\xF4ng.` });
   }
   return res.status(405).json({ error: "Method Not Allowed" });
 });

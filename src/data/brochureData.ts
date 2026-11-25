@@ -10,6 +10,15 @@ try {
 const rawCmsBrochure = Object.values(brochureCmsModules)[0] as any;
 const cmsBrochure = rawCmsBrochure?.default || rawCmsBrochure || {};
 
+let certsCmsModules: Record<string, any> = {};
+try {
+  certsCmsModules = (import.meta as any).glob('/content/settings/certificates.json', { eager: true });
+} catch {
+  certsCmsModules = {};
+}
+const rawCmsCerts = Object.values(certsCmsModules)[0] as any;
+const cmsCertsList = (rawCmsCerts?.default || rawCmsCerts) as ComplianceBadge[] | undefined;
+
 export const BROCHURE_DOCUMENT = {
   pdfUrl: cmsBrochure.pdf_file || '/brochures/vinaxo-company-brochure-2026.pdf',
   downloadFilename: 'Vinaxo-Company-Brochure-2026.pdf',
@@ -87,7 +96,7 @@ export interface ComplianceBadge {
  * Official 8 compliance pillars & certificates from Vinaxo Brochure 2026 (Pages 1 & 4).
  * Distinguishes Certifications, Governmental Registrations, and Retail/Ethical Audits cleanly.
  */
-export const COMPLIANCE_ITEMS: ComplianceBadge[] = [
+const BASE_COMPLIANCE_ITEMS: ComplianceBadge[] = [
   {
     id: 'brcgs',
     pillLabel: 'BRCGS',
@@ -175,6 +184,10 @@ export const COMPLIANCE_ITEMS: ComplianceBadge[] = [
     scopeVi: 'Kiểm toán Thực hành Sản xuất Tốt Chuỗi Costco',
   },
 ];
+
+export const COMPLIANCE_ITEMS: ComplianceBadge[] = Array.isArray(cmsCertsList) && cmsCertsList.length > 0
+  ? cmsCertsList
+  : BASE_COMPLIANCE_ITEMS;
 
 export interface BrochureCategory {
   id: string;

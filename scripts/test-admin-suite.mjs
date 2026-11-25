@@ -35,6 +35,8 @@ import productsHandler from '../api/admin/products.mjs';
 import mediaHandler from '../api/admin/media.mjs';
 import settingsHandler from '../api/admin/settings.mjs';
 import deployStatusHandler from '../api/admin/deployStatus.mjs';
+import certificatesHandler from '../api/admin/certificates.mjs';
+import publishHandler from '../api/admin/publish.mjs';
 import { validateNewsArticle, mergeNewsArticle } from '../src/shared/schemas/newsSchema.ts';
 import { validateProduct, mergeProduct } from '../src/shared/schemas/productSchema.ts';
 import { validateCompanySettings, validateBrochureSettings } from '../src/shared/schemas/settingsSchema.ts';
@@ -560,6 +562,196 @@ async function runTests() {
     const safeItem = toNewsItem({});
     assert(safeItem && typeof safeItem.vi?.title === 'string');
     assert(safeItem.category === 'press' || safeItem.category === 'company');
+  });
+
+  // 16. Product Image Synchronization & Dragonfruit Integrity Check
+  await runCase('Product Image Sync: mergeProduct synchronizes image, imageWebp, and imageJpg', async () => {
+    const existing = {
+      id: 'soft-dried-red-dragonfruit',
+      slug: 'soft-dried-red-dragonfruit',
+      nameVi: 'Thanh long ruột đỏ sấy dẻo',
+      nameEn: 'Soft-dried Red Dragonfruit',
+      image: '/images/products/soft-dried-red-dragonfruit.webp',
+      imageWebp: '/images/products/soft-dried-red-dragonfruit.webp',
+      imageJpg: '/images/products/soft-dried-red-dragonfruit.jpg'
+    };
+
+    const updated = mergeProduct(existing, {
+      image: '/uploads/products/new-dragonfruit-test.webp'
+    });
+
+    assert.strictEqual(updated.image, '/uploads/products/new-dragonfruit-test.webp');
+    assert.strictEqual(updated.imageWebp, '/uploads/products/new-dragonfruit-test.webp');
+    assert.strictEqual(updated.imageJpg, '/uploads/products/new-dragonfruit-test.jpg', 'imageJpg derives .jpg from .webp');
+
+    // Verify disk integrity of dragonfruit product file
+    const dragonfruitPath = path.join(process.cwd(), 'content/products/soft-dried-red-dragonfruit.json');
+    assert(fs.existsSync(dragonfruitPath), 'Dragonfruit product JSON must exist');
+    const dfData = JSON.parse(fs.readFileSync(dragonfruitPath, 'utf-8'));
+    assert(!dfData.image?.includes('img_5608'), 'Dragonfruit must NOT have certificate voucher image');
+    assert(dfData.image?.includes('dragonfruit'), 'Dragonfruit must have valid dragonfruit product image');
+  });
+
+  // 17. Safe Media Deletion Reference Protection & Usage Check
+  await runCase('Media Safe Deletion: Prevents deleting in-use media and non-uploads', async () => {
+    const validToken = createSessionToken('admin', 1);
+    const csrfToken = createCsrfToken(validToken);
+
+    // 17.1 Usage Check via GET ?checkUsage=
+    const rUsage = createMockRes();
+    await mediaHandler({
+      method: 'GET',
+      headers: {
+        cookie: `vinaxo_admin_session=${validToken}`
+      },
+      query: {
+        checkUsage: 'eu-green-policy.webp'
+      }
+    }, rUsage);
+    assert.strictEqual(rUsage.statusCode, 200);
+    assert(rUsage.body?.usageCount > 0, 'Must detect usage of eu-green-policy in news');
+    assert(Array.isArray(rUsage.body?.references));
+
+    // 17.2 Blocks deleting built-in assets
+    const rAsset = createMockRes();
+    await mediaHandler({
+      method: 'DELETE',
+      headers: {
+        cookie: `vinaxo_admin_session=${validToken}`,
+        origin: 'http://localhost:4174',
+        'x-requested-with': 'XMLHttpRequest',
+        'x-csrf-token': csrfToken,
+        'content-type': 'application/json'
+      },
+      body: {
+        url: '/assets/images/news/eu-green-policy.webp'
+      }
+    }, rAsset);
+    assert.strictEqual(rAsset.statusCode, 400, 'Must block deleting core static site assets');
+
+    // 17.3 Blocks deleting referenced upload without force
+    const testUploadPath = path.join(process.cwd(), 'public/uploads/news/in-use-sample.webp');
+    fs.mkdirSync(path.dirname(testUploadPath), { recursive: true });
+    fs.writeFileSync(testUploadPath, 'fake-webp');
+
+    // Create a temporary reference in news
+    const testArticlePath = path.join(process.cwd(), 'content/news/_test-ref-article.json');
+    fs.writeFileSync(testArticlePath, JSON.stringify({
+      slug: '_test-ref-article',
+      title_vi: 'Bài viết test tham chiếu',
+      cover_image: '/uploads/news/in-use-sample.webp'
+    }));
+
+    try {
+      const rDelInUse = createMockRes();
+      await mediaHandler({
+        method: 'DELETE',
+        headers: {
+          cookie: `vinaxo_admin_session=${validToken}`,
+          origin: 'http://localhost:4174',
+          'x-requested-with': 'XMLHttpRequest',
+          'x-csrf-token': csrfToken,
+          'content-type': 'application/json'
+        },
+        body: {
+          url: '/uploads/news/in-use-sample.webp'
+        }
+      }, rDelInUse);
+
+      assert.strictEqual(rDelInUse.statusCode, 409, 'Must return 409 Conflict when media is in use');
+      assert.strictEqual(rDelInUse.body?.referenced, true);
+      assert(rDelInUse.body?.references?.length > 0);
+    } finally {
+      // Cleanup temp test files
+      if (fs.existsSync(testArticlePath)) fs.unlinkSync(testArticlePath);
+      if (fs.existsSync(testUploadPath)) fs.unlinkSync(testUploadPath);
+    }
+  });
+
+  // 18. Certificates API CRUD Verification
+  await runCase('Certificates API: Supports GET and POST safely', async () => {
+    const validToken = createSessionToken('admin', 1);
+    const csrfToken = createCsrfToken(validToken);
+
+    // GET
+    const rGet = createMockRes();
+    await certificatesHandler({
+      method: 'GET',
+      headers: {
+        cookie: `vinaxo_admin_session=${validToken}`
+      }
+    }, rGet);
+    assert.strictEqual(rGet.statusCode, 200);
+    assert(Array.isArray(rGet.body?.certificates));
+    assert(rGet.body.certificates.length >= 6, 'Should load at least 6 standard international certs');
+
+    // POST update
+    const rPost = createMockRes();
+    await certificatesHandler({
+      method: 'POST',
+      headers: {
+        cookie: `vinaxo_admin_session=${validToken}`,
+        origin: 'http://localhost:4174',
+        'x-requested-with': 'XMLHttpRequest',
+        'x-csrf-token': csrfToken,
+        'content-type': 'application/json'
+      },
+      body: {
+        id: 'brcgs',
+        code: 'BRCGS',
+        pillLabel: 'BRCGS GRADE B',
+        name: 'BRCGS Food Safety',
+        nameVi: 'Tiêu chuẩn An toàn Thực phẩm Toàn cầu BRCGS',
+        nameEn: 'BRCGS Global Standard for Food Safety',
+        kindEn: 'Certification',
+        kindVi: 'Chứng nhận',
+        scopeEn: 'SGS Global Standard Food Safety (Grade B)',
+        scopeVi: 'Đạt chuẩn an toàn thực phẩm quốc tế Hạng B (Kiểm toán bởi SGS)',
+        certImageWebp: '/assets/images/certs-2026/cert-brcgs.webp',
+        order: 1,
+        published: true
+      }
+    }, rPost);
+    assert.strictEqual(rPost.statusCode, 200);
+    assert.strictEqual(rPost.body?.ok, true);
+  });
+
+  // 19. Module-Based Publishing API
+  await runCase('Publish API: GET stats and POST module-based publishing', async () => {
+    const validToken = createSessionToken('admin', 1);
+    const csrfToken = createCsrfToken(validToken);
+
+    // GET
+    const rGet = createMockRes();
+    await publishHandler({
+      method: 'GET',
+      headers: {
+        cookie: `vinaxo_admin_session=${validToken}`
+      }
+    }, rGet);
+    assert.strictEqual(rGet.statusCode, 200);
+    assert(rGet.body?.stats?.news?.total >= 9, 'Must have at least 9 news articles');
+    assert(rGet.body?.stats?.products?.total >= 12, 'Must have at least 12 products');
+    assert(Array.isArray(rGet.body?.history), 'Must return publish history');
+
+    // POST Publish module 'products'
+    const rPost = createMockRes();
+    await publishHandler({
+      method: 'POST',
+      headers: {
+        cookie: `vinaxo_admin_session=${validToken}`,
+        origin: 'http://localhost:4174',
+        'x-requested-with': 'XMLHttpRequest',
+        'x-csrf-token': csrfToken,
+        'content-type': 'application/json'
+      },
+      body: {
+        module: 'products'
+      }
+    }, rPost);
+    assert.strictEqual(rPost.statusCode, 200);
+    assert.strictEqual(rPost.body?.ok, true);
+    assert.strictEqual(rPost.body?.module, 'products');
   });
 
   console.log(`\n========================================`);

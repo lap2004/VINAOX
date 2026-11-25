@@ -10,7 +10,8 @@ import {
   CheckCircle,
   Eye,
   EyeOff,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from 'lucide-react';
 import { getAllArticles, isArticleDraft } from '../../services/contentService';
 import { ArticleContent } from '../../types/content';
@@ -24,6 +25,28 @@ export const AdminNewsList: React.FC = () => {
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoadingList, setIsLoadingList] = useState(false);
+  const [isPublishingNews, setIsPublishingNews] = useState(false);
+
+  const handlePublishNewsModule = async () => {
+    try {
+      setIsPublishingNews(true);
+      setStatusMsg(null);
+      const res = await adminFetch('/api/admin/publish', {
+        method: 'POST',
+        body: JSON.stringify({ module: 'news' })
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setStatusMsg({ type: 'success', text: 'Đã kích hoạt xuất bản toàn bộ tin tức lên website!' });
+      } else {
+        setStatusMsg({ type: 'error', text: data.error || 'Lỗi khi kích hoạt xuất bản tin tức.' });
+      }
+    } catch {
+      setStatusMsg({ type: 'error', text: 'Lỗi mạng khi xuất bản tin tức.' });
+    } finally {
+      setIsPublishingNews(false);
+    }
+  };
 
   const fetchLiveArticles = async () => {
     try {
@@ -117,6 +140,28 @@ export const AdminNewsList: React.FC = () => {
           >
             <RefreshCw size={15} />
             <span>{isLoadingList ? 'Đang tải...' : 'Làm mới danh sách'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handlePublishNewsModule}
+            disabled={isPublishingNews}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '9px 16px',
+              borderRadius: '8px',
+              border: '1px solid #10B981',
+              backgroundColor: '#ECFDF5',
+              color: '#065F46',
+              fontWeight: 700,
+              fontSize: '0.86rem',
+              cursor: isPublishingNews ? 'not-allowed' : 'pointer'
+            }}
+          >
+            <Sparkles size={16} />
+            <span>{isPublishingNews ? 'Đang cập nhật...' : 'Cập nhật tin tức lên website'}</span>
           </button>
 
           <Link

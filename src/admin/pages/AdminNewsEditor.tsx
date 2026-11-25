@@ -23,6 +23,7 @@ import { getArticleBySlug, isArticleDraft } from '../../services/contentService'
 import { ArticleContent } from '../../types/content';
 import { validateNewsArticle } from '../../shared/schemas/newsSchema';
 import { adminFetch } from '../lib/adminFetch';
+import { MediaPicker } from '../components/MediaPicker';
 
 export const AdminNewsEditor: React.FC = () => {
   const { id, slug } = useParams<{ id?: string; slug?: string }>();
@@ -66,6 +67,7 @@ export const AdminNewsEditor: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'vi' | 'en' | 'seo' | 'preview'>('vi');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoadingArticle, setIsLoadingArticle] = useState(false);
+  const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [deployStatus, setDeployStatus] = useState<{
     active: boolean;
@@ -506,15 +508,38 @@ export const AdminNewsEditor: React.FC = () => {
               <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
                 Đường dẫn ảnh đại diện (URL)
               </label>
-              <input
-                type="text"
-                value={formData.cover_image || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, cover_image: e.target.value }))}
-                placeholder="/uploads/news/anh-bai-viet.webp"
-                style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem', marginBottom: '8px' }}
-              />
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                <input
+                  type="text"
+                  value={formData.cover_image || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, cover_image: e.target.value }))}
+                  placeholder="/uploads/news/anh-bai-viet.webp"
+                  style={{ flex: 1, boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsMediaPickerOpen(true)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '9px 14px',
+                    borderRadius: '6px',
+                    border: '1px solid #EADCCE',
+                    backgroundColor: '#FAF6F0',
+                    color: '#3A251B',
+                    fontWeight: 700,
+                    fontSize: '0.84rem',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  <ImageIcon size={15} color="#D97706" />
+                  <span>Chọn từ Thư viện</span>
+                </button>
+              </div>
               <p style={{ fontSize: '0.78rem', color: '#6E6259', margin: 0 }}>
-                💡 Gợi ý: Bạn có thể vào mục <Link to="/admin/media" target="_blank" style={{ color: '#F4A83A', fontWeight: 600 }}>Thư viện hình ảnh</Link> để tải ảnh từ điện thoại/máy tính lên rồi copy đường dẫn dán vào đây.
+                💡 Bấm <strong>Chọn từ Thư viện</strong> để chọn ảnh có sẵn hoặc tải ảnh mới trực tiếp mà không cần dán link thủ công.
               </p>
             </div>
           </div>
@@ -1010,6 +1035,17 @@ export const AdminNewsEditor: React.FC = () => {
           </div>
         </div>
       )}
+      {/* MediaPicker for Cover Image */}
+      <MediaPicker
+        isOpen={isMediaPickerOpen}
+        onClose={() => setIsMediaPickerOpen(false)}
+        initialCategory="news"
+        currentValue={formData.cover_image || ''}
+        onSelect={(newUrl) => {
+          setFormData(prev => ({ ...prev, cover_image: newUrl }));
+        }}
+        title="Chọn ảnh đại diện cho bài viết"
+      />
     </div>
   );
 };

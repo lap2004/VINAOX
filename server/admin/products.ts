@@ -10,7 +10,7 @@ import {
   wrapHandler
 } from '../lib/security.js';
 import { checkApiMutationRateLimit } from '../lib/rateLimit.js';
-import { commitFile, hasGitHubToken, listRepoJsonFiles, getRepoFile } from '../lib/github.js';
+import { commitFile, deleteRepoFile, hasGitHubToken, listRepoJsonFiles, getRepoFile } from '../lib/github.js';
 import { validateProduct, mergeProduct } from '../../src/shared/schemas/productSchema.js';
 import fs from 'fs';
 import path from 'path';
@@ -169,6 +169,31 @@ export default wrapHandler(async (req: any, res: any) => {
       product: validatedProduct,
       result
     });
+  }
+
+  // DELETE: Remove a product from content/products/
+  if (req.method === 'DELETE') {
+    const rawBody = await readJsonBody(req);
+    const rawSlug = rawBody.slug ?? req.query?.slug;
+    const requestSha = typeof rawBody.sha === 'string' ? rawBody.sha : undefined;
+    const slug = sanitizeSlug(rawSlug);
+    if (!slug) {
+      return res.status(400).json({ error: 'Slug sản phẩm cần xóa không hợp lệ.' });
+    }
+
+    const filePath = `content/products/${slug}.json`;
+    if (useGitHub) {
+      await deleteRepoFile(filePath, `cms(product): delete "${slug}"`, requestSha);
+    } else {
+      const fullLocalPath = path.join(process.cwd(), filePath);
+      if (fs.existsSync(fullLocalPath)) {
+        fs.unlinkSync(fullLocalPath);
+      } else {
+        return res.status(404).json({ error: 'Không tìm thấy sản phẩm để xóa.' });
+      }
+    }
+
+    return res.status(200).json({ ok: true, message: `Đã xóa sản phẩm ${slug} thành công.` });
   }
 
   return res.status(405).json({ error: 'Method Not Allowed' });

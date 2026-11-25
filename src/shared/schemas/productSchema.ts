@@ -31,7 +31,24 @@ export function validateProduct(input: unknown): ProductValidationResult {
 
   let image = typeof raw.image === 'string' ? raw.image.trim() : (typeof raw.imageWebp === 'string' ? raw.imageWebp.trim() : '');
   if (!image || !isValidUrl(image, true)) {
-    image = '/assets/images/products/placeholder.webp';
+    image = '/images/products/placeholder.webp';
+  }
+
+  // Derive WebP and JPG URLs consistently
+  let imageWebp = typeof raw.imageWebp === 'string' && raw.imageWebp.trim() ? raw.imageWebp.trim() : image;
+  let imageJpg = typeof raw.imageJpg === 'string' && raw.imageJpg.trim() ? raw.imageJpg.trim() : image;
+
+  // If image was changed to a different WebP file, sync imageWebp and imageJpg
+  if (image.endsWith('.webp')) {
+    imageWebp = image;
+    if (!raw.imageJpg || raw.imageJpg.includes('img_5608') || !raw.imageJpg.endsWith('.jpg')) {
+      imageJpg = image.replace(/\.webp$/, '.jpg');
+    }
+  } else if (image.endsWith('.jpg') || image.endsWith('.jpeg')) {
+    imageJpg = image;
+    if (!raw.imageWebp || raw.imageWebp.includes('img_5608') || !raw.imageWebp.endsWith('.webp')) {
+      imageWebp = image.replace(/\.jpe?g$/, '.webp');
+    }
   }
 
   const shortDescriptionVi = typeof raw.shortDescriptionVi === 'string' ? raw.shortDescriptionVi.trim() : (typeof raw.description_vi === 'string' ? raw.description_vi.trim() : '');
@@ -69,8 +86,8 @@ export function validateProduct(input: unknown): ProductValidationResult {
     categoryLabelEn: typeof raw.categoryLabelEn === 'string' ? raw.categoryLabelEn : 'Tropical Dried Fruits',
     categoryLabelVi: typeof raw.categoryLabelVi === 'string' ? raw.categoryLabelVi : 'Trái cây sấy nhiệt đới',
     image,
-    imageWebp: image,
-    imageJpg: typeof raw.imageJpg === 'string' ? raw.imageJpg : image,
+    imageWebp,
+    imageJpg,
     shortDescription,
     shortDescriptionVi,
     description: typeof raw.description === 'string' ? raw.description.trim() : shortDescription,
@@ -118,6 +135,16 @@ export function mergeProduct(
 ): ProductItem {
   const base = existing && typeof existing === 'object' ? { ...existing } : {};
   const update = incoming && typeof incoming === 'object' ? { ...incoming } : {};
+
+  // If update specifies or changes image, ensure imageWebp and imageJpg match
+  if (update.image) {
+    if (!update.imageWebp) update.imageWebp = update.image;
+    if (!update.imageJpg) {
+      update.imageJpg = update.image.endsWith('.webp')
+        ? update.image.replace(/\.webp$/, '.jpg')
+        : update.image;
+    }
+  }
 
   const merged = {
     ...base,

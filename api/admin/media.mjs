@@ -376,6 +376,30 @@ function mapGitHubError(status, action) {
   }
   return `L\u1ED7i k\u1EBFt n\u1ED1i GitHub API (HTTP ${status}) khi ${action}.`;
 }
+async function getRepoFile(filePath) {
+  if (!validatePath(filePath)) {
+    throw new Error(`\u0110\u01B0\u1EDDng d\u1EABn kh\xF4ng h\u1EE3p l\u1EC7 ho\u1EB7c n\u1EB1m ngo\xE0i danh m\u1EE5c \u0111\u01B0\u1EE3c ph\xE9p: ${filePath}`);
+  }
+  const { owner, repo, branch, token } = getRepoConfig();
+  if (!token) {
+    throw new Error("GITHUB_TOKEN ch\u01B0a \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh trong Vercel Environment Variables.");
+  }
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${encodeURIComponent(branch)}`;
+  const response = await fetch(url, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Accept": "application/vnd.github.v3+json",
+      "User-Agent": "VINAXO-CMS-Serverless"
+    }
+  });
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    throw new Error(mapGitHubError(response.status, "\u0111\u1ECDc t\u1EC7p tin"));
+  }
+  const data = await response.json();
+  const content = Buffer.from(data.content || "", "base64").toString("utf-8").replace(/^\uFEFF/, "");
+  return { content, sha: data.sha };
+}
 async function getRepoBinaryFile(filePath) {
   if (!validatePath(filePath)) {
     throw new Error(`\u0110\u01B0\u1EDDng d\u1EABn kh\xF4ng h\u1EE3p l\u1EC7: ${filePath}`);
@@ -431,6 +455,62 @@ async function listRepoDirectory(dirPath) {
     type: item.type === "dir" ? "dir" : "file"
   }));
 }
+async function listRepoJsonFiles(dirPath) {
+  const entries = await listRepoDirectory(dirPath);
+  const jsonFiles = entries.filter((e) => e.type === "file" && e.name.endsWith(".json"));
+  const results = await Promise.all(
+    jsonFiles.map(async (entry) => {
+      const file = await getRepoFile(entry.path);
+      if (!file) return null;
+      try {
+        return {
+          data: JSON.parse(file.content),
+          sha: file.sha,
+          name: entry.name
+        };
+      } catch {
+        return null;
+      }
+    })
+  );
+  return results.filter((r) => r !== null);
+}
+async function deleteRepoFile(filePath, commitMessage, sha) {
+  if (!validatePath(filePath)) {
+    throw new Error(`\u0110\u01B0\u1EDDng d\u1EABn kh\xF4ng h\u1EE3p l\u1EC7 ho\u1EB7c n\u1EB1m ngo\xE0i danh m\u1EE5c \u0111\u01B0\u1EE3c ph\xE9p: ${filePath}`);
+  }
+  const { owner, repo, branch, token } = getRepoConfig();
+  if (!token) {
+    throw new Error("GITHUB_TOKEN ch\u01B0a \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh trong Vercel Environment Variables.");
+  }
+  let fileSha = sha;
+  if (!fileSha) {
+    const existing = await getRepoFile(filePath);
+    if (!existing) {
+      throw new Error("Kh\xF4ng t\xECm th\u1EA5y b\xE0i vi\u1EBFt tr\xEAn kho l\u01B0u tr\u1EEF \u0111\u1EC3 x\xF3a.");
+    }
+    fileSha = existing.sha;
+  }
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "Accept": "application/vnd.github.v3+json",
+      "User-Agent": "VINAXO-CMS-Serverless"
+    },
+    body: JSON.stringify({
+      message: commitMessage,
+      sha: fileSha,
+      branch
+    })
+  });
+  if (!response.ok) {
+    throw new Error(mapGitHubError(response.status, "x\xF3a t\u1EC7p tin"));
+  }
+  return true;
+}
 async function commitMediaFile(filePath, base64Data, commitMessage) {
   if (!validatePath(filePath)) {
     throw new Error(`\u0110\u01B0\u1EDDng d\u1EABn t\u1EA3i \u1EA3nh kh\xF4ng h\u1EE3p l\u1EC7: ${filePath}`);
@@ -471,7 +551,7 @@ async function commitMediaFile(filePath, base64Data, commitMessage) {
 // server/admin/media.ts
 import fs from "fs";
 import path from "path";
-var ALLOWED_CATEGORIES = ["news", "products", "certificates"];
+var ALLOWED_CATEGORIES = ["news", "products", "certificates", "banners"];
 var MAX_BINARY_BYTES = 3 * 1024 * 1024;
 function detectImageFormat(base64Data) {
   const headerMatch = base64Data.match(/^data:image\/(png|jpeg|jpg|webp);base64,(.+)$/i);
@@ -492,6 +572,55 @@ function detectImageFormat(base64Data) {
   if (declaredType === "webp" && rawBase64.startsWith("UklGR")) return { ext: ".webp", cleanBase64: rawBase64 };
   return null;
 }
+async function findMediaReferences(mediaPathOrUrl, useGitHub) {
+  const references = [];
+  const filename = path.basename(mediaPathOrUrl);
+  const normalizedUrl = mediaPathOrUrl.startsWith("/") ? mediaPathOrUrl : `/${mediaPathOrUrl}`;
+  const checkDirs = [
+    { dir: "content/news", type: "B\xE0i vi\u1EBFt tin t\u1EE9c", titleField: "title_vi" },
+    { dir: "content/products", type: "S\u1EA3n ph\u1EA9m", titleField: "name_vi" },
+    { dir: "content/settings", type: "C\xE0i \u0111\u1EB7t h\u1EC7 th\u1ED1ng", titleField: "title_vi" },
+    { dir: "content/certificates", type: "Ch\u1EE9ng nh\u1EADn", titleField: "nameVi" }
+  ];
+  for (const item of checkDirs) {
+    if (useGitHub) {
+      try {
+        const entries = await listRepoJsonFiles(item.dir);
+        for (const entry of entries) {
+          const contentStr = JSON.stringify(entry.data);
+          if (contentStr.includes(mediaPathOrUrl) || contentStr.includes(filename) || contentStr.includes(normalizedUrl)) {
+            references.push({
+              type: item.type,
+              title: entry.data[item.titleField] || entry.data.nameVi || entry.data.name || entry.name,
+              file: `${item.dir}/${entry.name}`
+            });
+          }
+        }
+      } catch {
+      }
+    } else {
+      const fullDir = path.join(process.cwd(), item.dir);
+      if (fs.existsSync(fullDir)) {
+        const files = fs.readdirSync(fullDir).filter((f) => f.endsWith(".json"));
+        for (const f of files) {
+          try {
+            const content = fs.readFileSync(path.join(fullDir, f), "utf-8");
+            if (content.includes(mediaPathOrUrl) || content.includes(filename) || content.includes(normalizedUrl)) {
+              const parsed = JSON.parse(content.replace(/^\uFEFF/, ""));
+              references.push({
+                type: item.type,
+                title: parsed[item.titleField] || parsed.nameVi || parsed.name || f,
+                file: `${item.dir}/${f}`
+              });
+            }
+          } catch {
+          }
+        }
+      }
+    }
+  }
+  return references;
+}
 var media_default = wrapHandler(async (req, res) => {
   const user = getAuthenticatedUser(req);
   if (!user) {
@@ -500,6 +629,11 @@ var media_default = wrapHandler(async (req, res) => {
   const useGitHub = hasGitHubToken();
   if (req.method === "GET") {
     try {
+      const checkUsage = req.query?.checkUsage;
+      if (typeof checkUsage === "string" && checkUsage.trim()) {
+        const references = await findMediaReferences(checkUsage.trim(), useGitHub);
+        return res.status(200).json({ ok: true, usageCount: references.length, references });
+      }
       const rawFile = req.query?.raw;
       if (typeof rawFile === "string" && rawFile.trim()) {
         const cleanFile = rawFile.replace(/^\/+/, "");
@@ -537,27 +671,27 @@ var media_default = wrapHandler(async (req, res) => {
           })
         );
         catResults.forEach((items) => mediaList.push(...items));
-        return res.status(200).json({ ok: true, media: mediaList, source: "github" });
-      }
-      const uploadsDir = path.join(process.cwd(), "public", "uploads");
-      if (fs.existsSync(uploadsDir)) {
-        for (const cat of ALLOWED_CATEGORIES) {
-          const catDir = path.join(uploadsDir, cat);
-          if (fs.existsSync(catDir)) {
-            const files = fs.readdirSync(catDir).filter((f) => !f.startsWith("."));
-            files.forEach((f) => {
-              const stat = fs.statSync(path.join(catDir, f));
-              mediaList.push({
-                name: f,
-                url: `/uploads/${cat}/${f}`,
-                size: stat.size,
-                category: cat
+      } else {
+        const uploadsDir = path.join(process.cwd(), "public", "uploads");
+        if (fs.existsSync(uploadsDir)) {
+          for (const cat of ALLOWED_CATEGORIES) {
+            const catDir = path.join(uploadsDir, cat);
+            if (fs.existsSync(catDir)) {
+              const files = fs.readdirSync(catDir).filter((f) => !f.startsWith("."));
+              files.forEach((f) => {
+                const stat = fs.statSync(path.join(catDir, f));
+                mediaList.push({
+                  name: f,
+                  url: `/uploads/${cat}/${f}`,
+                  size: stat.size,
+                  category: cat
+                });
               });
-            });
+            }
           }
         }
       }
-      return res.status(200).json({ ok: true, media: mediaList, source: "local" });
+      return res.status(200).json({ ok: true, media: mediaList, source: useGitHub ? "github" : "local" });
     } catch (err) {
       return res.status(500).json({ error: err?.message || "L\u1ED7i khi t\u1EA3i th\u01B0 vi\u1EC7n h\xECnh \u1EA3nh." });
     }
@@ -572,7 +706,7 @@ var media_default = wrapHandler(async (req, res) => {
   const mutLimit = checkApiMutationRateLimit(`${user.username}:${getClientIp(req)}`);
   if (!mutLimit.allowed) {
     res.setHeader("Retry-After", String(mutLimit.retryAfterSeconds));
-    return res.status(429).json({ error: "Upload qu\xE1 nhi\u1EC1u \u1EA3nh li\xEAn ti\u1EBFp. Vui l\xF2ng ch\u1EDD gi\xE2y l\xE1t." });
+    return res.status(429).json({ error: "Thao t\xE1c qu\xE1 nhanh. Vui l\xF2ng th\u1EED l\u1EA1i sau." });
   }
   if (req.method === "POST") {
     const body = await readJsonBody(req);
@@ -617,6 +751,43 @@ var media_default = wrapHandler(async (req, res) => {
         size: decodedBuffer.length
       });
     }
+  }
+  if (req.method === "DELETE") {
+    const body = await readJsonBody(req);
+    const rawUrl = body?.url || body?.path || req.query?.url;
+    const force = Boolean(body?.force);
+    if (typeof rawUrl !== "string" || !rawUrl.trim()) {
+      return res.status(400).json({ error: "Vui l\xF2ng cung c\u1EA5p \u0111\u01B0\u1EDDng d\u1EABn \u1EA3nh c\u1EA7n x\xF3a." });
+    }
+    const cleanUrl = rawUrl.trim().replace(/^\/+/, "");
+    const repoFilePath = cleanUrl.startsWith("public/") ? cleanUrl : `public/${cleanUrl}`;
+    if (!repoFilePath.startsWith("public/uploads/") || !validatePath(repoFilePath)) {
+      return res.status(400).json({ error: "Ch\u1EC9 cho ph\xE9p x\xF3a c\xE1c h\xECnh \u1EA3nh thu\u1ED9c th\u01B0 m\u1EE5c public/uploads/." });
+    }
+    const references = await findMediaReferences(cleanUrl, useGitHub);
+    if (references.length > 0 && !force) {
+      return res.status(409).json({
+        ok: false,
+        error: `Kh\xF4ng th\u1EC3 x\xF3a \u1EA3nh v\xEC \u0111ang \u0111\u01B0\u1EE3c s\u1EED d\u1EE5ng t\u1EA1i ${references.length} v\u1ECB tr\xED tr\xEAn website. Vui l\xF2ng thay th\u1EBF ho\u1EB7c g\u1EE1 tham chi\u1EBFu tr\u01B0\u1EDBc khi x\xF3a.`,
+        referenced: true,
+        references
+      });
+    }
+    const filename = path.basename(repoFilePath);
+    if (useGitHub) {
+      await deleteRepoFile(repoFilePath, `cms(media): delete "${sanitizeCommitText(filename, 70)}"`);
+    } else {
+      const localPath = path.join(process.cwd(), repoFilePath);
+      if (fs.existsSync(localPath)) {
+        fs.unlinkSync(localPath);
+      } else {
+        return res.status(404).json({ error: "Kh\xF4ng t\xECm th\u1EA5y t\u1EC7p \u1EA3nh tr\xEAn m\xE1y ch\u1EE7 \u0111\u1EC3 x\xF3a." });
+      }
+    }
+    return res.status(200).json({
+      ok: true,
+      message: `\u0110\xE3 x\xF3a \u1EA3nh "${filename}" th\xE0nh c\xF4ng kh\u1ECFi h\u1EC7 th\u1ED1ng.`
+    });
   }
   return res.status(405).json({ error: "Method Not Allowed" });
 });
