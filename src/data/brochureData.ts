@@ -1,13 +1,17 @@
 /**
  * Shared immutable metadata and verified public URLs for the official 2026 Company Brochure PDF.
  */
+const brochureCmsModules = import.meta.glob<Record<string, any>>('/content/settings/brochure.json', { eager: true });
+const rawCmsBrochure = Object.values(brochureCmsModules)[0] as any;
+const cmsBrochure = rawCmsBrochure?.default || rawCmsBrochure || {};
+
 export const BROCHURE_DOCUMENT = {
-  pdfUrl: '/brochures/vinaxo-company-brochure-2026.pdf',
+  pdfUrl: cmsBrochure.pdf_file || '/brochures/vinaxo-company-brochure-2026.pdf',
   downloadFilename: 'Vinaxo-Company-Brochure-2026.pdf',
   coverWebp: '/assets/images/brochure-2026-cover.webp',
   coverJpg: '/assets/images/brochure-2026-cover.jpg',
   totalPages: 4,
-  edition: '2026',
+  edition: cmsBrochure.year || '2026',
   format: 'PDF',
 } as const;
 

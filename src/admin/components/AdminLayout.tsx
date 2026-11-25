@@ -6,13 +6,14 @@ import {
   Package, 
   Image, 
   FileText, 
-  Settings, 
   LogOut, 
   ExternalLink, 
   Menu, 
   X, 
   User,
-  Shield
+  Shield,
+  ShieldCheck,
+  Building
 } from 'lucide-react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
@@ -25,8 +26,9 @@ export const AdminLayout: React.FC = () => {
     { to: '/admin/news', label: 'Quản lý tin tức', icon: Newspaper },
     { to: '/admin/products', label: 'Quản lý sản phẩm', icon: Package },
     { to: '/admin/media', label: 'Thư viện hình ảnh', icon: Image },
-    { to: '/admin/brochure', label: 'Hồ sơ & Brochure', icon: FileText },
-    { to: '/admin/settings', label: 'Cấu hình công ty', icon: Settings },
+    { to: '/admin/certificates', label: 'Chứng nhận', icon: ShieldCheck },
+    { to: '/admin/brochure', label: 'Brochure', icon: FileText },
+    { to: '/admin/settings', label: 'Thông tin doanh nghiệp', icon: Building },
   ];
 
   const renderSidebarContent = (onNavClick?: () => void) => (

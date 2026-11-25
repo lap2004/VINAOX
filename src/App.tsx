@@ -131,6 +131,14 @@ export const App: React.FC = () => {
               }
             />
             <Route
+              path="certificates"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminMedia />
+                </Suspense>
+              }
+            />
+            <Route
               path="brochure"
               element={
                 <Suspense fallback={<PageLoader />}>

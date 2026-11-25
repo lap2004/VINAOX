@@ -3,15 +3,19 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
   CheckCircle, 
-  AlertCircle,
-  Send,
-  Bold,
-  Italic,
-  Heading1,
-  Heading2,
-  List,
-  Quote,
-  Link2
+  AlertCircle, 
+  Send, 
+  Bold, 
+  Italic, 
+  Underline,
+  Heading1, 
+  Heading2, 
+  List, 
+  Quote, 
+  Link2,
+  Image as ImageIcon,
+  AlignLeft,
+  AlignCenter
 } from 'lucide-react';
 import { getArticleBySlug, isArticleDraft } from '../../services/contentService';
 import { ArticleContent } from '../../types/content';
@@ -56,7 +60,7 @@ export const AdminNewsEditor: React.FC = () => {
 
   const [fileSha, setFileSha] = useState<string | undefined>(undefined);
   const [slugLockedByUser, setSlugLockedByUser] = useState<boolean>(isEditing);
-  const [activeTab, setActiveTab] = useState<'vi' | 'en' | 'seo'>('vi');
+  const [activeTab, setActiveTab] = useState<'vi' | 'en' | 'seo' | 'preview'>('vi');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoadingArticle, setIsLoadingArticle] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -109,11 +113,15 @@ export const AdminNewsEditor: React.FC = () => {
 
     if (syntax === 'b') newBody += ' **in đậm** ';
     else if (syntax === 'i') newBody += ' *in nghiêng* ';
+    else if (syntax === 'u') newBody += ' <u>gạch chân</u> ';
     else if (syntax === 'h2') newBody += '\n## Tiêu đề đoạn\n';
     else if (syntax === 'h3') newBody += '\n### Tiêu đề phụ\n';
     else if (syntax === 'list') newBody += '\n- Mục danh sách 1\n- Mục danh sách 2\n';
     else if (syntax === 'quote') newBody += '\n> Trích dẫn quan trọng\n';
     else if (syntax === 'link') newBody += ' [Tên liên kết](https://...) ';
+    else if (syntax === 'image') newBody += '\n![Mô tả hình ảnh](/assets/images/news/dried-fruit-export.webp)\n';
+    else if (syntax === 'align-center') newBody += '\n<div align="center">\n\nNội dung căn giữa\n\n</div>\n';
+    else if (syntax === 'align-left') newBody += '\n<div align="left">\n\nNội dung căn trái\n\n</div>\n';
 
     if (activeTab === 'en') {
       setFormData(prev => ({ ...prev, body_en: newBody }));
@@ -474,6 +482,23 @@ export const AdminNewsEditor: React.FC = () => {
               >
                 🔍 SEO & Hiển thị
               </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('preview')}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.84rem',
+                  fontWeight: 600,
+                  border: 'none',
+                  cursor: 'pointer',
+                  backgroundColor: activeTab === 'preview' ? '#F4A83A' : '#FAF7F2',
+                  color: '#3A251B'
+                }}
+              >
+                👁️ Xem trước
+              </button>
             </div>
           </div>
 
@@ -508,17 +533,20 @@ export const AdminNewsEditor: React.FC = () => {
 
               {/* Rich Text Toolbar */}
               <div style={{ marginBottom: '8px', display: 'flex', gap: '4px', flexWrap: 'wrap', backgroundColor: '#FAF7F2', padding: '6px', borderRadius: '6px', border: '1px solid #D1C7BD' }}>
-                <button type="button" onClick={() => insertMarkdown('h2')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Tiêu đề H2">
-                  <Heading1 size={14} />
-                </button>
-                <button type="button" onClick={() => insertMarkdown('h3')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Tiêu đề H3">
-                  <Heading2 size={14} />
-                </button>
                 <button type="button" onClick={() => insertMarkdown('b')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="In đậm">
                   <Bold size={14} />
                 </button>
                 <button type="button" onClick={() => insertMarkdown('i')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="In nghiêng">
                   <Italic size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('u')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Gạch chân">
+                  <Underline size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('h2')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Tiêu đề H2">
+                  <Heading1 size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('h3')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Tiêu đề H3">
+                  <Heading2 size={14} />
                 </button>
                 <button type="button" onClick={() => insertMarkdown('list')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Danh sách">
                   <List size={14} />
@@ -528,6 +556,15 @@ export const AdminNewsEditor: React.FC = () => {
                 </button>
                 <button type="button" onClick={() => insertMarkdown('link')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Chèn link">
                   <Link2 size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('image')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Chèn ảnh vào nội dung">
+                  <ImageIcon size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('align-center')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Căn giữa">
+                  <AlignCenter size={14} />
+                </button>
+                <button type="button" onClick={() => insertMarkdown('align-left')} style={{ padding: '6px 8px', border: '1px solid #D1C7BD', borderRadius: '4px', background: '#fff', cursor: 'pointer' }} title="Căn trái">
+                  <AlignLeft size={14} />
                 </button>
               </div>
 
@@ -654,6 +691,45 @@ export const AdminNewsEditor: React.FC = () => {
                     style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
                   />
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Tab 4: Live Visual Preview */}
+          {activeTab === 'preview' && (
+            <div style={{ backgroundColor: '#FAF7F2', borderRadius: '8px', padding: '24px', border: '1px solid #D1C7BD' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', borderBottom: '1px solid #EADFCC', paddingBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', padding: '3px 8px', borderRadius: '4px', backgroundColor: '#3A251B', color: '#FFF' }}>
+                    {formData.category === 'press' ? 'Báo chí đưa tin' : 'Hoạt động doanh nghiệp'}
+                  </span>
+                  <span style={{ fontSize: '0.82rem', color: '#6E6259' }}>
+                    {formData.published_at || new Date().toISOString().split('T')[0]} • {formData.source || 'VINAXO'}
+                  </span>
+                </div>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '3px 8px', borderRadius: '4px', backgroundColor: isArticleDraft(formData) ? '#FEF3C7' : '#ECFDF5', color: isArticleDraft(formData) ? '#B45309' : '#047857' }}>
+                  {isArticleDraft(formData) ? 'Bản nháp (Ẩn công khai)' : 'Xuất bản công khai'}
+                </span>
+              </div>
+
+              <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#3A251B', lineHeight: 1.3, marginBottom: '12px' }}>
+                {formData.title_vi || 'Chưa có tiêu đề bài viết'}
+              </h1>
+
+              {formData.cover_image && (
+                <div style={{ marginBottom: '20px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #D1C7BD', maxHeight: '360px' }}>
+                  <img src={formData.cover_image} alt="Preview Cover" style={{ width: '100%', height: 'auto', maxHeight: '360px', objectFit: 'cover' }} />
+                </div>
+              )}
+
+              {formData.excerpt_vi && (
+                <div style={{ padding: '14px 16px', backgroundColor: '#FFFFFF', borderLeft: '4px solid #F4A83A', borderRadius: '4px', fontStyle: 'italic', color: '#4A3B32', marginBottom: '20px', lineHeight: 1.6 }}>
+                  {formData.excerpt_vi}
+                </div>
+              )}
+
+              <div style={{ fontSize: '0.96rem', color: '#3A251B', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
+                {formData.body_vi || 'Nội dung bài viết chưa được nhập.'}
               </div>
             </div>
           )}

@@ -50,7 +50,7 @@ export interface ProductItem {
   vi: ProductLocalizedContent;
 }
 
-export const productsData: ProductItem[] = [
+const BASE_PRODUCTS_DATA: ProductItem[] = [
   // 01 — Soft Dried Red Dragonfruit
   {
     id: "soft-dried-red-dragonfruit",
@@ -668,3 +668,57 @@ export const productsData: ProductItem[] = [
     }
   }
 ];
+
+// Dynamically merge with content/products/*.json from CMS at build time
+const productCmsModules = import.meta.glob<Record<string, any>>('/content/products/*.json', { eager: true });
+const cmsProductMap = new Map<string, any>();
+for (const mod of Object.values(productCmsModules)) {
+  const p = (mod as any).default || mod;
+  if (p?.slug) cmsProductMap.set(p.slug, p);
+  if (p?.id) cmsProductMap.set(p.id, p);
+}
+
+export const productsData: ProductItem[] = BASE_PRODUCTS_DATA.map((base) => {
+  const cms = cmsProductMap.get(base.slug) || cmsProductMap.get(base.id);
+  if (!cms) return base;
+
+  const nameVi = cms.name_vi || base.nameVi;
+  const nameEn = cms.name_en || base.name;
+  const category = (cms.category as ProductCategory) || base.category;
+  const img = cms.image || base.imageWebp || base.image;
+
+  return {
+    ...base,
+    nameVi,
+    name: nameEn,
+    category,
+    image: img,
+    imageWebp: img,
+    imageJpg: img,
+    shortDescriptionVi: cms.description_vi || base.shortDescriptionVi,
+    descriptionVi: cms.description_vi || base.descriptionVi,
+    shortDescription: cms.description_en || base.shortDescription,
+    description: cms.description_en || base.description,
+    originVi: cms.origin_vi || base.originVi,
+    origin: cms.origin_en || base.origin,
+    certifications: cms.certifications || base.certifications,
+    specs: {
+      ...base.specs,
+      shelfLifeVi: cms.shelf_life || base.specs.shelfLifeVi,
+      packagingVi: cms.packaging || base.specs.packagingVi
+    },
+    en: {
+      ...base.en,
+      name: nameEn,
+      desc: cms.description_en || base.en.desc,
+      origin: cms.origin_en || base.en.origin
+    },
+    vi: {
+      ...base.vi,
+      name: nameVi,
+      desc: cms.description_vi || base.vi.desc,
+      origin: cms.origin_vi || base.vi.origin
+    }
+  };
+});
+

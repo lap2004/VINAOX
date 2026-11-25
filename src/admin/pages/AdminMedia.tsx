@@ -10,9 +10,15 @@ import {
   AlertCircle, 
   CheckCircle, 
   X,
-  RefreshCw
+  RefreshCw,
+  Crop,
+  RotateCw,
+  Scissors,
+  BookmarkCheck
 } from 'lucide-react';
 import { adminFetch } from '../lib/adminFetch';
+import { productsData } from '../../data/products';
+import { getAllArticles } from '../../services/contentService';
 
 interface MediaItem {
   name: string;
@@ -48,8 +54,29 @@ export const AdminMedia: React.FC = () => {
   const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
   const [uploadCategory, setUploadCategory] = useState<'news' | 'products' | 'certificates'>('news');
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [editingItem, setEditingItem] = useState<MediaItem | null>(null);
+  const [cropAspectRatio, setCropAspectRatio] = useState<'free' | '1:1' | '4:3' | '16:9'>('free');
+  const [cropRotation, setCropRotation] = useState<number>(0);
+  const [cropMaxDim, setCropMaxDim] = useState<number>(1920);
+  const [isProcessingEdit, setIsProcessingEdit] = useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Cross-reference checker for existing site content
+  const getReferencingItems = (url: string): string[] => {
+    const refs: string[] = [];
+    productsData.forEach(p => {
+      if (p.image === url || p.imageWebp === url || p.imageJpg === url) {
+        refs.push(`Sản phẩm: ${p.nameVi}`);
+      }
+    });
+    getAllArticles({ includeDrafts: true }).forEach(a => {
+      if (a.cover_image === url) {
+        refs.push(`Bài viết: ${a.title_vi}`);
+      }
+    });
+    return refs;
+  };
 
   const fetchMedia = async () => {
     try {
@@ -72,6 +99,124 @@ export const AdminMedia: React.FC = () => {
   useEffect(() => {
     fetchMedia();
   }, []);
+
+  // Process crop, rotate, resize and save as optimized WebP directly to Git
+  const handleApplyCropAndSave = async () => {
+    if (!editingItem) return;
+    try {
+      setIsProcessingEdit(true);
+      setStatusMsg(null);
+
+      const targetUrl = editingItem.fallbackUrl || editingItem.url;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('Không thể tải ảnh để chỉnh sửa.'));
+        img.src = targetUrl;
+      });
+
+      const canvas = document.createElement('canvas');
+      let srcW = img.width;
+      let srcH = img.height;
+
+      // Calculate crop box if aspect ratio is set
+      let cropX = 0;
+      let cropY = 0;
+      let cropW = srcW;
+      let cropH = srcH;
+
+      if (cropAspectRatio === '1:1') {
+        const side = Math.min(srcW, srcH);
+        cropX = Math.round((srcW - side) / 2);
+        cropY = Math.round((srcH - side) / 2);
+        cropW = side;
+        cropH = side;
+      } else if (cropAspectRatio === '4:3') {
+        const targetRatio = 4 / 3;
+        if (srcW / srcH > targetRatio) {
+          cropW = Math.round(srcH * targetRatio);
+          cropX = Math.round((srcW - cropW) / 2);
+        } else {
+          cropH = Math.round(srcW / targetRatio);
+          cropY = Math.round((srcH - cropH) / 2);
+        }
+      } else if (cropAspectRatio === '16:9') {
+        const targetRatio = 16 / 9;
+        if (srcW / srcH > targetRatio) {
+          cropW = Math.round(srcH * targetRatio);
+          cropX = Math.round((srcW - cropW) / 2);
+        } else {
+          cropH = Math.round(srcW / targetRatio);
+          cropY = Math.round((srcH - cropH) / 2);
+        }
+      }
+
+      // Target scaled dimensions
+      let outW = cropW;
+      let outH = cropH;
+      if (outW > cropMaxDim || outH > cropMaxDim) {
+        if (outW > outH) {
+          outH = Math.round((outH * cropMaxDim) / outW);
+          outW = cropMaxDim;
+        } else {
+          outW = Math.round((outW * cropMaxDim) / outH);
+          outH = cropMaxDim;
+        }
+      }
+
+      const isRotated90 = cropRotation % 180 !== 0;
+      canvas.width = isRotated90 ? outH : outW;
+      canvas.height = isRotated90 ? outW : outH;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Không thể khởi tạo Canvas 2D');
+
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((cropRotation * Math.PI) / 180);
+      ctx.drawImage(img, cropX, cropY, cropW, cropH, -outW / 2, -outH / 2, outW, outH);
+
+      let quality = 0.85;
+      let base64Data = canvas.toDataURL('image/webp', quality);
+      while (base64Data.length > 700_000 && quality > 0.4) {
+        quality -= 0.1;
+        base64Data = canvas.toDataURL('image/webp', quality);
+      }
+
+      const cleanBaseName = editingItem.name.replace(/\.[^/.]+$/, '').replace(/[^a-z0-9_-]/gi, '-');
+      const filename = `${cleanBaseName}-edit-${cropAspectRatio}.webp`;
+
+      const res = await adminFetch('/api/admin/media', {
+        method: 'POST',
+        body: JSON.stringify({
+          filename,
+          base64Data,
+          category: editingItem.category
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setStatusMsg({ type: 'success', text: `Đã cắt & tối ưu ảnh WebP thành công: ${data.url}` });
+        const uploadedName = data.url.split('/').pop() || filename;
+        setMediaList(prev => [{
+          name: uploadedName,
+          url: data.url,
+          fallbackUrl: data.fallbackUrl,
+          category: editingItem.category,
+          size: data.size || Math.round((base64Data.length * 3) / 4)
+        }, ...prev]);
+        setEditingItem(null);
+      } else {
+        setStatusMsg({ type: 'error', text: data.error || 'Lỗi khi lưu ảnh đã cắt.' });
+      }
+    } catch (err: any) {
+      setStatusMsg({ type: 'error', text: err?.message || 'Lỗi khi xử lý hình ảnh.' });
+    } finally {
+      setIsProcessingEdit(false);
+    }
+  };
 
   const formatSize = (bytes?: number) => {
     if (!bytes) return '--';
@@ -481,6 +626,34 @@ export const AdminMedia: React.FC = () => {
                 {formatSize(item.size)}
               </div>
 
+              {/* Referencing badge if used on website */}
+              {(() => {
+                const refs = getReferencingItems(item.url);
+                if (refs.length > 0) {
+                  return (
+                    <div 
+                      title={`Đang dùng trong: ${refs.join(', ')}`}
+                      style={{ 
+                        display: 'inline-flex', 
+                        alignItems: 'center', 
+                        gap: '4px', 
+                        fontSize: '0.7rem', 
+                        color: '#065F46', 
+                        backgroundColor: '#ECFDF5', 
+                        padding: '2px 6px', 
+                        borderRadius: '4px',
+                        marginBottom: '8px',
+                        fontWeight: 600
+                      }}
+                    >
+                      <BookmarkCheck size={11} />
+                      <span>Đang dùng trên web ({refs.length})</span>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+
               {/* Action buttons */}
               <div style={{ marginTop: 'auto', display: 'flex', gap: '6px' }}>
                 <button
@@ -513,6 +686,26 @@ export const AdminMedia: React.FC = () => {
                       <span>Copy link</span>
                     </>
                   )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingItem(item);
+                    setCropAspectRatio('free');
+                    setCropRotation(0);
+                  }}
+                  title="Cắt / Xoay / Đổi tỷ lệ ảnh"
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #EADCCE',
+                    color: '#3A251B',
+                    padding: '6px 8px',
+                    borderRadius: '6px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Crop size={13} />
                 </button>
 
                 <button
@@ -599,6 +792,174 @@ export const AdminMedia: React.FC = () => {
                 }}
               >
                 Copy đường dẫn
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Crop & Image Editor Modal */}
+      {editingItem && (
+        <div 
+          onClick={() => setEditingItem(null)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(20, 10, 5, 0.8)',
+            zIndex: 1100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: '12px',
+              maxWidth: '840px',
+              width: '100%',
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px rgba(0,0,0,0.35)'
+            }}
+          >
+            <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #EADCCE' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Scissors size={18} color="#F4A83A" />
+                <span style={{ fontWeight: 700, color: '#3A251B', fontSize: '1rem' }}>
+                  Cắt, xoay & tối ưu ảnh WebP: {editingItem.name}
+                </span>
+              </div>
+              <button onClick={() => setEditingItem(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6E6259' }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Controls bar */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', backgroundColor: '#FAF7F2', padding: '12px 16px', borderRadius: '8px', border: '1px solid #EADCCE' }}>
+                {/* Aspect ratio */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#3A251B' }}>Tỷ lệ:</span>
+                  {(['free', '1:1', '4:3', '16:9'] as const).map(ratio => (
+                    <button
+                      key={ratio}
+                      type="button"
+                      onClick={() => setCropAspectRatio(ratio)}
+                      style={{
+                        padding: '5px 10px',
+                        borderRadius: '6px',
+                        fontSize: '0.8rem',
+                        fontWeight: cropAspectRatio === ratio ? 700 : 500,
+                        backgroundColor: cropAspectRatio === ratio ? '#3A251B' : '#FFFFFF',
+                        color: cropAspectRatio === ratio ? '#FFFFFF' : '#6E6259',
+                        border: `1px solid ${cropAspectRatio === ratio ? '#3A251B' : '#D1C7BD'}`,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {ratio === 'free' ? 'Tự do' : ratio}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Rotate */}
+                <button
+                  type="button"
+                  onClick={() => setCropRotation(r => (r + 90) % 360)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #D1C7BD',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    color: '#3A251B'
+                  }}
+                >
+                  <RotateCw size={14} />
+                  <span>Xoay 90° ({cropRotation}°)</span>
+                </button>
+
+                {/* Max Dim */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#3A251B' }}>Kích thước:</span>
+                  <select
+                    value={cropMaxDim}
+                    onChange={(e) => setCropMaxDim(Number(e.target.value))}
+                    style={{
+                      padding: '5px 8px',
+                      borderRadius: '6px',
+                      border: '1px solid #D1C7BD',
+                      fontSize: '0.8rem',
+                      backgroundColor: '#FFFFFF'
+                    }}
+                  >
+                    <option value={1920}>1920px (Full HD)</option>
+                    <option value={1200}>1200px (Banner tiêu chuẩn)</option>
+                    <option value={800}>800px (Sản phẩm / Bài viết)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Visual preview */}
+              <div style={{ textAlign: 'center', backgroundColor: '#F5EFE6', borderRadius: '8px', padding: '16px', maxHeight: '50vh', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img 
+                  src={editingItem.url} 
+                  alt={editingItem.name}
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '45vh',
+                    objectFit: 'contain',
+                    transform: `rotate(${cropRotation}deg)`,
+                    transition: 'transform 0.2s ease',
+                    borderRadius: '4px'
+                  }}
+                />
+              </div>
+
+              <div style={{ fontSize: '0.78rem', color: '#6E6259', textAlign: 'center' }}>
+                ⚡ Ảnh sẽ được cắt theo khung <strong>{cropAspectRatio === 'free' ? 'Gốc' : cropAspectRatio}</strong>, nén WebP dưới 500KB và tự động commit trực tiếp vào Git repository.
+              </div>
+            </div>
+
+            <div style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', backgroundColor: '#FFFDF9', borderTop: '1px solid #EADCCE' }}>
+              <button
+                type="button"
+                onClick={() => setEditingItem(null)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: '1px solid #D1C7BD',
+                  backgroundColor: '#FFFFFF',
+                  color: '#6E6259',
+                  fontSize: '0.84rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                disabled={isProcessingEdit}
+                onClick={handleApplyCropAndSave}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: '#F4A83A',
+                  color: '#3A251B',
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
+                  cursor: isProcessingEdit ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {isProcessingEdit ? 'Đang nén & lưu Git...' : 'Lưu ảnh WebP mới'}
               </button>
             </div>
           </div>

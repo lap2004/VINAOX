@@ -48,7 +48,7 @@ export interface CompanyInfo {
   };
 }
 
-export const COMPANY_INFO: CompanyInfo = {
+const BASE_COMPANY_INFO: CompanyInfo = {
   legalNameVi: "CÔNG TY TNHH VINAXO",
   legalNameEn: "VINAXO COMPANY LIMITED",
   shortName: "Vinaxo Co., Ltd.",
@@ -108,3 +108,26 @@ export const COMPANY_INFO: CompanyInfo = {
     reportFile: "VINAXO_CONTENT_AUDIT.md",
   },
 };
+
+const companyCmsModules = import.meta.glob<Record<string, any>>('/content/settings/company.json', { eager: true });
+const rawCmsCompany = Object.values(companyCmsModules)[0] as any;
+const cmsComp = rawCmsCompany?.default || rawCmsCompany || {};
+
+export const COMPANY_INFO: CompanyInfo = {
+  ...BASE_COMPANY_INFO,
+  legalNameVi: cmsComp.company_name_vi || BASE_COMPANY_INFO.legalNameVi,
+  legalNameEn: cmsComp.company_name_en || BASE_COMPANY_INFO.legalNameEn,
+  taxCode: cmsComp.tax_id || BASE_COMPANY_INFO.taxCode,
+  headquarters: {
+    ...BASE_COMPANY_INFO.headquarters,
+    addressVi: cmsComp.address_vi || BASE_COMPANY_INFO.headquarters.addressVi
+  },
+  contacts: {
+    ...BASE_COMPANY_INFO.contacts,
+    hotline: cmsComp.hotline || BASE_COMPANY_INFO.contacts.hotline,
+    phoneDisplay: cmsComp.hotline || BASE_COMPANY_INFO.contacts.phoneDisplay,
+    email: cmsComp.email || BASE_COMPANY_INFO.contacts.email,
+    website: cmsComp.website || BASE_COMPANY_INFO.contacts.website
+  }
+};
+
