@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { 
   Building, 
   FileText, 
@@ -10,6 +11,7 @@ import {
   ShieldCheck,
   FileCheck
 } from 'lucide-react';
+import { adminFetch } from '../lib/adminFetch';
 
 interface CompanySettings {
   company_name_vi: string;
@@ -31,14 +33,21 @@ interface BrochureSettings {
 }
 
 export const AdminSettings: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'company' | 'brochure'>('company');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState<'company' | 'brochure'>(() =>
+    location.pathname.includes('brochure') ? 'brochure' : 'company'
+  );
+
+  useEffect(() => {
+    setActiveTab(location.pathname.includes('brochure') ? 'brochure' : 'company');
+  }, [location.pathname]);
 
   const [companyData, setCompanyData] = useState<CompanySettings>({
     company_name_vi: 'CÔNG TY TNHH VINAXO',
     company_name_en: 'VINAXO COMPANY LIMITED (Vinaxo Co., Ltd.)',
     tax_id: '1201611681',
     address_vi: 'Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp, Việt Nam',
-    legal_rep_vi: 'Ông Hoàng Mạnh Cường (Jimmy)',
+    legal_rep_vi: 'Ông Nguyễn Anh Khoa',
     hotline: '(+84) 984 815 016',
     email: 'cuonghoang0710@gmail.com',
     website: 'www.vinaxo.net'
@@ -52,27 +61,30 @@ export const AdminSettings: React.FC = () => {
     download_enabled: true
   });
 
+  const [companySha, setCompanySha] = useState<string | undefined>(undefined);
+  const [brochureSha, setBrochureSha] = useState<string | undefined>(undefined);
   const [isSaving, setIsSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Fetch initial settings from server
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const compRes = await fetch('/api/admin/settings?section=company');
+        const compRes = await adminFetch('/api/admin/settings?section=company');
         if (compRes.ok) {
           const compJson = await compRes.json();
           if (compJson.data && Object.keys(compJson.data).length > 0) {
             setCompanyData(prev => ({ ...prev, ...compJson.data }));
           }
+          if (compJson.sha) setCompanySha(compJson.sha);
         }
 
-        const brocRes = await fetch('/api/admin/settings?section=brochure');
+        const brocRes = await adminFetch('/api/admin/settings?section=brochure');
         if (brocRes.ok) {
           const brocJson = await brocRes.json();
           if (brocJson.data && Object.keys(brocJson.data).length > 0) {
             setBrochureData(prev => ({ ...prev, ...brocJson.data }));
           }
+          if (brocJson.sha) setBrochureSha(brocJson.sha);
         }
       } catch {
         // Fall back to default
@@ -86,13 +98,13 @@ export const AdminSettings: React.FC = () => {
     try {
       setIsSaving(true);
       setStatusMsg(null);
-      const res = await fetch('/api/admin/settings?section=company', {
+      const res = await adminFetch('/api/admin/settings?section=company', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(companyData)
+        body: JSON.stringify({ ...companyData, sha: companySha })
       });
       const data = await res.json();
       if (res.ok && data.ok) {
+        if (data.result?.sha) setCompanySha(data.result.sha);
         setStatusMsg({ type: 'success', text: 'Cập nhật thông tin doanh nghiệp thành công!' });
       } else {
         setStatusMsg({ type: 'error', text: data.error || 'Không thể lưu cài đặt.' });
@@ -109,13 +121,13 @@ export const AdminSettings: React.FC = () => {
     try {
       setIsSaving(true);
       setStatusMsg(null);
-      const res = await fetch('/api/admin/settings?section=brochure', {
+      const res = await adminFetch('/api/admin/settings?section=brochure', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(brochureData)
+        body: JSON.stringify({ ...brochureData, sha: brochureSha })
       });
       const data = await res.json();
       if (res.ok && data.ok) {
+        if (data.result?.sha) setBrochureSha(data.result.sha);
         setStatusMsg({ type: 'success', text: 'Cập nhật cấu hình Brochure thành công!' });
       } else {
         setStatusMsg({ type: 'error', text: data.error || 'Không thể lưu cài đặt.' });

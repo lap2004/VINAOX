@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Plus, 
@@ -8,18 +8,43 @@ import {
   Newspaper, 
   AlertCircle,
   CheckCircle,
-  Eye
+  Eye,
+  EyeOff,
+  RefreshCw
 } from 'lucide-react';
-import { getAllArticles } from '../../services/contentService';
+import { getAllArticles, isArticleDraft } from '../../services/contentService';
 import { ArticleContent } from '../../types/content';
+import { adminFetch } from '../lib/adminFetch';
 
 export const AdminNewsList: React.FC = () => {
-  const [articles, setArticles] = useState<ArticleContent[]>(getAllArticles());
+  const [articles, setArticles] = useState<ArticleContent[]>(() => getAllArticles({ includeDrafts: true }));
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoadingList, setIsLoadingList] = useState(false);
+
+  const fetchLiveArticles = async () => {
+    try {
+      setIsLoadingList(true);
+      const res = await adminFetch('/api/admin/news');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.articles) && data.articles.length > 0) {
+          setArticles(data.articles);
+        }
+      }
+    } catch {
+      // Retain initial articles on offline fallback
+    } finally {
+      setIsLoadingList(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLiveArticles();
+  }, []);
 
   // Filter articles
   const filteredArticles = articles.filter(item => {
@@ -27,7 +52,9 @@ export const AdminNewsList: React.FC = () => {
       item.title_vi.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.source.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item.title_en && item.title_en.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCat = selectedCategory === 'all' || item.category === selectedCategory;
+    const matchesCat =
+      selectedCategory === 'all' ||
+      (selectedCategory === 'draft' ? isArticleDraft(item) : item.category === selectedCategory);
     return matchesSearch && matchesCat;
   });
 
@@ -35,9 +62,8 @@ export const AdminNewsList: React.FC = () => {
     try {
       setIsDeleting(true);
       setStatusMsg(null);
-      const res = await fetch('/api/admin/news', {
+      const res = await adminFetch('/api/admin/news', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ slug })
       });
       const data = await res.json();
@@ -64,29 +90,53 @@ export const AdminNewsList: React.FC = () => {
             Quản lý Bài viết & Báo chí
           </h1>
           <p style={{ fontSize: '0.88rem', color: '#6E6259', margin: 0 }}>
-            Tổng số: {articles.length} bài viết đã lưu trữ trong hệ thống Git
+            Tổng số: {articles.length} bài viết ({articles.filter(a => isArticleDraft(a)).length} bản nháp) đã lưu trữ trong hệ thống Git
           </p>
         </div>
 
-        <Link
-          to="/admin/news/new"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            backgroundColor: '#F4A83A',
-            color: '#3A251B',
-            padding: '10px 18px',
-            borderRadius: '8px',
-            fontWeight: 700,
-            fontSize: '0.9rem',
-            textDecoration: 'none',
-            boxShadow: '0 2px 6px rgba(244, 168, 58, 0.3)'
-          }}
-        >
-          <Plus size={18} />
-          <span>Tạo bài viết mới</span>
-        </Link>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={fetchLiveArticles}
+            disabled={isLoadingList}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #D1C7BD',
+              color: '#3A251B',
+              padding: '10px 14px',
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '0.88rem',
+              cursor: isLoadingList ? 'not-allowed' : 'pointer'
+            }}
+          >
+            <RefreshCw size={15} />
+            <span>{isLoadingList ? 'Đang tải...' : 'Đồng bộ Git'}</span>
+          </button>
+
+          <Link
+            to="/admin/news/new"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: '#F4A83A',
+              color: '#3A251B',
+              padding: '10px 18px',
+              borderRadius: '8px',
+              fontWeight: 700,
+              fontSize: '0.9rem',
+              textDecoration: 'none',
+              boxShadow: '0 2px 6px rgba(244, 168, 58, 0.3)'
+            }}
+          >
+            <Plus size={18} />
+            <span>Tạo bài viết mới</span>
+          </Link>
+        </div>
       </div>
 
       {/* Status Feedback Alert */}
@@ -144,11 +194,12 @@ export const AdminNewsList: React.FC = () => {
         </div>
 
         {/* Category Filter Pills */}
-        <div style={{ display: 'flex', gap: '6px' }}>
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           {[
             { id: 'all', label: 'Tất cả' },
             { id: 'press', label: 'Báo chí đưa tin' },
-            { id: 'company', label: 'Hoạt động nội bộ' }
+            { id: 'company', label: 'Hoạt động nội bộ' },
+            { id: 'draft', label: 'Bản nháp (Ẩn)' }
           ].map(cat => (
             <button
               key={cat.id}
@@ -185,7 +236,7 @@ export const AdminNewsList: React.FC = () => {
               <tr style={{ backgroundColor: '#FAF7F2', borderBottom: '1px solid #EADFCC', color: '#6E6259' }}>
                 <th style={{ padding: '14px 18px', fontWeight: 600 }}>Ảnh</th>
                 <th style={{ padding: '14px 18px', fontWeight: 600 }}>Tiêu đề & Slug</th>
-                <th style={{ padding: '14px 18px', fontWeight: 600 }}>Danh mục / Nguồn</th>
+                <th style={{ padding: '14px 18px', fontWeight: 600 }}>Trạng thái / Nguồn</th>
                 <th style={{ padding: '14px 18px', fontWeight: 600 }}>Ngày xuất bản</th>
                 <th style={{ padding: '14px 18px', fontWeight: 600, textAlign: 'right' }}>Thao tác</th>
               </tr>
@@ -199,105 +250,139 @@ export const AdminNewsList: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredArticles.map((a) => (
-                  <tr key={a.id} style={{ borderBottom: '1px solid #F0EAE1' }}>
-                    <td style={{ padding: '12px 18px', width: '60px' }}>
-                      <img
-                        src={a.cover_image}
-                        alt={a.title_vi}
-                        style={{ width: '54px', height: '40px', objectFit: 'cover', borderRadius: '4px', backgroundColor: '#EADFCC' }}
-                      />
-                    </td>
-                    <td style={{ padding: '12px 18px', maxWidth: '380px' }}>
-                      <div style={{ fontWeight: 600, color: '#3A251B', marginBottom: '2px', lineHeight: 1.35 }}>
-                        {a.title_vi}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: '#8C827A', fontFamily: 'monospace' }}>
-                        /{a.slug}
-                      </div>
-                    </td>
-                    <td style={{ padding: '12px 18px' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                        <span style={{
-                          display: 'inline-block',
-                          padding: '2px 8px',
-                          borderRadius: '4px',
-                          backgroundColor: a.category === 'press' ? '#EFF6FF' : '#ECFDF5',
-                          color: a.category === 'press' ? '#1D4ED8' : '#047857',
-                          fontSize: '0.72rem',
-                          fontWeight: 600,
-                          width: 'fit-content'
-                        }}>
-                          {a.category === 'press' ? 'Báo chí đưa tin' : 'Doanh nghiệp'}
-                        </span>
-                        <span style={{ fontSize: '0.76rem', color: '#6E6259' }}>
-                          Nguồn: {a.source}
-                        </span>
-                      </div>
-                    </td>
-                    <td style={{ padding: '12px 18px', color: '#6E6259', fontSize: '0.82rem' }}>
-                      {a.dateVi || a.published_at}
-                    </td>
-                    <td style={{ padding: '12px 18px', textAlign: 'right' }}>
-                      <div style={{ display: 'inline-flex', gap: '6px' }}>
-                        <Link
-                          to={`/tin-tuc/${a.slug}`}
-                          target="_blank"
-                          title="Xem bài viết trên web"
-                          style={{
-                            padding: '6px 8px',
-                            borderRadius: '6px',
-                            backgroundColor: '#FAF7F2',
-                            color: '#6E6259',
-                            border: '1px solid #D1C7BD',
-                            display: 'inline-flex',
-                            alignItems: 'center'
-                          }}
-                        >
-                          <Eye size={14} />
-                        </Link>
+                filteredArticles.map((a) => {
+                  const draft = isArticleDraft(a);
+                  return (
+                    <tr key={a.slug || a.id} style={{ borderBottom: '1px solid #F0EAE1' }}>
+                      <td style={{ padding: '12px 18px', width: '60px' }}>
+                        <img
+                          src={a.cover_image}
+                          alt={a.title_vi}
+                          style={{ width: '54px', height: '40px', objectFit: 'cover', borderRadius: '4px', backgroundColor: '#EADFCC' }}
+                        />
+                      </td>
+                      <td style={{ padding: '12px 18px', maxWidth: '380px' }}>
+                        <div style={{ fontWeight: 600, color: '#3A251B', marginBottom: '2px', lineHeight: 1.35 }}>
+                          {a.title_vi}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#8C827A', fontFamily: 'monospace' }}>
+                          /{a.slug}
+                        </div>
+                      </td>
+                      <td style={{ padding: '12px 18px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                            <span style={{
+                              display: 'inline-block',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              backgroundColor: draft ? '#FEF3C7' : '#ECFDF5',
+                              color: draft ? '#B45309' : '#047857',
+                              fontSize: '0.72rem',
+                              fontWeight: 700,
+                              border: `1px solid ${draft ? '#FDE68A' : '#A7F3D0'}`
+                            }}>
+                              {draft ? 'Bản nháp (Ẩn công khai)' : 'Đã xuất bản'}
+                            </span>
+                            <span style={{
+                              display: 'inline-block',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              backgroundColor: a.category === 'press' ? '#EFF6FF' : '#F3F4F6',
+                              color: a.category === 'press' ? '#1D4ED8' : '#374151',
+                              fontSize: '0.72rem',
+                              fontWeight: 600
+                            }}>
+                              {a.category === 'press' ? 'Báo chí' : 'Doanh nghiệp'}
+                            </span>
+                          </div>
+                          <span style={{ fontSize: '0.76rem', color: '#6E6259' }}>
+                            Nguồn: {a.source}
+                          </span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '12px 18px', color: '#6E6259', fontSize: '0.82rem' }}>
+                        {a.dateVi || a.published_at}
+                      </td>
+                      <td style={{ padding: '12px 18px', textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '6px' }}>
+                          {draft ? (
+                            <span
+                              title="Bản nháp không hiển thị công khai trên website"
+                              style={{
+                                padding: '6px 8px',
+                                borderRadius: '6px',
+                                backgroundColor: '#F3F4F6',
+                                color: '#9CA3AF',
+                                border: '1px solid #E5E7EB',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                cursor: 'not-allowed'
+                              }}
+                            >
+                              <EyeOff size={14} />
+                            </span>
+                          ) : (
+                            <Link
+                              to={`/tin-tuc/${a.slug}`}
+                              target="_blank"
+                              title="Xem bài viết trên web"
+                              style={{
+                                padding: '6px 8px',
+                                borderRadius: '6px',
+                                backgroundColor: '#FAF7F2',
+                                color: '#6E6259',
+                                border: '1px solid #D1C7BD',
+                                display: 'inline-flex',
+                                alignItems: 'center'
+                              }}
+                            >
+                              <Eye size={14} />
+                            </Link>
+                          )}
 
-                        <Link
-                          to={`/admin/news/${a.slug}/edit`}
-                          title="Chỉnh sửa bài viết"
-                          style={{
-                            padding: '6px 12px',
-                            borderRadius: '6px',
-                            backgroundColor: '#FFF7EC',
-                            color: '#3A251B',
-                            border: '1px solid #EADFCC',
-                            fontSize: '0.8rem',
-                            fontWeight: 600,
-                            textDecoration: 'none',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px'
-                          }}
-                        >
-                          <Edit3 size={13} />
-                          <span>Sửa</span>
-                        </Link>
+                          <Link
+                            to={`/admin/news/${a.slug}/edit`}
+                            title="Chỉnh sửa bài viết"
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              backgroundColor: '#FFF7EC',
+                              color: '#3A251B',
+                              border: '1px solid #EADFCC',
+                              fontSize: '0.8rem',
+                              fontWeight: 600,
+                              textDecoration: 'none',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                          >
+                            <Edit3 size={13} />
+                            <span>Sửa</span>
+                          </Link>
 
-                        <button
-                          onClick={() => setDeletingSlug(a.slug)}
-                          title="Xóa bài viết"
-                          style={{
-                            padding: '6px 8px',
-                            borderRadius: '6px',
-                            backgroundColor: '#FEF2F2',
-                            color: '#DC2626',
-                            border: '1px solid #FECACA',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center'
-                          }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                          <button
+                            onClick={() => setDeletingSlug(a.slug)}
+                            title="Xóa bài viết"
+                            style={{
+                              padding: '6px 8px',
+                              borderRadius: '6px',
+                              backgroundColor: '#FEF2F2',
+                              color: '#DC2626',
+                              border: '1px solid #FECACA',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

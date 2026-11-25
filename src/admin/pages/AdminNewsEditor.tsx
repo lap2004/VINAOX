@@ -13,8 +13,9 @@ import {
   Quote,
   Link2
 } from 'lucide-react';
-import { getArticleBySlug } from '../../services/contentService';
+import { getArticleBySlug, isArticleDraft } from '../../services/contentService';
 import { ArticleContent } from '../../types/content';
+import { adminFetch } from '../lib/adminFetch';
 
 export const AdminNewsEditor: React.FC = () => {
   const { id, slug } = useParams<{ id?: string; slug?: string }>();
@@ -44,6 +45,8 @@ export const AdminNewsEditor: React.FC = () => {
     published_at: new Date().toISOString().split('T')[0],
     featured: false,
     tags: ['press'],
+    status: 'published',
+    published: true,
     verified: true,
     seo_title_vi: '',
     seo_description_vi: '',
@@ -51,25 +54,40 @@ export const AdminNewsEditor: React.FC = () => {
     seo_description_en: ''
   });
 
+  const [fileSha, setFileSha] = useState<string | undefined>(undefined);
+  const [slugLockedByUser, setSlugLockedByUser] = useState<boolean>(isEditing);
   const [activeTab, setActiveTab] = useState<'vi' | 'en' | 'seo'>('vi');
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingArticle, setIsLoadingArticle] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  // Load existing article if editing
+  // Load existing article if editing (prefer live GitHub API, fallback build-time content)
   useEffect(() => {
-    if (editIdentifier) {
-      const existing = getArticleBySlug(editIdentifier);
-      if (existing) {
-        setFormData(existing);
-      }
+    if (!editIdentifier) return;
+
+    const existingLocal = getArticleBySlug(editIdentifier, { includeDrafts: true });
+    if (existingLocal) {
+      setFormData(existingLocal);
     }
+
+    setIsLoadingArticle(true);
+    adminFetch(`/api/admin/news?slug=${encodeURIComponent(editIdentifier)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok && data.article) {
+          setFormData(data.article);
+          if (data.sha) setFileSha(data.sha);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setIsLoadingArticle(false));
   }, [editIdentifier]);
 
-  // Auto-generate slug from Vietnamese title if new
+  // Auto-generate slug from Vietnamese title if new and not manually overridden
   const handleTitleChange = (val: string) => {
     setFormData(prev => {
       const updated = { ...prev, title_vi: val };
-      if (!isEditing && !prev.slug) {
+      if (!isEditing && !slugLockedByUser) {
         const generatedSlug = val
           .toLowerCase()
           .normalize('NFD')
@@ -105,7 +123,7 @@ export const AdminNewsEditor: React.FC = () => {
   };
 
   const handleSave = async (isDraft = false) => {
-    if (!formData.title_vi || !formData.slug) {
+    if (!formData.title_vi?.trim() || !formData.slug?.trim()) {
       setFeedback({ type: 'error', message: 'Vui lòng nhập Tiêu đề tiếng Việt và Đường dẫn (slug)!' });
       return;
     }
@@ -116,26 +134,29 @@ export const AdminNewsEditor: React.FC = () => {
 
       const articlePayload = {
         ...formData,
+        sha: fileSha,
+        status: isDraft ? 'draft' : 'published',
+        published: !isDraft,
         tags: isDraft 
           ? Array.from(new Set([...(formData.tags || []), 'draft']))
           : (formData.tags || []).filter(t => t !== 'draft')
       };
 
-      const res = await fetch('/api/admin/news', {
+      const res = await adminFetch('/api/admin/news', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(articlePayload)
       });
 
       const data = await res.json();
       if (res.ok && data.ok) {
+        if (data.result?.sha) setFileSha(data.result.sha);
         setFeedback({ 
           type: 'success', 
-          message: isDraft ? 'Đã lưu bản nháp thành công!' : 'Đã xuất bản bài viết thành công!' 
+          message: isDraft ? 'Đã lưu bản nháp thành công! (Ẩn khỏi trang công khai)' : 'Đã xuất bản bài viết thành công!' 
         });
         setTimeout(() => {
           navigate('/admin/news');
-        }, 1200);
+        }, 1100);
       } else {
         setFeedback({ type: 'error', message: data.error || 'Không thể lưu bài viết.' });
       }
@@ -145,6 +166,8 @@ export const AdminNewsEditor: React.FC = () => {
       setIsSaving(false);
     }
   };
+
+  const currentlyDraft = isArticleDraft(formData);
 
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '60px' }}>
@@ -166,11 +189,25 @@ export const AdminNewsEditor: React.FC = () => {
             <ArrowLeft size={16} />
           </Link>
           <div>
-            <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#3A251B', margin: 0 }}>
-              {isEditing ? 'Chỉnh sửa bài viết' : 'Viết bài bài báo / tin tức mới'}
-            </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <h1 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#3A251B', margin: 0 }}>
+                {isEditing ? 'Chỉnh sửa bài viết' : 'Viết bài báo / tin tức mới'}
+              </h1>
+              {isEditing && (
+                <span style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  padding: '3px 10px',
+                  borderRadius: '999px',
+                  backgroundColor: currentlyDraft ? '#FEF3C7' : '#ECFDF5',
+                  color: currentlyDraft ? '#B45309' : '#047857'
+                }}>
+                  {currentlyDraft ? 'Bản nháp' : 'Đã xuất bản'}
+                </span>
+              )}
+            </div>
             <p style={{ fontSize: '0.8rem', color: '#6E6259', margin: '2px 0 0 0' }}>
-              Nội dung lưu trực tiếp vào Git repository và cập nhật tự động lên website
+              {isLoadingArticle ? 'Đang tải phiên bản mới nhất từ Git...' : 'Nội dung lưu trực tiếp vào Git repository và cập nhật tự động lên website'}
             </p>
           </div>
         </div>
@@ -255,9 +292,21 @@ export const AdminNewsEditor: React.FC = () => {
               <input
                 type="text"
                 value={formData.slug || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value, id: e.target.value }))}
+                readOnly={isEditing}
+                onChange={(e) => {
+                  setSlugLockedByUser(true);
+                  setFormData(prev => ({ ...prev, slug: e.target.value, id: e.target.value }));
+                }}
                 placeholder="vi-du-xoai-say-deo-vinaxo"
-                style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                style={{
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  padding: '9px 12px',
+                  borderRadius: '6px',
+                  border: '1.5px solid #D1C7BD',
+                  fontSize: '0.88rem',
+                  backgroundColor: isEditing ? '#F9FAFB' : '#FFFFFF'
+                }}
               />
             </div>
 
@@ -338,6 +387,14 @@ export const AdminNewsEditor: React.FC = () => {
             <img
               src={formData.cover_image || '/assets/images/news/dried-fruit-export.webp'}
               alt="Preview"
+              onError={(e) => {
+                const el = e.target as HTMLImageElement;
+                const val = formData.cover_image || '';
+                if (val.startsWith('/uploads/') && !el.dataset.triedFallback) {
+                  el.dataset.triedFallback = '1';
+                  el.src = `/api/admin/media?raw=${encodeURIComponent('public' + val)}`;
+                }
+              }}
               style={{ width: '140px', height: '90px', objectFit: 'cover', borderRadius: '8px', border: '1.5px solid #EADFCC', backgroundColor: '#FAF7F2' }}
             />
             <div style={{ flex: '1 1 300px' }}>
@@ -360,13 +417,13 @@ export const AdminNewsEditor: React.FC = () => {
 
         {/* Card 3: Soạn thảo nội dung Song ngữ (Tabs) */}
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '24px', border: '1.5px solid #EADFCC' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1.5px solid #EADFCC', paddingBottom: '12px', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', borderBottom: '1.5px solid #EADFCC', paddingBottom: '12px', marginBottom: '20px' }}>
             <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#3A251B', margin: 0 }}>
-              3. Nội dung bài viết song ngữ
+              3. Nội dung bài viết song ngữ & SEO
             </h2>
 
             {/* Language Switch Tabs */}
-            <div style={{ display: 'flex', gap: '4px' }}>
+            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 onClick={() => setActiveTab('vi')}
@@ -399,6 +456,23 @@ export const AdminNewsEditor: React.FC = () => {
                 }}
               >
                 🇬🇧 Tiếng Anh
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('seo')}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  fontSize: '0.84rem',
+                  fontWeight: 600,
+                  border: 'none',
+                  cursor: 'pointer',
+                  backgroundColor: activeTab === 'seo' ? '#3A251B' : '#FAF7F2',
+                  color: activeTab === 'seo' ? '#FFFFFF' : '#6E6259'
+                }}
+              >
+                🔍 SEO & Hiển thị
               </button>
             </div>
           </div>
@@ -512,6 +586,74 @@ export const AdminNewsEditor: React.FC = () => {
                   placeholder="Full English body content..."
                   style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.92rem', lineHeight: 1.6, fontFamily: 'monospace' }}
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Tab 3: SEO & Display */}
+          {activeTab === 'seo' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.88rem', color: '#3A251B', fontWeight: 600 }}>
+                <input
+                  type="checkbox"
+                  checked={Boolean(formData.featured)}
+                  onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
+                />
+                <span>Đánh dấu là bài viết nổi bật</span>
+              </label>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                    SEO Title (Tiếng Việt)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.seo_title_vi || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, seo_title_vi: e.target.value }))}
+                    placeholder="Tiêu đề hiển thị trên Google Search..."
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                    SEO Title (English)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.seo_title_en || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, seo_title_en: e.target.value }))}
+                    placeholder="SEO title for international search..."
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                    SEO Meta Description (Tiếng Việt)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={formData.seo_description_vi || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, seo_description_vi: e.target.value }))}
+                    placeholder="Mô tả ngắn tối đa 160 ký tự..."
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                    SEO Meta Description (English)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={formData.seo_description_en || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, seo_description_en: e.target.value }))}
+                    placeholder="Short SEO meta description..."
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                  />
+                </div>
               </div>
             </div>
           )}

@@ -9,12 +9,12 @@ Hệ thống quản trị VINAXO Custom Admin được thiết kế theo mô hì
 | Nguy cơ bảo mật | Mức độ rủi ro | Cơ chế phòng vệ của VINAXO Custom Admin | Trạng thái |
 | :--- | :--- | :--- | :--- |
 | **Lộ mật khẩu qua mã nguồn** | Cực kỳ nghiêm trọng | Mật khẩu gốc không bao giờ lưu trong Git. Chỉ lưu hash `scrypt` trên biến môi trường bí mật Vercel. | **ĐÃ TRIỆT TIÊU** |
-| **Tấn công dò mật khẩu (Brute-force / Rainbow Tables)** | Cao | Sử dụng thuật toán `scrypt` tốn nhiều bộ nhớ và CPU, muối ngẫu nhiên 16 bytes (32 ký tự hex) cho từng lần băm. | **ĐÃ TRIỆT TIÊU** |
-| **Đo thời gian phản hồi (Timing Attacks)** | Trung bình | Kiểm tra mật khẩu và chữ ký HMAC bằng `crypto.timingSafeEqual()`, đảm bảo thời gian so sánh là hằng số. | **ĐÃ TRIỆT TIÊU** |
-| **Đánh cắp token phiên qua XSS** | Cao | Token phiên được lưu độc quyền trong Cookie có cờ `HttpOnly`. JavaScript trên trình duyệt bị cấm đọc. | **ĐÃ TRIỆT TIÊU** |
-| **Giả mạo yêu cầu chéo trang (CSRF)** | Trung bình | Cookie thiết lập `SameSite=Lax`, tất cả các API thay đổi dữ liệu yêu cầu phương thức POST/DELETE và `Content-Type: application/json`. | **ĐÃ TRIỆT TIÊU** |
-| **Ghi đè mã nguồn qua Path Traversal** | Nghiêm trọng | Hàm API kiểm tra nghiêm ngặt tiền tố đường dẫn (Allowlist), chỉ cho phép ghi vào `content/` và `public/uploads/`. | **ĐÃ TRIỆT TIÊU** |
-| **Tấn công từ chối dịch vụ (Upload DoS)** | Trung bình | Tự động nén WebP tại client, kiểm tra kích thước tối đa 4.5MB tại Serverless Function. | **ĐÃ TRIỆT TIÊU** |
+| **Tấn công dò mật khẩu (Brute-force / Rainbow Tables)** | Cao | `scrypt` tốn nhiều bộ nhớ + giới hạn tần suất (Rate Limiting 5 lần sai/15 phút -> HTTP 429) kết hợp cookie ký HMAC. | **ĐÃ TRIỆT TIÊU** |
+| **Đo thời gian phản hồi (Timing Attacks)** | Trung bình | Kiểm tra username (SHA-256), mật khẩu và chữ ký HMAC bằng `crypto.timingSafeEqual()`, thời gian phản hồi hằng số. | **ĐÃ TRIỆT TIÊU** |
+| **Đánh cắp token phiên qua XSS** | Cao | Token phiên lưu độc quyền trong Cookie `HttpOnly; Secure; SameSite=Lax`, cấm JS đọc; Fail-closed khi thiếu `SESSION_SECRET`. | **ĐÃ TRIỆT TIÊU** |
+| **Giả mạo yêu cầu chéo trang (CSRF)** | Trung bình | Phòng thủ 4 lớp: `SameSite=Lax`, kiểm tra `Origin`/`Sec-Fetch-Site`, `X-Requested-With` và chữ ký `X-CSRF-Token` gắn phiên. | **ĐÃ TRIỆT TIÊU** |
+| **Ghi đè mã nguồn qua Path Traversal** | Nghiêm trọng | Danh sách tiền tố thư mục cho phép (Allowlist) + chuẩn hóa slug `/^[a-z0-9-]+$/`, chặn `..` và các tệp hệ thống. | **ĐÃ TRIỆT TIÊU** |
+| **Tấn công từ chối dịch vụ (Upload DoS / Giả mạo ảnh)** | Trung bình | Nén WebP tự động tại client (< 2MB), kiểm tra magic bytes thực tế (JPG/PNG/WebP) và giới hạn <= 3MB nhị phân. | **ĐÃ TRIỆT TIÊU** |
 
 ---
 

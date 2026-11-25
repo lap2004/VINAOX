@@ -37,6 +37,8 @@ export interface ArticleContent {
   dateEn?: string;
   featured: boolean;
   tags?: string[];
+  status?: 'published' | 'draft';
+  published?: boolean;
   verified?: boolean;
   seo_title_vi?: string;
   seo_title_en?: string;

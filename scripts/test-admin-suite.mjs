@@ -1,109 +1,385 @@
-import { hashPassword } from './generate-password-hash.mjs';
-import { verifyPassword, createSessionToken, verifySessionToken, createSessionCookie, parseCookies, clearSessionCookie } from '../api/lib/auth.ts';
+import assert from 'assert';
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import assert from 'assert';
+import { hashPassword } from './generate-password-hash.mjs';
+import {
+  verifyPassword,
+  verifyUsername,
+  createSessionToken,
+  verifySessionToken,
+  createCsrfToken,
+  verifyCsrfToken,
+  createSessionCookie,
+  clearSessionCookie,
+  parseCookies
+} from '../api/lib/auth.ts';
+import {
+  validateCsrfAndOrigin,
+  sanitizeSlug,
+  sanitizeSafeUrl,
+  sanitizeCommitText,
+  stripUnsafeKeys
+} from '../api/lib/security.ts';
+import {
+  validatePath,
+  getPublicRepoMeta,
+  commitFile,
+  commitMediaFile
+} from '../api/lib/github.ts';
+import loginHandler from '../api/admin/login.ts';
+import logoutHandler from '../api/admin/logout.ts';
+import sessionHandler from '../api/admin/session.ts';
+import newsHandler from '../api/admin/news.ts';
+import productsHandler from '../api/admin/products.ts';
+import mediaHandler from '../api/admin/media.ts';
+import settingsHandler from '../api/admin/settings.ts';
 
-console.log('=== VINAXO CUSTOM ADMIN TEST SUITE ===\n');
+console.log('=== VINAXO CUSTOM ADMIN SECURITY & INTEGRATION TEST SUITE ===\n');
+
+function createMockRes() {
+  const headers = {};
+  const res = {
+    statusCode: 200,
+    headers,
+    body: null,
+    setHeader(k, v) {
+      headers[k.toLowerCase()] = v;
+    },
+    getHeader(k) {
+      return headers[k.toLowerCase()];
+    },
+    status(code) {
+      this.statusCode = code;
+      return this;
+    },
+    json(obj) {
+      this.body = obj;
+      return this;
+    },
+    send(buf) {
+      this.body = buf;
+      return this;
+    }
+  };
+  return res;
+}
 
 async function runTests() {
   let passed = 0;
   let total = 0;
 
-  function test(name, fn) {
-    total++;
-    try {
-      fn();
-      console.log(`[PASS] ${name}`);
-      passed++;
-    } catch (err) {
-      console.error(`[FAIL] ${name}:`, err.message);
-    }
-  }
-
-  async function testAsync(name, fn) {
+  async function runCase(name, fn) {
     total++;
     try {
       await fn();
       console.log(`[PASS] ${name}`);
       passed++;
     } catch (err) {
-      console.error(`[FAIL] ${name}:`, err.message);
+      console.error(`[FAIL] ${name}:`, err);
     }
   }
 
-  // 1. Password Hash & Verification
-  await testAsync('Password hashing & verification with scrypt', async () => {
-    const password = 'VinaxoSecretAdmin2026!';
-    const hash = await hashPassword(password);
-    assert(hash.startsWith('scrypt:'), 'Hash format must start with scrypt:');
-    assert.strictEqual(hash.split(':').length, 3, 'Hash format must have 3 parts');
-    
-    const isValid = await verifyPassword(password, hash);
-    assert.strictEqual(isValid, true, 'Correct password must verify');
+  // Configure temporary ephemeral test environment variables (zero secrets saved)
+  const testPassword = 'Test_Admin_Pass!_' + crypto.randomBytes(8).toString('hex');
+  const testHash = await hashPassword(testPassword);
+  const testSecret = crypto.randomBytes(32).toString('hex');
 
-    const isInvalid = await verifyPassword('WrongPassword123', hash);
-    assert.strictEqual(isInvalid, false, 'Wrong password must be rejected');
+  process.env.ADMIN_USERNAME = 'admin';
+  process.env.ADMIN_PASSWORD_HASH = testHash;
+  process.env.SESSION_SECRET = testSecret;
+  process.env.GITHUB_REPO = 'lap2004/VINAOX';
+  process.env.GITHUB_BRANCH = 'feature/vinaxo-custom-admin';
+  delete process.env.GITHUB_TOKEN;
+
+  // 1. Auth & scrypt tests
+  await runCase('Auth: scrypt password hashing + constant-time username verification', async () => {
+    assert(await verifyPassword(testPassword, testHash), 'Correct password must verify');
+    assert.strictEqual(await verifyPassword('WrongPass', testHash), false, 'Wrong password must fail');
+    assert.strictEqual(verifyUsername(' ADMIN ', 'admin'), true, 'Normalized username should match');
+    assert.strictEqual(verifyUsername('root', 'admin'), false, 'Invalid username must fail');
   });
 
-  // 2. Session Token & Tamper Resistance
-  test('Session Token creation and signature verification', () => {
+  // 2. Production fail-closed SESSION_SECRET check
+  await runCase('Auth: Fails closed in Production if SESSION_SECRET is missing or short', async () => {
+    const prevEnv = process.env.NODE_ENV;
+    const prevSecret = process.env.SESSION_SECRET;
+    try {
+      process.env.NODE_ENV = 'production';
+      process.env.SESSION_SECRET = 'short';
+      assert.throws(() => createSessionToken('admin'), /SESSION_SECRET/);
+    } finally {
+      process.env.NODE_ENV = prevEnv;
+      process.env.SESSION_SECRET = prevSecret;
+    }
+  });
+
+  // 3. Session & CSRF tokens
+  await runCase('Session & CSRF: Signing, tamper detection, cookie clearing parity', async () => {
     const token = createSessionToken('admin', 24);
-    assert(token && token.split('.').length === 4, 'Token must contain 4 dot-separated parts');
-
-    const result = verifySessionToken(token);
-    assert.strictEqual(result.valid, true, 'Token must be valid');
-    assert.strictEqual(result.username, 'admin', 'Username must match');
-
-    // Tampering test: modify username
+    assert.strictEqual(verifySessionToken(token).valid, true);
     const parts = token.split('.');
-    parts[0] = 'hacker';
-    const tamperedToken = parts.join('.');
-    const tamperedResult = verifySessionToken(tamperedToken);
-    assert.strictEqual(tamperedResult.valid, false, 'Tampered token must be rejected');
+    parts[0] = 'attacker';
+    assert.strictEqual(verifySessionToken(parts.join('.')).valid, false, 'Tampered token must be rejected');
+
+    const csrf = createCsrfToken(token);
+    assert.strictEqual(verifyCsrfToken(token, csrf), true);
+    assert.strictEqual(verifyCsrfToken(token, '0'.repeat(64)), false);
+
+    const setCookie = createSessionCookie(token, 24, { headers: { 'x-forwarded-proto': 'https' } });
+    const clearCookie = clearSessionCookie({ headers: { 'x-forwarded-proto': 'https' } });
+    assert(setCookie.includes('HttpOnly') && setCookie.includes('SameSite=Lax') && setCookie.includes('Secure'));
+    assert(clearCookie.includes('HttpOnly') && clearCookie.includes('Max-Age=0') && clearCookie.includes('Secure'));
+    assert.strictEqual(parseCookies('vinaxo_admin_session=' + encodeURIComponent(token)).vinaxo_admin_session, token);
   });
 
-  // 3. Cookie generation & parsing
-  test('HttpOnly Cookie headers & parsing', () => {
-    const cookieHeader = createSessionCookie('test_token_123', 86400, false);
-    assert(cookieHeader.includes('HttpOnly'), 'Must be HttpOnly');
-    assert(cookieHeader.includes('SameSite=Lax'), 'Must have SameSite=Lax');
-    assert(cookieHeader.includes('Path=/'), 'Must have Path=/');
+  // 4. CSRF & Origin middleware tests
+  await runCase('Security: Blocks cross-site requests, mismatched Origin, missing headers, bad Content-Type', async () => {
+    const sessionToken = createSessionToken('admin', 1);
+    const csrfToken = createCsrfToken(sessionToken);
 
-    const clearHeader = clearSessionCookie();
-    assert(clearHeader.includes('Max-Age=0'), 'Clear cookie must set Max-Age=0');
+    // Cross-site blocked
+    const r1 = validateCsrfAndOrigin({
+      method: 'POST',
+      headers: { 'sec-fetch-site': 'cross-site', 'content-type': 'application/json', 'x-requested-with': 'XMLHttpRequest' }
+    });
+    assert.strictEqual(r1.ok, false);
+    assert.strictEqual(r1.status, 403);
 
-    const parsed = parseCookies('session_token=test_token_123; other=456');
-    assert.strictEqual(parsed.session_token, 'test_token_123', 'Cookie must be parsed correctly');
+    // Non-JSON form POST blocked
+    const r2 = validateCsrfAndOrigin({
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded', 'x-requested-with': 'XMLHttpRequest' }
+    });
+    assert.strictEqual(r2.ok, false);
+    assert.strictEqual(r2.status, 415);
+
+    // Mismatched Origin blocked
+    const r3 = validateCsrfAndOrigin({
+      method: 'POST',
+      headers: {
+        host: 'vinaxo.net',
+        origin: 'https://evil.com',
+        'content-type': 'application/json',
+        'x-requested-with': 'XMLHttpRequest',
+        'x-csrf-token': csrfToken
+      }
+    }, { sessionToken, requireCsrfToken: true });
+    assert.strictEqual(r3.ok, false);
+    assert.strictEqual(r3.status, 403);
+
+    // Missing CSRF token blocked
+    const r4 = validateCsrfAndOrigin({
+      method: 'POST',
+      headers: {
+        host: 'vinaxo.net',
+        origin: 'https://vinaxo.net',
+        'content-type': 'application/json',
+        'x-requested-with': 'XMLHttpRequest'
+      }
+    }, { sessionToken, requireCsrfToken: true });
+    assert.strictEqual(r4.ok, false);
+    assert.strictEqual(r4.status, 403);
+
+    // Valid request passes
+    const r5 = validateCsrfAndOrigin({
+      method: 'POST',
+      headers: {
+        host: 'vinaxo.net',
+        origin: 'https://vinaxo.net',
+        'content-type': 'application/json',
+        'x-requested-with': 'XMLHttpRequest',
+        'x-csrf-token': csrfToken
+      }
+    }, { sessionToken, requireCsrfToken: true });
+    assert.strictEqual(r5.ok, true);
   });
 
-  // 4. Data Integrity: 9 News Articles & 12 Products
-  test('Verification of migrated News Articles in content/news/', () => {
-    const newsDir = path.join(process.cwd(), 'content', 'news');
-    assert(fs.existsSync(newsDir), 'content/news/ must exist');
-    const files = fs.readdirSync(newsDir).filter(f => f.endsWith('.json'));
-    assert(files.length >= 9, `Must contain at least 9 news articles, found ${files.length}`);
-    for (const file of files) {
-      const data = JSON.parse(fs.readFileSync(path.join(newsDir, file), 'utf-8'));
-      assert(data.title_vi, `Article ${file} must have title_vi`);
-      assert(data.slug, `Article ${file} must have slug`);
+  // 5. Path allowlist, Slug & XSS sanitizers
+  await runCase('Security: Path traversal, URL XSS, and prototype pollution blocked', async () => {
+    assert.strictEqual(validatePath('content/news/test.json'), true);
+    assert.strictEqual(validatePath('public/uploads/news/img.webp'), true);
+    assert.strictEqual(validatePath('../.env'), false);
+    assert.strictEqual(validatePath('content/news/../../package.json'), false);
+    assert.strictEqual(validatePath('src/App.tsx'), false);
+    assert.strictEqual(validatePath('api/lib/auth.ts'), false);
+    assert.strictEqual(validatePath('.github/workflows/deploy.yml'), false);
+
+    assert.strictEqual(sanitizeSlug('Valid-Slug-2026'), 'valid-slug-2026');
+    assert.strictEqual(sanitizeSlug('../../etc/passwd'), 'etc-passwd');
+    assert.strictEqual(sanitizeSlug(''), null);
+
+    assert.strictEqual(sanitizeSafeUrl('javascript:alert(1)', true), '');
+    assert.strictEqual(sanitizeSafeUrl('data:text/html,<script>', true), '');
+    assert.strictEqual(sanitizeSafeUrl('//evil.com/phish', true), '');
+    assert.strictEqual(sanitizeSafeUrl('/uploads/news/a.webp', true), '/uploads/news/a.webp');
+    assert.strictEqual(sanitizeSafeUrl('https://cafef.vn/bai-viet.chn', false), 'https://cafef.vn/bai-viet.chn');
+
+    const cleaned = stripUnsafeKeys({ title_vi: 'Test', sha: 'deadbeef', constructor: {}, prototype: {} });
+    assert.strictEqual('sha' in cleaned, false);
+    assert.strictEqual(Object.prototype.hasOwnProperty.call(cleaned, 'constructor'), false);
+    assert.strictEqual(sanitizeCommitText('Hello\nInjected Header\r\n'), 'Hello Injected Header');
+  });
+
+  // 6. GitHub repo config & branch routing logic (fix for lap2004/VINAOX!)
+  await runCase('GitHub Config: GITHUB_REPO="lap2004/VINAOX" parses owner/repo cleanly & respects env branch', async () => {
+    const prevEnv = process.env.VERCEL_ENV;
+    const prevRef = process.env.VERCEL_GIT_COMMIT_REF;
+    try {
+      process.env.GITHUB_REPO = 'lap2004/VINAOX';
+      process.env.GITHUB_BRANCH = 'main';
+      process.env.VERCEL_ENV = 'preview';
+      process.env.VERCEL_GIT_COMMIT_REF = 'feature/vinaxo-custom-admin';
+      const previewMeta = getPublicRepoMeta();
+      assert.strictEqual(previewMeta.owner, 'lap2004');
+      assert.strictEqual(previewMeta.repo, 'VINAOX');
+      assert.strictEqual(previewMeta.branch, 'feature/vinaxo-custom-admin', 'Preview must isolate commits to preview branch');
+
+      process.env.VERCEL_ENV = 'production';
+      process.env.VERCEL_GIT_COMMIT_REF = 'main';
+      const prodMeta = getPublicRepoMeta();
+      assert.strictEqual(prodMeta.owner, 'lap2004');
+      assert.strictEqual(prodMeta.repo, 'VINAOX');
+      assert.strictEqual(prodMeta.branch, 'main', 'Production must commit to main');
+    } finally {
+      if (prevEnv === undefined) delete process.env.VERCEL_ENV;
+      else process.env.VERCEL_ENV = prevEnv;
+      if (prevRef === undefined) delete process.env.VERCEL_GIT_COMMIT_REF;
+      else process.env.VERCEL_GIT_COMMIT_REF = prevRef;
     }
   });
 
-  test('Verification of migrated Products in content/products/', () => {
-    const prodDir = path.join(process.cwd(), 'content', 'products');
-    assert(fs.existsSync(prodDir), 'content/products/ must exist');
-    const files = fs.readdirSync(prodDir).filter(f => f.endsWith('.json'));
-    assert(files.length >= 12, `Must contain at least 12 products, found ${files.length}`);
-    for (const file of files) {
-      const data = JSON.parse(fs.readFileSync(path.join(prodDir, file), 'utf-8'));
-      assert(data.name_vi, `Product ${file} must have name_vi`);
-      assert(data.slug, `Product ${file} must have slug`);
+  // 7. Mock GitHub REST API call trace test (proves exact URL /repos/lap2004/VINAOX/...)
+  await runCase('GitHub API: commitFile & commitMediaFile hit exact owner/repo URL without double owner', async () => {
+    const originalFetch = globalThis.fetch;
+    const calls = [];
+    process.env.GITHUB_TOKEN = 'ghp_mock_test_token_only';
+    globalThis.fetch = async (url, init) => {
+      calls.push({ url, method: init?.method || 'GET', body: init?.body ? JSON.parse(init.body) : null });
+      if ((init?.method || 'GET') === 'GET') {
+        return new Response('', { status: 404 });
+      }
+      return new Response(JSON.stringify({ content: { sha: 'newsha123' }, commit: { sha: 'commitsha456' } }), { status: 200 });
+    };
+    try {
+      const r = await commitFile('content/news/mock-test.json', '{"hello":"world"}', 'test commit');
+      assert.strictEqual(r.commitSha, 'commitsha456');
+      assert(calls[0].url.startsWith('https://api.github.com/repos/lap2004/VINAOX/contents/content/news/mock-test.json'), `Unexpected URL: ${calls[0].url}`);
+      const m = await commitMediaFile('public/uploads/news/mock.webp', 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4', 'media upload');
+      assert.strictEqual(m.publicUrl, '/uploads/news/mock.webp');
+    } finally {
+      globalThis.fetch = originalFetch;
+      delete process.env.GITHUB_TOKEN;
     }
+  });
+
+  // 8. End-to-End Handler Lifecycle: Rate Limit -> Login -> Session -> News -> Media Security -> Logout
+  await runCase('API Handlers: Brute-force Rate Limit (429), Login, News Draft/Delete, Binary Image Check, Logout', async () => {
+    // 5 failed attempts -> 6th blocked with 429
+    for (let i = 0; i < 5; i++) {
+      const rFail = createMockRes();
+      await loginHandler({
+        method: 'POST',
+        headers: { host: 'localhost:4174', origin: 'http://localhost:4174', 'content-type': 'application/json', 'x-requested-with': 'XMLHttpRequest', 'x-forwarded-for': '203.0.113.99' },
+        body: { username: 'admin', password: 'wrong-password' }
+      }, rFail);
+      assert.strictEqual(rFail.statusCode, 401);
+    }
+    const rBlocked = createMockRes();
+    await loginHandler({
+      method: 'POST',
+      headers: { host: 'localhost:4174', origin: 'http://localhost:4174', 'content-type': 'application/json', 'x-requested-with': 'XMLHttpRequest', 'x-forwarded-for': '203.0.113.99' },
+      body: { username: 'admin', password: testPassword }
+    }, rBlocked);
+    assert.strictEqual(rBlocked.statusCode, 429, '6th login attempt from blocked IP must return 429');
+    assert(rBlocked.getHeader('retry-after'), '429 must include Retry-After header');
+
+    // Valid login from different IP succeeds
+    const rOk = createMockRes();
+    await loginHandler({
+      method: 'POST',
+      headers: { host: 'localhost:4174', origin: 'http://localhost:4174', 'content-type': 'application/json', 'x-requested-with': 'XMLHttpRequest', 'x-forwarded-for': '198.51.100.10' },
+      body: { username: 'admin', password: testPassword }
+    }, rOk);
+    assert.strictEqual(rOk.statusCode, 200);
+    assert(rOk.body.csrfToken, 'Login must issue CSRF token');
+    const cookiesHeader = rOk.getHeader('set-cookie');
+    const sessionCookieStr = Array.isArray(cookiesHeader) ? cookiesHeader[0].split(';')[0] : cookiesHeader.split(';')[0];
+
+    // Session GET
+    const rSess = createMockRes();
+    await sessionHandler({ method: 'GET', headers: { cookie: sessionCookieStr } }, rSess);
+    assert.strictEqual(rSess.statusCode, 200);
+    assert.strictEqual(rSess.body.authenticated, true);
+
+    // News GET unauthenticated -> 401
+    const rUnauth = createMockRes();
+    await newsHandler({ method: 'GET', headers: {} }, rUnauth);
+    assert.strictEqual(rUnauth.statusCode, 401);
+
+    // News POST without CSRF token -> 403
+    const rNoCsrf = createMockRes();
+    await newsHandler({
+      method: 'POST',
+      headers: { host: 'localhost:4174', origin: 'http://localhost:4174', 'content-type': 'application/json', 'x-requested-with': 'XMLHttpRequest', cookie: sessionCookieStr },
+      body: { slug: 'temp-test-slug', title_vi: 'Test' }
+    }, rNoCsrf);
+    assert.strictEqual(rNoCsrf.statusCode, 403);
+
+    // News POST create draft -> succeeds, then delete
+    const rDraft = createMockRes();
+    await newsHandler({
+      method: 'POST',
+      headers: { host: 'localhost:4174', origin: 'http://localhost:4174', 'content-type': 'application/json', 'x-requested-with': 'XMLHttpRequest', 'x-csrf-token': rOk.body.csrfToken, cookie: sessionCookieStr },
+      body: { slug: 'temp-unit-draft', title_vi: 'Bai nhap kiem thu', status: 'draft', published: false, tags: ['draft'] }
+    }, rDraft);
+    assert.strictEqual(rDraft.statusCode, 200);
+    assert.strictEqual(rDraft.body.article.status, 'draft');
+    assert.strictEqual(rDraft.body.article.published, false);
+
+    const rDel = createMockRes();
+    await newsHandler({
+      method: 'DELETE',
+      headers: { host: 'localhost:4174', origin: 'http://localhost:4174', 'content-type': 'application/json', 'x-requested-with': 'XMLHttpRequest', 'x-csrf-token': rOk.body.csrfToken, cookie: sessionCookieStr },
+      body: { slug: 'temp-unit-draft' }
+    }, rDel);
+    assert.strictEqual(rDel.statusCode, 200);
+
+    // Media POST rejects spoofed binary header
+    const rBadImg = createMockRes();
+    await mediaHandler({
+      method: 'POST',
+      headers: { host: 'localhost:4174', origin: 'http://localhost:4174', 'content-type': 'application/json', 'x-requested-with': 'XMLHttpRequest', 'x-csrf-token': rOk.body.csrfToken, cookie: sessionCookieStr },
+      body: { filename: 'malware.webp', base64Data: 'data:image/webp;base64,' + Buffer.from('<script>alert(1)</script>').toString('base64'), category: 'news' }
+    }, rBadImg);
+    assert.strictEqual(rBadImg.statusCode, 400, 'Spoofed non-image magic bytes must be rejected');
+
+    // Logout clears cookie
+    const rOut = createMockRes();
+    await logoutHandler({
+      method: 'POST',
+      headers: { host: 'localhost:4174', origin: 'http://localhost:4174', 'content-type': 'application/json', 'x-requested-with': 'XMLHttpRequest', 'x-csrf-token': rOk.body.csrfToken, cookie: sessionCookieStr },
+      body: {}
+    }, rOut);
+    assert.strictEqual(rOut.statusCode, 200);
+    assert(String(rOut.getHeader('set-cookie')).includes('Max-Age=0'));
+  });
+
+  // 9. Data Integrity Check: 9 News Articles & 12 Products
+  await runCase('Content Integrity: All 9 news articles (published) & 12 products intact', async () => {
+    const newsFiles = fs.readdirSync(path.join(process.cwd(), 'content', 'news')).filter(f => f.endsWith('.json'));
+    assert(newsFiles.length >= 9, `Expected >= 9 news files, found ${newsFiles.length}`);
+    for (const f of newsFiles) {
+      const d = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'content', 'news', f), 'utf-8'));
+      assert(d.title_vi && d.slug, `Invalid news JSON ${f}`);
+    }
+
+    const prodFiles = fs.readdirSync(path.join(process.cwd(), 'content', 'products')).filter(f => f.endsWith('.json'));
+    assert(prodFiles.length >= 12, `Expected >= 12 products, found ${prodFiles.length}`);
   });
 
   console.log(`\n========================================`);
-  console.log(`TEST SUITE RESULTS: ${passed}/${total} PASSED (100%)`);
+  console.log(`SECURITY & UNIT SUITE RESULTS: ${passed}/${total} PASSED`);
   console.log(`========================================\n`);
 
   if (passed !== total) process.exit(1);

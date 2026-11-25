@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ExternalLink, MessageSquareQuote, Mail } from 'lucide-react';
+import { ExternalLink, MessageSquareQuote, Mail, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { NewsItem } from '../data/news';
 import { getAllNewsItems } from '../services/contentService';
@@ -22,9 +22,9 @@ export const PressMedia: React.FC = () => {
       ? newsData
       : newsData.filter((item) => item.category === activeCategory);
 
-  // Featured article (First one: CafeF)
-  const featuredArticle: NewsItem = newsData[0];
-  const featuredInfo = isVi ? featuredArticle.vi : featuredArticle.en;
+  // Featured article (safely handle empty newsData)
+  const featuredArticle: NewsItem | undefined = newsData[0];
+  const featuredInfo = featuredArticle ? (isVi ? featuredArticle.vi : featuredArticle.en) : undefined;
 
   const countAll = newsData.length;
   const countPress = newsData.filter((i) => i.category === 'press').length;
@@ -48,6 +48,7 @@ export const PressMedia: React.FC = () => {
       {/* ======================================================================
           FEATURED PRESS ARTICLE
           ====================================================================== */}
+      {featuredArticle && featuredInfo && (
       <section className="section section-white" style={{ paddingBottom: '40px' }}>
         <div className="container">
           <div
@@ -99,16 +100,27 @@ export const PressMedia: React.FC = () => {
               </p>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                <a
-                  href={featuredArticle.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-primary"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <span>{featuredInfo.readMore}</span>
-                  <ExternalLink size={15} />
-                </a>
+                {featuredArticle.sourceUrl ? (
+                  <a
+                    href={featuredArticle.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-primary"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <span>{featuredInfo.readMore}</span>
+                    <ExternalLink size={15} />
+                  </a>
+                ) : (
+                  <Link
+                    to={`/tin-tuc/${featuredArticle.id}`}
+                    className="btn btn-primary"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <span>{featuredInfo.readMore}</span>
+                    <ArrowRight size={15} />
+                  </Link>
+                )}
 
                 {featuredArticle.personQuoted && (
                   <span style={{ fontSize: '0.82rem', color: 'var(--color-muted)' }}>
@@ -146,6 +158,7 @@ export const PressMedia: React.FC = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* ======================================================================
           NEWS ARCHIVE WITH FILTER TABS

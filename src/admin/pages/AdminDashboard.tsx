@@ -9,21 +9,44 @@ import {
   CheckCircle, 
   ArrowRight,
   TrendingUp,
-  FileText
+  FileText,
+  GitBranch
 } from 'lucide-react';
-import { getAllArticles } from '../../services/contentService';
+import { getAllArticles, isArticleDraft } from '../../services/contentService';
 import { productsData } from '../../data/products';
+import { ArticleContent } from '../../types/content';
+import { adminFetch } from '../lib/adminFetch';
+import { useAdminAuth } from '../context/AdminAuthContext';
 
 export const AdminDashboard: React.FC = () => {
-  const articles = getAllArticles();
-  const publishedArticles = articles.filter(a => !a.tags?.includes('draft'));
-  const products = productsData;
-
+  const { repoMeta } = useAdminAuth();
+  const [articles, setArticles] = useState<ArticleContent[]>(() => getAllArticles({ includeDrafts: true }));
+  const [productsCount, setProductsCount] = useState<number>(productsData.length);
   const [mediaCount, setMediaCount] = useState<number>(0);
 
+  const publishedArticles = articles.filter(a => !isArticleDraft(a));
+  const draftArticles = articles.filter(a => isArticleDraft(a));
+
   useEffect(() => {
-    // Fetch media count
-    fetch('/api/admin/media')
+    adminFetch('/api/admin/news')
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok && Array.isArray(data.articles) && data.articles.length > 0) {
+          setArticles(data.articles);
+        }
+      })
+      .catch(() => {});
+
+    adminFetch('/api/admin/products')
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok && Array.isArray(data.products) && data.products.length > 0) {
+          setProductsCount(data.products.length);
+        }
+      })
+      .catch(() => {});
+
+    adminFetch('/api/admin/media')
       .then(res => res.json())
       .then(data => {
         if (data.ok && Array.isArray(data.media)) {
@@ -41,7 +64,7 @@ export const AdminDashboard: React.FC = () => {
           Tổng quan Quản trị VINAXO
         </h1>
         <p style={{ fontSize: '0.9rem', color: '#6E6259', margin: 0 }}>
-          Hệ thống quản lý nội dung số, cập nhật bài viết báo chí và danh mục 12 sản phẩm xuất khẩu.
+          Hệ thống quản lý nội dung số, cập nhật bài viết báo chí và danh mục {productsCount} sản phẩm xuất khẩu.
         </p>
       </div>
 
@@ -69,9 +92,14 @@ export const AdminDashboard: React.FC = () => {
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
             {articles.length}
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#059669', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <CheckCircle size={13} />
-            <span>{publishedArticles.length} bài đã xuất bản</span>
+          <div style={{ fontSize: '0.78rem', color: '#059669', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <CheckCircle size={13} />
+              {publishedArticles.length} công khai
+            </span>
+            {draftArticles.length > 0 && (
+              <span style={{ color: '#B45309' }}>• {draftArticles.length} bản nháp</span>
+            )}
           </div>
         </div>
 
@@ -90,7 +118,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
           </div>
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
-            {products.length}
+            {productsCount}
           </div>
           <div style={{ fontSize: '0.78rem', color: '#6E6259' }}>
             <span>Đạt chuẩn xuất khẩu BRCGS</span>
@@ -106,7 +134,7 @@ export const AdminDashboard: React.FC = () => {
           boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <span style={{ fontSize: '0.86rem', fontWeight: 600, color: '#6E6259' }}>Thư viện Media</span>
+            <span style={{ fontSize: '0.86rem', fontWeight: 600, color: '#6E6259' }}>Thư viện Media (Uploads)</span>
             <div style={{ padding: '8px', borderRadius: '8px', backgroundColor: '#EFF6FF', color: '#2563EB' }}>
               <Image size={20} />
             </div>
@@ -133,11 +161,12 @@ export const AdminDashboard: React.FC = () => {
               <TrendingUp size={20} />
             </div>
           </div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
+          <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
             Git-Based
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#059669' }}>
-            <span>Không phụ thuộc runtime DB</span>
+          <div style={{ fontSize: '0.78rem', color: '#059669', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <GitBranch size={13} />
+            <span>{repoMeta ? `${repoMeta.repo} (${repoMeta.branch})` : 'Không phụ thuộc runtime DB'}</span>
           </div>
         </div>
       </div>
@@ -206,7 +235,7 @@ export const AdminDashboard: React.FC = () => {
           }}
         >
           <Package size={18} />
-          <span>Xem 12 sản phẩm</span>
+          <span>Xem {productsCount} sản phẩm</span>
         </Link>
 
         <Link
@@ -277,65 +306,81 @@ export const AdminDashboard: React.FC = () => {
               <tr style={{ backgroundColor: '#FAF7F2', borderBottom: '1px solid #EADFCC', color: '#6E6259' }}>
                 <th style={{ padding: '12px 18px', fontWeight: 600 }}>Ảnh</th>
                 <th style={{ padding: '12px 18px', fontWeight: 600 }}>Tiêu đề tiếng Việt</th>
-                <th style={{ padding: '12px 18px', fontWeight: 600 }}>Nguồn</th>
+                <th style={{ padding: '12px 18px', fontWeight: 600 }}>Trạng thái & Nguồn</th>
                 <th style={{ padding: '12px 18px', fontWeight: 600 }}>Ngày đăng</th>
                 <th style={{ padding: '12px 18px', fontWeight: 600 }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {articles.slice(0, 5).map((a) => (
-                <tr key={a.id} style={{ borderBottom: '1px solid #F0EAE1' }}>
-                  <td style={{ padding: '12px 18px' }}>
-                    <img
-                      src={a.cover_image}
-                      alt={a.title_vi}
-                      style={{ width: '48px', height: '36px', objectFit: 'cover', borderRadius: '4px', backgroundColor: '#EADFCC' }}
-                    />
-                  </td>
-                  <td style={{ padding: '12px 18px', fontWeight: 600, color: '#3A251B', maxWidth: '340px' }}>
-                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {a.title_vi}
-                    </div>
-                  </td>
-                  <td style={{ padding: '12px 18px', color: '#6E6259' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      backgroundColor: '#FEF3C7',
-                      color: '#92400E',
-                      fontSize: '0.75rem',
-                      fontWeight: 600
-                    }}>
-                      {a.source}
-                    </span>
-                  </td>
-                  <td style={{ padding: '12px 18px', color: '#6E6259', fontSize: '0.82rem' }}>
-                    {a.dateVi || a.published_at}
-                  </td>
-                  <td style={{ padding: '12px 18px' }}>
-                    <Link
-                      to={`/admin/news/${a.slug}/edit`}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        padding: '6px 12px',
-                        borderRadius: '6px',
-                        backgroundColor: '#FFF7EC',
-                        color: '#3A251B',
-                        border: '1px solid #EADFCC',
-                        fontSize: '0.8rem',
-                        fontWeight: 600,
-                        textDecoration: 'none'
-                      }}
-                    >
-                      <Edit3 size={13} />
-                      <span>Sửa</span>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {articles.slice(0, 5).map((a) => {
+                const draft = isArticleDraft(a);
+                return (
+                  <tr key={a.slug || a.id} style={{ borderBottom: '1px solid #F0EAE1' }}>
+                    <td style={{ padding: '12px 18px' }}>
+                      <img
+                        src={a.cover_image}
+                        alt={a.title_vi}
+                        style={{ width: '48px', height: '36px', objectFit: 'cover', borderRadius: '4px', backgroundColor: '#EADFCC' }}
+                      />
+                    </td>
+                    <td style={{ padding: '12px 18px', fontWeight: 600, color: '#3A251B', maxWidth: '340px' }}>
+                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {a.title_vi}
+                      </div>
+                    </td>
+                    <td style={{ padding: '12px 18px', color: '#6E6259' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <span style={{
+                          display: 'inline-block',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          backgroundColor: draft ? '#F3F4F6' : '#ECFDF5',
+                          color: draft ? '#4B5563' : '#047857',
+                          fontSize: '0.72rem',
+                          fontWeight: 700
+                        }}>
+                          {draft ? 'Bản nháp' : 'Công khai'}
+                        </span>
+                        <span style={{
+                          display: 'inline-block',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          backgroundColor: '#FEF3C7',
+                          color: '#92400E',
+                          fontSize: '0.75rem',
+                          fontWeight: 600
+                        }}>
+                          {a.source}
+                        </span>
+                      </div>
+                    </td>
+                    <td style={{ padding: '12px 18px', color: '#6E6259', fontSize: '0.82rem' }}>
+                      {a.dateVi || a.published_at}
+                    </td>
+                    <td style={{ padding: '12px 18px' }}>
+                      <Link
+                        to={`/admin/news/${a.slug}/edit`}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          padding: '6px 12px',
+                          borderRadius: '6px',
+                          backgroundColor: '#FFF7EC',
+                          color: '#3A251B',
+                          border: '1px solid #EADFCC',
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          textDecoration: 'none'
+                        }}
+                      >
+                        <Edit3 size={13} />
+                        <span>Sửa</span>
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

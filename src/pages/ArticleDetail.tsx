@@ -12,7 +12,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { getArticleBySlug, getAllArticles, toNewsItem } from '../services/contentService';
+import { getArticleBySlug, getAllArticles, toNewsItem, safeExternalUrl } from '../services/contentService';
 import { NewsCard } from '../components/news/NewsCard';
 
 export const ArticleDetail: React.FC = () => {
@@ -351,7 +351,7 @@ export const ArticleDetail: React.FC = () => {
           {renderBodyContent(body)}
 
           {/* External Source Link Callout */}
-          {article.sourceUrl && (
+          {safeExternalUrl(article.sourceUrl) && (
             <div 
               style={{ 
                 marginTop: '36px', 
@@ -376,7 +376,7 @@ export const ArticleDetail: React.FC = () => {
               </div>
 
               <a
-                href={article.sourceUrl}
+                href={safeExternalUrl(article.sourceUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -402,12 +402,14 @@ export const ArticleDetail: React.FC = () => {
           {article.secondaryUrls && article.secondaryUrls.length > 0 && (
             <div style={{ marginTop: '20px', fontSize: '0.84rem', color: 'var(--color-muted)' }}>
               <span>{isVi ? 'Đăng lại và trích dẫn trên các báo: ' : 'Also syndicated on: '}</span>
-              {article.secondaryUrls.map((s, idx) => (
+              {article.secondaryUrls
+                .filter((s) => Boolean(safeExternalUrl(s.url)))
+                .map((s, idx, arr) => (
                 <span key={idx}>
-                  <a href={s.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-green)', textDecoration: 'underline' }}>
+                  <a href={safeExternalUrl(s.url)} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-green)', textDecoration: 'underline' }}>
                     {s.name}
                   </a>
-                  {idx < (article.secondaryUrls?.length || 0) - 1 ? ', ' : ''}
+                  {idx < arr.length - 1 ? ', ' : ''}
                 </span>
               ))}
             </div>

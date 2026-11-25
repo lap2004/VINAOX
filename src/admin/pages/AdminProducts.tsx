@@ -11,6 +11,7 @@ import {
   Clock
 } from 'lucide-react';
 import { productsData } from '../../data/products';
+import { adminFetch } from '../lib/adminFetch';
 
 interface ProductItemData {
   id: string;
@@ -30,7 +31,6 @@ interface ProductItemData {
 }
 
 export const AdminProducts: React.FC = () => {
-  // Initial fallback mapping from productsData
   const initialProducts: ProductItemData[] = productsData.map((p, idx) => ({
     id: p.id,
     slug: p.slug,
@@ -55,11 +55,10 @@ export const AdminProducts: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Load latest products from server if available
   useEffect(() => {
     const fetchServerProducts = async () => {
       try {
-        const res = await fetch('/api/admin/products');
+        const res = await adminFetch('/api/admin/products');
         if (res.ok) {
           const data = await res.json();
           if (data.products && data.products.length > 0) {
@@ -85,15 +84,14 @@ export const AdminProducts: React.FC = () => {
       setIsSaving(true);
       setStatusMsg(null);
 
-      const res = await fetch('/api/admin/products', {
+      const res = await adminFetch('/api/admin/products', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editingProduct)
       });
 
       const data = await res.json();
       if (res.ok && data.ok) {
-        setProducts(prev => prev.map(p => p.slug === editingProduct.slug ? editingProduct : p));
+        setProducts(prev => prev.map(p => p.slug === editingProduct.slug ? (data.product || editingProduct) : p));
         setStatusMsg({ type: 'success', text: `Cập nhật sản phẩm "${editingProduct.name_vi}" thành công!` });
         setEditingProduct(null);
       } else {
@@ -162,7 +160,6 @@ export const AdminProducts: React.FC = () => {
         gap: '12px',
         marginBottom: '20px'
       }}>
-        {/* Search */}
         <div style={{ position: 'relative', flex: '1 1 280px', maxWidth: '400px' }}>
           <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#8C7E74' }} />
           <input
@@ -184,12 +181,11 @@ export const AdminProducts: React.FC = () => {
           />
         </div>
 
-        {/* Categories */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           {[
             { id: 'all', label: 'Tất cả' },
             { id: 'soft-dried', label: 'Sấy dẻo' },
-            { id: 'crispy', label: 'Sấy giòn' },
+            { id: 'chips', label: 'Sấy giòn' },
             { id: 'nuts-seeds', label: 'Hạt dinh dưỡng' },
             { id: 'mixed', label: 'Hỗn hợp' }
           ].map(cat => (
@@ -347,7 +343,6 @@ export const AdminProducts: React.FC = () => {
             boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
             overflow: 'hidden'
           }}>
-            {/* Modal Header */}
             <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #EADCCE', backgroundColor: '#FFF9F2' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#3A251B' }}>
@@ -363,7 +358,6 @@ export const AdminProducts: React.FC = () => {
               </button>
             </div>
 
-            {/* Modal Body Form */}
             <form onSubmit={handleSaveProduct} style={{ overflowY: 'auto', padding: '20px', flex: 1 }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px', marginBottom: '16px' }}>
                 <div>
@@ -404,7 +398,7 @@ export const AdminProducts: React.FC = () => {
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
                   >
                     <option value="soft-dried">Trái cây sấy dẻo (soft-dried)</option>
-                    <option value="crispy">Trái cây sấy giòn (crispy)</option>
+                    <option value="chips">Trái cây sấy giòn (chips)</option>
                     <option value="nuts-seeds">Hạt dinh dưỡng (nuts-seeds)</option>
                     <option value="mixed">Hỗn hợp sấy (mixed)</option>
                   </select>
@@ -475,7 +469,6 @@ export const AdminProducts: React.FC = () => {
                 </div>
               </div>
 
-              {/* Action buttons */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', paddingTop: '16px', borderTop: '1px solid #EADCCE' }}>
                 <button
                   type="button"

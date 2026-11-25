@@ -15,10 +15,10 @@ Trước khi triển khai hoặc kích hoạt deployment, bạn cần vào **Ver
 | 3 | `SESSION_SECRET` | `64_hex_random_characters...` | Khóa bí mật ký token HMAC-SHA256 |
 | 4 | `GITHUB_TOKEN` | `github_pat_11...` | Token Fine-grained PAT có quyền `Contents: Read and write` |
 | 5 | `GITHUB_REPO` | `lap2004/VINAOX` | Repository chứa mã nguồn dự án |
-| 6 | `GITHUB_BRANCH` | `feature/vinaxo-custom-admin` | Nhánh Git mà Serverless Function commit vào |
+| 6 | `GITHUB_BRANCH` | `main` *(Production)* | Nhánh Git Production (`main`); môi trường Preview tự động dùng nhánh preview (`VERCEL_GIT_COMMIT_REF`) |
 
 > [!NOTE]
-> Khi sau này bạn merge nhánh vào `main`, chỉ cần đổi giá trị `GITHUB_BRANCH` thành `main`.
+> Đảm bảo biến `GITHUB_BRANCH` cho **Production** luôn đặt là `main` trước khi merge vào `main`. Tại môi trường **Preview**, hệ thống tự động cô lập thao tác ghi vào đúng nhánh Preview (`feature/vinaxo-custom-admin`).
 
 ---
 

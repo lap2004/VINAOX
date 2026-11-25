@@ -12,16 +12,34 @@ import {
   X,
   RefreshCw
 } from 'lucide-react';
+import { adminFetch } from '../lib/adminFetch';
 
 interface MediaItem {
   name: string;
   url: string;
+  fallbackUrl?: string;
   size?: number;
   category: string;
 }
 
+const SITE_ASSETS_MEDIA: MediaItem[] = [
+  { name: 'dried-fruit-export.webp', url: '/assets/images/news/dried-fruit-export.webp', category: 'news', size: 105510 },
+  { name: 'eu-green-policy.webp', url: '/assets/images/news/eu-green-policy.webp', category: 'news', size: 209414 },
+  { name: 'fruit-processing.webp', url: '/assets/images/news/fruit-processing.webp', category: 'news', size: 138814 },
+  { name: 'green-logistics.webp', url: '/assets/images/news/green-logistics.webp', category: 'news', size: 280392 },
+  { name: 'mango-procurement.webp', url: '/assets/images/news/mango-procurement.webp', category: 'news', size: 364106 },
+  { name: 'tet-oem-production.webp', url: '/assets/images/news/tet-oem-production.webp', category: 'news', size: 186932 },
+  { name: 'vinaxo-company-story.webp', url: '/assets/images/news/vinaxo-company-story.webp', category: 'news', size: 102806 },
+  { name: 'soft-dried-mango.webp', url: '/images/products/soft-dried-mango.webp', category: 'products', size: 611290 },
+  { name: 'soft-dried-red-dragonfruit.webp', url: '/images/products/soft-dried-red-dragonfruit.webp', category: 'products', size: 656812 },
+  { name: 'jackfruit-chips.webp', url: '/images/products/jackfruit-chips.webp', category: 'products', size: 781398 },
+  { name: 'cashew.webp', url: '/images/products/cashew.webp', category: 'products', size: 1020798 },
+  { name: 'lotus-seeds.webp', url: '/images/products/lotus-seeds.webp', category: 'products', size: 735030 },
+  { name: 'macadamia-nuts.webp', url: '/images/products/macadamia-nuts.webp', category: 'products', size: 775360 }
+];
+
 export const AdminMedia: React.FC = () => {
-  const [mediaList, setMediaList] = useState<MediaItem[]>([]);
+  const [mediaList, setMediaList] = useState<MediaItem[]>(SITE_ASSETS_MEDIA);
   const [loading, setLoading] = useState<boolean>(true);
   const [uploading, setUploading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -33,35 +51,19 @@ export const AdminMedia: React.FC = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Fallback initial list if API isn't populated
-  const defaultMedia: MediaItem[] = [
-    { name: 'soft-dried-mango.webp', url: '/images/products/soft-dried-mango.webp', category: 'products', size: 145000 },
-    { name: 'jackfruit-chips.webp', url: '/images/products/jackfruit-chips.webp', category: 'products', size: 162000 },
-    { name: 'cashew.webp', url: '/images/products/cashew.webp', category: 'products', size: 138000 },
-    { name: 'lotus-seeds.webp', url: '/images/products/lotus-seeds.webp', category: 'products', size: 154000 },
-    { name: 'macadamia-nuts.webp', url: '/images/products/macadamia-nuts.webp', category: 'products', size: 149000 },
-    { name: 'banana-chips.webp', url: '/images/products/banana-chips.webp', category: 'products', size: 141000 },
-    { name: 'cover-vtv1.webp', url: '/images/news/cover-vtv1.webp', category: 'news', size: 198000 },
-    { name: 'cover-tuoitre.webp', url: '/images/news/cover-tuoitre.webp', category: 'news', size: 212000 },
-    { name: 'cover-vnexpress.webp', url: '/images/news/cover-vnexpress.webp', category: 'news', size: 184000 }
-  ];
-
   const fetchMedia = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/admin/media');
+      const res = await adminFetch('/api/admin/media');
       if (res.ok) {
         const data = await res.json();
-        if (data.media && data.media.length > 0) {
-          setMediaList(data.media);
-        } else {
-          setMediaList(defaultMedia);
-        }
-      } else {
-        setMediaList(defaultMedia);
+        const uploaded: MediaItem[] = Array.isArray(data.media) ? data.media : [];
+        const existingUrls = new Set(uploaded.map(u => u.url));
+        const merged = [...uploaded, ...SITE_ASSETS_MEDIA.filter(s => !existingUrls.has(s.url))];
+        setMediaList(merged);
       }
     } catch {
-      setMediaList(defaultMedia);
+      // Retain built-in asset list
     } finally {
       setLoading(false);
     }
@@ -71,7 +73,6 @@ export const AdminMedia: React.FC = () => {
     fetchMedia();
   }, []);
 
-  // Format file size
   const formatSize = (bytes?: number) => {
     if (!bytes) return '--';
     if (bytes < 1024) return `${bytes} B`;
@@ -79,67 +80,63 @@ export const AdminMedia: React.FC = () => {
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   };
 
-  // Copy URL with clipboard API & visual feedback
   const handleCopyUrl = async (url: string) => {
     try {
       await navigator.clipboard.writeText(url);
-      setCopiedUrl(url);
-      setTimeout(() => setCopiedUrl(null), 2500);
     } catch {
-      // Fallback
-      setCopiedUrl(url);
-      setTimeout(() => setCopiedUrl(null), 2500);
+      // Fallback ignored if clipboard blocked
     }
+    setCopiedUrl(url);
+    setTimeout(() => setCopiedUrl(null), 2500);
   };
 
-  // Client-side image resize via HTML5 Canvas before uploading
+  // Client-side image scaling and WebP compression via HTML5 Canvas
   const processAndUploadImage = async (file: File) => {
     try {
       setUploading(true);
       setStatusMsg(null);
 
-      // Verify file type
       if (!file.type.match(/^image\/(jpeg|png|webp|jpg)$/i)) {
         setStatusMsg({ type: 'error', text: 'Chỉ chấp nhận file hình ảnh định dạng JPG, PNG hoặc WebP.' });
         setUploading(false);
         return;
       }
 
-      // Read file and downscale if max dimension > 1920px
       const base64Data = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
           const img = new Image();
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 1920;
-            const MAX_HEIGHT = 1920;
+            const MAX_DIM = 1920;
             let width = img.width;
             let height = img.height;
 
-            if (width > height) {
-              if (width > MAX_WIDTH) {
-                height = Math.round((height * MAX_WIDTH) / width);
-                width = MAX_WIDTH;
-              }
-            } else {
-              if (height > MAX_HEIGHT) {
-                width = Math.round((width * MAX_HEIGHT) / height);
-                height = MAX_HEIGHT;
-              }
+            if (width > height && width > MAX_DIM) {
+              height = Math.round((height * MAX_DIM) / width);
+              width = MAX_DIM;
+            } else if (height >= width && height > MAX_DIM) {
+              width = Math.round((width * MAX_DIM) / height);
+              height = MAX_DIM;
             }
 
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
-            if (ctx) {
-              ctx.drawImage(img, 0, 0, width, height);
-              // Output WebP with 0.85 quality for optimal compression
-              const dataUrl = canvas.toDataURL('image/webp', 0.85);
-              resolve(dataUrl);
-            } else {
+            if (!ctx) {
               resolve(e.target?.result as string);
+              return;
             }
+
+            ctx.drawImage(img, 0, 0, width, height);
+            let quality = 0.85;
+            let dataUrl = canvas.toDataURL('image/webp', quality);
+            // Adaptively step down quality if compressed output is still > 2MB base64
+            while (dataUrl.length > 2_600_000 && quality > 0.45) {
+              quality -= 0.1;
+              dataUrl = canvas.toDataURL('image/webp', quality);
+            }
+            resolve(dataUrl);
           };
           img.onerror = reject;
           img.src = e.target?.result as string;
@@ -148,10 +145,8 @@ export const AdminMedia: React.FC = () => {
         reader.readAsDataURL(file);
       });
 
-      // Send to /api/admin/media
-      const res = await fetch('/api/admin/media', {
+      const res = await adminFetch('/api/admin/media', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           filename: file.name,
           base64Data,
@@ -162,11 +157,13 @@ export const AdminMedia: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.ok) {
         setStatusMsg({ type: 'success', text: `Upload ảnh thành công: ${data.url}` });
+        const uploadedName = data.url.split('/').pop() || file.name;
         setMediaList(prev => [{
-          name: file.name,
+          name: uploadedName,
           url: data.url,
+          fallbackUrl: data.fallbackUrl,
           category: uploadCategory,
-          size: Math.round((base64Data.length * 3) / 4)
+          size: data.size || Math.round((base64Data.length * 3) / 4)
         }, ...prev]);
       } else {
         setStatusMsg({ type: 'error', text: data.error || 'Lỗi khi upload ảnh.' });
@@ -192,7 +189,16 @@ export const AdminMedia: React.FC = () => {
     }
   };
 
-  // Filtered media
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>, item: MediaItem) => {
+    const imgEl = e.currentTarget;
+    if (item.fallbackUrl && !imgEl.dataset.triedFallback) {
+      imgEl.dataset.triedFallback = '1';
+      imgEl.src = item.fallbackUrl;
+      return;
+    }
+    imgEl.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23999" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+  };
+
   const filteredList = mediaList.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.url.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCat = selectedCategory === 'all' || item.category === selectedCategory;
@@ -229,7 +235,7 @@ export const AdminMedia: React.FC = () => {
             cursor: 'pointer'
           }}
         >
-          <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+          <RefreshCw size={16} />
           <span>Làm mới</span>
         </button>
       </div>
@@ -405,9 +411,9 @@ export const AdminMedia: React.FC = () => {
         gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
         gap: '16px'
       }}>
-        {filteredList.map((item, idx) => (
+        {filteredList.map((item) => (
           <div
-            key={idx}
+            key={item.url}
             style={{
               backgroundColor: '#FFFFFF',
               borderRadius: '10px',
@@ -415,8 +421,7 @@ export const AdminMedia: React.FC = () => {
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
-              boxShadow: '0 1px 4px rgba(58, 37, 27, 0.04)',
-              transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+              boxShadow: '0 1px 4px rgba(58, 37, 27, 0.04)'
             }}
           >
             {/* Thumbnail */}
@@ -437,9 +442,7 @@ export const AdminMedia: React.FC = () => {
                 src={item.url}
                 alt={item.name}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23999" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
-                }}
+                onError={(e) => handleImgError(e, item)}
               />
               <span style={{
                 position: 'absolute',
@@ -576,6 +579,7 @@ export const AdminMedia: React.FC = () => {
               <img 
                 src={previewItem.url} 
                 alt={previewItem.name} 
+                onError={(e) => handleImgError(e, previewItem)}
                 style={{ maxWidth: '100%', maxHeight: '60vh', objectFit: 'contain', borderRadius: '6px' }} 
               />
             </div>
