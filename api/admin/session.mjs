@@ -140,9 +140,13 @@ function getRepoConfig() {
   const vercelEnv = (process.env.VERCEL_ENV || "development").trim();
   const gitRef = (process.env.VERCEL_GIT_COMMIT_REF || "").trim();
   const configuredBranchEnv = (process.env.GITHUB_BRANCH || "").trim();
-  let branch = configuredBranchEnv || gitRef || "main";
-  if (vercelEnv === "preview" && gitRef) {
-    branch = gitRef;
+  let branch = "main";
+  if (vercelEnv === "production") {
+    branch = "main";
+  } else if (vercelEnv === "preview") {
+    branch = gitRef || configuredBranchEnv || "main";
+  } else {
+    branch = configuredBranchEnv || gitRef || "main";
   }
   const token = (process.env.GITHUB_TOKEN || process.env.GITHUB_APP_TOKEN || "").trim();
   return {

@@ -99,6 +99,7 @@ export const AdminNewsList: React.FC = () => {
             type="button"
             onClick={fetchLiveArticles}
             disabled={isLoadingList}
+            title="Tải lại danh sách bài viết mới nhất từ Git"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -114,7 +115,7 @@ export const AdminNewsList: React.FC = () => {
             }}
           >
             <RefreshCw size={15} />
-            <span>{isLoadingList ? 'Đang tải...' : 'Đồng bộ Git'}</span>
+            <span>{isLoadingList ? 'Đang tải...' : 'Làm mới danh sách'}</span>
           </button>
 
           <Link

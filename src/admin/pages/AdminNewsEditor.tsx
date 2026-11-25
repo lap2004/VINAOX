@@ -15,7 +15,9 @@ import {
   Link2,
   Image as ImageIcon,
   AlignLeft,
-  AlignCenter
+  AlignCenter,
+  ExternalLink,
+  Loader2
 } from 'lucide-react';
 import { getArticleBySlug, isArticleDraft } from '../../services/contentService';
 import { ArticleContent } from '../../types/content';
@@ -64,6 +66,15 @@ export const AdminNewsEditor: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoadingArticle, setIsLoadingArticle] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [deployStatus, setDeployStatus] = useState<{
+    active: boolean;
+    state: 'queued' | 'pending' | 'success' | 'failure' | 'timeout';
+    commitSha?: string;
+    branch?: string;
+    slug: string;
+    description: string;
+    secondsElapsed: number;
+  } | null>(null);
 
   // Load existing article if editing (prefer live GitHub API, fallback build-time content)
   useEffect(() => {
@@ -130,6 +141,63 @@ export const AdminNewsEditor: React.FC = () => {
     }
   };
 
+  // Poll commit deployment status when article is published to Git
+  useEffect(() => {
+    if (!deployStatus || !deployStatus.active || !deployStatus.commitSha) return;
+    if (deployStatus.state === 'success' || deployStatus.state === 'failure' || deployStatus.state === 'timeout') return;
+
+    const commitSha = deployStatus.commitSha;
+    const interval = setInterval(async () => {
+      setDeployStatus(prev => {
+        if (!prev) return null;
+        const elapsed = prev.secondsElapsed + 3;
+        if (elapsed > 75) {
+          return {
+            ...prev,
+            state: 'timeout',
+            secondsElapsed: elapsed,
+            description: 'Đã lưu commit an toàn vào nhánh main. Quá trình build của Vercel thường mất 1-2 phút, bạn có thể kiểm tra trực tiếp trên web.'
+          };
+        }
+        return { ...prev, secondsElapsed: elapsed };
+      });
+
+      try {
+        const res = await adminFetch(`/api/admin/deployStatus?commitSha=${encodeURIComponent(commitSha)}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.ok && json.status) {
+            const { state, description, targetUrl } = json.status;
+            if (state === 'success') {
+              setDeployStatus(prev => prev ? {
+                ...prev,
+                state: 'success',
+                description: description || 'Website https://vinaxo.net đã cập nhật nội dung mới!',
+                targetUrl
+              } : null);
+            } else if (state === 'failure') {
+              setDeployStatus(prev => prev ? {
+                ...prev,
+                state: 'failure',
+                description: description || 'Triển khai Vercel thất bại.'
+              } : null);
+            } else if (state === 'pending') {
+              setDeployStatus(prev => prev ? {
+                ...prev,
+                state: 'pending',
+                description: 'Vercel đang biên dịch và cập nhật CDN edge...'
+              } : null);
+            }
+          }
+        }
+      } catch {
+        // Network hiccups tolerated during polling
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [deployStatus?.active, deployStatus?.commitSha, deployStatus?.state]);
+
   const handleSave = async (isDraft = false) => {
     if (!formData.title_vi?.trim() || !formData.slug?.trim()) {
       setFeedback({ type: 'error', message: 'Vui lòng nhập Tiêu đề tiếng Việt và Đường dẫn (slug)!' });
@@ -140,6 +208,7 @@ export const AdminNewsEditor: React.FC = () => {
       setIsSaving(true);
       setFeedback(null);
 
+      const targetSlug = formData.slug.trim();
       const articlePayload = {
         ...formData,
         sha: fileSha,
@@ -158,13 +227,32 @@ export const AdminNewsEditor: React.FC = () => {
       const data = await res.json();
       if (res.ok && data.ok) {
         if (data.result?.sha) setFileSha(data.result.sha);
-        setFeedback({ 
-          type: 'success', 
-          message: isDraft ? 'Đã lưu bản nháp thành công! (Ẩn khỏi trang công khai)' : 'Đã xuất bản bài viết thành công!' 
+        const commitSha = data.result?.commitSha;
+        const branch = data.result?.branch || 'main';
+
+        if (isDraft || !commitSha || commitSha === 'local-commit') {
+          setFeedback({ 
+            type: 'success', 
+            message: isDraft 
+              ? 'Đã lưu bản nháp thành công! (Bản nháp được lưu trong Git, ẩn khỏi web công khai)' 
+              : 'Đã xuất bản bài viết thành công!' 
+          });
+          setTimeout(() => {
+            navigate('/admin/news');
+          }, 1200);
+          return;
+        }
+
+        // Production publication: open deployment tracking dialog
+        setDeployStatus({
+          active: true,
+          state: 'queued',
+          commitSha,
+          branch,
+          slug: targetSlug,
+          description: `Đã commit thành công vào nhánh ${branch}. Đang kết nối Vercel để triển khai lên website...`,
+          secondsElapsed: 0
         });
-        setTimeout(() => {
-          navigate('/admin/news');
-        }, 1100);
       } else {
         setFeedback({ type: 'error', message: data.error || 'Không thể lưu bài viết.' });
       }
@@ -735,6 +823,184 @@ export const AdminNewsEditor: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Deployment Tracking Modal Overlay */}
+      {deployStatus && deployStatus.active && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.65)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          padding: '16px'
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '16px',
+            maxWidth: '520px',
+            width: '100%',
+            padding: '28px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
+            border: '1.5px solid #EADFCC',
+            textAlign: 'center'
+          }}>
+            {deployStatus.state === 'success' ? (
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#ECFDF5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                <CheckCircle size={36} />
+              </div>
+            ) : deployStatus.state === 'failure' ? (
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#FEF2F2', color: '#DC2626', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                <AlertCircle size={36} />
+              </div>
+            ) : deployStatus.state === 'timeout' ? (
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#FFFBEB', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                <CheckCircle size={36} />
+              </div>
+            ) : (
+              <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#FFF7ED', color: '#F4A83A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                <Loader2 size={36} className="animate-spin" />
+              </div>
+            )}
+
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#3A251B', marginBottom: '8px' }}>
+              {deployStatus.state === 'success'
+                ? 'Website đã xuất bản thành công!'
+                : deployStatus.state === 'failure'
+                ? 'Lỗi triển khai máy chủ'
+                : deployStatus.state === 'timeout'
+                ? 'Đã lưu vào Git repository!'
+                : 'Đang triển khai lên website vinaxo.net'}
+            </h3>
+
+            <p style={{ fontSize: '0.9rem', color: '#6E6259', lineHeight: 1.6, marginBottom: '20px' }}>
+              {deployStatus.description}
+            </p>
+
+            <div style={{ backgroundColor: '#FAF7F2', borderRadius: '8px', padding: '12px 16px', fontSize: '0.82rem', color: '#786C60', textAlign: 'left', marginBottom: '24px' }}>
+              <div><strong>Nhánh đích:</strong> <code>{deployStatus.branch || 'main'}</code></div>
+              <div><strong>Commit Git:</strong> <code>{deployStatus.commitSha?.slice(0, 7)}</code></div>
+              <div><strong>Thời gian xử lý:</strong> {deployStatus.secondsElapsed}s</div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              {deployStatus.state === 'success' ? (
+                <>
+                  <a
+                    href={`/tin-tuc/${deployStatus.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      backgroundColor: '#F4A83A',
+                      color: '#3A251B',
+                      padding: '10px 18px',
+                      borderRadius: '8px',
+                      fontWeight: 700,
+                      fontSize: '0.9rem',
+                      textDecoration: 'none'
+                    }}
+                  >
+                    <ExternalLink size={16} />
+                    <span>Xem bài viết trên web</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/admin/news')}
+                    style={{
+                      padding: '10px 18px',
+                      borderRadius: '8px',
+                      backgroundColor: '#FFFFFF',
+                      border: '1.5px solid #D1C7BD',
+                      color: '#3A251B',
+                      fontWeight: 600,
+                      fontSize: '0.9rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Về danh sách bài viết
+                  </button>
+                </>
+              ) : deployStatus.state === 'timeout' ? (
+                <>
+                  <a
+                    href={`/tin-tuc/${deployStatus.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      backgroundColor: '#F4A83A',
+                      color: '#3A251B',
+                      padding: '10px 18px',
+                      borderRadius: '8px',
+                      fontWeight: 700,
+                      fontSize: '0.9rem',
+                      textDecoration: 'none'
+                    }}
+                  >
+                    <ExternalLink size={16} />
+                    <span>Mở trang bài viết</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/admin/news')}
+                    style={{
+                      padding: '10px 18px',
+                      borderRadius: '8px',
+                      backgroundColor: '#FFFFFF',
+                      border: '1.5px solid #D1C7BD',
+                      color: '#3A251B',
+                      fontWeight: 600,
+                      fontSize: '0.9rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Về danh sách bài viết
+                  </button>
+                </>
+              ) : deployStatus.state === 'failure' ? (
+                <button
+                  type="button"
+                  onClick={() => setDeployStatus(null)}
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: '8px',
+                    backgroundColor: '#3A251B',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Đóng
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => navigate('/admin/news')}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: '#8C827A',
+                    fontSize: '0.84rem',
+                    cursor: 'pointer',
+                    textDecoration: 'underline'
+                  }}
+                >
+                  Rời trang và tiếp tục xử lý nền
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

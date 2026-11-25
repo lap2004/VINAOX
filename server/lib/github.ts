@@ -38,6 +38,13 @@ export interface RepoPublicMeta {
   configuredBranchEnv: string;
 }
 
+export interface DeployStatusResult {
+  state: 'queued' | 'pending' | 'success' | 'failure' | 'unknown';
+  description: string;
+  targetUrl?: string;
+  branch: string;
+}
+
 /**
  * Validates that a file path is safe and strictly inside allowed directories.
  * Prevents directory traversal (..), absolute paths, and modifications to root/config files.
@@ -80,11 +87,21 @@ function getRepoConfig() {
   const gitRef = (process.env.VERCEL_GIT_COMMIT_REF || '').trim();
   const configuredBranchEnv = (process.env.GITHUB_BRANCH || '').trim();
 
-  // In Preview deployments, target the active preview branch (`gitRef`) so tests never pollute `main`.
-  // In Production deployments, use configured `GITHUB_BRANCH` (expected to be `main`) or fallback to `main`.
-  let branch = configuredBranchEnv || gitRef || 'main';
-  if (vercelEnv === 'preview' && gitRef) {
-    branch = gitRef;
+  // Branch target resolution with strict production isolation:
+  // 1. In Production (VERCEL_ENV === 'production'):
+  //    MUST ALWAYS write to and read from 'main'. Even if a stray environment variable exists,
+  //    production CMS must never commit to feature branches.
+  // 2. In Preview (VERCEL_ENV === 'preview'):
+  //    Target the active PR/preview branch (`gitRef`) or configuredBranchEnv, preserving isolated preview testing.
+  // 3. In Development/Local:
+  //    Target configuredBranchEnv or gitRef or fallback to 'main'.
+  let branch = 'main';
+  if (vercelEnv === 'production') {
+    branch = 'main';
+  } else if (vercelEnv === 'preview') {
+    branch = gitRef || configuredBranchEnv || 'main';
+  } else {
+    branch = configuredBranchEnv || gitRef || 'main';
   }
 
   const token = (process.env.GITHUB_TOKEN || process.env.GITHUB_APP_TOKEN || '').trim();
@@ -412,3 +429,66 @@ export async function commitMediaFile(
     branch
   };
 }
+
+/**
+ * Checks the deployment / commit status of a given commit on GitHub.
+ * Queries GitHub Commit Status API (/commits/{commitSha}/status) which reflects Vercel deployments.
+ */
+export async function getCommitDeployStatus(commitSha: string): Promise<DeployStatusResult> {
+  const { owner, repo, branch, token } = getRepoConfig();
+  if (!token || !commitSha || commitSha === 'local-commit') {
+    return {
+      state: 'success',
+      description: 'Môi trường phát triển nội bộ (Local / không kết nối GitHub)',
+      branch
+    };
+  }
+
+  try {
+    const url = `https://api.github.com/repos/${owner}/${repo}/commits/${commitSha}/status`;
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'VINAXO-CMS-Serverless'
+      }
+    });
+
+    if (!response.ok) {
+      return {
+        state: 'unknown',
+        description: `Không thể kiểm tra trạng thái Git (HTTP ${response.status})`,
+        branch
+      };
+    }
+
+    const data: any = await response.json();
+    const vercelStatus = Array.isArray(data.statuses)
+      ? data.statuses.find((s: any) => (s.context || '').toLowerCase().includes('vercel')) || data.statuses[0]
+      : null;
+
+    if (vercelStatus) {
+      const state = vercelStatus.state; // 'pending' | 'success' | 'failure' | 'error'
+      return {
+        state: state === 'error' ? 'failure' : state,
+        description: vercelStatus.description || (state === 'success' ? 'Website đã cập nhật thành công!' : 'Đang triển khai lên máy chủ...'),
+        targetUrl: vercelStatus.target_url,
+        branch
+      };
+    }
+
+    // If total_count === 0, Vercel webhook might still be processing or starting build
+    return {
+      state: 'queued',
+      description: 'Đã ghi nhận commit vào Git. Đang xếp hàng chờ Vercel khởi tạo bản build...',
+      branch
+    };
+  } catch (err: any) {
+    return {
+      state: 'unknown',
+      description: err?.message || 'Lỗi kết nối kiểm tra tiến độ triển khai',
+      branch
+    };
+  }
+}
+

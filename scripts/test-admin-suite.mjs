@@ -34,6 +34,7 @@ import newsHandler from '../api/admin/news.mjs';
 import productsHandler from '../api/admin/products.mjs';
 import mediaHandler from '../api/admin/media.mjs';
 import settingsHandler from '../api/admin/settings.mjs';
+import deployStatusHandler from '../api/admin/deployStatus.mjs';
 
 console.log('=== VINAXO CUSTOM ADMIN SECURITY & INTEGRATION TEST SUITE ===\n');
 
@@ -407,6 +408,50 @@ async function runTests() {
 
     const prodFiles = fs.readdirSync(path.join(process.cwd(), 'content', 'products')).filter(f => f.endsWith('.json'));
     assert(prodFiles.length >= 12, `Expected >= 12 products, found ${prodFiles.length}`);
+  });
+
+  // 10. Production Branch Enforcement Guard
+  await runCase('Production Isolation: Production environment strictly enforces branch "main"', async () => {
+    const prevVercelEnv = process.env.VERCEL_ENV;
+    const prevBranch = process.env.GITHUB_BRANCH;
+    try {
+      process.env.VERCEL_ENV = 'production';
+      process.env.GITHUB_BRANCH = 'feature/vinaxo-custom-admin';
+      const meta = getPublicRepoMeta();
+      assert.strictEqual(meta.branch, 'main', 'Production must ALWAYS force branch "main" despite feature branch env var');
+
+      process.env.VERCEL_ENV = 'preview';
+      process.env.VERCEL_GIT_COMMIT_REF = 'feature/my-pr';
+      const previewMeta = getPublicRepoMeta();
+      assert.strictEqual(previewMeta.branch, 'feature/my-pr', 'Preview should respect preview git ref');
+    } finally {
+      if (prevVercelEnv === undefined) delete process.env.VERCEL_ENV;
+      else process.env.VERCEL_ENV = prevVercelEnv;
+      if (prevBranch === undefined) delete process.env.GITHUB_BRANCH;
+      else process.env.GITHUB_BRANCH = prevBranch;
+      delete process.env.VERCEL_GIT_COMMIT_REF;
+    }
+  });
+
+  // 11. Deployment Status Endpoint
+  await runCase('Deploy Status: Handler returns status and handles missing commitSha / local fallback', async () => {
+    const validToken = createSessionToken('admin', 1);
+    const rMissingSha = createMockRes();
+    await deployStatusHandler({
+      method: 'GET',
+      headers: { cookie: `vinaxo_admin_session=${validToken}` },
+      query: {}
+    }, rMissingSha);
+    assert.strictEqual(rMissingSha.statusCode, 400, 'Missing commitSha must return 400');
+
+    const rLocalSha = createMockRes();
+    await deployStatusHandler({
+      method: 'GET',
+      headers: { cookie: `vinaxo_admin_session=${validToken}` },
+      query: { commitSha: 'local-commit' }
+    }, rLocalSha);
+    assert.strictEqual(rLocalSha.statusCode, 200, 'Valid query must return 200');
+    assert.strictEqual(rLocalSha.body?.status?.state, 'success', 'Local commit status should return success');
   });
 
   console.log(`\n========================================`);
