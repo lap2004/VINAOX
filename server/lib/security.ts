@@ -1,4 +1,89 @@
-import { verifyCsrfToken } from './auth';
+import { verifyCsrfToken } from './auth.js';
+
+export class HttpRequestError extends Error {
+  statusCode: number;
+  constructor(statusCode: number, message: string) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
+
+/**
+ * Safely writes a JSON response compatible with both Vercel helper wrappers and raw Node ServerResponse.
+ */
+export function sendJson(res: any, statusCode: number, payload: unknown): any {
+  if (typeof res?.status === 'function' && typeof res?.json === 'function') {
+    return res.status(statusCode).json(payload);
+  }
+  res.statusCode = statusCode;
+  if (typeof res?.setHeader === 'function') {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  }
+  if (typeof res?.end === 'function') {
+    res.end(JSON.stringify(payload));
+  }
+  return res;
+}
+
+/**
+ * Top-level defensive wrapper for every Admin serverless endpoint.
+ * Ensures security headers are applied and unexpected failures always emit structured JSON.
+ */
+export function wrapHandler(
+  handlerFn: (req: any, res: any) => Promise<any>
+): (req: any, res: any) => Promise<any> {
+  return async (req: any, res: any) => {
+    try {
+      applySecurityHeaders(res);
+      return await handlerFn(req, res);
+    } catch (err: any) {
+      const status = typeof err?.statusCode === 'number' ? err.statusCode : 500;
+      const msg = err?.message || 'Lỗi hệ thống nội bộ tại máy chủ quản trị.';
+      console.error('[VINAXO Admin API Error]', err);
+      return sendJson(res, status, { error: msg });
+    }
+  };
+}
+
+function parseJsonObject(rawText: string): Record<string, any> {
+  const trimmed = rawText.trim();
+  if (!trimmed) return {};
+  try {
+    const parsed = JSON.parse(trimmed);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    throw new HttpRequestError(400, 'Dữ liệu JSON gửi lên không hợp lệ.');
+  }
+}
+
+/**
+ * Reads and parses JSON body safely from Vercel parsed req.body or an unread Node stream.
+ */
+export async function readJsonBody(req: any, maxBytes = 4_500_000): Promise<Record<string, any>> {
+  const existing = req?.body;
+  if (existing !== undefined && existing !== null) {
+    if (typeof existing === 'string') return parseJsonObject(existing);
+    if (Buffer.isBuffer(existing)) return parseJsonObject(existing.toString('utf8'));
+    if (typeof existing === 'object') return existing;
+  }
+
+  if (!req || typeof req[Symbol.asyncIterator] !== 'function') {
+    return {};
+  }
+
+  const chunks: Buffer[] = [];
+  let total = 0;
+  for await (const chunk of req) {
+    const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk));
+    total += buf.length;
+    if (total > maxBytes) {
+      throw new HttpRequestError(413, 'Dữ liệu gửi lên vượt quá giới hạn cho phép.');
+    }
+    chunks.push(buf);
+  }
+
+  return chunks.length === 0 ? {} : parseJsonObject(Buffer.concat(chunks).toString('utf8'));
+}
 
 /**
  * Applies mandatory no-cache & anti-indexing security headers to all /api/admin/* responses.

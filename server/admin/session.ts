@@ -1,10 +1,8 @@
 import { getAuthenticatedUser, createCsrfToken } from '../lib/auth.js';
-import { applySecurityHeaders } from '../lib/security.js';
+import { wrapHandler } from '../lib/security.js';
 import { getPublicRepoMeta, hasGitHubToken } from '../lib/github.js';
 
-export default async function handler(req: any, res: any) {
-  applySecurityHeaders(res);
-
+export default wrapHandler(async (req: any, res: any) => {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
@@ -35,4 +33,4 @@ export default async function handler(req: any, res: any) {
     repo: getPublicRepoMeta(),
     githubConfigured: hasGitHubToken()
   });
-}
+});

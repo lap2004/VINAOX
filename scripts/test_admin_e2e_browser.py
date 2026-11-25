@@ -48,11 +48,9 @@ def main():
     env["E2E_PORT"] = str(PORT)
     env["E2E_ADMIN_PASS"] = TEST_PASS
 
-    cached_tsx = glob.glob(os.path.join(os.environ.get("LOCALAPPDATA", ""), "npm-cache", "_npx", "*", "node_modules", ".bin", "tsx.cmd"))
-    tsx_cmd = [cached_tsx[0], "scripts/test-e2e-server.mjs"] if cached_tsx else ["npx.cmd", "--yes", "tsx", "scripts/test-e2e-server.mjs"]
-    print("Starting E2E integration server using:", tsx_cmd[0])
+    print("Starting E2E integration server using node scripts/test-e2e-server.mjs")
     server_proc = subprocess.Popen(
-        tsx_cmd,
+        ["node", "scripts/test-e2e-server.mjs"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         env=env,

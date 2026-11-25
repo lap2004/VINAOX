@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { getSessionSecret, parseCookies, shouldUseSecureCookie } from './auth';
+import { getSessionSecret, parseCookies, shouldUseSecureCookie } from './auth.js';
 
 const RL_COOKIE_NAME = 'vinaxo_login_rl';
 const LOGIN_MAX_ATTEMPTS = 5;

@@ -1,12 +1,13 @@
 import { getAuthenticatedUser } from '../lib/auth.js';
 import {
-  applySecurityHeaders,
   getClientIp,
+  readJsonBody,
   sanitizeCommitText,
   sanitizeSafeUrl,
   sanitizeSlug,
   stripUnsafeKeys,
-  validateCsrfAndOrigin
+  validateCsrfAndOrigin,
+  wrapHandler
 } from '../lib/security.js';
 import { checkApiMutationRateLimit } from '../lib/rateLimit.js';
 import { commitFile, hasGitHubToken, listRepoJsonFiles } from '../lib/github.js';
@@ -15,8 +16,7 @@ import path from 'path';
 
 const ALLOWED_CATEGORIES = ['soft-dried', 'chips', 'nuts-seeds', 'mixed'];
 
-export default async function handler(req: any, res: any) {
-  applySecurityHeaders(res);
+export default wrapHandler(async (req: any, res: any) => {
 
   const user = getAuthenticatedUser(req);
   if (!user) {
@@ -67,47 +67,43 @@ export default async function handler(req: any, res: any) {
 
   // POST: Update product info
   if (req.method === 'POST') {
-    try {
-      const rawBody = req.body || {};
-      const requestSha = typeof rawBody.sha === 'string' ? rawBody.sha : undefined;
-      const product = stripUnsafeKeys(rawBody);
+    const rawBody = await readJsonBody(req);
+    const requestSha = typeof rawBody.sha === 'string' ? rawBody.sha : undefined;
+    const product = stripUnsafeKeys(rawBody);
 
-      const slug = sanitizeSlug(product.slug);
-      if (!slug || typeof product.name_vi !== 'string' || !product.name_vi.trim()) {
-        return res.status(400).json({ error: 'Thiếu slug hợp lệ hoặc tên sản phẩm tiếng Việt.' });
-      }
-
-      product.slug = slug;
-      product.id = typeof product.id === 'string' && product.id.trim() ? sanitizeSlug(product.id) || slug : slug;
-      if (typeof product.category !== 'string' || !ALLOWED_CATEGORIES.includes(product.category)) {
-        product.category = 'soft-dried';
-      }
-      product.image = sanitizeSafeUrl(product.image, true) || `/images/products/${slug}.webp`;
-
-      const filePath = `content/products/${slug}.json`;
-      const contentStr = JSON.stringify(product, null, 2);
-      const commitMessage = `cms(product): update "${sanitizeCommitText(product.name_vi, 72)}"`;
-
-      let result = null;
-      if (useGitHub) {
-        result = await commitFile(filePath, contentStr, commitMessage, requestSha);
-      } else {
-        const fullLocalPath = path.join(process.cwd(), filePath);
-        fs.mkdirSync(path.dirname(fullLocalPath), { recursive: true });
-        fs.writeFileSync(fullLocalPath, contentStr, 'utf-8');
-        result = { sha: 'local-sha', commitSha: 'local-commit' };
-      }
-
-      return res.status(200).json({
-        ok: true,
-        message: 'Cập nhật sản phẩm thành công!',
-        product,
-        result
-      });
-    } catch (err: any) {
-      return res.status(500).json({ error: err?.message || 'Lỗi khi cập nhật sản phẩm.' });
+    const slug = sanitizeSlug(product.slug);
+    if (!slug || typeof product.name_vi !== 'string' || !product.name_vi.trim()) {
+      return res.status(400).json({ error: 'Thiếu slug hợp lệ hoặc tên sản phẩm tiếng Việt.' });
     }
+
+    product.slug = slug;
+    product.id = typeof product.id === 'string' && product.id.trim() ? sanitizeSlug(product.id) || slug : slug;
+    if (typeof product.category !== 'string' || !ALLOWED_CATEGORIES.includes(product.category)) {
+      product.category = 'soft-dried';
+    }
+    product.image = sanitizeSafeUrl(product.image, true) || `/images/products/${slug}.webp`;
+
+    const filePath = `content/products/${slug}.json`;
+    const contentStr = JSON.stringify(product, null, 2);
+    const commitMessage = `cms(product): update "${sanitizeCommitText(product.name_vi, 72)}"`;
+
+    let result = null;
+    if (useGitHub) {
+      result = await commitFile(filePath, contentStr, commitMessage, requestSha);
+    } else {
+      const fullLocalPath = path.join(process.cwd(), filePath);
+      fs.mkdirSync(path.dirname(fullLocalPath), { recursive: true });
+      fs.writeFileSync(fullLocalPath, contentStr, 'utf-8');
+      result = { sha: 'local-sha', commitSha: 'local-commit' };
+    }
+
+    return res.status(200).json({
+      ok: true,
+      message: 'Cập nhật sản phẩm thành công!',
+      product,
+      result
+    });
   }
 
   return res.status(405).json({ error: 'Method Not Allowed' });
-}
+});

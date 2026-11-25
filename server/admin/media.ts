@@ -1,9 +1,10 @@
 import { getAuthenticatedUser } from '../lib/auth.js';
 import {
-  applySecurityHeaders,
   getClientIp,
+  readJsonBody,
   sanitizeCommitText,
-  validateCsrfAndOrigin
+  validateCsrfAndOrigin,
+  wrapHandler
 } from '../lib/security.js';
 import { checkApiMutationRateLimit } from '../lib/rateLimit.js';
 import {
@@ -47,9 +48,7 @@ function detectImageFormat(base64Data: string): { ext: string; cleanBase64: stri
   return null;
 }
 
-export default async function handler(req: any, res: any) {
-  applySecurityHeaders(res);
-
+export default wrapHandler(async (req: any, res: any) => {
   const user = getAuthenticatedUser(req);
   if (!user) {
     return res.status(401).json({ error: 'Yêu cầu đăng nhập quản trị.' });
@@ -148,58 +147,55 @@ export default async function handler(req: any, res: any) {
 
   // POST: Upload an image file (Base64 data)
   if (req.method === 'POST') {
-    try {
-      const { filename, base64Data, category = 'news' } = req.body || {};
+    const body = await readJsonBody(req);
+    const { filename, base64Data, category = 'news' } = body;
 
-      if (typeof filename !== 'string' || !filename.trim() || typeof base64Data !== 'string' || !base64Data) {
-        return res.status(400).json({ error: 'Vui lòng cung cấp tên file và dữ liệu ảnh.' });
-      }
+    if (typeof filename !== 'string' || !filename.trim() || typeof base64Data !== 'string' || !base64Data) {
+      return res.status(400).json({ error: 'Vui lòng cung cấp tên file và dữ liệu ảnh.' });
+    }
 
-      const detected = detectImageFormat(base64Data);
-      if (!detected) {
-        return res.status(400).json({ error: 'Định dạng ảnh không hợp lệ. Chỉ chấp nhận file thực tế JPG, PNG hoặc WebP.' });
-      }
+    const detected = detectImageFormat(base64Data);
+    if (!detected) {
+      return res.status(400).json({ error: 'Định dạng ảnh không hợp lệ. Chỉ chấp nhận file thực tế JPG, PNG hoặc WebP.' });
+    }
 
-      const decodedBuffer = Buffer.from(detected.cleanBase64, 'base64');
-      if (decodedBuffer.length === 0 || decodedBuffer.length > MAX_BINARY_BYTES) {
-        return res.status(400).json({ error: 'Dung lượng ảnh vượt quá giới hạn cho phép (tối đa 3MB sau nén).' });
-      }
+    const decodedBuffer = Buffer.from(detected.cleanBase64, 'base64');
+    if (decodedBuffer.length === 0 || decodedBuffer.length > MAX_BINARY_BYTES) {
+      return res.status(400).json({ error: 'Dung lượng ảnh vượt quá giới hạn cho phép (tối đa 3MB sau nén).' });
+    }
 
-      // Sanitize filename & enforce extension matching real binary format
-      const cleanName = filename.toLowerCase().replace(/[^a-z0-9._-]/g, '-').replace(/-+/g, '-');
-      const rawExt = path.extname(cleanName);
-      const baseName = path.basename(cleanName, rawExt).replace(/[^a-z0-9_-]/g, '-').slice(0, 60) || 'vinaxo-image';
-      const uniqueFilename = `${baseName}-${Date.now()}${detected.ext}`;
-      const targetCategory = ALLOWED_CATEGORIES.includes(category) ? category : 'news';
-      const targetFilePath = `public/uploads/${targetCategory}/${uniqueFilename}`;
-      const safeCommitName = sanitizeCommitText(uniqueFilename, 80);
+    // Sanitize filename & enforce extension matching real binary format
+    const cleanName = filename.toLowerCase().replace(/[^a-z0-9._-]/g, '-').replace(/-+/g, '-');
+    const rawExt = path.extname(cleanName);
+    const baseName = path.basename(cleanName, rawExt).replace(/[^a-z0-9_-]/g, '-').slice(0, 60) || 'vinaxo-image';
+    const uniqueFilename = `${baseName}-${Date.now()}${detected.ext}`;
+    const targetCategory = ALLOWED_CATEGORIES.includes(category) ? category : 'news';
+    const targetFilePath = `public/uploads/${targetCategory}/${uniqueFilename}`;
+    const safeCommitName = sanitizeCommitText(uniqueFilename, 80);
 
-      if (useGitHub) {
-        const result = await commitMediaFile(targetFilePath, detected.cleanBase64, `cms(media): upload ${safeCommitName}`);
-        return res.status(200).json({
-          ok: true,
-          url: result.publicUrl,
-          fallbackUrl: `/api/admin/media?raw=${encodeURIComponent(targetFilePath)}`,
-          path: targetFilePath,
-          size: decodedBuffer.length,
-          commitSha: result.commitSha,
-          branch: result.branch
-        });
-      } else {
-        const localPath = path.join(process.cwd(), targetFilePath);
-        fs.mkdirSync(path.dirname(localPath), { recursive: true });
-        fs.writeFileSync(localPath, decodedBuffer);
-        return res.status(200).json({
-          ok: true,
-          url: `/uploads/${targetCategory}/${uniqueFilename}`,
-          path: targetFilePath,
-          size: decodedBuffer.length
-        });
-      }
-    } catch (err: any) {
-      return res.status(500).json({ error: err?.message || 'Không thể upload hình ảnh.' });
+    if (useGitHub) {
+      const result = await commitMediaFile(targetFilePath, detected.cleanBase64, `cms(media): upload ${safeCommitName}`);
+      return res.status(200).json({
+        ok: true,
+        url: result.publicUrl,
+        fallbackUrl: `/api/admin/media?raw=${encodeURIComponent(targetFilePath)}`,
+        path: targetFilePath,
+        size: decodedBuffer.length,
+        commitSha: result.commitSha,
+        branch: result.branch
+      });
+    } else {
+      const localPath = path.join(process.cwd(), targetFilePath);
+      fs.mkdirSync(path.dirname(localPath), { recursive: true });
+      fs.writeFileSync(localPath, decodedBuffer);
+      return res.status(200).json({
+        ok: true,
+        url: `/uploads/${targetCategory}/${uniqueFilename}`,
+        path: targetFilePath,
+        size: decodedBuffer.length
+      });
     }
   }
 
   return res.status(405).json({ error: 'Method Not Allowed' });
-}
+});

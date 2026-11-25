@@ -1,9 +1,7 @@
 import { clearSessionCookie, getAuthenticatedUser } from '../lib/auth.js';
-import { applySecurityHeaders, validateCsrfAndOrigin } from '../lib/security.js';
+import { validateCsrfAndOrigin, wrapHandler } from '../lib/security.js';
 
-export default async function handler(req: any, res: any) {
-  applySecurityHeaders(res);
-
+export default wrapHandler(async (req: any, res: any) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
@@ -22,4 +20,4 @@ export default async function handler(req: any, res: any) {
     ok: true,
     message: 'Đã đăng xuất thành công'
   });
-}
+});

@@ -13,27 +13,27 @@ import {
   createSessionCookie,
   clearSessionCookie,
   parseCookies
-} from '../api/lib/auth.ts';
+} from '../server/lib/auth.ts';
 import {
   validateCsrfAndOrigin,
   sanitizeSlug,
   sanitizeSafeUrl,
   sanitizeCommitText,
   stripUnsafeKeys
-} from '../api/lib/security.ts';
+} from '../server/lib/security.ts';
 import {
   validatePath,
   getPublicRepoMeta,
   commitFile,
   commitMediaFile
-} from '../api/lib/github.ts';
-import loginHandler from '../api/admin/login.ts';
-import logoutHandler from '../api/admin/logout.ts';
-import sessionHandler from '../api/admin/session.ts';
-import newsHandler from '../api/admin/news.ts';
-import productsHandler from '../api/admin/products.ts';
-import mediaHandler from '../api/admin/media.ts';
-import settingsHandler from '../api/admin/settings.ts';
+} from '../server/lib/github.ts';
+import loginHandler from '../api/admin/login.mjs';
+import logoutHandler from '../api/admin/logout.mjs';
+import sessionHandler from '../api/admin/session.mjs';
+import newsHandler from '../api/admin/news.mjs';
+import productsHandler from '../api/admin/products.mjs';
+import mediaHandler from '../api/admin/media.mjs';
+import settingsHandler from '../api/admin/settings.mjs';
 
 console.log('=== VINAXO CUSTOM ADMIN SECURITY & INTEGRATION TEST SUITE ===\n');
 
@@ -363,6 +363,37 @@ async function runTests() {
     }, rOut);
     assert.strictEqual(rOut.statusCode, 200);
     assert(String(rOut.getHeader('set-cookie')).includes('Max-Age=0'));
+
+    // Raw stream JSON body parsing + wrapHandler JSON error safety (never plain-text 500)
+    const streamReq = {
+      method: 'POST',
+      headers: { host: 'localhost:4174', origin: 'http://localhost:4174', 'content-type': 'application/json', 'x-requested-with': 'XMLHttpRequest', 'x-forwarded-for': '198.51.100.11' },
+      async *[Symbol.asyncIterator]() {
+        yield Buffer.from(JSON.stringify({ username: 'admin', password: testPassword }));
+      }
+    };
+    const rStream = createMockRes();
+    await loginHandler(streamReq, rStream);
+    assert.strictEqual(rStream.statusCode, 200, 'Built .mjs handler must read unread JSON stream body');
+
+    const prevVercel = process.env.VERCEL;
+    const prevSecret = process.env.SESSION_SECRET;
+    try {
+      process.env.VERCEL = '1';
+      delete process.env.SESSION_SECRET;
+      const rMissingSecret = createMockRes();
+      await loginHandler({
+        method: 'POST',
+        headers: { host: 'localhost:4174', origin: 'http://localhost:4174', 'content-type': 'application/json', 'x-requested-with': 'XMLHttpRequest', 'x-forwarded-for': '198.51.100.12' },
+        body: { username: 'admin', password: testPassword }
+      }, rMissingSecret);
+      assert.strictEqual(rMissingSecret.statusCode, 500);
+      assert(typeof rMissingSecret.body?.error === 'string' && rMissingSecret.body.error.includes('SESSION_SECRET'), 'Missing SESSION_SECRET must return JSON 500 via wrapHandler');
+    } finally {
+      if (prevVercel === undefined) delete process.env.VERCEL;
+      else process.env.VERCEL = prevVercel;
+      process.env.SESSION_SECRET = prevSecret;
+    }
   });
 
   // 9. Data Integrity Check: 9 News Articles & 12 Products

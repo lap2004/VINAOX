@@ -27,6 +27,18 @@ interface AdminAuthContextType {
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
+async function parseJsonSafe(res: Response): Promise<{ okJson: boolean; data: any; rawText: string }> {
+  const rawText = await res.text();
+  if (!rawText) {
+    return { okJson: true, data: {}, rawText: '' };
+  }
+  try {
+    return { okJson: true, data: JSON.parse(rawText), rawText };
+  } catch {
+    return { okJson: false, data: null, rawText };
+  }
+}
+
 export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [repoMeta, setRepoMeta] = useState<RepoMeta | null>(null);
@@ -40,8 +52,9 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         headers: { 'Cache-Control': 'no-cache' }
       });
       if (res.ok) {
-        const data = await res.json();
-        if (data.authenticated && data.user) {
+        const parsed = await parseJsonSafe(res);
+        const data = parsed.okJson ? parsed.data : null;
+        if (data?.authenticated && data?.user) {
           setUser(data.user);
           setAdminCsrfToken(data.csrfToken);
           setRepoMeta(data.repo || null);
@@ -50,14 +63,19 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           setUser(null);
           clearAdminCsrfToken();
           setRepoMeta(null);
+          setGithubConfigured(false);
         }
       } else {
         setUser(null);
         clearAdminCsrfToken();
+        setRepoMeta(null);
+        setGithubConfigured(false);
       }
     } catch {
       setUser(null);
       clearAdminCsrfToken();
+      setRepoMeta(null);
+      setGithubConfigured(false);
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +92,16 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         body: JSON.stringify({ username, password })
       });
 
-      const data = await res.json();
+      const parsed = await parseJsonSafe(res);
+      if (!parsed.okJson) {
+        const preview = parsed.rawText.replace(/\s+/g, ' ').trim().slice(0, 80);
+        return {
+          ok: false,
+          error: `Lỗi máy chủ API (HTTP ${res.status}): ${preview || 'Phản hồi không phải định dạng JSON.'}`
+        };
+      }
+
+      const data = parsed.data || {};
       if (res.ok && data.ok) {
         setAdminCsrfToken(data.csrfToken);
         setUser(data.user);
