@@ -670,9 +670,12 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
 ];
 
 // Dynamically merge with content/products/*.json from CMS at build time
-const productCmsModules: Record<string, any> = typeof (import.meta as any).glob === 'function'
-  ? (import.meta as any).glob('/content/products/*.json', { eager: true })
-  : {};
+let productCmsModules: Record<string, any> = {};
+try {
+  productCmsModules = (import.meta as any).glob('/content/products/*.json', { eager: true });
+} catch {
+  productCmsModules = {};
+}
 const cmsProductMap = new Map<string, any>();
 for (const mod of Object.values(productCmsModules)) {
   const p = (mod as any).default || mod;

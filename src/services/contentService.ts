@@ -5,9 +5,7 @@ import { validateNewsArticle } from '../shared/schemas/newsSchema';
 // Build-time static loading of all news articles in content/news/ with fault isolation
 let articleModules: Record<string, any> = {};
 try {
-  if (typeof (import.meta as any)?.glob === 'function') {
-    articleModules = (import.meta as any).glob('/content/news/*.json', { eager: true });
-  }
+  articleModules = (import.meta as any).glob('/content/news/*.json', { eager: true });
 } catch {
   articleModules = {};
 }

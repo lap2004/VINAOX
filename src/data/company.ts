@@ -109,9 +109,12 @@ const BASE_COMPANY_INFO: CompanyInfo = {
   },
 };
 
-const companyCmsModules: Record<string, any> = typeof (import.meta as any).glob === 'function'
-  ? (import.meta as any).glob('/content/settings/company.json', { eager: true })
-  : {};
+let companyCmsModules: Record<string, any> = {};
+try {
+  companyCmsModules = (import.meta as any).glob('/content/settings/company.json', { eager: true });
+} catch {
+  companyCmsModules = {};
+}
 const rawCmsCompany = Object.values(companyCmsModules)[0] as any;
 const cmsComp = rawCmsCompany?.default || rawCmsCompany || {};
 
