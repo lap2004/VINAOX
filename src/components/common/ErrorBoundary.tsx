@@ -1,11 +1,13 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { RefreshCw, Home, AlertTriangle, ShieldCheck } from 'lucide-react';
 
-interface Props {
+export interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
   level?: 'root' | 'route' | 'component';
   title?: string;
+  resetKey?: any;
   onReset?: () => void;
 }
 
@@ -15,7 +17,7 @@ interface State {
   errorInfo: ErrorInfo | null;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
   public state: State = {
     hasError: false,
     error: null,
@@ -24,6 +26,12 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error, errorInfo: null };
+  }
+
+  public componentDidUpdate(prevProps: ErrorBoundaryProps) {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false, error: null, errorInfo: null });
+    }
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -278,3 +286,18 @@ export class ErrorBoundary extends Component<Props, State> {
     );
   }
 }
+
+/**
+ * Route-aware Error Boundary that automatically resets its error state
+ * upon navigating to a new URL pathname.
+ */
+export const RouteErrorBoundary: React.FC<ErrorBoundaryProps> = (props) => {
+  const location = useLocation();
+  return (
+    <ErrorBoundary
+      key={location.pathname}
+      resetKey={location.pathname}
+      {...props}
+    />
+  );
+};

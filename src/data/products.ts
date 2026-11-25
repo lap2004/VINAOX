@@ -48,6 +48,16 @@ export interface ProductItem {
   specs: ProductSpecs;
   en: ProductLocalizedContent;
   vi: ProductLocalizedContent;
+  // Compatibility aliases between snake_case CMS models and camelCase site models
+  name_vi?: string;
+  name_en?: string;
+  description_vi?: string;
+  description_en?: string;
+  origin_vi?: string;
+  origin_en?: string;
+  shelf_life?: string;
+  packaging?: string;
+  order?: number;
 }
 
 const BASE_PRODUCTS_DATA: ProductItem[] = [

@@ -48,10 +48,11 @@ export const AdminNewsList: React.FC = () => {
 
   // Filter articles
   const filteredArticles = articles.filter(item => {
-    const matchesSearch = 
-      item.title_vi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.source.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (item.title_en && item.title_en.toLowerCase().includes(searchTerm.toLowerCase()));
+    const sTerm = searchTerm.trim().toLowerCase();
+    const titleVi = String(item.title_vi || '').toLowerCase();
+    const source = String(item.source || '').toLowerCase();
+    const titleEn = String(item.title_en || '').toLowerCase();
+    const matchesSearch = !sTerm || titleVi.includes(sTerm) || source.includes(sTerm) || titleEn.includes(sTerm);
     const matchesCat =
       selectedCategory === 'all' ||
       (selectedCategory === 'draft' ? isArticleDraft(item) : item.category === selectedCategory);

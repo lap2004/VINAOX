@@ -4,7 +4,7 @@ import { MainLayout } from './components/layout/MainLayout';
 import { AdminAuthProvider } from './admin/context/AdminAuthContext';
 import { AdminProtectedRoute } from './admin/components/AdminProtectedRoute';
 import { AdminLayout } from './admin/components/AdminLayout';
-import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { ErrorBoundary, RouteErrorBoundary } from './components/common/ErrorBoundary';
 
 // Public pages - Route-level code splitting
 const Home = lazy(() => import('./pages/Home'));
@@ -75,11 +75,11 @@ export const App: React.FC = () => {
         <Route
           path="/admin/login"
           element={
-            <ErrorBoundary level="route" title="Đăng nhập quản trị">
+            <RouteErrorBoundary level="route" title="Đăng nhập quản trị">
               <Suspense fallback={<PageLoader />}>
                 <AdminLogin />
               </Suspense>
-            </ErrorBoundary>
+            </RouteErrorBoundary>
           }
         />
         <Route path="/admin" element={<AdminProtectedRoute />}>
@@ -88,91 +88,91 @@ export const App: React.FC = () => {
             <Route
               path="dashboard"
               element={
-                <ErrorBoundary level="route" title="Bảng điều khiển">
+                <RouteErrorBoundary level="route" title="Bảng điều khiển">
                   <Suspense fallback={<PageLoader />}>
                     <AdminDashboard />
                   </Suspense>
-                </ErrorBoundary>
+                </RouteErrorBoundary>
               }
             />
             <Route
               path="news"
               element={
-                <ErrorBoundary level="route" title="Quản lý bài viết">
+                <RouteErrorBoundary level="route" title="Quản lý bài viết">
                   <Suspense fallback={<PageLoader />}>
                     <AdminNewsList />
                   </Suspense>
-                </ErrorBoundary>
+                </RouteErrorBoundary>
               }
             />
             <Route
               path="news/new"
               element={
-                <ErrorBoundary level="route" title="Soạn thảo bài viết">
+                <RouteErrorBoundary level="route" title="Soạn thảo bài viết">
                   <Suspense fallback={<PageLoader />}>
                     <AdminNewsEditor />
                   </Suspense>
-                </ErrorBoundary>
+                </RouteErrorBoundary>
               }
             />
             <Route
               path="news/:slug/edit"
               element={
-                <ErrorBoundary level="route" title="Chỉnh sửa bài viết">
+                <RouteErrorBoundary level="route" title="Chỉnh sửa bài viết">
                   <Suspense fallback={<PageLoader />}>
                     <AdminNewsEditor />
                   </Suspense>
-                </ErrorBoundary>
+                </RouteErrorBoundary>
               }
             />
             <Route
               path="products"
               element={
-                <ErrorBoundary level="route" title="Quản lý sản phẩm">
+                <RouteErrorBoundary level="route" title="Quản lý sản phẩm">
                   <Suspense fallback={<PageLoader />}>
                     <AdminProducts />
                   </Suspense>
-                </ErrorBoundary>
+                </RouteErrorBoundary>
               }
             />
             <Route
               path="media"
               element={
-                <ErrorBoundary level="route" title="Thư viện hình ảnh">
+                <RouteErrorBoundary level="route" title="Thư viện hình ảnh">
                   <Suspense fallback={<PageLoader />}>
                     <AdminMedia />
                   </Suspense>
-                </ErrorBoundary>
+                </RouteErrorBoundary>
               }
             />
             <Route
               path="certificates"
               element={
-                <ErrorBoundary level="route" title="Quản lý chứng nhận">
+                <RouteErrorBoundary level="route" title="Quản lý chứng nhận">
                   <Suspense fallback={<PageLoader />}>
-                    <AdminMedia />
+                    <AdminMedia initialCategory="certificates" />
                   </Suspense>
-                </ErrorBoundary>
+                </RouteErrorBoundary>
               }
             />
             <Route
               path="brochure"
               element={
-                <ErrorBoundary level="route" title="Quản lý Brochure">
+                <RouteErrorBoundary level="route" title="Quản lý Brochure">
                   <Suspense fallback={<PageLoader />}>
                     <AdminSettings />
                   </Suspense>
-                </ErrorBoundary>
+                </RouteErrorBoundary>
               }
             />
             <Route
               path="settings"
               element={
-                <ErrorBoundary level="route" title="Cài đặt hệ thống">
+                <RouteErrorBoundary level="route" title="Cài đặt hệ thống">
                   <Suspense fallback={<PageLoader />}>
                     <AdminSettings />
                   </Suspense>
-                </ErrorBoundary>
+                </RouteErrorBoundary>
               }
             />
           </Route>

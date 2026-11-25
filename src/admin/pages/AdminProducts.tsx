@@ -13,7 +13,7 @@ import {
 import { productsData } from '../../data/products';
 import { adminFetch } from '../lib/adminFetch';
 
-interface ProductItemData {
+export interface ProductItemData {
   id: string;
   slug: string;
   name_vi: string;
@@ -30,23 +30,56 @@ interface ProductItemData {
   order?: number;
 }
 
+export function normalizeProductItem(raw: any, idx = 0): ProductItemData {
+  if (!raw || typeof raw !== 'object') {
+    return {
+      id: `prod-${idx}`,
+      slug: `prod-${idx}`,
+      name_vi: 'Sản phẩm VINAXO',
+      name_en: 'VINAXO Product',
+      category: 'soft-dried',
+      image: '/images/products/placeholder.webp',
+      description_vi: '',
+      description_en: '',
+      order: idx + 1
+    };
+  }
+
+  const slug = String(raw.slug || raw.id || `product-${idx}`).trim();
+  const id = String(raw.id || slug).trim();
+  const name_vi = String(raw.name_vi || raw.nameVi || raw.vi?.name || slug).trim();
+  const name_en = String(raw.name_en || raw.name || raw.nameEn || raw.en?.name || name_vi).trim();
+  const category = String(raw.category || 'soft-dried').trim();
+  const image = String(raw.image || raw.imageWebp || raw.imageJpg || '/images/products/placeholder.webp').trim();
+  const description_vi = String(raw.description_vi || raw.descriptionVi || raw.shortDescriptionVi || raw.vi?.desc || '').trim();
+  const description_en = String(raw.description_en || raw.description || raw.shortDescription || raw.en?.desc || description_vi).trim();
+  const origin_vi = String(raw.origin_vi || raw.originVi || raw.vi?.origin || raw.origin || '').trim();
+  const origin_en = String(raw.origin_en || raw.origin || raw.en?.origin || origin_vi || '').trim();
+  const shelf_life = String(raw.shelf_life || raw.specs?.shelfLifeVi || raw.specs?.shelfLifeEn || '12 Tháng').trim();
+  const packaging = String(raw.packaging || raw.specs?.packagingVi || raw.specs?.packagingEn || 'Túi zip / Thùng carton xuất khẩu').trim();
+  const certifications = Array.isArray(raw.certifications) ? raw.certifications : [];
+  const order = Number(raw.order) || idx + 1;
+
+  return {
+    id,
+    slug,
+    name_vi,
+    name_en,
+    category,
+    image,
+    description_vi,
+    description_en,
+    origin_vi,
+    origin_en,
+    shelf_life,
+    packaging,
+    certifications,
+    order
+  };
+}
+
 export const AdminProducts: React.FC = () => {
-  const initialProducts: ProductItemData[] = productsData.map((p, idx) => ({
-    id: p.id,
-    slug: p.slug,
-    name_vi: p.nameVi,
-    name_en: p.name,
-    category: p.category,
-    image: p.imageWebp || p.image,
-    description_vi: p.descriptionVi || p.shortDescriptionVi,
-    description_en: p.description || p.shortDescription,
-    origin_vi: p.originVi || p.origin,
-    origin_en: p.origin,
-    shelf_life: p.specs?.shelfLifeVi || '12 Tháng',
-    packaging: p.specs?.packagingVi || 'Túi zip / Thùng carton xuất khẩu',
-    certifications: p.certifications || [],
-    order: idx + 1
-  }));
+  const initialProducts: ProductItemData[] = productsData.map((p, idx) => normalizeProductItem(p, idx));
 
   const [products, setProducts] = useState<ProductItemData[]>(initialProducts);
   const [searchTerm, setSearchTerm] = useState('');
@@ -56,13 +89,14 @@ export const AdminProducts: React.FC = () => {
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchServerProducts = async () => {
       try {
         const res = await adminFetch('/api/admin/products');
-        if (res.ok) {
+        if (res.ok && isMounted) {
           const data = await res.json();
-          if (data.products && data.products.length > 0) {
-            setProducts(data.products);
+          if (Array.isArray(data.products) && data.products.length > 0) {
+            setProducts(data.products.map((p: any, idx: number) => normalizeProductItem(p, idx)));
           }
         }
       } catch {
@@ -70,6 +104,7 @@ export const AdminProducts: React.FC = () => {
       }
     };
     fetchServerProducts();
+    return () => { isMounted = false; };
   }, []);
 
   const handleEditClick = (prod: ProductItemData) => {
@@ -91,8 +126,9 @@ export const AdminProducts: React.FC = () => {
 
       const data = await res.json();
       if (res.ok && data.ok) {
-        setProducts(prev => prev.map(p => p.slug === editingProduct.slug ? (data.product || editingProduct) : p));
-        setStatusMsg({ type: 'success', text: `Cập nhật sản phẩm "${editingProduct.name_vi}" thành công!` });
+        const updated = normalizeProductItem(data.product || editingProduct, editingProduct.order || 0);
+        setProducts(prev => prev.map(p => p.slug === editingProduct.slug ? updated : p));
+        setStatusMsg({ type: 'success', text: `Cập nhật sản phẩm "${updated.name_vi}" thành công!` });
         setEditingProduct(null);
       } else {
         setStatusMsg({ type: 'error', text: data.error || 'Không thể lưu sản phẩm.' });
@@ -105,10 +141,11 @@ export const AdminProducts: React.FC = () => {
   };
 
   const filteredProducts = products.filter(p => {
-    const matchesSearch = 
-      p.name_vi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.name_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.slug.toLowerCase().includes(searchTerm.toLowerCase());
+    const sTerm = searchTerm.trim().toLowerCase();
+    const nameVi = String(p.name_vi || (p as any).nameVi || '').toLowerCase();
+    const nameEn = String(p.name_en || (p as any).name || '').toLowerCase();
+    const slug = String(p.slug || p.id || '').toLowerCase();
+    const matchesSearch = !sTerm || nameVi.includes(sTerm) || nameEn.includes(sTerm) || slug.includes(sTerm);
     const matchesCat = selectedCategory === 'all' || p.category === selectedCategory;
     return matchesSearch && matchesCat;
   });

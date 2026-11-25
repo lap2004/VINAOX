@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { 
   Upload, 
   Search, 
@@ -14,11 +15,13 @@ import {
   Crop,
   RotateCw,
   Scissors,
-  BookmarkCheck
+  BookmarkCheck,
+  ShieldCheck
 } from 'lucide-react';
 import { adminFetch } from '../lib/adminFetch';
 import { productsData } from '../../data/products';
 import { getAllArticles } from '../../services/contentService';
+import { COMPLIANCE_ITEMS } from '../../data/brochureData';
 
 interface MediaItem {
   name: string;
@@ -41,18 +44,33 @@ const SITE_ASSETS_MEDIA: MediaItem[] = [
   { name: 'jackfruit-chips.webp', url: '/images/products/jackfruit-chips.webp', category: 'products', size: 781398 },
   { name: 'cashew.webp', url: '/images/products/cashew.webp', category: 'products', size: 1020798 },
   { name: 'lotus-seeds.webp', url: '/images/products/lotus-seeds.webp', category: 'products', size: 735030 },
-  { name: 'macadamia-nuts.webp', url: '/images/products/macadamia-nuts.webp', category: 'products', size: 775360 }
+  { name: 'macadamia-nuts.webp', url: '/images/products/macadamia-nuts.webp', category: 'products', size: 775360 },
+  { name: 'cert-brcgs.webp', url: '/assets/images/certs-2026/cert-brcgs.webp', category: 'certificates', size: 21318 },
+  { name: 'cert-fda.webp', url: '/assets/images/certs-2026/cert-fda.webp', category: 'certificates', size: 43114 },
+  { name: 'cert-iso22000.webp', url: '/assets/images/certs-2026/cert-iso22000.webp', category: 'certificates', size: 22810 },
+  { name: 'cert-haccp.webp', url: '/assets/images/certs-2026/cert-haccp.webp', category: 'certificates', size: 23588 },
+  { name: 'cert-kosher-ou.webp', url: '/assets/images/certs-2026/cert-kosher-ou.webp', category: 'certificates', size: 17648 },
+  { name: 'cert-smeta.webp', url: '/assets/images/certs-2026/cert-smeta.webp', category: 'certificates', size: 20034 }
 ];
 
-export const AdminMedia: React.FC = () => {
+export interface AdminMediaProps {
+  initialCategory?: 'all' | 'news' | 'products' | 'certificates';
+}
+
+export const AdminMedia: React.FC<AdminMediaProps> = ({ initialCategory }) => {
+  const location = useLocation();
+  const isCertificatesRoute = initialCategory === 'certificates' || location.pathname.includes('/certificates');
+  const defaultCategory = isCertificatesRoute ? 'certificates' : (initialCategory || 'all');
+  const defaultUploadCategory = isCertificatesRoute ? 'certificates' : (initialCategory && initialCategory !== 'all' ? initialCategory : 'news');
+
   const [mediaList, setMediaList] = useState<MediaItem[]>(SITE_ASSETS_MEDIA);
   const [loading, setLoading] = useState<boolean>(true);
   const [uploading, setUploading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>(defaultCategory);
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
-  const [uploadCategory, setUploadCategory] = useState<'news' | 'products' | 'certificates'>('news');
+  const [uploadCategory, setUploadCategory] = useState<'news' | 'products' | 'certificates'>(defaultUploadCategory);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [editingItem, setEditingItem] = useState<MediaItem | null>(null);
   const [cropAspectRatio, setCropAspectRatio] = useState<'free' | '1:1' | '4:3' | '16:9'>('free');
@@ -61,6 +79,14 @@ export const AdminMedia: React.FC = () => {
   const [isProcessingEdit, setIsProcessingEdit] = useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync category if URL pathname or prop changes
+  useEffect(() => {
+    if (isCertificatesRoute) {
+      setSelectedCategory('certificates');
+      setUploadCategory('certificates');
+    }
+  }, [isCertificatesRoute]);
 
   // Cross-reference checker for existing site content
   const getReferencingItems = (url: string): string[] => {
@@ -73,6 +99,11 @@ export const AdminMedia: React.FC = () => {
     getAllArticles({ includeDrafts: true }).forEach(a => {
       if (a.cover_image === url) {
         refs.push(`Bài viết: ${a.title_vi}`);
+      }
+    });
+    COMPLIANCE_ITEMS.forEach(c => {
+      if (c.certImageWebp === url || c.certImageJpg === url) {
+        refs.push(`Chứng nhận: ${c.name} (${c.kindVi})`);
       }
     });
     return refs;
@@ -226,13 +257,43 @@ export const AdminMedia: React.FC = () => {
   };
 
   const handleCopyUrl = async (url: string) => {
-    try {
-      await navigator.clipboard.writeText(url);
-    } catch {
-      // Fallback ignored if clipboard blocked
+    let success = false;
+    const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url.startsWith('/') ? '' : '/'}${url}`;
+
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(fullUrl);
+        success = true;
+      } catch {
+        success = false;
+      }
     }
+
+    if (!success) {
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = fullUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        success = document.execCommand('copy');
+        document.body.removeChild(textArea);
+      } catch (err) {
+        console.warn('Fallback copy failed:', err);
+      }
+    }
+
     setCopiedUrl(url);
-    setTimeout(() => setCopiedUrl(null), 2500);
+    setStatusMsg({
+      type: 'success',
+      text: `Đã sao chép đường dẫn ảnh vào bộ nhớ tạm: ${fullUrl}`
+    });
+    setTimeout(() => {
+      setCopiedUrl(null);
+    }, 2500);
   };
 
   // Client-side image scaling and WebP compression via HTML5 Canvas
@@ -356,10 +417,12 @@ export const AdminMedia: React.FC = () => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#3A251B', margin: '0 0 4px 0' }}>
-            Thư viện Hình ảnh & Media
+            {isCertificatesRoute ? 'Quản lý Chứng nhận & Kiểm định' : 'Thư viện Hình ảnh & Media'}
           </h1>
           <p style={{ fontSize: '0.88rem', color: '#6E6259', margin: 0 }}>
-            Quản lý và upload hình ảnh cho bài viết tin tức, sản phẩm và chứng nhận
+            {isCertificatesRoute
+              ? 'Hồ sơ và bản quét các chứng chỉ quốc tế (BRCGS, FDA, ISO 22000, HACCP, Kosher, SMETA) phục vụ trang Chất lượng và hồ sơ năng lực xuất khẩu.'
+              : 'Quản lý và upload hình ảnh cho bài viết tin tức, sản phẩm và chứng nhận'}
           </p>
         </div>
 
@@ -730,9 +793,46 @@ export const AdminMedia: React.FC = () => {
       </div>
 
       {filteredList.length === 0 && !loading && (
-        <div style={{ textAlign: 'center', padding: '48px 20px', color: '#8C7E74' }}>
-          <ImageIcon size={40} style={{ opacity: 0.4, marginBottom: '8px' }} />
-          <p style={{ margin: 0, fontSize: '0.9rem' }}>Không tìm thấy hình ảnh phù hợp với tiêu chí lọc.</p>
+        <div style={{ textAlign: 'center', padding: '48px 20px', backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #EADCCE', margin: '20px 0' }}>
+          {selectedCategory === 'certificates' ? (
+            <>
+              <ShieldCheck size={48} color="#D97706" style={{ margin: '0 auto 12px' }} />
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#3A251B', margin: '0 0 8px 0' }}>
+                Chưa có bản quét chứng nhận nào trong danh mục này
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: '#6E6259', maxWidth: '460px', margin: '0 auto 20px', lineHeight: 1.5 }}>
+                Bạn có thể tải lên bản quét chứng chỉ xuất khẩu (BRCGS, FDA, ISO, HACCP, Halal...) định dạng JPG, PNG hoặc WebP tại khung upload phía trên.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setUploadCategory('certificates');
+                  fileInputRef.current?.click();
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  backgroundColor: '#F4A83A',
+                  color: '#3A251B',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  fontWeight: 700,
+                  fontSize: '0.88rem',
+                  cursor: 'pointer'
+                }}
+              >
+                <Upload size={16} />
+                <span>Tải lên chứng nhận mới</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <ImageIcon size={40} style={{ opacity: 0.4, marginBottom: '8px' }} />
+              <p style={{ margin: 0, fontSize: '0.9rem', color: '#6E6259' }}>Không tìm thấy hình ảnh phù hợp với tiêu chí lọc.</p>
+            </>
+          )}
         </div>
       )}
 

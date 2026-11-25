@@ -29,10 +29,35 @@ export default wrapHandler(async (req: any, res: any) => {
   // GET: List all products
   if (req.method === 'GET') {
     try {
+      const normalizeRawProduct = (raw: any, idx = 0) => {
+        const nameVi = raw.name_vi || raw.nameVi || raw.vi?.name || 'Sản phẩm VINAXO';
+        const nameEn = raw.name_en || raw.name || raw.nameEn || raw.en?.name || nameVi;
+        const slug = raw.slug || raw.id || `product-${idx}`;
+        return {
+          ...raw,
+          id: raw.id || slug,
+          slug,
+          name_vi: nameVi,
+          name_en: nameEn,
+          nameVi,
+          name: nameEn,
+          category: raw.category || 'soft-dried',
+          image: raw.image || raw.imageWebp || raw.imageJpg || '/assets/images/products/placeholder.webp',
+          description_vi: raw.description_vi || raw.descriptionVi || raw.shortDescriptionVi || raw.vi?.desc || '',
+          description_en: raw.description_en || raw.description || raw.shortDescription || raw.en?.desc || '',
+          origin_vi: raw.origin_vi || raw.originVi || raw.origin || '',
+          origin_en: raw.origin_en || raw.origin || '',
+          shelf_life: raw.shelf_life || raw.specs?.shelfLifeVi || '12 Tháng',
+          packaging: raw.packaging || raw.specs?.packagingVi || 'Túi zip / Thùng carton xuất khẩu',
+          certifications: Array.isArray(raw.certifications) ? raw.certifications : [],
+          order: Number(raw.order) || idx + 1
+        };
+      };
+
       if (useGitHub) {
         const entries = await listRepoJsonFiles('content/products');
         const products = entries
-          .map(e => e.data)
+          .map((e, idx) => normalizeRawProduct(e.data, idx))
           .sort((a: any, b: any) => (Number(a?.order) || 999) - (Number(b?.order) || 999));
         return res.status(200).json({ ok: true, products, source: 'github' });
       }
@@ -41,7 +66,10 @@ export default wrapHandler(async (req: any, res: any) => {
       if (fs.existsSync(contentProductsDir)) {
         const files = fs.readdirSync(contentProductsDir).filter(f => f.endsWith('.json'));
         const products = files
-          .map(file => JSON.parse(fs.readFileSync(path.join(contentProductsDir, file), 'utf-8').replace(/^\uFEFF/, '')))
+          .map((file, idx) => {
+            const raw = JSON.parse(fs.readFileSync(path.join(contentProductsDir, file), 'utf-8').replace(/^\uFEFF/, ''));
+            return normalizeRawProduct(raw, idx);
+          })
           .sort((a: any, b: any) => (Number(a?.order) || 999) - (Number(b?.order) || 999));
         return res.status(200).json({ ok: true, products, source: 'local' });
       }

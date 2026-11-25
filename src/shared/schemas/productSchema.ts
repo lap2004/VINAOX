@@ -36,6 +36,8 @@ export function validateProduct(input: unknown): ProductValidationResult {
 
   const shortDescriptionVi = typeof raw.shortDescriptionVi === 'string' ? raw.shortDescriptionVi.trim() : (typeof raw.description_vi === 'string' ? raw.description_vi.trim() : '');
   const shortDescription = typeof raw.shortDescription === 'string' ? raw.shortDescription.trim() : (typeof raw.description_en === 'string' ? raw.description_en.trim() : shortDescriptionVi);
+  const descriptionVi = typeof raw.descriptionVi === 'string' ? raw.descriptionVi.trim() : (typeof raw.description_vi === 'string' ? raw.description_vi.trim() : shortDescriptionVi);
+  const description = typeof raw.description === 'string' ? raw.description.trim() : (typeof raw.description_en === 'string' ? raw.description_en.trim() : shortDescription);
 
   const defaultSpecs: ProductSpecs = {
     moisture: '< 16%',
@@ -90,7 +92,17 @@ export function validateProduct(input: unknown): ProductValidationResult {
       desc: shortDescriptionVi,
       origin: typeof raw.vi?.origin === 'string' ? raw.vi.origin : 'Đồng bằng Sông Cửu Long, Việt Nam',
       features: typeof raw.vi?.features === 'string' ? raw.vi.features : shortDescriptionVi
-    }
+    },
+    // Compatibility fields
+    name_vi: nameVi,
+    name_en: name,
+    description_vi: descriptionVi,
+    description_en: description,
+    origin_vi: typeof raw.originVi === 'string' ? raw.originVi : 'Đồng bằng Sông Cửu Long, Việt Nam',
+    origin_en: typeof raw.origin === 'string' ? raw.origin : 'Mekong Delta, Vietnam',
+    shelf_life: specs.shelfLifeVi,
+    packaging: specs.packagingVi,
+    order: Number(raw.order) || 999
   };
 
   return {

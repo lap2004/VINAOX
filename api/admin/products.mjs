@@ -567,6 +567,8 @@ function validateProduct(input) {
   }
   const shortDescriptionVi = typeof raw.shortDescriptionVi === "string" ? raw.shortDescriptionVi.trim() : typeof raw.description_vi === "string" ? raw.description_vi.trim() : "";
   const shortDescription = typeof raw.shortDescription === "string" ? raw.shortDescription.trim() : typeof raw.description_en === "string" ? raw.description_en.trim() : shortDescriptionVi;
+  const descriptionVi = typeof raw.descriptionVi === "string" ? raw.descriptionVi.trim() : typeof raw.description_vi === "string" ? raw.description_vi.trim() : shortDescriptionVi;
+  const description = typeof raw.description === "string" ? raw.description.trim() : typeof raw.description_en === "string" ? raw.description_en.trim() : shortDescription;
   const defaultSpecs = {
     moisture: "< 16%",
     brix: "50\xB0 - 55\xB0 Brix",
@@ -618,7 +620,17 @@ function validateProduct(input) {
       desc: shortDescriptionVi,
       origin: typeof raw.vi?.origin === "string" ? raw.vi.origin : "\u0110\u1ED3ng b\u1EB1ng S\xF4ng C\u1EEDu Long, Vi\u1EC7t Nam",
       features: typeof raw.vi?.features === "string" ? raw.vi.features : shortDescriptionVi
-    }
+    },
+    // Compatibility fields
+    name_vi: nameVi,
+    name_en: name,
+    description_vi: descriptionVi,
+    description_en: description,
+    origin_vi: typeof raw.originVi === "string" ? raw.originVi : "\u0110\u1ED3ng b\u1EB1ng S\xF4ng C\u1EEDu Long, Vi\u1EC7t Nam",
+    origin_en: typeof raw.origin === "string" ? raw.origin : "Mekong Delta, Vietnam",
+    shelf_life: specs.shelfLifeVi,
+    packaging: specs.packagingVi,
+    order: Number(raw.order) || 999
   };
   return {
     valid: errors.length === 0,
@@ -650,15 +662,42 @@ var products_default = wrapHandler(async (req, res) => {
   const useGitHub = hasGitHubToken();
   if (req.method === "GET") {
     try {
+      const normalizeRawProduct = (raw, idx = 0) => {
+        const nameVi = raw.name_vi || raw.nameVi || raw.vi?.name || "S\u1EA3n ph\u1EA9m VINAXO";
+        const nameEn = raw.name_en || raw.name || raw.nameEn || raw.en?.name || nameVi;
+        const slug = raw.slug || raw.id || `product-${idx}`;
+        return {
+          ...raw,
+          id: raw.id || slug,
+          slug,
+          name_vi: nameVi,
+          name_en: nameEn,
+          nameVi,
+          name: nameEn,
+          category: raw.category || "soft-dried",
+          image: raw.image || raw.imageWebp || raw.imageJpg || "/assets/images/products/placeholder.webp",
+          description_vi: raw.description_vi || raw.descriptionVi || raw.shortDescriptionVi || raw.vi?.desc || "",
+          description_en: raw.description_en || raw.description || raw.shortDescription || raw.en?.desc || "",
+          origin_vi: raw.origin_vi || raw.originVi || raw.origin || "",
+          origin_en: raw.origin_en || raw.origin || "",
+          shelf_life: raw.shelf_life || raw.specs?.shelfLifeVi || "12 Th\xE1ng",
+          packaging: raw.packaging || raw.specs?.packagingVi || "T\xFAi zip / Th\xF9ng carton xu\u1EA5t kh\u1EA9u",
+          certifications: Array.isArray(raw.certifications) ? raw.certifications : [],
+          order: Number(raw.order) || idx + 1
+        };
+      };
       if (useGitHub) {
         const entries = await listRepoJsonFiles("content/products");
-        const products = entries.map((e) => e.data).sort((a, b) => (Number(a?.order) || 999) - (Number(b?.order) || 999));
+        const products = entries.map((e, idx) => normalizeRawProduct(e.data, idx)).sort((a, b) => (Number(a?.order) || 999) - (Number(b?.order) || 999));
         return res.status(200).json({ ok: true, products, source: "github" });
       }
       const contentProductsDir = path.join(process.cwd(), "content", "products");
       if (fs.existsSync(contentProductsDir)) {
         const files = fs.readdirSync(contentProductsDir).filter((f) => f.endsWith(".json"));
-        const products = files.map((file) => JSON.parse(fs.readFileSync(path.join(contentProductsDir, file), "utf-8").replace(/^\uFEFF/, ""))).sort((a, b) => (Number(a?.order) || 999) - (Number(b?.order) || 999));
+        const products = files.map((file, idx) => {
+          const raw = JSON.parse(fs.readFileSync(path.join(contentProductsDir, file), "utf-8").replace(/^\uFEFF/, ""));
+          return normalizeRawProduct(raw, idx);
+        }).sort((a, b) => (Number(a?.order) || 999) - (Number(b?.order) || 999));
         return res.status(200).json({ ok: true, products, source: "local" });
       }
       return res.status(200).json({ ok: true, products: [], source: "empty" });
