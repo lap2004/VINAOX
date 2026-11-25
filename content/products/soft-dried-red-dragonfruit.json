@@ -1,20 +1,54 @@
 {
   "id": "soft-dried-red-dragonfruit",
   "slug": "soft-dried-red-dragonfruit",
-  "name_vi": "Thanh long ruột đỏ sấy dẻo",
-  "name_en": "Soft Dried Red Dragonfruit",
+  "aliases": [],
+  "name": "Soft Dried Red Dragonfruit",
+  "nameVi": "Thanh long ruột đỏ sấy dẻo",
   "category": "soft-dried",
-  "image": "/images/products/soft-dried-red-dragonfruit.webp",
-  "description_vi": "Được tuyển chọn từ vùng chuyên canh thanh long ruột đỏ Chợ Gạo (Tiền Giang). Quy trình sấy dẻo nhiệt thấp tuần hoàn giúp giữ trọn sắc đỏ tím tự nhiên, hàm lượng betacyanin chống oxy hóa và vị ngọt thanh nhẹ tự nhiên không qua phẩm màu.",
-  "description_en": "Sourced from Cho Gao, Tien Giang, our red dragonfruit is gently low-temperature dehydrated to retain its natural vibrant color, rich betacyanin antioxidants, dietary fiber, and authentic tropical taste without artificial coloring or added sugar.",
-  "origin_vi": "Vùng trồng Chợ Gạo, Tiền Giang",
-  "origin_en": "Cho Gao, Tien Giang Orchards",
-  "shelf_life": "12 Tháng",
-  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg nạp khí Nitơ / OEM",
+  "categoryLabelEn": "Tropical Dried Fruits",
+  "categoryLabelVi": "Trái cây sấy nhiệt đới",
+  "image": "/uploads/news/img_5608-1795598495833.webp",
+  "imageWebp": "/uploads/news/img_5608-1795598495833.webp",
+  "imageJpg": "/uploads/news/img_5608-1795598495833.webp",
+  "shortDescription": "Sourced from Cho Gao, Tien Giang, our red dragonfruit is gently low-temperature dehydrated to retain its natural vibrant color, rich betacyanin antioxidants, dietary fiber, and authentic tropical taste without artificial coloring or added sugar.",
+  "shortDescriptionVi": "Được tuyển chọn từ vùng chuyên canh thanh long ruột đỏ Chợ Gạo (Tiền Giang). Quy trình sấy dẻo nhiệt thấp tuần hoàn giúp giữ trọn sắc đỏ tím tự nhiên, hàm lượng betacyanin chống oxy hóa và vị ngọt thanh nhẹ tự nhiên không qua phẩm màu.",
+  "description": "Sourced from Cho Gao, Tien Giang, our red dragonfruit is gently low-temperature dehydrated to retain its natural vibrant color, rich betacyanin antioxidants, dietary fiber, and authentic tropical taste without artificial coloring or added sugar.",
+  "descriptionVi": "Được tuyển chọn từ vùng chuyên canh thanh long ruột đỏ Chợ Gạo (Tiền Giang). Quy trình sấy dẻo nhiệt thấp tuần hoàn giúp giữ trọn sắc đỏ tím tự nhiên, hàm lượng betacyanin chống oxy hóa và vị ngọt thanh nhẹ tự nhiên không qua phẩm màu.",
+  "origin": "Mekong Delta, Vietnam",
+  "originVi": "Đồng bằng Sông Cửu Long, Việt Nam",
   "certifications": [
     "OCOP 3-Star Tien Giang",
     "BRCGS Facility",
     "Clean Label"
   ],
-  "order": 1
+  "verified": true,
+  "ocop": "3-Star OCOP",
+  "specs": {
+    "moisture": "< 16%",
+    "brix": "50° - 55° Brix",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeVi": "12 Tháng",
+    "storageEn": "Cool, dry place (20 - 25°C)",
+    "storageVi": "Nơi khô ráo, thoáng mát (20 - 25°C)",
+    "ingredientsEn": "100% Natural Vietnamese Fruits",
+    "ingredientsVi": "100% Trái cây Việt Nam tự nhiên",
+    "processEn": "Low-temperature convective heat-pump drying",
+    "processVi": "Sấy bơm nhiệt nhiệt độ thấp tuần hoàn",
+    "packagingEn": "Zip pouch / Export carton",
+    "packagingVi": "Túi zip / Thùng carton xuất khẩu",
+    "certificationsEn": "BRCGS Facility, Clean Label",
+    "certificationsVi": "Nhà máy chuẩn BRCGS, Clean Label"
+  },
+  "en": {
+    "name": "Soft Dried Red Dragonfruit",
+    "desc": "Sourced from Cho Gao, Tien Giang, our red dragonfruit is gently low-temperature dehydrated to retain its natural vibrant color, rich betacyanin antioxidants, dietary fiber, and authentic tropical taste without artificial coloring or added sugar.",
+    "origin": "Mekong Delta, Vietnam",
+    "features": "Sourced from Cho Gao, Tien Giang, our red dragonfruit is gently low-temperature dehydrated to retain its natural vibrant color, rich betacyanin antioxidants, dietary fiber, and authentic tropical taste without artificial coloring or added sugar."
+  },
+  "vi": {
+    "name": "Thanh long ruột đỏ sấy dẻo",
+    "desc": "Được tuyển chọn từ vùng chuyên canh thanh long ruột đỏ Chợ Gạo (Tiền Giang). Quy trình sấy dẻo nhiệt thấp tuần hoàn giúp giữ trọn sắc đỏ tím tự nhiên, hàm lượng betacyanin chống oxy hóa và vị ngọt thanh nhẹ tự nhiên không qua phẩm màu.",
+    "origin": "Đồng bằng Sông Cửu Long, Việt Nam",
+    "features": "Được tuyển chọn từ vùng chuyên canh thanh long ruột đỏ Chợ Gạo (Tiền Giang). Quy trình sấy dẻo nhiệt thấp tuần hoàn giúp giữ trọn sắc đỏ tím tự nhiên, hàm lượng betacyanin chống oxy hóa và vị ngọt thanh nhẹ tự nhiên không qua phẩm màu."
+  }
 }
