@@ -17,6 +17,7 @@ import {
   deleteRepoFile,
   hasGitHubToken
 } from '../lib/github.js';
+import { validateNewsArticle, mergeNewsArticle } from '../../src/shared/schemas/newsSchema.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -103,56 +104,74 @@ export default wrapHandler(async (req: any, res: any) => {
     return res.status(429).json({ error: 'Thao tác quá nhanh. Vui lòng thử lại sau ít giây.' });
   }
 
-  // 2. POST: Create or Update an article
+  // 2. POST: Create or Update an article with Safe Publishing Pipeline
   if (req.method === 'POST') {
     const rawBody = await readJsonBody(req);
     const requestSha = typeof rawBody.sha === 'string' ? rawBody.sha : undefined;
-    const article = stripUnsafeKeys(rawBody);
+    const articleInput = stripUnsafeKeys(rawBody);
 
-    const slug = sanitizeSlug(article.slug);
-    if (!slug || typeof article.title_vi !== 'string' || !article.title_vi.trim()) {
-      return res.status(400).json({ error: 'Vui lòng cung cấp tiêu đề tiếng Việt và slug hợp lệ (chữ thường, số, gạch nối).' });
+    const slug = sanitizeSlug(articleInput.slug || articleInput.id);
+    if (!slug) {
+      return res.status(400).json({ error: 'Slug bài viết không hợp lệ (yêu cầu từ 3-120 ký tự chữ thường, số, gạch nối).' });
     }
-
-    if (article.title_vi.length > 300 || (article.body_vi && String(article.body_vi).length > 150000)) {
-      return res.status(400).json({ error: 'Nội dung bài viết vượt quá giới hạn cho phép.' });
-    }
-
-    // Normalize status & published flags cleanly
-    const tags: string[] = Array.isArray(article.tags)
-      ? article.tags.filter((t: any) => typeof t === 'string').map((t: string) => t.trim()).filter(Boolean)
-      : [];
-    const isDraft = article.status === 'draft' || article.published === false || tags.includes('draft');
-    const normalizedTags = isDraft
-      ? Array.from(new Set([...tags, 'draft']))
-      : tags.filter(t => t !== 'draft');
-
-    article.slug = slug;
-    article.id = typeof article.id === 'string' && article.id.trim() ? sanitizeSlug(article.id) || slug : slug;
-    article.status = isDraft ? 'draft' : 'published';
-    article.published = !isDraft;
-    article.tags = normalizedTags;
-    article.title_vi = article.title_vi.trim();
-    article.title_en = typeof article.title_en === 'string' ? article.title_en.trim() : '';
-    article.sourceUrl = sanitizeSafeUrl(article.sourceUrl, false);
-    article.cover_image = sanitizeSafeUrl(article.cover_image, true) || '/assets/images/news/dried-fruit-export.webp';
-    if (Array.isArray(article.secondaryUrls)) {
-      article.secondaryUrls = article.secondaryUrls
-        .filter((s: any) => s && typeof s.name === 'string' && sanitizeSafeUrl(s.url, false))
-        .map((s: any) => ({ name: s.name.trim(), url: sanitizeSafeUrl(s.url, false) }));
-    }
-    article.updated_at = new Date().toISOString().split('T')[0];
 
     const filePath = `content/news/${slug}.json`;
-    const contentStr = JSON.stringify(article, null, 2);
-    const safeTitle = sanitizeCommitText(article.title_vi, 72);
+
+    // 1. Fetch existing file to protect against concurrent modifications and preserve fields
+    let existingArticle: any = null;
+    let targetSha = requestSha;
+
+    if (useGitHub) {
+      const existingFile = await getRepoFile(filePath);
+      if (existingFile) {
+        try {
+          existingArticle = JSON.parse(existingFile.content);
+          if (requestSha && existingFile.sha !== requestSha) {
+            return res.status(409).json({
+              error: 'Nội dung bài viết đã được cập nhật bởi một phiên làm việc khác trên Git. Vui lòng tải lại trang trước khi lưu.',
+              currentSha: existingFile.sha
+            });
+          }
+          targetSha = existingFile.sha;
+        } catch {
+          existingArticle = null;
+        }
+      }
+    } else {
+      const fullLocalPath = path.join(process.cwd(), filePath);
+      if (fs.existsSync(fullLocalPath)) {
+        try {
+          existingArticle = JSON.parse(fs.readFileSync(fullLocalPath, 'utf-8').replace(/^\uFEFF/, ''));
+        } catch {
+          existingArticle = null;
+        }
+      }
+    }
+
+    // 2. Deep merge incoming data with existing content to guarantee zero lost fields
+    articleInput.slug = slug;
+    articleInput.id = slug;
+    const mergedArticle = mergeNewsArticle(existingArticle, articleInput);
+
+    // 3. Pre-Commit Validation Gate: strictly validate against shared content schema
+    const validation = validateNewsArticle(mergedArticle);
+    if (!validation.valid) {
+      return res.status(400).json({
+        error: `Dữ liệu bài viết không hợp lệ: ${validation.errors.join('; ')}`,
+        errors: validation.errors
+      });
+    }
+
+    const validatedArticle = validation.data;
+    const isDraft = validatedArticle.status === 'draft' || !validatedArticle.published;
+    const contentStr = JSON.stringify(validatedArticle, null, 2);
+    const safeTitle = sanitizeCommitText(validatedArticle.title_vi, 72);
+    const actionLabel = existingArticle ? 'update' : 'create';
+    const commitMessage = `cms(news): ${actionLabel} "${safeTitle}"`;
 
     let result = null;
     if (useGitHub) {
-      const existing = requestSha ? { sha: requestSha } : await getRepoFile(filePath);
-      const actionLabel = existing ? 'update' : 'create';
-      const commitMessage = `cms(news): ${actionLabel} "${safeTitle}"`;
-      result = await commitFile(filePath, contentStr, commitMessage, existing?.sha);
+      result = await commitFile(filePath, contentStr, commitMessage, targetSha);
     } else {
       const fullLocalPath = path.join(process.cwd(), filePath);
       const existed = fs.existsSync(fullLocalPath);
@@ -163,9 +182,9 @@ export default wrapHandler(async (req: any, res: any) => {
 
     return res.status(200).json({
       ok: true,
-      message: isDraft ? 'Đã lưu bản nháp thành công!' : 'Xuất bản bài viết thành công!',
+      message: isDraft ? 'Đã lưu bản nháp an toàn vào Git!' : 'Đã xuất bản bài viết thành công!',
       slug,
-      article,
+      article: validatedArticle,
       result
     });
   }

@@ -11,9 +11,17 @@ export interface NewsCardProps {
 export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
   const { language } = useLanguage();
   const isVi = language === 'vi';
-  const info = isVi ? news.vi : news.en;
-  const badgeText = isVi ? news.badgeTextVi : news.badgeTextEn;
-  const dateText = isVi ? news.dateVi : news.dateEn;
+
+  if (!news) return null;
+
+  const info = (isVi ? news.vi : news.en) || news.vi || news.en || {
+    title: 'Tin tức VINAXO',
+    sourceBadge: `${news.source || 'VINAXO'} • Tin tức`,
+    summary: '',
+    readMore: 'Xem chi tiết'
+  };
+  const badgeText = (isVi ? news.badgeTextVi : news.badgeTextEn) || news.badgeTextVi || 'Tin tức';
+  const dateText = (isVi ? news.dateVi : news.dateEn) || news.dateVi || news.publishedAt || '';
 
   // Render badge by badgeType
   const renderBadge = () => {

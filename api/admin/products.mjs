@@ -248,23 +248,6 @@ function sanitizeSlug(raw) {
   }
   return normalized;
 }
-function sanitizeSafeUrl(raw, allowRelative = false) {
-  if (typeof raw !== "string") return "";
-  const trimmed = raw.trim();
-  if (!trimmed) return "";
-  if (allowRelative && trimmed.startsWith("/") && !trimmed.startsWith("//")) {
-    return trimmed;
-  }
-  try {
-    const parsed = new URL(trimmed);
-    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
-      return trimmed;
-    }
-  } catch {
-    return "";
-  }
-  return "";
-}
 function sanitizeCommitText(text, maxLen = 100) {
   if (typeof text !== "string") return "";
   return text.replace(/[\r\n\t\x00-\x1f\x7f]/g, " ").replace(/\s+/g, " ").trim().slice(0, maxLen);
@@ -535,10 +518,130 @@ async function commitFile(filePath, contentStr, commitMessage, sha) {
   };
 }
 
+// src/shared/schemas/newsSchema.ts
+function validateSlug(slug) {
+  if (typeof slug !== "string") return { valid: false, slug: "" };
+  const trimmed = slug.trim().toLowerCase();
+  if (!trimmed || trimmed.length < 3 || trimmed.length > 120) {
+    return { valid: false, slug: "" };
+  }
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trimmed)) {
+    return { valid: false, slug: "" };
+  }
+  return { valid: true, slug: trimmed };
+}
+function isValidUrl(url, allowRelative = true) {
+  if (typeof url !== "string" || !url.trim()) return false;
+  const trimmed = url.trim();
+  if (allowRelative && trimmed.startsWith("/") && !trimmed.startsWith("//")) {
+    return !trimmed.includes("..") && !/[<>"'\\|?*]/.test(trimmed);
+  }
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+// src/shared/schemas/productSchema.ts
+var ALLOWED_CATEGORIES = ["soft-dried", "chips", "nuts-seeds", "mixed"];
+function validateProduct(input) {
+  const errors = [];
+  const raw = typeof input === "object" && input !== null ? input : {};
+  const slugCheck = validateSlug(raw.slug || raw.id);
+  if (!slugCheck.valid) {
+    errors.push("Slug s\u1EA3n ph\u1EA9m kh\xF4ng h\u1EE3p l\u1EC7 (y\xEAu c\u1EA7u t\u1EEB 3-120 k\xFD t\u1EF1 ch\u1EEF th\u01B0\u1EDDng, s\u1ED1 v\xE0 g\u1EA1ch n\u1ED1i).");
+  }
+  const slug = slugCheck.slug || "san-pham-moi";
+  const id = typeof raw.id === "string" && raw.id.trim() ? raw.id.trim() : slug;
+  const nameVi = typeof raw.nameVi === "string" && raw.nameVi.trim() ? raw.nameVi.trim() : typeof raw.name_vi === "string" ? raw.name_vi.trim() : "";
+  if (!nameVi) {
+    errors.push("T\xEAn s\u1EA3n ph\u1EA9m ti\u1EBFng Vi\u1EC7t l\xE0 tr\u01B0\u1EDDng b\u1EAFt bu\u1ED9c.");
+  }
+  const name = typeof raw.name === "string" && raw.name.trim() ? raw.name.trim() : typeof raw.name_en === "string" ? raw.name_en.trim() : nameVi;
+  const category = ALLOWED_CATEGORIES.includes(raw.category) ? raw.category : "soft-dried";
+  let image = typeof raw.image === "string" ? raw.image.trim() : typeof raw.imageWebp === "string" ? raw.imageWebp.trim() : "";
+  if (!image || !isValidUrl(image, true)) {
+    image = "/assets/images/products/placeholder.webp";
+  }
+  const shortDescriptionVi = typeof raw.shortDescriptionVi === "string" ? raw.shortDescriptionVi.trim() : typeof raw.description_vi === "string" ? raw.description_vi.trim() : "";
+  const shortDescription = typeof raw.shortDescription === "string" ? raw.shortDescription.trim() : typeof raw.description_en === "string" ? raw.description_en.trim() : shortDescriptionVi;
+  const defaultSpecs = {
+    moisture: "< 16%",
+    brix: "50\xB0 - 55\xB0 Brix",
+    shelfLifeEn: "12 Months",
+    shelfLifeVi: "12 Th\xE1ng",
+    storageEn: "Cool, dry place (20 - 25\xB0C)",
+    storageVi: "N\u01A1i kh\xF4 r\xE1o, tho\xE1ng m\xE1t (20 - 25\xB0C)",
+    ingredientsEn: "100% Natural Vietnamese Fruits",
+    ingredientsVi: "100% Tr\xE1i c\xE2y Vi\u1EC7t Nam t\u1EF1 nhi\xEAn",
+    processEn: "Low-temperature convective heat-pump drying",
+    processVi: "S\u1EA5y b\u01A1m nhi\u1EC7t nhi\u1EC7t \u0111\u1ED9 th\u1EA5p tu\u1EA7n ho\xE0n",
+    packagingEn: "Zip pouch / Export carton",
+    packagingVi: "T\xFAi zip / Th\xF9ng carton xu\u1EA5t kh\u1EA9u",
+    certificationsEn: "BRCGS Facility, Clean Label",
+    certificationsVi: "Nh\xE0 m\xE1y chu\u1EA9n BRCGS, Clean Label"
+  };
+  const rawSpecs = typeof raw.specs === "object" && raw.specs !== null ? raw.specs : {};
+  const specs = { ...defaultSpecs, ...rawSpecs };
+  const product = {
+    id,
+    slug,
+    aliases: Array.isArray(raw.aliases) ? raw.aliases : [],
+    name,
+    nameVi,
+    category,
+    categoryLabelEn: typeof raw.categoryLabelEn === "string" ? raw.categoryLabelEn : "Tropical Dried Fruits",
+    categoryLabelVi: typeof raw.categoryLabelVi === "string" ? raw.categoryLabelVi : "Tr\xE1i c\xE2y s\u1EA5y nhi\u1EC7t \u0111\u1EDBi",
+    image,
+    imageWebp: image,
+    imageJpg: typeof raw.imageJpg === "string" ? raw.imageJpg : image,
+    shortDescription,
+    shortDescriptionVi,
+    description: typeof raw.description === "string" ? raw.description.trim() : shortDescription,
+    descriptionVi: typeof raw.descriptionVi === "string" ? raw.descriptionVi.trim() : shortDescriptionVi,
+    origin: typeof raw.origin === "string" ? raw.origin : "Mekong Delta, Vietnam",
+    originVi: typeof raw.originVi === "string" ? raw.originVi : "\u0110\u1ED3ng b\u1EB1ng S\xF4ng C\u1EEDu Long, Vi\u1EC7t Nam",
+    certifications: Array.isArray(raw.certifications) ? raw.certifications : ["BRCGS", "Clean Label"],
+    verified: raw.verified !== void 0 ? Boolean(raw.verified) : true,
+    ocop: typeof raw.ocop === "string" ? raw.ocop : "3-Star OCOP",
+    specs,
+    en: {
+      name,
+      desc: shortDescription,
+      origin: typeof raw.en?.origin === "string" ? raw.en.origin : "Mekong Delta, Vietnam",
+      features: typeof raw.en?.features === "string" ? raw.en.features : shortDescription
+    },
+    vi: {
+      name: nameVi,
+      desc: shortDescriptionVi,
+      origin: typeof raw.vi?.origin === "string" ? raw.vi.origin : "\u0110\u1ED3ng b\u1EB1ng S\xF4ng C\u1EEDu Long, Vi\u1EC7t Nam",
+      features: typeof raw.vi?.features === "string" ? raw.vi.features : shortDescriptionVi
+    }
+  };
+  return {
+    valid: errors.length === 0,
+    errors,
+    data: product
+  };
+}
+function mergeProduct(existing, incoming) {
+  const base = existing && typeof existing === "object" ? { ...existing } : {};
+  const update = incoming && typeof incoming === "object" ? { ...incoming } : {};
+  const merged = {
+    ...base,
+    ...update,
+    specs: { ...base.specs || {}, ...update.specs || {} },
+    en: { ...base.en || {}, ...update.en || {} },
+    vi: { ...base.vi || {}, ...update.vi || {} }
+  };
+  return validateProduct(merged).data;
+}
+
 // server/admin/products.ts
 import fs from "fs";
 import path from "path";
-var ALLOWED_CATEGORIES = ["soft-dried", "chips", "nuts-seeds", "mixed"];
 var products_default = wrapHandler(async (req, res) => {
   const user = getAuthenticatedUser(req);
   if (!user) {
@@ -578,23 +681,56 @@ var products_default = wrapHandler(async (req, res) => {
   if (req.method === "POST") {
     const rawBody = await readJsonBody(req);
     const requestSha = typeof rawBody.sha === "string" ? rawBody.sha : void 0;
-    const product = stripUnsafeKeys(rawBody);
-    const slug = sanitizeSlug(product.slug);
-    if (!slug || typeof product.name_vi !== "string" || !product.name_vi.trim()) {
-      return res.status(400).json({ error: "Thi\u1EBFu slug h\u1EE3p l\u1EC7 ho\u1EB7c t\xEAn s\u1EA3n ph\u1EA9m ti\u1EBFng Vi\u1EC7t." });
+    const productInput = stripUnsafeKeys(rawBody);
+    const slug = sanitizeSlug(productInput.slug || productInput.id);
+    if (!slug) {
+      return res.status(400).json({ error: "Slug s\u1EA3n ph\u1EA9m kh\xF4ng h\u1EE3p l\u1EC7." });
     }
-    product.slug = slug;
-    product.id = typeof product.id === "string" && product.id.trim() ? sanitizeSlug(product.id) || slug : slug;
-    if (typeof product.category !== "string" || !ALLOWED_CATEGORIES.includes(product.category)) {
-      product.category = "soft-dried";
-    }
-    product.image = sanitizeSafeUrl(product.image, true) || `/images/products/${slug}.webp`;
     const filePath = `content/products/${slug}.json`;
-    const contentStr = JSON.stringify(product, null, 2);
-    const commitMessage = `cms(product): update "${sanitizeCommitText(product.name_vi, 72)}"`;
+    let existingProduct = null;
+    let targetSha = requestSha;
+    if (useGitHub) {
+      const existingFile = await getRepoFile(filePath);
+      if (existingFile) {
+        try {
+          existingProduct = JSON.parse(existingFile.content);
+          if (requestSha && existingFile.sha !== requestSha) {
+            return res.status(409).json({
+              error: "S\u1EA3n ph\u1EA9m \u0111\xE3 \u0111\u01B0\u1EE3c c\u1EADp nh\u1EADt b\u1EDFi m\u1ED9t phi\xEAn l\xE0m vi\u1EC7c kh\xE1c. Vui l\xF2ng t\u1EA3i l\u1EA1i trang.",
+              currentSha: existingFile.sha
+            });
+          }
+          targetSha = existingFile.sha;
+        } catch {
+          existingProduct = null;
+        }
+      }
+    } else {
+      const fullLocalPath = path.join(process.cwd(), filePath);
+      if (fs.existsSync(fullLocalPath)) {
+        try {
+          existingProduct = JSON.parse(fs.readFileSync(fullLocalPath, "utf-8").replace(/^\uFEFF/, ""));
+        } catch {
+          existingProduct = null;
+        }
+      }
+    }
+    productInput.slug = slug;
+    productInput.id = slug;
+    const merged = mergeProduct(existingProduct, productInput);
+    const validation = validateProduct(merged);
+    if (!validation.valid) {
+      return res.status(400).json({
+        error: `D\u1EEF li\u1EC7u s\u1EA3n ph\u1EA9m kh\xF4ng h\u1EE3p l\u1EC7: ${validation.errors.join("; ")}`,
+        errors: validation.errors
+      });
+    }
+    const validatedProduct = validation.data;
+    const contentStr = JSON.stringify(validatedProduct, null, 2);
+    const commitMessage = `cms(product): update "${sanitizeCommitText(validatedProduct.nameVi || validatedProduct.name, 72)}"`;
     let result = null;
     if (useGitHub) {
-      result = await commitFile(filePath, contentStr, commitMessage, requestSha);
+      result = await commitFile(filePath, contentStr, commitMessage, targetSha);
     } else {
       const fullLocalPath = path.join(process.cwd(), filePath);
       fs.mkdirSync(path.dirname(fullLocalPath), { recursive: true });
@@ -603,8 +739,8 @@ var products_default = wrapHandler(async (req, res) => {
     }
     return res.status(200).json({
       ok: true,
-      message: "C\u1EADp nh\u1EADt s\u1EA3n ph\u1EA9m th\xE0nh c\xF4ng!",
-      product,
+      message: "C\u1EADp nh\u1EADt s\u1EA3n ph\u1EA9m an to\xE0n th\xE0nh c\xF4ng!",
+      product: validatedProduct,
       result
     });
   }

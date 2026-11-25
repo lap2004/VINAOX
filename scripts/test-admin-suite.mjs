@@ -35,6 +35,11 @@ import productsHandler from '../api/admin/products.mjs';
 import mediaHandler from '../api/admin/media.mjs';
 import settingsHandler from '../api/admin/settings.mjs';
 import deployStatusHandler from '../api/admin/deployStatus.mjs';
+import { validateNewsArticle, mergeNewsArticle } from '../src/shared/schemas/newsSchema.ts';
+import { validateProduct, mergeProduct } from '../src/shared/schemas/productSchema.ts';
+import { validateCompanySettings, validateBrochureSettings } from '../src/shared/schemas/settingsSchema.ts';
+import { validateMediaUpload } from '../src/shared/schemas/mediaSchema.ts';
+import { getAllArticles, toNewsItem } from '../src/services/contentService.ts';
 
 console.log('=== VINAXO CUSTOM ADMIN SECURITY & INTEGRATION TEST SUITE ===\n');
 
@@ -452,6 +457,109 @@ async function runTests() {
     }, rLocalSha);
     assert.strictEqual(rLocalSha.statusCode, 200, 'Valid query must return 200');
     assert.strictEqual(rLocalSha.body?.status?.state, 'success', 'Local commit status should return success');
+  });
+
+  // 12. Shared Schema Validation
+  await runCase('Data Contract: News, Product, Settings & Media validation guards', async () => {
+    // Valid article passes
+    const vValid = validateNewsArticle({
+      slug: 'test-article-valid',
+      title_vi: 'Tiêu đề kiểm thử hợp lệ',
+      category: 'press',
+      published_at: '2026-11-25'
+    });
+    assert.strictEqual(vValid.valid, true);
+    assert.strictEqual(vValid.errors.length, 0);
+    assert.strictEqual(vValid.data.slug, 'test-article-valid');
+
+    // Invalid slug & missing title fails
+    const vInvalid = validateNewsArticle({
+      slug: 'bad slug with spaces!!',
+      title_vi: ''
+    });
+    assert.strictEqual(vInvalid.valid, false);
+    assert(vInvalid.errors.length >= 2, 'Should report both slug and title errors');
+
+    // Product validation
+    const pValid = validateProduct({
+      slug: 'mango-soft-dried',
+      name_vi: 'Xoài Sấy Dẻo',
+      category: 'soft-dried'
+    });
+    assert.strictEqual(pValid.valid, true);
+
+    // Media upload validation
+    const mValid = validateMediaUpload('my-image.webp', 'data:image/webp;base64,AAAA', 'news');
+    assert.strictEqual(mValid.valid, true);
+    const mInvalid = validateMediaUpload('bad.exe', 'base64');
+    assert.strictEqual(mInvalid.valid, false);
+  });
+
+  // 13. Field Preservation on Partial Updates (Root Cause Prevention)
+  await runCase('Field Preservation: Updating title_vi never drops personQuoted, secondaryUrls or title_en', async () => {
+    const existing = {
+      id: 'press-nld-mango-sourcing',
+      slug: 'press-nld-mango-sourcing',
+      title_vi: 'Tiêu đề cũ',
+      title_en: 'Old English Title',
+      excerpt_vi: 'Tóm tắt cũ',
+      personQuoted: { name: 'Hoàng Mạnh Cường', titleVi: 'GĐKD', titleEn: 'Commercial Director' },
+      secondaryUrls: [{ name: 'CafeF', url: 'https://cafef.vn/test' }],
+      published_at: '2026-05-24',
+      dateVi: '24/05/2026',
+      dateEn: 'May 24, 2026',
+      featured: false,
+      tags: ['company', 'operation']
+    };
+
+    // User only updates title_vi and adds "hehe"
+    const incoming = {
+      slug: 'press-nld-mango-sourcing',
+      title_vi: 'Tiêu đề mới hehe'
+    };
+
+    const merged = mergeNewsArticle(existing, incoming);
+    assert.strictEqual(merged.title_vi, 'Tiêu đề mới hehe');
+    assert.strictEqual(merged.title_en, 'Old English Title', 'title_en must be preserved');
+    assert.strictEqual(merged.personQuoted?.name, 'Hoàng Mạnh Cường', 'personQuoted must be preserved');
+    assert.strictEqual(merged.secondaryUrls?.length, 1, 'secondaryUrls must be preserved');
+    assert.strictEqual(merged.published_at, '2026-05-24', 'published_at must be preserved');
+  });
+
+  // 14. Server-Side Pre-Commit Validation Gate
+  await runCase('Pre-Commit Gate: Rejects invalid article before Git commit', async () => {
+    const validToken = createSessionToken('admin', 1);
+    const csrfToken = createCsrfToken(validToken);
+
+    const rBadArticle = createMockRes();
+    await newsHandler({
+      method: 'POST',
+      headers: {
+        cookie: `vinaxo_admin_session=${validToken}`,
+        origin: 'http://localhost:4174',
+        'x-requested-with': 'XMLHttpRequest',
+        'x-csrf-token': csrfToken,
+        'content-type': 'application/json'
+      },
+      body: {
+        slug: 'bad slug',
+        title_vi: ''
+      }
+    }, rBadArticle);
+
+    assert.strictEqual(rBadArticle.statusCode, 400);
+    assert(rBadArticle.body?.errors?.length > 0, 'Must return specific validation errors');
+  });
+
+  // 15. Content Service Fault Isolation
+  await runCase('Fault Isolation: Content service gracefully tolerates corrupt records', async () => {
+    const articles = getAllArticles({ includeDrafts: true });
+    assert(Array.isArray(articles) && articles.length > 0, 'Articles array must be valid');
+
+    // toNewsItem on malformed record should never throw
+    const safeItem = toNewsItem({});
+    assert(safeItem && typeof safeItem.vi?.title === 'string');
+    assert(safeItem.category === 'press' || safeItem.category === 'company');
   });
 
   console.log(`\n========================================`);

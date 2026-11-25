@@ -10,7 +10,8 @@ import {
   wrapHandler
 } from '../lib/security.js';
 import { checkApiMutationRateLimit } from '../lib/rateLimit.js';
-import { commitFile, hasGitHubToken, listRepoJsonFiles } from '../lib/github.js';
+import { commitFile, hasGitHubToken, listRepoJsonFiles, getRepoFile } from '../lib/github.js';
+import { validateProduct, mergeProduct } from '../../src/shared/schemas/productSchema.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -65,31 +66,68 @@ export default wrapHandler(async (req: any, res: any) => {
     return res.status(429).json({ error: 'Thao tác quá nhanh. Vui lòng thử lại sau.' });
   }
 
-  // POST: Update product info
+  // POST: Update product info with Safe Publishing Pipeline & Field Preservation
   if (req.method === 'POST') {
     const rawBody = await readJsonBody(req);
     const requestSha = typeof rawBody.sha === 'string' ? rawBody.sha : undefined;
-    const product = stripUnsafeKeys(rawBody);
+    const productInput = stripUnsafeKeys(rawBody);
 
-    const slug = sanitizeSlug(product.slug);
-    if (!slug || typeof product.name_vi !== 'string' || !product.name_vi.trim()) {
-      return res.status(400).json({ error: 'Thiếu slug hợp lệ hoặc tên sản phẩm tiếng Việt.' });
+    const slug = sanitizeSlug(productInput.slug || productInput.id);
+    if (!slug) {
+      return res.status(400).json({ error: 'Slug sản phẩm không hợp lệ.' });
     }
-
-    product.slug = slug;
-    product.id = typeof product.id === 'string' && product.id.trim() ? sanitizeSlug(product.id) || slug : slug;
-    if (typeof product.category !== 'string' || !ALLOWED_CATEGORIES.includes(product.category)) {
-      product.category = 'soft-dried';
-    }
-    product.image = sanitizeSafeUrl(product.image, true) || `/images/products/${slug}.webp`;
 
     const filePath = `content/products/${slug}.json`;
-    const contentStr = JSON.stringify(product, null, 2);
-    const commitMessage = `cms(product): update "${sanitizeCommitText(product.name_vi, 72)}"`;
+
+    // Fetch existing product to preserve existing fields and check concurrent edits
+    let existingProduct: any = null;
+    let targetSha = requestSha;
+
+    if (useGitHub) {
+      const existingFile = await getRepoFile(filePath);
+      if (existingFile) {
+        try {
+          existingProduct = JSON.parse(existingFile.content);
+          if (requestSha && existingFile.sha !== requestSha) {
+            return res.status(409).json({
+              error: 'Sản phẩm đã được cập nhật bởi một phiên làm việc khác. Vui lòng tải lại trang.',
+              currentSha: existingFile.sha
+            });
+          }
+          targetSha = existingFile.sha;
+        } catch {
+          existingProduct = null;
+        }
+      }
+    } else {
+      const fullLocalPath = path.join(process.cwd(), filePath);
+      if (fs.existsSync(fullLocalPath)) {
+        try {
+          existingProduct = JSON.parse(fs.readFileSync(fullLocalPath, 'utf-8').replace(/^\uFEFF/, ''));
+        } catch {
+          existingProduct = null;
+        }
+      }
+    }
+
+    productInput.slug = slug;
+    productInput.id = slug;
+    const merged = mergeProduct(existingProduct, productInput);
+    const validation = validateProduct(merged);
+    if (!validation.valid) {
+      return res.status(400).json({
+        error: `Dữ liệu sản phẩm không hợp lệ: ${validation.errors.join('; ')}`,
+        errors: validation.errors
+      });
+    }
+
+    const validatedProduct = validation.data;
+    const contentStr = JSON.stringify(validatedProduct, null, 2);
+    const commitMessage = `cms(product): update "${sanitizeCommitText(validatedProduct.nameVi || validatedProduct.name, 72)}"`;
 
     let result = null;
     if (useGitHub) {
-      result = await commitFile(filePath, contentStr, commitMessage, requestSha);
+      result = await commitFile(filePath, contentStr, commitMessage, targetSha);
     } else {
       const fullLocalPath = path.join(process.cwd(), filePath);
       fs.mkdirSync(path.dirname(fullLocalPath), { recursive: true });
@@ -99,8 +137,8 @@ export default wrapHandler(async (req: any, res: any) => {
 
     return res.status(200).json({
       ok: true,
-      message: 'Cập nhật sản phẩm thành công!',
-      product,
+      message: 'Cập nhật sản phẩm an toàn thành công!',
+      product: validatedProduct,
       result
     });
   }

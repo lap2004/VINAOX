@@ -1,13 +1,30 @@
 import { ArticleContent } from '../types/content';
 import { NewsItem, newsData as fallbackNewsData } from '../data/news';
+import { validateNewsArticle } from '../shared/schemas/newsSchema';
 
-// Build-time static loading of all news articles in content/news/
-const articleModules = import.meta.glob<ArticleContent>('/content/news/*.json', { eager: true });
+// Build-time static loading of all news articles in content/news/ with fault isolation
+let articleModules: Record<string, any> = {};
+try {
+  if (typeof (import.meta as any)?.glob === 'function') {
+    articleModules = (import.meta as any).glob('/content/news/*.json', { eager: true });
+  }
+} catch {
+  articleModules = {};
+}
 
-// Convert imported modules into an array of ArticleContent
-const loadedArticles: ArticleContent[] = Object.values(articleModules).map((mod: any) => {
-  return mod.default || mod;
-});
+// Convert imported modules into an array of ArticleContent with defensive validation
+const loadedArticles: ArticleContent[] = [];
+for (const [filePath, mod] of Object.entries(articleModules)) {
+  try {
+    const raw = (mod as any)?.default || mod;
+    const validated = validateNewsArticle(raw);
+    if (validated.data) {
+      loadedArticles.push(validated.data);
+    }
+  } catch (err) {
+    console.warn(`[VINAXO contentService] Malformed article at ${filePath} isolated, skipping:`, err);
+  }
+}
 
 /**
  * Determines whether an article is a draft and must NOT appear on public pages.
@@ -40,38 +57,54 @@ export function safeExternalUrl(url: string | undefined | null): string {
   return '';
 }
 
-// Helper to convert ArticleContent to NewsItem for 100% backward compatibility
+// Helper to convert ArticleContent to NewsItem for 100% backward compatibility with total fault tolerance
 export function toNewsItem(article: ArticleContent): NewsItem {
-  const safeSourceUrl = safeExternalUrl(article.sourceUrl);
-  return {
-    id: article.id || article.slug,
-    category: article.category,
-    badgeType: article.badgeType,
-    badgeTextVi: article.badgeTextVi,
-    badgeTextEn: article.badgeTextEn,
-    source: article.source,
-    sourceUrl: safeSourceUrl,
-    secondaryUrls: article.secondaryUrls?.filter((s) => Boolean(safeExternalUrl(s.url))),
-    publishedAt: article.published_at,
-    dateEn: article.dateEn || article.published_at,
-    dateVi: article.dateVi || article.published_at,
-    verified: article.verified ?? true,
-    personQuoted: article.personQuoted || undefined,
-    imageWebp: article.cover_image,
-    imageJpg: article.cover_image,
-    en: {
-      title: article.title_en || article.title_vi,
-      sourceBadge: `${article.source} • Press`,
-      summary: article.excerpt_en || article.body_en || '',
-      readMore: safeSourceUrl ? 'Read Original Article' : 'Read Article'
-    },
-    vi: {
-      title: article.title_vi,
-      sourceBadge: `${article.source} • Tin tức`,
-      summary: article.excerpt_vi || article.body_vi || '',
-      readMore: safeSourceUrl ? 'Đọc bài báo gốc' : 'Xem chi tiết'
-    }
-  };
+  try {
+    const safeSourceUrl = safeExternalUrl(article?.sourceUrl);
+    const category = article?.category === 'company' ? 'company' : 'press';
+    const badgeType = article?.badgeType || (category === 'company' ? 'operation' : 'quote');
+    const source = article?.source || 'VINAXO';
+    const titleVi = article?.title_vi || 'Tin tức VINAXO';
+    const titleEn = article?.title_en || titleVi;
+    const summaryVi = article?.excerpt_vi || article?.body_vi || '';
+    const summaryEn = article?.excerpt_en || article?.body_en || summaryVi;
+    const coverImage = article?.cover_image || '/assets/images/news/dried-fruit-export.webp';
+
+    return {
+      id: article?.id || article?.slug || 'bai-viet',
+      category,
+      badgeType,
+      badgeTextVi: article?.badgeTextVi || (category === 'company' ? 'Hoạt động doanh nghiệp' : 'Báo chí đưa tin'),
+      badgeTextEn: article?.badgeTextEn || (category === 'company' ? 'Company Operations' : 'Press Coverage'),
+      source,
+      sourceUrl: safeSourceUrl,
+      secondaryUrls: Array.isArray(article?.secondaryUrls)
+        ? article.secondaryUrls.filter((s) => Boolean(safeExternalUrl(s?.url)))
+        : [],
+      publishedAt: article?.published_at || new Date().toISOString().split('T')[0],
+      dateEn: article?.dateEn || article?.published_at || 'May 2026',
+      dateVi: article?.dateVi || article?.published_at || '05/2026',
+      verified: article?.verified ?? true,
+      personQuoted: article?.personQuoted || undefined,
+      imageWebp: coverImage,
+      imageJpg: coverImage,
+      en: {
+        title: titleEn,
+        sourceBadge: `${source} • Press`,
+        summary: summaryEn,
+        readMore: safeSourceUrl ? 'Read Original Article' : 'Read Article'
+      },
+      vi: {
+        title: titleVi,
+        sourceBadge: `${source} • Tin tức`,
+        summary: summaryVi,
+        readMore: safeSourceUrl ? 'Đọc bài báo gốc' : 'Xem chi tiết'
+      }
+    };
+  } catch (err) {
+    console.error('[VINAXO toNewsItem] Error transforming article to NewsItem, using fallback:', err);
+    return fallbackNewsData[0];
+  }
 }
 
 /**
@@ -115,8 +148,8 @@ export function getAllArticles(options: { includeDrafts?: boolean } = {}): Artic
   const visible = includeDrafts ? sourceList : sourceList.filter((a) => !isArticleDraft(a));
 
   return [...visible].sort((a, b) => {
-    const dateA = new Date(a.published_at).getTime() || 0;
-    const dateB = new Date(b.published_at).getTime() || 0;
+    const dateA = a?.published_at ? Date.parse(a.published_at) || 0 : 0;
+    const dateB = b?.published_at ? Date.parse(b.published_at) || 0 : 0;
     return dateB - dateA;
   });
 }

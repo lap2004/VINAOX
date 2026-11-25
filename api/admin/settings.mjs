@@ -240,23 +240,6 @@ function validateCsrfAndOrigin(req, options = {}) {
   }
   return { ok: true, status: 200 };
 }
-function sanitizeSafeUrl(raw, allowRelative = false) {
-  if (typeof raw !== "string") return "";
-  const trimmed = raw.trim();
-  if (!trimmed) return "";
-  if (allowRelative && trimmed.startsWith("/") && !trimmed.startsWith("//")) {
-    return trimmed;
-  }
-  try {
-    const parsed = new URL(trimmed);
-    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
-      return trimmed;
-    }
-  } catch {
-    return "";
-  }
-  return "";
-}
 function stripUnsafeKeys(obj) {
   if (!obj || typeof obj !== "object" || Array.isArray(obj)) {
     return {};
@@ -472,6 +455,70 @@ async function commitFile(filePath, contentStr, commitMessage, sha) {
   };
 }
 
+// src/shared/schemas/newsSchema.ts
+function isValidUrl(url, allowRelative = true) {
+  if (typeof url !== "string" || !url.trim()) return false;
+  const trimmed = url.trim();
+  if (allowRelative && trimmed.startsWith("/") && !trimmed.startsWith("//")) {
+    return !trimmed.includes("..") && !/[<>"'\\|?*]/.test(trimmed);
+  }
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
+// src/shared/schemas/settingsSchema.ts
+function validateCompanySettings(input) {
+  const errors = [];
+  const raw = typeof input === "object" && input !== null ? input : {};
+  const company_name_vi = typeof raw.company_name_vi === "string" && raw.company_name_vi.trim() ? raw.company_name_vi.trim() : "C\xD4NG TY TNHH VINAXO";
+  const company_name_en = typeof raw.company_name_en === "string" && raw.company_name_en.trim() ? raw.company_name_en.trim() : "VINAXO COMPANY LIMITED";
+  const tax_id = typeof raw.tax_id === "string" ? raw.tax_id.trim() : "1402230784";
+  const address_vi = typeof raw.address_vi === "string" ? raw.address_vi.trim() : "T\u1ED5 24, \u1EA4p V\u0129nh B\xECnh, X\xE3 An Nh\u01A1n, Huy\u1EC7n Ch\xE2u Th\xE0nh, T\u1EC9nh \u0110\u1ED3ng Th\xE1p";
+  const address_en = typeof raw.address_en === "string" ? raw.address_en.trim() : "Vinh Binh Hamlet, An Nhon Commune, Chau Thanh District, Dong Thap Province, Vietnam";
+  const hotline = typeof raw.hotline === "string" ? raw.hotline.trim() : "(+84) 922 222 247";
+  const email = typeof raw.email === "string" ? raw.email.trim() : "cuonghoang0710@gmail.com";
+  const website = typeof raw.website === "string" && isValidUrl(raw.website, false) ? raw.website.trim() : "https://www.vinaxo.net";
+  return {
+    valid: errors.length === 0,
+    errors,
+    data: {
+      company_name_vi,
+      company_name_en,
+      tax_id,
+      address_vi,
+      address_en,
+      hotline,
+      email,
+      website
+    }
+  };
+}
+function validateBrochureSettings(input) {
+  const errors = [];
+  const raw = typeof input === "object" && input !== null ? input : {};
+  let pdf_file = typeof raw.pdf_file === "string" ? raw.pdf_file.trim() : "";
+  if (!pdf_file || !isValidUrl(pdf_file, true) || !pdf_file.toLowerCase().endsWith(".pdf")) {
+    pdf_file = "/brochures/vinaxo-company-brochure-2026.pdf";
+  }
+  const year = typeof raw.year === "string" && /^\d{4}$/.test(raw.year.trim()) ? raw.year.trim() : "2026";
+  const title_vi = typeof raw.title_vi === "string" ? raw.title_vi.trim() : "H\u1ED3 S\u01A1 Doanh Nghi\u1EC7p & N\u0103ng L\u1EF1c S\u1EA3n Xu\u1EA5t VINAXO";
+  const title_en = typeof raw.title_en === "string" ? raw.title_en.trim() : "VINAXO Corporate Profile & Manufacturing Capabilities";
+  return {
+    valid: errors.length === 0,
+    errors,
+    data: {
+      pdf_file,
+      year,
+      title_vi,
+      title_en
+    }
+  };
+}
+
 // server/admin/settings.ts
 import fs from "fs";
 import path from "path";
@@ -513,15 +560,22 @@ var settings_default = wrapHandler(async (req, res) => {
   if (req.method === "POST") {
     const rawBody = await readJsonBody(req);
     const requestSha = typeof rawBody.sha === "string" ? rawBody.sha : void 0;
-    const data = stripUnsafeKeys(rawBody);
-    if (section === "brochure" && typeof data.pdf_file === "string") {
-      const safePdf = sanitizeSafeUrl(data.pdf_file, true);
-      if (!safePdf) {
-        return res.status(400).json({ error: "\u0110\u01B0\u1EDDng d\u1EABn file PDF Brochure kh\xF4ng h\u1EE3p l\u1EC7." });
+    const incomingData = stripUnsafeKeys(rawBody);
+    let validatedData = incomingData;
+    if (section === "brochure") {
+      const v = validateBrochureSettings(incomingData);
+      if (!v.valid) {
+        return res.status(400).json({ error: `D\u1EEF li\u1EC7u c\u1EA5u h\xECnh Brochure kh\xF4ng h\u1EE3p l\u1EC7: ${v.errors.join("; ")}` });
       }
-      data.pdf_file = safePdf;
+      validatedData = v.data;
+    } else {
+      const v = validateCompanySettings(incomingData);
+      if (!v.valid) {
+        return res.status(400).json({ error: `D\u1EEF li\u1EC7u c\u1EA5u h\xECnh Doanh nghi\u1EC7p kh\xF4ng h\u1EE3p l\u1EC7: ${v.errors.join("; ")}` });
+      }
+      validatedData = v.data;
     }
-    const contentStr = JSON.stringify(data, null, 2);
+    const contentStr = JSON.stringify(validatedData, null, 2);
     const commitMessage = `cms(settings): update ${section} settings`;
     let result = null;
     if (useGitHub) {
@@ -534,8 +588,8 @@ var settings_default = wrapHandler(async (req, res) => {
     }
     return res.status(200).json({
       ok: true,
-      message: "\u0110\xE3 l\u01B0u c\u1EA5u h\xECnh th\xE0nh c\xF4ng!",
-      data,
+      message: "\u0110\xE3 l\u01B0u c\u1EA5u h\xECnh an to\xE0n th\xE0nh c\xF4ng!",
+      data: validatedData,
       result
     });
   }

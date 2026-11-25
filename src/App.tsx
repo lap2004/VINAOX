@@ -4,6 +4,7 @@ import { MainLayout } from './components/layout/MainLayout';
 import { AdminAuthProvider } from './admin/context/AdminAuthContext';
 import { AdminProtectedRoute } from './admin/components/AdminProtectedRoute';
 import { AdminLayout } from './admin/components/AdminLayout';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 // Public pages - Route-level code splitting
 const Home = lazy(() => import('./pages/Home'));
@@ -74,9 +75,11 @@ export const App: React.FC = () => {
         <Route
           path="/admin/login"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <AdminLogin />
-            </Suspense>
+            <ErrorBoundary level="route" title="Đăng nhập quản trị">
+              <Suspense fallback={<PageLoader />}>
+                <AdminLogin />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route path="/admin" element={<AdminProtectedRoute />}>
@@ -85,73 +88,91 @@ export const App: React.FC = () => {
             <Route
               path="dashboard"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminDashboard />
-                </Suspense>
+                <ErrorBoundary level="route" title="Bảng điều khiển">
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminDashboard />
+                  </Suspense>
+                </ErrorBoundary>
               }
             />
             <Route
               path="news"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminNewsList />
-                </Suspense>
+                <ErrorBoundary level="route" title="Quản lý bài viết">
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminNewsList />
+                  </Suspense>
+                </ErrorBoundary>
               }
             />
             <Route
               path="news/new"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminNewsEditor />
-                </Suspense>
+                <ErrorBoundary level="route" title="Soạn thảo bài viết">
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminNewsEditor />
+                  </Suspense>
+                </ErrorBoundary>
               }
             />
             <Route
               path="news/:slug/edit"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminNewsEditor />
-                </Suspense>
+                <ErrorBoundary level="route" title="Chỉnh sửa bài viết">
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminNewsEditor />
+                  </Suspense>
+                </ErrorBoundary>
               }
             />
             <Route
               path="products"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminProducts />
-                </Suspense>
+                <ErrorBoundary level="route" title="Quản lý sản phẩm">
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminProducts />
+                  </Suspense>
+                </ErrorBoundary>
               }
             />
             <Route
               path="media"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminMedia />
-                </Suspense>
+                <ErrorBoundary level="route" title="Thư viện hình ảnh">
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminMedia />
+                  </Suspense>
+                </ErrorBoundary>
               }
             />
             <Route
               path="certificates"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminMedia />
-                </Suspense>
+                <ErrorBoundary level="route" title="Quản lý chứng nhận">
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminMedia />
+                  </Suspense>
+                </ErrorBoundary>
               }
             />
             <Route
               path="brochure"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminSettings />
-                </Suspense>
+                <ErrorBoundary level="route" title="Quản lý Brochure">
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminSettings />
+                  </Suspense>
+                </ErrorBoundary>
               }
             />
             <Route
               path="settings"
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <AdminSettings />
-                </Suspense>
+                <ErrorBoundary level="route" title="Cài đặt hệ thống">
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminSettings />
+                  </Suspense>
+                </ErrorBoundary>
               }
             />
           </Route>
@@ -163,105 +184,131 @@ export const App: React.FC = () => {
         <Route
           path="/"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <Home />
-            </Suspense>
+            <ErrorBoundary level="route" title="Trang chủ">
+              <Suspense fallback={<PageLoader />}>
+                <Home />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/about"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <About />
-            </Suspense>
+            <ErrorBoundary level="route" title="Về chúng tôi">
+              <Suspense fallback={<PageLoader />}>
+                <About />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/products"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <Products />
-            </Suspense>
+            <ErrorBoundary level="route" title="Sản phẩm">
+              <Suspense fallback={<PageLoader />}>
+                <Products />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/products/:slug"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <Products />
-            </Suspense>
+            <ErrorBoundary level="route" title="Chi tiết sản phẩm">
+              <Suspense fallback={<PageLoader />}>
+                <Products />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/quality"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <Quality />
-            </Suspense>
+            <ErrorBoundary level="route" title="Chất lượng & Tiêu chuẩn">
+              <Suspense fallback={<PageLoader />}>
+                <Quality />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/markets"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <GlobalMarket />
-            </Suspense>
+            <ErrorBoundary level="route" title="Thị trường xuất khẩu">
+              <Suspense fallback={<PageLoader />}>
+                <GlobalMarket />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/news"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <PressMedia />
-            </Suspense>
+            <ErrorBoundary level="route" title="Báo chí & Tin tức">
+              <Suspense fallback={<PageLoader />}>
+                <PressMedia />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/press-media"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <PressMedia />
-            </Suspense>
+            <ErrorBoundary level="route" title="Báo chí & Tin tức">
+              <Suspense fallback={<PageLoader />}>
+                <PressMedia />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/tin-tuc/:slug"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <ArticleDetail />
-            </Suspense>
+            <ErrorBoundary level="route" title="Chi tiết bài viết">
+              <Suspense fallback={<PageLoader />}>
+                <ArticleDetail />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/news/:slug"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <ArticleDetail />
-            </Suspense>
+            <ErrorBoundary level="route" title="Chi tiết bài viết">
+              <Suspense fallback={<PageLoader />}>
+                <ArticleDetail />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/press-media/:slug"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <ArticleDetail />
-            </Suspense>
+            <ErrorBoundary level="route" title="Chi tiết bài viết">
+              <Suspense fallback={<PageLoader />}>
+                <ArticleDetail />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/contact"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <Contact />
-            </Suspense>
+            <ErrorBoundary level="route" title="Liên hệ">
+              <Suspense fallback={<PageLoader />}>
+                <Contact />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/brochure"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <Brochure />
-            </Suspense>
+            <ErrorBoundary level="route" title="Tài liệu doanh nghiệp">
+              <Suspense fallback={<PageLoader />}>
+                <Brochure />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
 
@@ -279,9 +326,11 @@ export const App: React.FC = () => {
         <Route
           path="*"
           element={
-            <Suspense fallback={<PageLoader />}>
-              <NotFound />
-            </Suspense>
+            <ErrorBoundary level="route" title="Không tìm thấy trang">
+              <Suspense fallback={<PageLoader />}>
+                <NotFound />
+              </Suspense>
+            </ErrorBoundary>
           }
         />
       </Route>

@@ -9,6 +9,7 @@ import {
 } from '../lib/security.js';
 import { checkApiMutationRateLimit } from '../lib/rateLimit.js';
 import { commitFile, getRepoFile, hasGitHubToken } from '../lib/github.js';
+import { validateCompanySettings, validateBrochureSettings } from '../../src/shared/schemas/settingsSchema.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -56,17 +57,24 @@ export default wrapHandler(async (req: any, res: any) => {
   if (req.method === 'POST') {
     const rawBody = await readJsonBody(req);
     const requestSha = typeof rawBody.sha === 'string' ? rawBody.sha : undefined;
-    const data = stripUnsafeKeys(rawBody);
+    const incomingData = stripUnsafeKeys(rawBody);
 
-    if (section === 'brochure' && typeof data.pdf_file === 'string') {
-      const safePdf = sanitizeSafeUrl(data.pdf_file, true);
-      if (!safePdf) {
-        return res.status(400).json({ error: 'Đường dẫn file PDF Brochure không hợp lệ.' });
+    let validatedData: any = incomingData;
+    if (section === 'brochure') {
+      const v = validateBrochureSettings(incomingData);
+      if (!v.valid) {
+        return res.status(400).json({ error: `Dữ liệu cấu hình Brochure không hợp lệ: ${v.errors.join('; ')}` });
       }
-      data.pdf_file = safePdf;
+      validatedData = v.data;
+    } else {
+      const v = validateCompanySettings(incomingData);
+      if (!v.valid) {
+        return res.status(400).json({ error: `Dữ liệu cấu hình Doanh nghiệp không hợp lệ: ${v.errors.join('; ')}` });
+      }
+      validatedData = v.data;
     }
 
-    const contentStr = JSON.stringify(data, null, 2);
+    const contentStr = JSON.stringify(validatedData, null, 2);
     const commitMessage = `cms(settings): update ${section} settings`;
 
     let result = null;
@@ -81,8 +89,8 @@ export default wrapHandler(async (req: any, res: any) => {
 
     return res.status(200).json({
       ok: true,
-      message: 'Đã lưu cấu hình thành công!',
-      data,
+      message: 'Đã lưu cấu hình an toàn thành công!',
+      data: validatedData,
       result
     });
   }

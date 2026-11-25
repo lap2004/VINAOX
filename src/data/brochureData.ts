@@ -1,7 +1,9 @@
 /**
  * Shared immutable metadata and verified public URLs for the official 2026 Company Brochure PDF.
  */
-const brochureCmsModules = import.meta.glob<Record<string, any>>('/content/settings/brochure.json', { eager: true });
+const brochureCmsModules: Record<string, any> = typeof (import.meta as any).glob === 'function'
+  ? (import.meta as any).glob('/content/settings/brochure.json', { eager: true })
+  : {};
 const rawCmsBrochure = Object.values(brochureCmsModules)[0] as any;
 const cmsBrochure = rawCmsBrochure?.default || rawCmsBrochure || {};
 

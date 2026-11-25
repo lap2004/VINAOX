@@ -248,23 +248,6 @@ function sanitizeSlug(raw) {
   }
   return normalized;
 }
-function sanitizeSafeUrl(raw, allowRelative = false) {
-  if (typeof raw !== "string") return "";
-  const trimmed = raw.trim();
-  if (!trimmed) return "";
-  if (allowRelative && trimmed.startsWith("/") && !trimmed.startsWith("//")) {
-    return trimmed;
-  }
-  try {
-    const parsed = new URL(trimmed);
-    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
-      return trimmed;
-    }
-  } catch {
-    return "";
-  }
-  return "";
-}
 function sanitizeCommitText(text, maxLen = 100) {
   if (typeof text !== "string") return "";
   return text.replace(/[\r\n\t\x00-\x1f\x7f]/g, " ").replace(/\s+/g, " ").trim().slice(0, maxLen);
@@ -571,6 +554,169 @@ async function deleteRepoFile(filePath, commitMessage, sha) {
   return true;
 }
 
+// src/shared/schemas/newsSchema.ts
+var ALLOWED_CATEGORIES = ["press", "company"];
+var ALLOWED_BADGE_TYPES = ["quote", "interview", "operation", "event"];
+function validateSlug(slug) {
+  if (typeof slug !== "string") return { valid: false, slug: "" };
+  const trimmed = slug.trim().toLowerCase();
+  if (!trimmed || trimmed.length < 3 || trimmed.length > 120) {
+    return { valid: false, slug: "" };
+  }
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trimmed)) {
+    return { valid: false, slug: "" };
+  }
+  return { valid: true, slug: trimmed };
+}
+function isValidDate(dateStr) {
+  if (typeof dateStr !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false;
+  const d = new Date(dateStr);
+  return !isNaN(d.getTime());
+}
+function isValidUrl(url, allowRelative = true) {
+  if (typeof url !== "string" || !url.trim()) return false;
+  const trimmed = url.trim();
+  if (allowRelative && trimmed.startsWith("/") && !trimmed.startsWith("//")) {
+    return !trimmed.includes("..") && !/[<>"'\\|?*]/.test(trimmed);
+  }
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+function validateNewsArticle(input) {
+  const errors = [];
+  const raw = typeof input === "object" && input !== null ? input : {};
+  const slugCheck = validateSlug(raw.slug || raw.id);
+  if (!slugCheck.valid) {
+    errors.push("Slug b\xE0i vi\u1EBFt kh\xF4ng h\u1EE3p l\u1EC7 (y\xEAu c\u1EA7u t\u1EEB 3-120 k\xFD t\u1EF1 ch\u1EEF th\u01B0\u1EDDng, s\u1ED1 v\xE0 g\u1EA1ch n\u1ED1i).");
+  }
+  const slug = slugCheck.slug || "bai-viet-moi";
+  const id = typeof raw.id === "string" && raw.id.trim() ? raw.id.trim() : slug;
+  const title_vi = typeof raw.title_vi === "string" ? raw.title_vi.trim() : "";
+  if (!title_vi) {
+    errors.push("Ti\xEAu \u0111\u1EC1 ti\u1EBFng Vi\u1EC7t l\xE0 tr\u01B0\u1EDDng b\u1EAFt bu\u1ED9c.");
+  } else if (title_vi.length > 300) {
+    errors.push("Ti\xEAu \u0111\u1EC1 ti\u1EBFng Vi\u1EC7t kh\xF4ng \u0111\u01B0\u1EE3c v\u01B0\u1EE3t qu\xE1 300 k\xFD t\u1EF1.");
+  }
+  const title_en = typeof raw.title_en === "string" ? raw.title_en.trim() : title_vi;
+  const excerpt_vi = typeof raw.excerpt_vi === "string" ? raw.excerpt_vi.trim() : "";
+  const excerpt_en = typeof raw.excerpt_en === "string" ? raw.excerpt_en.trim() : excerpt_vi;
+  const body_vi = typeof raw.body_vi === "string" ? raw.body_vi.trim() : excerpt_vi;
+  const body_en = typeof raw.body_en === "string" ? raw.body_en.trim() : body_vi;
+  if (body_vi.length > 15e4) {
+    errors.push("N\u1ED9i dung b\xE0i vi\u1EBFt ti\u1EBFng Vi\u1EC7t v\u01B0\u1EE3t qu\xE1 gi\u1EDBi h\u1EA1n 150.000 k\xFD t\u1EF1.");
+  }
+  let cover_image = typeof raw.cover_image === "string" ? raw.cover_image.trim() : "";
+  if (!cover_image || !isValidUrl(cover_image, true)) {
+    cover_image = "/assets/images/news/dried-fruit-export.webp";
+  }
+  const category = ALLOWED_CATEGORIES.includes(raw.category) ? raw.category : "press";
+  const badgeType = ALLOWED_BADGE_TYPES.includes(raw.badgeType) ? raw.badgeType : category === "company" ? "operation" : "quote";
+  const badgeTextVi = typeof raw.badgeTextVi === "string" && raw.badgeTextVi.trim() ? raw.badgeTextVi.trim() : category === "company" ? "Ho\u1EA1t \u0111\u1ED9ng doanh nghi\u1EC7p" : "B\xE1o ch\xED \u0111\u01B0a tin";
+  const badgeTextEn = typeof raw.badgeTextEn === "string" && raw.badgeTextEn.trim() ? raw.badgeTextEn.trim() : category === "company" ? "Company Operations" : "Press Coverage";
+  const source = typeof raw.source === "string" && raw.source.trim() ? raw.source.trim() : "VINAXO";
+  const sourceUrl = typeof raw.sourceUrl === "string" && isValidUrl(raw.sourceUrl, false) ? raw.sourceUrl.trim() : void 0;
+  let secondaryUrls = void 0;
+  if (Array.isArray(raw.secondaryUrls)) {
+    const validSecs = raw.secondaryUrls.filter((s) => s && typeof s.name === "string" && isValidUrl(s.url, false)).map((s) => ({ name: String(s.name).trim(), url: String(s.url).trim() }));
+    if (validSecs.length > 0) secondaryUrls = validSecs;
+  }
+  const author = typeof raw.author === "string" && raw.author.trim() ? raw.author.trim() : "Ban Bi\xEAn T\u1EADp VINAXO";
+  let personQuoted = void 0;
+  if (raw.personQuoted && typeof raw.personQuoted === "object") {
+    const pq = raw.personQuoted;
+    if (typeof pq.name === "string" && pq.name.trim()) {
+      personQuoted = {
+        name: pq.name.trim(),
+        titleVi: typeof pq.titleVi === "string" ? pq.titleVi.trim() : "\u0110\u1EA1i di\u1EC7n VINAXO",
+        titleEn: typeof pq.titleEn === "string" ? pq.titleEn.trim() : "VINAXO Representative"
+      };
+    }
+  }
+  let published_at = typeof raw.published_at === "string" ? raw.published_at.trim() : "";
+  if (!isValidDate(published_at)) {
+    published_at = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+  }
+  const updated_at = typeof raw.updated_at === "string" && isValidDate(raw.updated_at) ? raw.updated_at.trim() : (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+  const [y, m, d] = published_at.split("-");
+  const dateVi = typeof raw.dateVi === "string" && raw.dateVi.trim() ? raw.dateVi.trim() : `${d}/${m}/${y}`;
+  const dateEn = typeof raw.dateEn === "string" && raw.dateEn.trim() ? raw.dateEn.trim() : `${new Date(published_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+  const tags = Array.isArray(raw.tags) ? raw.tags.filter((t) => typeof t === "string" && t.trim()).map((t) => t.trim()) : [category];
+  const isDraft = raw.status === "draft" || raw.published === false || tags.includes("draft");
+  const normalizedTags = isDraft ? Array.from(/* @__PURE__ */ new Set([...tags, "draft"])) : tags.filter((t) => t !== "draft");
+  const article = {
+    id,
+    slug,
+    title_vi,
+    title_en,
+    excerpt_vi,
+    excerpt_en,
+    body_vi,
+    body_en,
+    cover_image,
+    cover_image_alt_vi: typeof raw.cover_image_alt_vi === "string" ? raw.cover_image_alt_vi.trim() : title_vi,
+    cover_image_alt_en: typeof raw.cover_image_alt_en === "string" ? raw.cover_image_alt_en.trim() : title_en,
+    gallery: Array.isArray(raw.gallery) ? raw.gallery.filter((g) => typeof g === "string" && isValidUrl(g, true)) : [],
+    category,
+    badgeType,
+    badgeTextVi,
+    badgeTextEn,
+    source,
+    sourceUrl,
+    secondaryUrls,
+    author,
+    personQuoted,
+    published_at,
+    updated_at,
+    dateVi,
+    dateEn,
+    featured: Boolean(raw.featured),
+    tags: normalizedTags,
+    status: isDraft ? "draft" : "published",
+    published: !isDraft,
+    verified: raw.verified !== void 0 ? Boolean(raw.verified) : true,
+    seo_title_vi: typeof raw.seo_title_vi === "string" ? raw.seo_title_vi.trim() : title_vi,
+    seo_title_en: typeof raw.seo_title_en === "string" ? raw.seo_title_en.trim() : title_en,
+    seo_description_vi: typeof raw.seo_description_vi === "string" ? raw.seo_description_vi.trim() : excerpt_vi,
+    seo_description_en: typeof raw.seo_description_en === "string" ? raw.seo_description_en.trim() : excerpt_en
+  };
+  return {
+    valid: errors.length === 0,
+    errors,
+    data: article
+  };
+}
+function mergeNewsArticle(existing, incoming) {
+  const base = existing && typeof existing === "object" ? { ...existing } : {};
+  const update = incoming && typeof incoming === "object" ? { ...incoming } : {};
+  const merged = { ...base };
+  for (const [key, value] of Object.entries(update)) {
+    if (value !== void 0 && value !== null) {
+      if (typeof value === "string" && value.trim() === "" && base[key]) {
+        if (key === "sourceUrl" || key === "excerpt_en" || key === "title_en") {
+          merged[key] = value;
+        }
+      } else {
+        merged[key] = value;
+      }
+    }
+  }
+  if (!update.personQuoted && base.personQuoted) {
+    merged.personQuoted = base.personQuoted;
+  }
+  if (!update.secondaryUrls && base.secondaryUrls) {
+    merged.secondaryUrls = base.secondaryUrls;
+  }
+  if (!update.gallery && base.gallery) {
+    merged.gallery = base.gallery;
+  }
+  const result = validateNewsArticle(merged);
+  return result.data;
+}
+
 // server/admin/news.ts
 import fs from "fs";
 import path from "path";
@@ -643,39 +789,59 @@ var news_default = wrapHandler(async (req, res) => {
   if (req.method === "POST") {
     const rawBody = await readJsonBody(req);
     const requestSha = typeof rawBody.sha === "string" ? rawBody.sha : void 0;
-    const article = stripUnsafeKeys(rawBody);
-    const slug = sanitizeSlug(article.slug);
-    if (!slug || typeof article.title_vi !== "string" || !article.title_vi.trim()) {
-      return res.status(400).json({ error: "Vui l\xF2ng cung c\u1EA5p ti\xEAu \u0111\u1EC1 ti\u1EBFng Vi\u1EC7t v\xE0 slug h\u1EE3p l\u1EC7 (ch\u1EEF th\u01B0\u1EDDng, s\u1ED1, g\u1EA1ch n\u1ED1i)." });
+    const articleInput = stripUnsafeKeys(rawBody);
+    const slug = sanitizeSlug(articleInput.slug || articleInput.id);
+    if (!slug) {
+      return res.status(400).json({ error: "Slug b\xE0i vi\u1EBFt kh\xF4ng h\u1EE3p l\u1EC7 (y\xEAu c\u1EA7u t\u1EEB 3-120 k\xFD t\u1EF1 ch\u1EEF th\u01B0\u1EDDng, s\u1ED1, g\u1EA1ch n\u1ED1i)." });
     }
-    if (article.title_vi.length > 300 || article.body_vi && String(article.body_vi).length > 15e4) {
-      return res.status(400).json({ error: "N\u1ED9i dung b\xE0i vi\u1EBFt v\u01B0\u1EE3t qu\xE1 gi\u1EDBi h\u1EA1n cho ph\xE9p." });
-    }
-    const tags = Array.isArray(article.tags) ? article.tags.filter((t) => typeof t === "string").map((t) => t.trim()).filter(Boolean) : [];
-    const isDraft = article.status === "draft" || article.published === false || tags.includes("draft");
-    const normalizedTags = isDraft ? Array.from(/* @__PURE__ */ new Set([...tags, "draft"])) : tags.filter((t) => t !== "draft");
-    article.slug = slug;
-    article.id = typeof article.id === "string" && article.id.trim() ? sanitizeSlug(article.id) || slug : slug;
-    article.status = isDraft ? "draft" : "published";
-    article.published = !isDraft;
-    article.tags = normalizedTags;
-    article.title_vi = article.title_vi.trim();
-    article.title_en = typeof article.title_en === "string" ? article.title_en.trim() : "";
-    article.sourceUrl = sanitizeSafeUrl(article.sourceUrl, false);
-    article.cover_image = sanitizeSafeUrl(article.cover_image, true) || "/assets/images/news/dried-fruit-export.webp";
-    if (Array.isArray(article.secondaryUrls)) {
-      article.secondaryUrls = article.secondaryUrls.filter((s) => s && typeof s.name === "string" && sanitizeSafeUrl(s.url, false)).map((s) => ({ name: s.name.trim(), url: sanitizeSafeUrl(s.url, false) }));
-    }
-    article.updated_at = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
     const filePath = `content/news/${slug}.json`;
-    const contentStr = JSON.stringify(article, null, 2);
-    const safeTitle = sanitizeCommitText(article.title_vi, 72);
+    let existingArticle = null;
+    let targetSha = requestSha;
+    if (useGitHub) {
+      const existingFile = await getRepoFile(filePath);
+      if (existingFile) {
+        try {
+          existingArticle = JSON.parse(existingFile.content);
+          if (requestSha && existingFile.sha !== requestSha) {
+            return res.status(409).json({
+              error: "N\u1ED9i dung b\xE0i vi\u1EBFt \u0111\xE3 \u0111\u01B0\u1EE3c c\u1EADp nh\u1EADt b\u1EDFi m\u1ED9t phi\xEAn l\xE0m vi\u1EC7c kh\xE1c tr\xEAn Git. Vui l\xF2ng t\u1EA3i l\u1EA1i trang tr\u01B0\u1EDBc khi l\u01B0u.",
+              currentSha: existingFile.sha
+            });
+          }
+          targetSha = existingFile.sha;
+        } catch {
+          existingArticle = null;
+        }
+      }
+    } else {
+      const fullLocalPath = path.join(process.cwd(), filePath);
+      if (fs.existsSync(fullLocalPath)) {
+        try {
+          existingArticle = JSON.parse(fs.readFileSync(fullLocalPath, "utf-8").replace(/^\uFEFF/, ""));
+        } catch {
+          existingArticle = null;
+        }
+      }
+    }
+    articleInput.slug = slug;
+    articleInput.id = slug;
+    const mergedArticle = mergeNewsArticle(existingArticle, articleInput);
+    const validation = validateNewsArticle(mergedArticle);
+    if (!validation.valid) {
+      return res.status(400).json({
+        error: `D\u1EEF li\u1EC7u b\xE0i vi\u1EBFt kh\xF4ng h\u1EE3p l\u1EC7: ${validation.errors.join("; ")}`,
+        errors: validation.errors
+      });
+    }
+    const validatedArticle = validation.data;
+    const isDraft = validatedArticle.status === "draft" || !validatedArticle.published;
+    const contentStr = JSON.stringify(validatedArticle, null, 2);
+    const safeTitle = sanitizeCommitText(validatedArticle.title_vi, 72);
+    const actionLabel = existingArticle ? "update" : "create";
+    const commitMessage = `cms(news): ${actionLabel} "${safeTitle}"`;
     let result = null;
     if (useGitHub) {
-      const existing = requestSha ? { sha: requestSha } : await getRepoFile(filePath);
-      const actionLabel = existing ? "update" : "create";
-      const commitMessage = `cms(news): ${actionLabel} "${safeTitle}"`;
-      result = await commitFile(filePath, contentStr, commitMessage, existing?.sha);
+      result = await commitFile(filePath, contentStr, commitMessage, targetSha);
     } else {
       const fullLocalPath = path.join(process.cwd(), filePath);
       const existed = fs.existsSync(fullLocalPath);
@@ -685,9 +851,9 @@ var news_default = wrapHandler(async (req, res) => {
     }
     return res.status(200).json({
       ok: true,
-      message: isDraft ? "\u0110\xE3 l\u01B0u b\u1EA3n nh\xE1p th\xE0nh c\xF4ng!" : "Xu\u1EA5t b\u1EA3n b\xE0i vi\u1EBFt th\xE0nh c\xF4ng!",
+      message: isDraft ? "\u0110\xE3 l\u01B0u b\u1EA3n nh\xE1p an to\xE0n v\xE0o Git!" : "\u0110\xE3 xu\u1EA5t b\u1EA3n b\xE0i vi\u1EBFt th\xE0nh c\xF4ng!",
       slug,
-      article,
+      article: validatedArticle,
       result
     });
   }

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { getArticleBySlug, isArticleDraft } from '../../services/contentService';
 import { ArticleContent } from '../../types/content';
+import { validateNewsArticle } from '../../shared/schemas/newsSchema';
 import { adminFetch } from '../lib/adminFetch';
 
 export const AdminNewsEditor: React.FC = () => {
@@ -218,6 +219,14 @@ export const AdminNewsEditor: React.FC = () => {
           ? Array.from(new Set([...(formData.tags || []), 'draft']))
           : (formData.tags || []).filter(t => t !== 'draft')
       };
+
+      // Client-side Data Contract validation gate
+      const validation = validateNewsArticle(articlePayload);
+      if (!validation.valid) {
+        setFeedback({ type: 'error', message: `Dữ liệu chưa hợp lệ: ${validation.errors.join('; ')}` });
+        setIsSaving(false);
+        return;
+      }
 
       const res = await adminFetch('/api/admin/news', {
         method: 'POST',
