@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { ComplianceBadge } from '../../data/brochureData';
 
@@ -16,15 +16,28 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
   isVi,
   onClose,
 }) => {
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     if (!certificate) return;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    document.body.style.overflow = 'hidden';
+    window.setTimeout(() => closeBtnRef.current?.focus(), 20);
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+      if (previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
+        previousFocusRef.current.focus();
+      }
+    };
   }, [certificate, onClose]);
 
   if (!certificate || !certificate.certImageWebp) {
@@ -62,6 +75,7 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
             </p>
           </div>
           <button
+            ref={closeBtnRef}
             type="button"
             onClick={onClose}
             aria-label={isVi ? 'Đóng bản xem trước' : 'Close preview'}

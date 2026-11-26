@@ -3,7 +3,9 @@ import { Link, useSearchParams } from 'react-router-dom';
 import {
   Anchor,
   Building2,
+  Check,
   Clock,
+  Copy,
   Factory,
   Globe,
   Mail,
@@ -16,10 +18,25 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { productsData } from '../data/products';
 import { COMPANY_INFO } from '../data/company';
 import { BROCHURE_FAQS } from '../data/brochureData';
+import {
+  InquiryPayload,
+  buildInquiryPlainText,
+  buildMailtoHref,
+  submitInquiry,
+} from '../services/inquiryService';
 
 export const Contact: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const initialProduct = searchParams.get('product') || '';
+  const rawInitialProduct = searchParams.get('product') || '';
+  const matchedInitial = rawInitialProduct
+    ? productsData.find(
+        (p) =>
+          p.slug.toLowerCase() === rawInitialProduct.trim().toLowerCase() ||
+          p.id.toLowerCase() === rawInitialProduct.trim().toLowerCase() ||
+          p.name.toLowerCase() === rawInitialProduct.trim().toLowerCase() ||
+          p.nameVi.toLowerCase() === rawInitialProduct.trim().toLowerCase()
+      )
+    : undefined;
   const { t, language } = useLanguage();
   const isVi = language === 'vi';
 
@@ -29,21 +46,33 @@ export const Contact: React.FC = () => {
     company: '',
     phone: '',
     inquiryType: '',
-    product: initialProduct || 'Tất cả sản phẩm / Chưa xác định',
+    product: matchedInitial
+      ? isVi
+        ? matchedInitial.nameVi
+        : matchedInitial.name
+      : rawInitialProduct || 'Tất cả sản phẩm / Chưa xác định',
     message: '',
   });
 
   const [honeypot, setHoneypot] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [referenceId, setReferenceId] = useState('');
   const [formError, setFormError] = useState('');
+  const [fallbackPayload, setFallbackPayload] = useState<InquiryPayload | null>(null);
+  const [fallbackRecipient, setFallbackRecipient] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormError('');
+    if (isSubmitting) return;
 
-    // Anti-bot honeypot check: automated scrapers fill hidden inputs
+    setFormError('');
+    setSubmitted(false);
+    setFallbackPayload(null);
+
     if (honeypot) {
       return;
     }
@@ -64,20 +93,49 @@ export const Contact: React.FC = () => {
       return;
     }
 
-    // Direct mailto generation for authentic B2B dispatch
-    const subject = encodeURIComponent(`[VINAXO B2B Inquiry] ${formData.inquiryType} - ${trimmedName}`);
-    const body = encodeURIComponent(
-      `Họ và tên / Name: ${trimmedName}\n` +
-      `Email: ${trimmedEmail}\n` +
-      `Công ty / Company: ${trimmedCompany || 'N/A'}\n` +
-      `Số điện thoại / Phone: ${trimmedPhone || 'N/A'}\n` +
-      `Mục đích / Inquiry Type: ${formData.inquiryType}\n` +
-      `Sản phẩm quan tâm / Product: ${formData.product}\n\n` +
-      `Nội dung / Message:\n${trimmedMessage}`
-    );
+    const payload: InquiryPayload = {
+      formType: 'contact',
+      language,
+      name: trimmedName,
+      email: trimmedEmail,
+      company: trimmedCompany,
+      phone: trimmedPhone,
+      inquiryType: formData.inquiryType,
+      product: formData.product,
+      message: trimmedMessage,
+      sourcePage: '/contact',
+      hp_website: honeypot,
+    };
 
-    window.location.href = `mailto:cuonghoang0710@gmail.com?subject=${subject}&body=${body}`;
-    setSubmitted(true);
+    setIsSubmitting(true);
+    const result = await submitInquiry(payload);
+    setIsSubmitting(false);
+
+    if (result.ok && result.delivered) {
+      setReferenceId(result.referenceId || '');
+      setSubmitted(true);
+      return;
+    }
+
+    setFormError(
+      result.error ||
+        (isVi
+          ? 'Không thể gửi yêu cầu qua máy chủ lúc này. Dữ liệu bạn đã nhập vẫn được giữ nguyên — vui lòng dùng kênh Email hoặc WhatsApp/Zalo bên dưới.'
+          : 'Could not dispatch via server right now. Your form input is preserved — please use the direct Email, WhatsApp, or Zalo option below.')
+    );
+    setFallbackPayload(payload);
+    setFallbackRecipient(result.recipient || COMPANY_INFO.contacts.email);
+  };
+
+  const handleCopyFallback = async () => {
+    if (!fallbackPayload) return;
+    try {
+      await navigator.clipboard.writeText(buildInquiryPlainText(fallbackPayload));
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2500);
+    } catch {
+      setCopied(false);
+    }
   };
 
   return (
@@ -329,6 +387,7 @@ export const Contact: React.FC = () => {
                         type="text"
                         id="contactName"
                         name="name"
+                        autoComplete="name"
                         className="form-input"
                         placeholder={isVi ? 'Nguyễn Văn A' : 'Johnathan Smith'}
                         value={formData.name}
@@ -343,6 +402,8 @@ export const Contact: React.FC = () => {
                       </label>
                       <input
                         type="email"
+                        inputMode="email"
+                        autoComplete="email"
                         id="contactEmail"
                         name="email"
                         className="form-input"
@@ -363,6 +424,7 @@ export const Contact: React.FC = () => {
                       </label>
                       <input
                         type="text"
+                        autoComplete="organization"
                         id="contactCompany"
                         name="company"
                         className="form-input"
@@ -378,6 +440,8 @@ export const Contact: React.FC = () => {
                       </label>
                       <input
                         type="tel"
+                        inputMode="tel"
+                        autoComplete="tel"
                         id="contactPhone"
                         name="phone"
                         className="form-input"
@@ -476,7 +540,7 @@ export const Contact: React.FC = () => {
                     ></textarea>
                   </div>
 
-                  {/* Error banner if validation fails */}
+                  {/* Error banner if validation or server dispatch fails */}
                   {formError && (
                     <div
                       style={{
@@ -491,7 +555,54 @@ export const Contact: React.FC = () => {
                       }}
                       role="alert"
                     >
-                      ⚠️ {formError}
+                      <div>⚠️ {formError}</div>
+                      {fallbackPayload && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px' }}>
+                          <a
+                            href={buildMailtoHref(fallbackPayload, fallbackRecipient)}
+                            className="btn btn-primary"
+                            style={{ padding: '8px 14px', fontSize: '0.8rem', textDecoration: 'none' }}
+                          >
+                            <Mail size={14} />
+                            <span>{isVi ? 'Mở ứng dụng Email' : 'Open Email App'}</span>
+                          </a>
+                          <button
+                            type="button"
+                            onClick={handleCopyFallback}
+                            className="btn btn-outline"
+                            style={{ padding: '8px 14px', fontSize: '0.8rem' }}
+                          >
+                            {copied ? <Check size={14} /> : <Copy size={14} />}
+                            <span>
+                              {copied
+                                ? isVi
+                                  ? 'Đã sao chép'
+                                  : 'Copied'
+                                : isVi
+                                ? 'Sao chép nội dung'
+                                : 'Copy Inquiry'}
+                            </span>
+                          </button>
+                          <a
+                            href="https://wa.me/84984815016"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-outline"
+                            style={{ padding: '8px 14px', fontSize: '0.8rem', textDecoration: 'none' }}
+                          >
+                            WhatsApp
+                          </a>
+                          <a
+                            href="https://zalo.me/0984815016"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-outline"
+                            style={{ padding: '8px 14px', fontSize: '0.8rem', textDecoration: 'none' }}
+                          >
+                            Zalo
+                          </a>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -500,29 +611,41 @@ export const Contact: React.FC = () => {
                     <button
                       type="submit"
                       id="contactSubmitBtn"
+                      disabled={isSubmitting}
                       className="btn btn-primary"
                       style={{ width: '100%', justifyContent: 'center', padding: '14px 24px', fontSize: '1rem' }}
                     >
-                      <span>{t('contactPage.submitBtn') || (isVi ? 'Gửi Yêu Cầu Báo Giá Đến VINAXO' : 'Submit Quotation Request to VINAXO')}</span>
+                      <span>
+                        {isSubmitting
+                          ? isVi
+                            ? 'Đang gửi yêu cầu...'
+                            : 'Sending inquiry...'
+                          : t('contactPage.submitBtn') || (isVi ? 'Gửi Yêu Cầu Báo Giá Đến VINAXO' : 'Submit Quotation Request to VINAXO')}
+                      </span>
                       <Send size={16} style={{ marginLeft: '8px', flexShrink: 0 }} />
                     </button>
                   </div>
 
-                  {/* Confirmation banner if clicked */}
+                  {/* Confirmation banner when server confirms delivery */}
                   {submitted && (
                     <div
+                      role="status"
                       style={{
                         marginTop: '16px',
-                        padding: '12px 16px',
-                        backgroundColor: 'var(--brand-orange-soft)',
-                        border: '1px solid var(--brand-orange)',
+                        padding: '14px 16px',
+                        backgroundColor: '#ECFDF5',
+                        border: '1px solid #34D399',
                         borderRadius: 'var(--radius-sm)',
-                        color: 'var(--dark-chocolate)',
+                        color: '#065F46',
                         fontWeight: 600,
                         fontSize: '0.875rem',
+                        lineHeight: 1.5,
                       }}
                     >
-                      ✓ {isVi ? `Đang mở ứng dụng email của bạn để gửi yêu cầu đến ${COMPANY_INFO.contacts.email}...` : `Launching your mail client to dispatch your inquiry to ${COMPANY_INFO.contacts.email}...`}
+                      ✓{' '}
+                      {isVi
+                        ? `Đã gửi yêu cầu thành công tới Bộ phận Xuất khẩu VINAXO (${COMPANY_INFO.contacts.email})${referenceId ? ` — Mã tham chiếu: ${referenceId}` : ''}. Chúng tôi sẽ phản hồi trong 24 giờ làm việc.`
+                        : `Your inquiry has been delivered to VINAXO Export Desk (${COMPANY_INFO.contacts.email})${referenceId ? ` — Ref: ${referenceId}` : ''}. Our team will respond within 24 business hours.`}
                     </div>
                   )}
 
@@ -538,11 +661,11 @@ export const Contact: React.FC = () => {
                   >
                     {isVi ? (
                       <>
-                        <em>Kết nối thực tế:</em> Sau khi nhấn gửi, hệ thống sẽ mở ứng dụng email của bạn với tiêu đề và nội dung được tạo tự động để gửi trực tiếp tới <strong>{COMPANY_INFO.contacts.email}</strong>. Quý khách cũng có thể liên hệ trực tiếp qua WhatsApp/Zalo <strong>{COMPANY_INFO.contacts.phoneDisplay}</strong> để nhận báo giá nhanh nhất.
+                        <em>Kết nối trực tiếp B2B:</em> Yêu cầu của bạn được gửi trực tiếp tới hộp thư xuất khẩu <strong>{COMPANY_INFO.contacts.email}</strong> (hoặc qua ứng dụng Email/WhatsApp/Zalo <strong>{COMPANY_INFO.contacts.phoneDisplay}</strong> nếu bạn cần trao đổi ngay).
                       </>
                     ) : (
                       <>
-                        <em>Direct connection:</em> Upon submitting, your default email client opens with prefilled commercial details to <strong>{COMPANY_INFO.contacts.email}</strong>. You may also call directly via Hotline <strong>{COMPANY_INFO.contacts.phoneDisplay}</strong>.
+                        <em>Direct B2B dispatch:</em> Your inquiry is routed directly to our export desk at <strong>{COMPANY_INFO.contacts.email}</strong>, with direct Hotline/WhatsApp support at <strong>{COMPANY_INFO.contacts.phoneDisplay}</strong>.
                       </>
                     )}
                   </div>

@@ -1,9 +1,12 @@
 User-agent: *
 Allow: /
 
-# Disallow sensitive asset scraping
+# Disallow internal admin, APIs, and raw build/data files
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
 Disallow: /dist/
 Disallow: /node_modules/
 Disallow: /*.json$
 
-Sitemap: https://vinaxo.vn/sitemap.xml
+Sitemap: https://www.vinaxo.net/sitemap.xml

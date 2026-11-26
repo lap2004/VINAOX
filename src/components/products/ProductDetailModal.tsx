@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X, Sparkles, Check, ArrowRight, ShieldCheck, Thermometer, Clock, Droplets } from 'lucide-react';
 import { ProductItem } from '../../data/products';
 import { useLanguage } from '../../i18n/LanguageContext';
@@ -16,15 +16,22 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   onRequestQuote,
 }) => {
   const { language } = useLanguage();
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (product) {
+      previousFocusRef.current = document.activeElement as HTMLElement | null;
       document.body.style.overflow = 'hidden';
+      window.setTimeout(() => closeBtnRef.current?.focus(), 20);
     } else {
       document.body.style.overflow = '';
     }
     return () => {
       document.body.style.overflow = '';
+      if (product && previousFocusRef.current && typeof previousFocusRef.current.focus === 'function') {
+        previousFocusRef.current.focus();
+      }
     };
   }, [product]);
 
@@ -105,11 +112,13 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           </div>
 
           <button
+            ref={closeBtnRef}
+            type="button"
             onClick={onClose}
             aria-label="Close dialog"
             style={{
-              width: '32px',
-              height: '32px',
+              width: '36px',
+              height: '36px',
               borderRadius: '50%',
               border: '1px solid var(--color-border)',
               backgroundColor: 'var(--white)',
@@ -118,6 +127,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               justifyContent: 'center',
               cursor: 'pointer',
               color: 'var(--color-heading)',
+              flexShrink: 0,
             }}
           >
             <X size={16} />
