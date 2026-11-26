@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useOutletContext, useSearchParams } from 'react-router-dom';
 import { FileText, Package, ShieldCheck } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { productsData, ProductItem } from '../data/products';
+import { getProductLocalized, getProductSpecsLocalized, productsData, ProductItem } from '../data/products';
 import { PageHero } from '../components/ui/PageHero';
 import { ProductCard } from '../components/products/ProductCard';
 import { ProductDetailModal } from '../components/products/ProductDetailModal';
@@ -13,8 +13,7 @@ export const Products: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
   const [searchParams] = useSearchParams();
   const { onOpenQuote } = useOutletContext<MainLayoutContext>();
-  const { language, t } = useLanguage();
-  const isVi = language === 'vi';
+  const { language, t, pick } = useLanguage();
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
@@ -37,11 +36,31 @@ export const Products: React.FC = () => {
   }, [slug, searchParams]);
 
   const categories = [
-    { key: 'all', labelEn: 'All Products', labelVi: 'Tất cả sản phẩm', count: productsData.length },
-    { key: 'soft-dried', labelEn: 'Soft-Dried Fruits', labelVi: 'Trái cây sấy dẻo', count: productsData.filter((p) => p.category === 'soft-dried').length },
-    { key: 'chips', labelEn: 'Fruit Chips', labelVi: 'Trái cây sấy giòn', count: productsData.filter((p) => p.category === 'chips').length },
-    { key: 'nuts-seeds', labelEn: 'Nuts & Seeds', labelVi: 'Hạt dinh dưỡng', count: productsData.filter((p) => p.category === 'nuts-seeds').length },
-    { key: 'mixed', labelEn: 'Mixed Products', labelVi: 'Sản phẩm thập cẩm', count: productsData.filter((p) => p.category === 'mixed').length },
+    {
+      key: 'all',
+      label: pick({ vi: 'Tất cả sản phẩm', en: 'All Products', ko: '전체 제품', zh: '全部产品' }),
+      count: productsData.length,
+    },
+    {
+      key: 'soft-dried',
+      label: pick({ vi: 'Trái cây sấy dẻo', en: 'Soft-Dried Fruits', ko: '소프트 건조 과일', zh: '软烘干果' }),
+      count: productsData.filter((p) => p.category === 'soft-dried').length,
+    },
+    {
+      key: 'chips',
+      label: pick({ vi: 'Trái cây sấy giòn', en: 'Fruit Chips', ko: '크리스피 과일 칩', zh: '香脆果干片' }),
+      count: productsData.filter((p) => p.category === 'chips').length,
+    },
+    {
+      key: 'nuts-seeds',
+      label: pick({ vi: 'Hạt dinh dưỡng', en: 'Nuts & Seeds', ko: '견과류 및 연자육', zh: '坚果与莲子' }),
+      count: productsData.filter((p) => p.category === 'nuts-seeds').length,
+    },
+    {
+      key: 'mixed',
+      label: pick({ vi: 'Sản phẩm thập cẩm', en: 'Mixed Products', ko: '모듬 과일·채소', zh: '综合果蔬' }),
+      count: productsData.filter((p) => p.category === 'mixed').length,
+    },
   ];
 
   // Filter products by category
@@ -50,30 +69,47 @@ export const Products: React.FC = () => {
       ? productsData
       : productsData.filter((p) => p.category === activeCategory);
 
-  const specRows = productsData.map((p) => ({
-    name: isVi ? p.nameVi : p.name,
-    origin: isVi ? (p.originVi || p.origin || '') : (p.origin || ''),
-    moisture: p.specs.moisture,
-    shelfLife: isVi ? p.specs.shelfLifeVi : p.specs.shelfLifeEn,
-    cert: isVi ? p.specs.certificationsVi : p.specs.certificationsEn,
-    certColor: p.ocop.includes('OCOP') ? '#3A2417' : '#2D4E32',
-    certBg: p.ocop.includes('OCOP') ? '#FBEBC9' : '#E7F3DF',
-    productQuery: p.slug,
-  }));
+  const specRows = productsData.map((p) => {
+    const loc = getProductLocalized(p, language);
+    const specs = getProductSpecsLocalized(p.specs, language);
+    return {
+      name: loc.name,
+      origin: loc.origin,
+      moisture: specs.moisture,
+      shelfLife: specs.shelfLife,
+      cert: specs.certifications,
+      certColor: p.ocop.includes('OCOP') ? '#3A2417' : '#2D4E32',
+      certBg: p.ocop.includes('OCOP') ? '#FBEBC9' : '#E7F3DF',
+      productQuery: p.slug,
+    };
+  });
 
   return (
     <div className="products-page">
       {/* Page Hero Banner */}
       <PageHero
-        badge={isVi ? 'DANH MỤC XUẤT KHẨU • B2B PRODUCT CATALOG' : 'EXPORT CATALOG • B2B DRIED FRUITS'}
-        title={t('pageBanners.products.title') || (isVi ? 'Danh Mục Sản Phẩm Trái Cây Sấy VINAXO' : 'VINAXO Tropical Dried Fruit Catalog')}
+        badge={pick({
+          vi: 'DANH MỤC XUẤT KHẨU • B2B PRODUCT CATALOG',
+          en: 'EXPORT CATALOG • B2B DRIED FRUITS',
+          ko: '수출용 제품 카탈로그 • B2B DRIED FRUITS',
+          zh: '出口产品目录 • B2B 热带果干系列'
+        })}
+        title={t('pageBanners.products.title') || pick({
+          vi: 'Danh Mục Sản Phẩm Trái Cây Sấy VINAXO',
+          en: 'VINAXO Tropical Dried Fruit Catalog',
+          ko: 'VINAXO 열대 건조 과일 제품 카탈로그',
+          zh: 'VINAXO 热带果干出口产品目录'
+        })}
         description={
           t('pageBanners.products.subtitle') ||
-          (isVi
-            ? '100% tự nhiên, sấy dẻo nhiệt thấp, không thêm đường, bảo toàn màu sắc và dưỡng chất tự nhiên từ các vùng chuyên canh ĐBSCL.'
-            : '100% natural, gently low-temperature dehydrated, zero added sugar or artificial preservatives — bringing authentic tropical tastes to global consumers.')
+          pick({
+            vi: '100% tự nhiên, sấy dẻo nhiệt thấp, không thêm đường, bảo toàn màu sắc và dưỡng chất tự nhiên từ các vùng chuyên canh ĐBSCL.',
+            en: '100% natural, gently low-temperature dehydrated, zero added sugar or artificial preservatives — bringing authentic tropical tastes to global consumers.',
+            ko: '100% 자연산 원물로 저온 건조 가공하여 설탕·방부제 첨가 없이 메콩 델타 과일 고유의 색감과 영양을 그대로 전합니다.',
+            zh: '100% 天然鲜果低温烘干，零额外蔗糖与防腐剂，完整保留湄公河三角洲热带鲜果原色与营养。'
+          })
         }
-        breadcrumbCurrent={isVi ? 'Sản Phẩm' : 'Products'}
+        breadcrumbCurrent={pick({ vi: 'Sản Phẩm', en: 'Products', ko: '제품 소개', zh: '产品中心' })}
       />
 
       {/* ========================================================================
@@ -82,9 +118,21 @@ export const Products: React.FC = () => {
       <section className="subpage-section">
         <div className="container">
           <div className="text-center" style={{ maxWidth: '820px', margin: '0 auto 48px auto' }}>
-            <span className="section-label">{t('productsPage.section1.label') || (isVi ? 'NÔNG SẢN SẤY CAO CẤP' : 'PREMIUM DRIED FRUITS')}</span>
+            <span className="section-label">
+              {t('productsPage.section1.label') || pick({
+                vi: 'NÔNG SẢN SẤY CAO CẤP',
+                en: 'PREMIUM DRIED FRUITS',
+                ko: '프리미엄 열대 건조 과일',
+                zh: '高端出口热带果干'
+              })}
+            </span>
             <h2 className="section-title">
-              {t('productsPage.section1.title') || (isVi ? 'Nông Sản Nhiệt Đới Chọn Lọc Từ Vùng Trồng Đạt Chuẩn' : 'Selected Tropical Fruits from Certified Mekong Orchards')}
+              {t('productsPage.section1.title') || pick({
+                vi: 'Nông Sản Nhiệt Đới Chọn Lọc Từ Vùng Trồng Đạt Chuẩn',
+                en: 'Selected Tropical Fruits from Certified Mekong Orchards',
+                ko: '인증된 메콩 델타 산지에서 엄선한 열대 과일 원물',
+                zh: '严选认证湄公河三角洲优质果园热带鲜果'
+              })}
             </h2>
             <p className="section-desc" style={{ margin: '0 auto' }}>
               {t('productsPage.section1.desc')}
@@ -101,7 +149,7 @@ export const Products: React.FC = () => {
                 role="tab"
                 aria-selected={activeCategory === cat.key}
               >
-                {isVi ? cat.labelVi : cat.labelEn} ({cat.count})
+                {cat.label} ({cat.count})
               </button>
             ))}
           </div>

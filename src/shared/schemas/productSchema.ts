@@ -26,6 +26,12 @@ export function validateProduct(input: unknown): ProductValidationResult {
   }
 
   const name = typeof raw.name === 'string' && raw.name.trim() ? raw.name.trim() : (typeof raw.name_en === 'string' ? raw.name_en.trim() : nameVi);
+  const nameKo = typeof raw.name_ko === 'string' && raw.name_ko.trim()
+    ? raw.name_ko.trim()
+    : (typeof raw.nameKo === 'string' ? raw.nameKo.trim() : (typeof raw.ko?.name === 'string' ? raw.ko.name.trim() : ''));
+  const nameZh = typeof raw.name_zh === 'string' && raw.name_zh.trim()
+    ? raw.name_zh.trim()
+    : (typeof raw.nameZh === 'string' ? raw.nameZh.trim() : (typeof raw.zh?.name === 'string' ? raw.zh.name.trim() : ''));
 
   const category: ProductCategory = ALLOWED_CATEGORIES.includes(raw.category) ? raw.category : 'soft-dried';
 
@@ -55,6 +61,18 @@ export function validateProduct(input: unknown): ProductValidationResult {
   const shortDescription = typeof raw.shortDescription === 'string' ? raw.shortDescription.trim() : (typeof raw.description_en === 'string' ? raw.description_en.trim() : shortDescriptionVi);
   const descriptionVi = typeof raw.descriptionVi === 'string' ? raw.descriptionVi.trim() : (typeof raw.description_vi === 'string' ? raw.description_vi.trim() : shortDescriptionVi);
   const description = typeof raw.description === 'string' ? raw.description.trim() : (typeof raw.description_en === 'string' ? raw.description_en.trim() : shortDescription);
+  const descriptionKo = typeof raw.description_ko === 'string' && raw.description_ko.trim()
+    ? raw.description_ko.trim()
+    : (typeof raw.descriptionKo === 'string' ? raw.descriptionKo.trim() : (typeof raw.ko?.desc === 'string' ? raw.ko.desc.trim() : ''));
+  const descriptionZh = typeof raw.description_zh === 'string' && raw.description_zh.trim()
+    ? raw.description_zh.trim()
+    : (typeof raw.descriptionZh === 'string' ? raw.descriptionZh.trim() : (typeof raw.zh?.desc === 'string' ? raw.zh.desc.trim() : ''));
+  const originKo = typeof raw.origin_ko === 'string' && raw.origin_ko.trim()
+    ? raw.origin_ko.trim()
+    : (typeof raw.originKo === 'string' ? raw.originKo.trim() : (typeof raw.ko?.origin === 'string' ? raw.ko.origin.trim() : ''));
+  const originZh = typeof raw.origin_zh === 'string' && raw.origin_zh.trim()
+    ? raw.origin_zh.trim()
+    : (typeof raw.originZh === 'string' ? raw.originZh.trim() : (typeof raw.zh?.origin === 'string' ? raw.zh.origin.trim() : ''));
 
   const defaultSpecs: ProductSpecs = {
     moisture: '< 16%',
@@ -82,6 +100,8 @@ export function validateProduct(input: unknown): ProductValidationResult {
     aliases: Array.isArray(raw.aliases) ? raw.aliases : [],
     name,
     nameVi,
+    ...(nameKo ? { nameKo } : {}),
+    ...(nameZh ? { nameZh } : {}),
     category,
     categoryLabelEn: typeof raw.categoryLabelEn === 'string' ? raw.categoryLabelEn : 'Tropical Dried Fruits',
     categoryLabelVi: typeof raw.categoryLabelVi === 'string' ? raw.categoryLabelVi : 'Trái cây sấy nhiệt đới',
@@ -92,8 +112,12 @@ export function validateProduct(input: unknown): ProductValidationResult {
     shortDescriptionVi,
     description: typeof raw.description === 'string' ? raw.description.trim() : shortDescription,
     descriptionVi: typeof raw.descriptionVi === 'string' ? raw.descriptionVi.trim() : shortDescriptionVi,
+    ...(descriptionKo ? { descriptionKo, shortDescriptionKo: descriptionKo } : {}),
+    ...(descriptionZh ? { descriptionZh, shortDescriptionZh: descriptionZh } : {}),
     origin: typeof raw.origin === 'string' ? raw.origin : 'Mekong Delta, Vietnam',
     originVi: typeof raw.originVi === 'string' ? raw.originVi : 'Đồng bằng Sông Cửu Long, Việt Nam',
+    ...(originKo ? { originKo } : {}),
+    ...(originZh ? { originZh } : {}),
     certifications: Array.isArray(raw.certifications) ? raw.certifications : ['BRCGS', 'Clean Label'],
     verified: raw.verified !== undefined ? Boolean(raw.verified) : true,
     ocop: typeof raw.ocop === 'string' ? raw.ocop : '3-Star OCOP',
@@ -110,13 +134,35 @@ export function validateProduct(input: unknown): ProductValidationResult {
       origin: typeof raw.vi?.origin === 'string' ? raw.vi.origin : 'Đồng bằng Sông Cửu Long, Việt Nam',
       features: typeof raw.vi?.features === 'string' ? raw.vi.features : shortDescriptionVi
     },
+    ...(nameKo || descriptionKo ? {
+      ko: {
+        name: nameKo || name,
+        desc: descriptionKo || description,
+        origin: originKo || (typeof raw.origin === 'string' ? raw.origin : 'Vietnam'),
+        features: typeof raw.ko?.features === 'string' ? raw.ko.features : (descriptionKo || description)
+      }
+    } : {}),
+    ...(nameZh || descriptionZh ? {
+      zh: {
+        name: nameZh || name,
+        desc: descriptionZh || description,
+        origin: originZh || (typeof raw.origin === 'string' ? raw.origin : 'Vietnam'),
+        features: typeof raw.zh?.features === 'string' ? raw.zh.features : (descriptionZh || description)
+      }
+    } : {}),
     // Compatibility fields
     name_vi: nameVi,
     name_en: name,
+    ...(nameKo ? { name_ko: nameKo } : {}),
+    ...(nameZh ? { name_zh: nameZh } : {}),
     description_vi: descriptionVi,
     description_en: description,
+    ...(descriptionKo ? { description_ko: descriptionKo } : {}),
+    ...(descriptionZh ? { description_zh: descriptionZh } : {}),
     origin_vi: typeof raw.originVi === 'string' ? raw.originVi : 'Đồng bằng Sông Cửu Long, Việt Nam',
     origin_en: typeof raw.origin === 'string' ? raw.origin : 'Mekong Delta, Vietnam',
+    ...(originKo ? { origin_ko: originKo } : {}),
+    ...(originZh ? { origin_zh: originZh } : {}),
     shelf_life: specs.shelfLifeVi,
     packaging: specs.packagingVi,
     order: Number(raw.order) || 999
@@ -133,8 +179,8 @@ export function mergeProduct(
   existing: ProductItem | Record<string, any> | undefined | null,
   incoming: Partial<ProductItem> | Record<string, any>
 ): ProductItem {
-  const base = existing && typeof existing === 'object' ? { ...existing } : {};
-  const update = incoming && typeof incoming === 'object' ? { ...incoming } : {};
+  const base: Record<string, any> = existing && typeof existing === 'object' ? { ...existing } : {};
+  const update: Record<string, any> = incoming && typeof incoming === 'object' ? { ...incoming } : {};
 
   // If update specifies or changes image, ensure imageWebp and imageJpg match
   if (update.image) {
@@ -146,13 +192,24 @@ export function mergeProduct(
     }
   }
 
-  const merged = {
+  const merged: Record<string, any> = {
     ...base,
-    ...update,
     specs: { ...(base.specs || {}), ...(update.specs || {}) },
     en: { ...(base.en || {}), ...(update.en || {}) },
-    vi: { ...(base.vi || {}), ...(update.vi || {}) }
+    vi: { ...(base.vi || {}), ...(update.vi || {}) },
+    ...(base.ko || update.ko ? { ko: { ...(base.ko || {}), ...(update.ko || {}) } } : {}),
+    ...(base.zh || update.zh ? { zh: { ...(base.zh || {}), ...(update.zh || {}) } } : {}),
   };
+
+  for (const [key, value] of Object.entries(update)) {
+    if (key === 'specs' || key === 'en' || key === 'vi' || key === 'ko' || key === 'zh') continue;
+    if (value !== undefined && value !== null) {
+      if (typeof value === 'string' && value.trim() === '' && base[key]) {
+        continue;
+      }
+      merged[key] = value;
+    }
+  }
 
   return validateProduct(merged).data;
 }

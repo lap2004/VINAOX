@@ -32,6 +32,8 @@ export default wrapHandler(async (req: any, res: any) => {
       const normalizeRawProduct = (raw: any, idx = 0) => {
         const nameVi = raw.name_vi || raw.nameVi || raw.vi?.name || 'Sản phẩm VINAXO';
         const nameEn = raw.name_en || raw.name || raw.nameEn || raw.en?.name || nameVi;
+        const nameKo = raw.name_ko || raw.nameKo || raw.ko?.name || '';
+        const nameZh = raw.name_zh || raw.nameZh || raw.zh?.name || '';
         const slug = raw.slug || raw.id || `product-${idx}`;
         return {
           ...raw,
@@ -39,14 +41,20 @@ export default wrapHandler(async (req: any, res: any) => {
           slug,
           name_vi: nameVi,
           name_en: nameEn,
+          name_ko: nameKo,
+          name_zh: nameZh,
           nameVi,
           name: nameEn,
           category: raw.category || 'soft-dried',
           image: raw.image || raw.imageWebp || raw.imageJpg || '/assets/images/products/placeholder.webp',
           description_vi: raw.description_vi || raw.descriptionVi || raw.shortDescriptionVi || raw.vi?.desc || '',
           description_en: raw.description_en || raw.description || raw.shortDescription || raw.en?.desc || '',
-          origin_vi: raw.origin_vi || raw.originVi || raw.origin || '',
-          origin_en: raw.origin_en || raw.origin || '',
+          description_ko: raw.description_ko || raw.descriptionKo || raw.shortDescriptionKo || raw.ko?.desc || '',
+          description_zh: raw.description_zh || raw.descriptionZh || raw.shortDescriptionZh || raw.zh?.desc || '',
+          origin_vi: raw.origin_vi || raw.originVi || raw.vi?.origin || raw.origin || '',
+          origin_en: raw.origin_en || raw.originEn || raw.en?.origin || raw.origin || '',
+          origin_ko: raw.origin_ko || raw.originKo || raw.ko?.origin || '',
+          origin_zh: raw.origin_zh || raw.originZh || raw.zh?.origin || '',
           shelf_life: raw.shelf_life || raw.specs?.shelfLifeVi || '12 Tháng',
           packaging: raw.packaging || raw.specs?.packagingVi || 'Túi zip / Thùng carton xuất khẩu',
           certifications: Array.isArray(raw.certifications) ? raw.certifications : [],

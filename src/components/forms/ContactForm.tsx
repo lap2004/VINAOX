@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Send, CheckCircle2, ShieldCheck, AlertCircle, Mail, Copy, Check } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { productsData } from '../../data/products';
+import { getProductLocalized, productsData } from '../../data/products';
 import {
   InquiryPayload,
   buildInquiryPlainText,
@@ -18,8 +18,7 @@ export interface ContactFormProps {
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', onSuccess }) => {
-  const { language } = useLanguage();
-  const isVi = language === 'vi';
+  const { language, pick } = useLanguage();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -65,18 +64,24 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
 
     if (!name || !email || !phone) {
       setErrorMessage(
-        isVi
-          ? 'Vui lòng cung cấp đầy đủ thông tin: Họ tên, Email và Số điện thoại liên hệ.'
-          : 'Please enter your Name, Business Email, and Phone number.'
+        pick({
+          vi: 'Vui lòng cung cấp đầy đủ thông tin: Họ tên, Email và Số điện thoại liên hệ.',
+          en: 'Please enter your Name, Business Email, and Phone number.',
+          ko: '담당자 성함, 기업 이메일, 전화번호를 모두 입력해 주세요.',
+          zh: '请完整填写联系人姓名、企业邮箱及联系电话。'
+        })
       );
       return;
     }
 
     if (!EMAIL_REGEX.test(email)) {
       setErrorMessage(
-        isVi
-          ? 'Địa chỉ email không đúng định dạng. Vui lòng kiểm tra lại.'
-          : 'Please enter a valid business email address.'
+        pick({
+          vi: 'Địa chỉ email không đúng định dạng. Vui lòng kiểm tra lại.',
+          en: 'Please enter a valid business email address.',
+          ko: '올바른 기업 이메일 형식이 아닙니다. 다시 확인해 주세요.',
+          zh: '电子邮箱格式不正确，请核对后重试。'
+        })
       );
       return;
     }
@@ -109,9 +114,12 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
 
     setErrorMessage(
       result.error ||
-        (isVi
-          ? 'Không thể gửi yêu cầu qua máy chủ lúc này. Dữ liệu của bạn vẫn được giữ nguyên.'
-          : 'Unable to dispatch right now. Your entered form data is preserved.')
+        pick({
+          vi: 'Không thể gửi yêu cầu qua máy chủ lúc này. Dữ liệu của bạn vẫn được giữ nguyên.',
+          en: 'Unable to dispatch right now. Your entered form data is preserved.',
+          ko: '현재 서버를 통해 문의를 발송할 수 없습니다. 입력하신 정보는 그대로 유지됩니다.',
+          zh: '暂时无法通过服务器提交，您填写的表单内容已安全保留。'
+        })
     );
     setFallbackPayload(payload);
     setFallbackRecipient(result.recipient || '');
@@ -162,7 +170,12 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
             marginBottom: '12px',
           }}
         >
-          {isVi ? 'Cảm Ơn Quý Doanh Nghiệp Đã Liên Hệ!' : 'Thank You for Your Partnership Inquiry!'}
+          {pick({
+            vi: 'Cảm Ơn Quý Doanh Nghiệp Đã Liên Hệ!',
+            en: 'Thank You for Your Partnership Inquiry!',
+            ko: 'B2B 파트너십 문의가 정상 접수되었습니다!',
+            zh: '感谢贵司联系 VINAXO！'
+          })}
         </h3>
         <p
           style={{
@@ -172,13 +185,21 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
             margin: '0 auto 14px',
           }}
         >
-          {isVi
-            ? 'Yêu cầu báo giá và thông số kỹ thuật của bạn đã được chuyển tới Bộ phận Xuất khẩu & Thương mại B2B VINAXO. Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc.'
-            : 'Your inquiry and specifications have been forwarded to the VINAXO B2B Export Desk. Our team will review your requirements and respond within 24 business hours.'}
+          {pick({
+            vi: 'Yêu cầu báo giá và thông số kỹ thuật của bạn đã được chuyển tới Bộ phận Xuất khẩu & Thương mại B2B VINAXO. Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc.',
+            en: 'Your inquiry and specifications have been forwarded to the VINAXO B2B Export Desk. Our team will review your requirements and respond within 24 business hours.',
+            ko: '견적 및 사양 문의가 VINAXO B2B 수출팀에 전달되었습니다. 영업일 기준 24시간 이내에 상세 검토 후 회신드리겠습니다.',
+            zh: '您的报价与规格需求已转交 VINAXO B2B 出口事业部。我们的外贸团队将在 24 个工作小时内与您对接。'
+          })}
         </p>
         {referenceId && (
           <div style={{ marginBottom: '20px', fontSize: '0.85rem', fontWeight: 700, color: 'var(--forest-green)' }}>
-            {isVi ? `Mã tham chiếu: ${referenceId}` : `Reference ID: ${referenceId}`}
+            {pick({
+              vi: `Mã tham chiếu: ${referenceId}`,
+              en: `Reference ID: ${referenceId}`,
+              ko: `접수 번호: ${referenceId}`,
+              zh: `受理编号：${referenceId}`
+            })}
           </div>
         )}
         <Button
@@ -198,7 +219,12 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
             });
           }}
         >
-          {isVi ? 'Gửi Yêu Cầu Khác' : 'Submit Another Inquiry'}
+          {pick({
+            vi: 'Gửi Yêu Cầu Khác',
+            en: 'Submit Another Inquiry',
+            ko: '추가 문의 작성',
+            zh: '提交其他询盘'
+          })}
         </Button>
       </div>
     );
@@ -234,14 +260,20 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
             marginBottom: '8px',
           }}
         >
-          {isVi
-            ? 'Gửi Thư Liên Hệ & Yêu Cầu Báo Giá Xuất Khẩu'
-            : 'Direct B2B Quote & Export Inquiry Form'}
+          {pick({
+            vi: 'Gửi Thư Liên Hệ & Yêu Cầu Báo Giá Xuất Khẩu',
+            en: 'Direct B2B Quote & Export Inquiry Form',
+            ko: '수출 견적 및 B2B 파트너십 직접 문의',
+            zh: '发送出口询盘与 B2B 合作报价申请'
+          })}
         </h3>
         <p style={{ fontSize: '0.88rem', color: 'var(--color-body)' }}>
-          {isVi
-            ? 'Điền thông tin doanh nghiệp và quy cách sản phẩm cần báo giá CIF/FOB. Nhà máy VINAXO cung cấp mẫu thử nghiệm và bảng kiểm nghiệm an toàn thực phẩm.'
-            : 'Fill in your enterprise details for CIF/FOB quotations. VINAXO provides commercial sample kits and full laboratory safety COAs.'}
+          {pick({
+            vi: 'Điền thông tin doanh nghiệp và quy cách sản phẩm cần báo giá CIF/FOB. Nhà máy VINAXO cung cấp mẫu thử nghiệm và bảng kiểm nghiệm an toàn thực phẩm.',
+            en: 'Fill in your enterprise details for CIF/FOB quotations. VINAXO provides commercial sample kits and full laboratory safety COAs.',
+            ko: '기업 정보 및 CIF/FOB 견적 희망 품목을 입력해 주세요. VINAXO 공장은 무상 샘플 키트와 식품안전 시험성적서(COA)를 제공합니다.',
+            zh: '请填写贵司信息及所需 CIF/FOB 报价产品规格。VINAXO 工厂提供试吃样品套装及完整第三方食品安全检测报告（COA）。'
+          })}
         </p>
       </div>
 
@@ -270,7 +302,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
                 style={{ padding: '7px 12px', fontSize: '0.8rem', textDecoration: 'none' }}
               >
                 <Mail size={14} />
-                <span>{isVi ? 'Mở ứng dụng Email' : 'Open Email App'}</span>
+                <span>{pick({ vi: 'Mở ứng dụng Email', en: 'Open Email App', ko: '이메일 앱 열기', zh: '打开邮件客户端' })}</span>
               </a>
               <button
                 type="button"
@@ -279,7 +311,11 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
                 style={{ padding: '7px 12px', fontSize: '0.8rem' }}
               >
                 {copied ? <Check size={14} /> : <Copy size={14} />}
-                <span>{copied ? (isVi ? 'Đã sao chép' : 'Copied') : isVi ? 'Sao chép nội dung' : 'Copy Inquiry'}</span>
+                <span>
+                  {copied
+                    ? pick({ vi: 'Đã sao chép', en: 'Copied', ko: '복사됨', zh: '已复制' })
+                    : pick({ vi: 'Sao chép nội dung', en: 'Copy Inquiry', ko: '문의 내용 복사', zh: '复制询盘内容' })}
+                </span>
               </button>
             </div>
           )}
@@ -290,7 +326,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="grid-mobile-1">
         <div className="form-group">
           <label className="form-label">
-            {isVi ? 'Họ và tên người liên hệ' : 'Full Name'} <span className="required">*</span>
+            {pick({ vi: 'Họ và tên người liên hệ', en: 'Full Name', ko: '담당자 성함', zh: '联系人姓名' })} <span className="required">*</span>
           </label>
           <input
             type="text"
@@ -299,14 +335,16 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
             maxLength={100}
             value={formData.name}
             onChange={handleChange}
-            placeholder={isVi ? 'Ví dụ: Nguyễn Văn A' : 'e.g. Johnathan Smith'}
+            placeholder={pick({ vi: 'Ví dụ: Nguyễn Văn A', en: 'e.g. Johnathan Smith', ko: '예: 김민수 / Johnathan Smith', zh: '例如：张伟 / Johnathan Smith' })}
             className="form-input"
             required
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label">{isVi ? 'Tên công ty / Tổ chức' : 'Company / Enterprise'}</label>
+          <label className="form-label">
+            {pick({ vi: 'Tên công ty / Tổ chức', en: 'Company / Enterprise', ko: '회사명 / 법인명', zh: '公司 / 机构名称' })}
+          </label>
           <input
             type="text"
             name="company"
@@ -314,7 +352,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
             maxLength={150}
             value={formData.company}
             onChange={handleChange}
-            placeholder={isVi ? 'Ví dụ: Pacific Export Trading Ltd' : 'e.g. Global Foods Trading Ltd'}
+            placeholder={pick({ vi: 'Ví dụ: Pacific Export Trading Ltd', en: 'e.g. Global Foods Trading Ltd', ko: '예: Pacific Export Trading Ltd', zh: '例如：环球食品贸易有限公司' })}
             className="form-input"
           />
         </div>
@@ -324,7 +362,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="grid-mobile-1">
         <div className="form-group">
           <label className="form-label">
-            {isVi ? 'Email doanh nghiệp' : 'Business Email'} <span className="required">*</span>
+            {pick({ vi: 'Email doanh nghiệp', en: 'Business Email', ko: '기업 이메일', zh: '企业邮箱' })} <span className="required">*</span>
           </label>
           <input
             type="email"
@@ -342,7 +380,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
 
         <div className="form-group">
           <label className="form-label">
-            {isVi ? 'Điện thoại / WhatsApp' : 'Phone / WhatsApp'} <span className="required">*</span>
+            {pick({ vi: 'Điện thoại / WhatsApp', en: 'Phone / WhatsApp', ko: '전화 / WhatsApp', zh: '电话 / WhatsApp' })} <span className="required">*</span>
           </label>
           <input
             type="tel"
@@ -362,7 +400,9 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
       {/* Row 3: Country & Product */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="grid-mobile-1">
         <div className="form-group">
-          <label className="form-label">{isVi ? 'Quốc gia / Thị trường' : 'Country / Target Market'}</label>
+          <label className="form-label">
+            {pick({ vi: 'Quốc gia / Thị trường', en: 'Country / Target Market', ko: '국가 / 목표 수출 시장', zh: '国家 / 目标市场' })}
+          </label>
           <input
             type="text"
             name="country"
@@ -370,26 +410,39 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
             maxLength={100}
             value={formData.country}
             onChange={handleChange}
-            placeholder={isVi ? 'Ví dụ: Hoa Kỳ, Đức, Hàn Quốc, Việt Nam' : 'e.g. United States, Germany, South Korea'}
+            placeholder={pick({ vi: 'Ví dụ: Hoa Kỳ, Đức, Hàn Quốc, Việt Nam', en: 'e.g. United States, Germany, South Korea', ko: '예: 한국, 미국, 독일, 일본', zh: '例如：中国、韩国、美国、德国' })}
             className="form-input"
           />
         </div>
 
         <div className="form-group">
-          <label className="form-label">{isVi ? 'Sản phẩm quan tâm' : 'Product Line'}</label>
+          <label className="form-label">
+            {pick({ vi: 'Sản phẩm quan tâm', en: 'Product Line', ko: '관심 품목', zh: '意向产品系列' })}
+          </label>
           <select name="product" value={formData.product} onChange={handleChange} className="form-select">
             <option value="">
-              {isVi ? '-- Chọn sản phẩm hoặc dịch vụ B2B --' : '-- Select Product or B2B Requirement --'}
+              {pick({
+                vi: '-- Chọn sản phẩm hoặc dịch vụ B2B --',
+                en: '-- Select Product or B2B Requirement --',
+                ko: '-- 제품 또는 B2B 서비스 선택 --',
+                zh: '-- 请选择产品或 B2B 合作项目 --'
+              })}
             </option>
-            {productsData.map((p) => (
-              <option key={p.id} value={isVi ? p.nameVi : p.name}>
-                {isVi ? p.nameVi : p.name}
-              </option>
-            ))}
+            {productsData.map((p) => {
+              const pName = getProductLocalized(p, language).name;
+              return (
+                <option key={p.id} value={pName}>
+                  {pName}
+                </option>
+              );
+            })}
             <option value="OEM / Private Label">
-              {isVi
-                ? 'Gia công OEM nhãn riêng / Đóng gói xuất khẩu (MOQ từ 200 kg)'
-                : 'OEM / ODM Private Label Formulation & Packaging (MOQ from 200 kg)'}
+              {pick({
+                vi: 'Gia công OEM nhãn riêng / Đóng gói xuất khẩu (MOQ từ 200 kg)',
+                en: 'OEM / ODM Private Label Formulation & Packaging (MOQ from 200 kg)',
+                ko: 'OEM / ODM 자체 브랜드(PB) 위탁 생산 (MOQ 200kg~)',
+                zh: 'OEM / ODM 自有品牌贴牌与出口包装（起订量 200 公斤起）'
+              })}
             </option>
           </select>
         </div>
@@ -398,7 +451,12 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
       {/* Row 4: Volume & Destination */}
       <div className="form-group">
         <label className="form-label">
-          {isVi ? 'Sản lượng dự kiến & Yêu cầu đóng gói' : 'Estimated Volume & Packaging Preference'}
+          {pick({
+            vi: 'Sản lượng dự kiến & Yêu cầu đóng gói',
+            en: 'Estimated Volume & Packaging Preference',
+            ko: '예상 주문 수량 및 포장 사양',
+            zh: '预计采购量及包装规格要求'
+          })}
         </label>
         <input
           type="text"
@@ -406,28 +464,37 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
           maxLength={200}
           value={formData.volume}
           onChange={handleChange}
-          placeholder={
-            isVi
-              ? 'Ví dụ: 1 container 20ft (FCL) / Túi zip 250g / Thùng carton 10kg'
-              : 'e.g. 1 FCL 20ft / 5 tons bulk / 250g retail pouch OEM'
-          }
+          placeholder={pick({
+            vi: 'Ví dụ: 1 container 20ft (FCL) / Túi zip 250g / Thùng carton 10kg',
+            en: 'e.g. 1 FCL 20ft / 5 tons bulk / 250g retail pouch OEM',
+            ko: '예: 20ft 컨테이너 1대(FCL) / 250g 지퍼 파우치 / 10kg 벌크 카톤',
+            zh: '例如：20尺整柜（FCL）/ 250g 自封袋 / 10kg 出口纸箱'
+          })}
           className="form-input"
         />
       </div>
 
       {/* Row 5: Message */}
       <div className="form-group">
-        <label className="form-label">{isVi ? 'Nội dung trao đổi cụ thể' : 'Detailed Message / Technical Inquiries'}</label>
+        <label className="form-label">
+          {pick({
+            vi: 'Nội dung trao đổi cụ thể',
+            en: 'Detailed Message / Technical Inquiries',
+            ko: '세부 요청 사항 및 기술 문의',
+            zh: '具体需求与技术咨询内容'
+          })}
+        </label>
         <textarea
           name="message"
           maxLength={3000}
           value={formData.message}
           onChange={handleChange}
-          placeholder={
-            isVi
-              ? 'Ghi chú các tiêu chuẩn an toàn thực phẩm cần đáp ứng, yêu cầu chứng chỉ kiểm dịch, hoặc kế hoạch giao hàng...'
-              : 'Specify target port, certification requirements (BRCGS, OCOP), custom formulation needs, or delivery schedule...'
-          }
+          placeholder={pick({
+            vi: 'Ghi chú các tiêu chuẩn an toàn thực phẩm cần đáp ứng, yêu cầu chứng chỉ kiểm dịch, hoặc kế hoạch giao hàng...',
+            en: 'Specify target port, certification requirements (BRCGS, OCOP), custom formulation needs, or delivery schedule...',
+            ko: '도착항(CIF/FOB), 필요 인증(BRCGS, FDA 등), 맞춤형 레시피 및 희망 납기 일정을 기재해 주세요...',
+            zh: '请填写目的港、所需认证标准（BRCGS、FDA 等）、定制配方要求或预期交货时间...'
+          })}
           className="form-textarea"
           style={{ minHeight: '110px' }}
         />
@@ -455,20 +522,19 @@ export const ContactForm: React.FC<ContactFormProps> = ({ initialProduct = '', o
         >
           <ShieldCheck size={18} color="var(--primary-green)" />
           <span>
-            {isVi
-              ? 'Thông tin bảo mật • Tổ hợp nhà máy 25.000 m² tại Xã Vĩnh Bình, Tỉnh Đồng Tháp'
-              : 'Direct from Factory • 25,000 m² facility in Vinh Binh Commune, Dong Thap Province'}
+            {pick({
+              vi: 'Thông tin bảo mật • Tổ hợp nhà máy 25.000 m² tại Xã Vĩnh Bình, Tỉnh Đồng Tháp',
+              en: 'Direct from Factory • 25,000 m² facility in Vinh Binh Commune, Dong Thap Province',
+              ko: '기업 정보 비밀 보장 • 동탑성 빈빈 25,000 m² 직영 공장 출고',
+              zh: '商业信息严格保密 • 越南同塔省永平 25,000 m² 直属现代化工厂直供'
+            })}
           </span>
         </div>
 
         <Button type="submit" variant="primary" disabled={isSubmitting} icon={<Send size={16} />}>
           {isSubmitting
-            ? isVi
-              ? 'Đang gửi...'
-              : 'Sending...'
-            : isVi
-            ? 'Gửi Yêu Cầu Báo Giá'
-            : 'Send Partnership Request'}
+            ? pick({ vi: 'Đang gửi...', en: 'Sending...', ko: '전송 중...', zh: '正在发送...' })
+            : pick({ vi: 'Gửi Yêu Cầu Báo Giá', en: 'Send Partnership Request', ko: '견적 요청 보내기', zh: '发送询盘报价请求' })}
         </Button>
       </div>
     </form>

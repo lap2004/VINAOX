@@ -2,16 +2,21 @@ import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { ZoomIn } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { COMPLIANCE_ITEMS, QUALITY_PROMISE_CARDS, BROCHURE_FAQS, ComplianceBadge } from '../data/brochureData';
+import {
+  COMPLIANCE_ITEMS,
+  QUALITY_PROMISE_CARDS,
+  BROCHURE_FAQS,
+  ComplianceBadge,
+  getComplianceLocalized,
+} from '../data/brochureData';
 import { PageHero } from '../components/ui/PageHero';
 import { CorporateCTA } from '../components/ui/CorporateCTA';
 import { CertificatePreviewModal } from '../components/ui/CertificatePreviewModal';
 import { MainLayoutContext } from '../components/layout/MainLayout';
 
 export const Quality: React.FC = () => {
-  const { language, t } = useLanguage();
+  const { language, t, pick } = useLanguage();
   const { onOpenQuote } = useOutletContext<MainLayoutContext>();
-  const isVi = language === 'vi';
   const [previewCert, setPreviewCert] = useState<ComplianceBadge | null>(null);
 
   const processSteps = [
@@ -51,15 +56,33 @@ export const Quality: React.FC = () => {
     <div className="quality-page">
       {/* Page Hero */}
       <PageHero
-        badge={isVi ? 'TIÊU CHUẨN CHẤT LƯỢNG • BRCGS • ISO 22000 • HACCP' : 'QUALITY ASSURANCE • BRCGS • ISO 22000 • FDA'}
-        title={t('pageBanners.quality.title') || (isVi ? 'Tiêu Chuẩn Chất Lượng & Quy Trình Chế Biến' : 'Quality Assurance & Processing Standards')}
+        badge={pick({
+          vi: 'TIÊU CHUẨN CHẤT LƯỢNG • BRCGS • ISO 22000 • HACCP',
+          en: 'QUALITY ASSURANCE • BRCGS • ISO 22000 • FDA',
+          ko: '품질 보증 표준 • BRCGS • ISO 22000 • US FDA',
+          zh: '国际品质保障 • BRCGS • ISO 22000 • 美国 FDA'
+        })}
+        title={t('pageBanners.quality.title') || pick({
+          vi: 'Tiêu Chuẩn Chất Lượng & Quy Trình Chế Biến',
+          en: 'Quality Assurance & Processing Standards',
+          ko: '품질 보증 및 위생 가공 공정',
+          zh: '国际质量标准与现代化加工流程'
+        })}
         description={
           t('pageBanners.quality.subtitle') ||
-          (isVi
-            ? 'Kiểm soát an toàn thực phẩm nghiêm ngặt từ vùng trồng đến đóng gói vô trùng theo chuẩn BRCGS, ISO 22000, HACCP, SMETA, Kosher và Halal.'
-            : 'Strict food safety controls from orchard sourcing to sterile cleanroom packaging under BRCGS, ISO 22000, HACCP, US FDA registration, SMETA, Kosher, and Halal.')
+          pick({
+            vi: 'Kiểm soát an toàn thực phẩm nghiêm ngặt từ vùng trồng đến đóng gói vô trùng theo chuẩn BRCGS, ISO 22000, HACCP, SMETA, Kosher và Halal.',
+            en: 'Strict food safety controls from orchard sourcing to sterile cleanroom packaging under BRCGS, ISO 22000, HACCP, US FDA registration, SMETA, Kosher, and Halal.',
+            ko: '원료 산지 수확부터 클린룸 무균 포장까지 BRCGS, ISO 22000, HACCP, 미국 FDA 등록, SMETA, 코셔(Kosher) 및 할랄 기준을 철저히 준수합니다.',
+            zh: '严格执行从果园原产地采购到洁净车间包装的全链路管控，全面符合 BRCGS、ISO 22000、HACCP、美国 FDA 注册、SMETA、Kosher 及 Halal 标准。'
+          })
         }
-        breadcrumbCurrent={isVi ? 'Chất Lượng & Sản Xuất' : 'Quality & Production'}
+        breadcrumbCurrent={pick({
+          vi: 'Chất Lượng & Sản Xuất',
+          en: 'Quality & Production',
+          ko: '품질 및 생산 공정',
+          zh: '品质控制与生产'
+        })}
       />
 
       {/* ========================================================================
@@ -103,26 +126,42 @@ export const Quality: React.FC = () => {
           <div className="facility-overview-grid">
             <div>
               <span className="section-label">
-                {isVi ? 'NĂNG LỰC TỔ HỢP NHÀ MÁY' : 'FACILITY INFRASTRUCTURE'}
+                {pick({
+                  vi: 'NĂNG LỰC TỔ HỢP NHÀ MÁY',
+                  en: 'FACILITY INFRASTRUCTURE',
+                  ko: '생산 공장 인프라 역량',
+                  zh: '现代化工厂基础设施'
+                })}
               </span>
               <h2 className="section-title">
-                {isVi
-                  ? 'Tổ Hợp Nhà Máy 25.000 M² Đạt Chuẩn Quốc Tế'
-                  : '25,000 m² Integrated Food Processing Complex'}
+                {pick({
+                  vi: 'Tổ Hợp Nhà Máy 25.000 M² Đạt Chuẩn Quốc Tế',
+                  en: '25,000 m² Integrated Food Processing Complex',
+                  ko: '국제 표준 25,000 m² 통합 식품 가공 단지',
+                  zh: '国际高标准 25,000 平方米一体化食品加工园'
+                })}
               </h2>
               <p className="section-desc" style={{ marginTop: '14px' }}>
-                {isVi
-                  ? 'Tổ hợp sản xuất của VINAXO vận hành công suất 300 tấn thành phẩm mỗi tháng với khu sấy nhiệt thấp (~60°C), chiên chân không tách dầu ly tâm, kho lạnh bảo quản mùa vụ và khu đóng gói nhãn riêng OEM.'
-                  : 'Vinaxo’s 25,000 m² manufacturing site delivers 300 tons monthly output across heat-pump low-temperature dehydrators, vacuum-frying centrifuge lines, temperature-controlled warehousing, and dedicated retail OEM packing rooms.'}
+                {pick({
+                  vi: 'Tổ hợp sản xuất của VINAXO vận hành công suất 300 tấn thành phẩm mỗi tháng với khu sấy nhiệt thấp (~60°C), chiên chân không tách dầu ly tâm, kho lạnh bảo quản mùa vụ và khu đóng gói nhãn riêng OEM.',
+                  en: 'Vinaxo’s 25,000 m² manufacturing site delivers 300 tons monthly output across heat-pump low-temperature dehydrators, vacuum-frying centrifuge lines, temperature-controlled warehousing, and dedicated retail OEM packing rooms.',
+                  ko: 'VINAXO의 25,000 m² 공장은 저온 히트펌프 건조기(~60°C), 진공 원심 탈유 라인, 계절별 저온 저장 창고 및 전용 OEM 포장실을 통해 월 300톤의 완제품을 생산합니다.',
+                  zh: 'VINAXO 25,000 平方米生产园区月成品产能达 300 吨，配备低温热泵干燥车间（~60°C）、真空离心脱油产线、恒温冷链原料库及独立 OEM 贴牌包装车间。'
+                })}
               </p>
 
               <div className="facility-stats-grid">
                 <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--soft-border)' }}>
                   <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--vinaxo-red)', fontFamily: 'var(--font-display)' }}>
-                    300 t
+                    {pick({ vi: '300 tấn', en: '300 t', ko: '300톤', zh: '300 吨' })}
                   </div>
                   <div style={{ fontSize: '0.84rem', color: 'var(--color-body)', marginTop: '4px', fontWeight: 600 }}>
-                    {isVi ? 'Sản lượng thành phẩm / tháng' : 'Monthly export capacity'}
+                    {pick({
+                      vi: 'Sản lượng thành phẩm / tháng',
+                      en: 'Monthly export capacity',
+                      ko: '월간 완제품 수출 생산량',
+                      zh: '月均成品出口产能'
+                    })}
                   </div>
                 </div>
 
@@ -131,7 +170,12 @@ export const Quality: React.FC = () => {
                     25,000 m²
                   </div>
                   <div style={{ fontSize: '0.84rem', color: 'var(--color-body)', marginTop: '4px', fontWeight: 600 }}>
-                    {isVi ? 'Tổng quy mô tổ hợp nhà máy' : 'Total factory area'}
+                    {pick({
+                      vi: 'Tổng quy mô tổ hợp nhà máy',
+                      en: 'Total factory area',
+                      ko: '총 공장 부지 면적',
+                      zh: '工厂园区总面积'
+                    })}
                   </div>
                 </div>
 
@@ -140,16 +184,26 @@ export const Quality: React.FC = () => {
                     200 kg
                   </div>
                   <div style={{ fontSize: '0.84rem', color: 'var(--color-body)', marginTop: '4px', fontWeight: 600 }}>
-                    {isVi ? 'MOQ khởi điểm (tùy mặt hàng)' : 'Starter MOQ (SKU dependent)'}
+                    {pick({
+                      vi: 'MOQ khởi điểm (tùy mặt hàng)',
+                      en: 'Starter MOQ (SKU dependent)',
+                      ko: '최소 주문 수량 (품목별 상이)',
+                      zh: '起步最低起订量（视品类而定）'
+                    })}
                   </div>
                 </div>
 
                 <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--soft-border)' }}>
                   <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--dark-chocolate)', fontFamily: 'var(--font-display)' }}>
-                    2–4 wks
+                    {pick({ vi: '2–4 tuần', en: '2–4 wks', ko: '2~4주', zh: '2–4 周' })}
                   </div>
                   <div style={{ fontSize: '0.84rem', color: 'var(--color-body)', marginTop: '4px', fontWeight: 600 }}>
-                    {isVi ? 'Thời gian giao hàng tiêu chuẩn' : 'Typical production lead time'}
+                    {pick({
+                      vi: 'Thời gian giao hàng tiêu chuẩn',
+                      en: 'Typical production lead time',
+                      ko: '표준 생산 및 납품 리드타임',
+                      zh: '标准生产交货周期'
+                    })}
                   </div>
                 </div>
               </div>
@@ -161,7 +215,12 @@ export const Quality: React.FC = () => {
                   <source srcSet="/assets/images/factory-2026/factory-featured.webp" type="image/webp" />
                   <img
                     src="/assets/images/factory-2026/factory-featured.jpg"
-                    alt={isVi ? 'Phân xưởng sấy trái cây VINAXO 25.000 m²' : 'VINAXO 25,000 m² processing facility floor'}
+                    alt={pick({
+                      vi: 'Phân xưởng sấy trái cây VINAXO 25.000 m²',
+                      en: 'VINAXO 25,000 m² processing facility floor',
+                      ko: 'VINAXO 25,000 m² 건조 과일 가공 작업장',
+                      zh: 'VINAXO 25,000 平方米现代化果干加工车间'
+                    })}
                     style={{ width: '100%', height: 'auto', display: 'block' }}
                     loading="lazy"
                   />
@@ -176,8 +235,12 @@ export const Quality: React.FC = () => {
               {QUALITY_PROMISE_CARDS.map((card) => (
                 <div key={card.number} className="quality-promise-card">
                   <div className="promise-number">{card.number}</div>
-                  <h3 className="promise-title">{isVi ? card.titleVi : card.titleEn}</h3>
-                  <p className="promise-desc">{isVi ? card.descVi : card.descEn}</p>
+                  <h3 className="promise-title">
+                    {pick({ vi: card.titleVi, en: card.titleEn, ko: card.titleKo, zh: card.titleZh })}
+                  </h3>
+                  <p className="promise-desc">
+                    {pick({ vi: card.descVi, en: card.descEn, ko: card.descKo, zh: card.descZh })}
+                  </p>
                 </div>
               ))}
             </div>
@@ -192,22 +255,34 @@ export const Quality: React.FC = () => {
         <div className="container">
           <div className="text-center" style={{ maxWidth: '800px', margin: '0 auto 48px auto' }}>
             <span className="section-label">
-              {isVi ? 'CHỨNG NHẬN • ĐĂNG KÝ • KIỂM TOÁN' : 'QUALITY & COMPLIANCE'}
+              {pick({
+                vi: 'CHỨNG NHẬN • ĐĂNG KÝ • KIỂM TOÁN',
+                en: 'QUALITY & COMPLIANCE',
+                ko: '인증 • 등록 • 윤리 감사',
+                zh: '资质认证 • 官方注册 • 合规审核'
+              })}
             </span>
             <h2 className="section-title">
-              {isVi
-                ? 'Hồ Sơ Chứng Nhận & Kiểm Toán Quốc Tế'
-                : 'CERTIFICATIONS & AUDITED COMPLIANCE'}
+              {pick({
+                vi: 'Hồ Sơ Chứng Nhận & Kiểm Toán Quốc Tế',
+                en: 'CERTIFICATIONS & AUDITED COMPLIANCE',
+                ko: '국제 식품안전 인증 및 감사 현황',
+                zh: '国际认证资质与第三方审计档案'
+              })}
             </h2>
             <p className="section-desc section-desc-center">
-              {isVi
-                ? 'Danh mục 8 tiêu chuẩn chính thức từ Vinaxo Brochure 2026 (bao gồm bản chụp chứng nhận thực tế và phạm vi kiểm toán minh bạch).'
-                : 'Official 2026 compliance portfolio showcasing scanned certificates, facility registration, and independent audit verifications.'}
+              {pick({
+                vi: 'Danh mục 8 tiêu chuẩn chính thức từ Vinaxo Brochure 2026 (bao gồm bản chụp chứng nhận thực tế và phạm vi kiểm toán minh bạch).',
+                en: 'Official 2026 compliance portfolio showcasing scanned certificates, facility registration, and independent audit verifications.',
+                ko: '2026 공식 브로슈어에 수록된 8대 국제 표준 목록과 실제 인증서 스캔본 및 투명한 감사 범위를 확인하실 수 있습니다.',
+                zh: '汇集 2026 官方手册 8 项国际标准清单，公开真实证书扫描件及独立审核范围说明。'
+              })}
             </p>
           </div>
 
           <div className="certifications-grid-4">
             {COMPLIANCE_ITEMS.filter((item) => item.id !== 'costco').map((item) => {
+              const locCert = getComplianceLocalized(item, language);
               const kindClass =
                 item.kindEn === 'Certification'
                   ? 'trust-kind-cert'
@@ -222,13 +297,18 @@ export const Quality: React.FC = () => {
                       onClick={() => setPreviewCert(item)}
                       className="cert-scan-thumb-wrap"
                       style={{ width: '100%', padding: 0, cursor: 'zoom-in' }}
-                      aria-label={`Inspect ${item.name} certificate image`}
+                      aria-label={pick({
+                        vi: `Xem lớn ảnh chứng nhận ${locCert.name}`,
+                        en: `Inspect ${locCert.name} certificate image`,
+                        ko: `${locCert.name} 인증서 이미지 확대 보기`,
+                        zh: `放大查看 ${locCert.name} 证书扫描件`
+                      })}
                     >
                       <picture style={{ width: '100%', height: '100%' }}>
                         <source srcSet={item.certImageWebp} type="image/webp" />
                         <img
                           src={item.certImageJpg}
-                          alt={`${item.name} — VINAXO`}
+                          alt={`${locCert.name} — VINAXO`}
                           loading="lazy"
                         />
                       </picture>
@@ -249,7 +329,7 @@ export const Quality: React.FC = () => {
                         }}
                       >
                         <ZoomIn size={12} />
-                        {isVi ? 'Xem lớn' : 'Preview'}
+                        {pick({ vi: 'Xem lớn', en: 'Preview', ko: '확대 보기', zh: '查看大图' })}
                       </span>
                     </button>
                   ) : (
@@ -267,7 +347,12 @@ export const Quality: React.FC = () => {
                           HALAL
                         </span>
                         <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#50433B', marginTop: '4px' }}>
-                          {isVi ? 'Hồ sơ chứng nhận Halal' : 'Certificate copy on request'}
+                          {pick({
+                            vi: 'Hồ sơ chứng nhận Halal',
+                            en: 'Certificate copy on request',
+                            ko: '요청 시 할랄 인증서 사본 제공',
+                            zh: '可应要求提供清真认证副本'
+                          })}
                         </span>
                       </div>
                     </div>
@@ -275,11 +360,11 @@ export const Quality: React.FC = () => {
 
                   <div style={{ paddingTop: '12px', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <span className={`trust-badge-kind ${kindClass}`} style={{ alignSelf: 'flex-start', marginBottom: '6px' }}>
-                      {isVi ? item.kindVi : item.kindEn}
+                      {locCert.kind}
                     </span>
-                    <h3 className="cert-title" style={{ fontSize: '1.15rem', marginBottom: '4px' }}>{item.name}</h3>
+                    <h3 className="cert-title" style={{ fontSize: '1.15rem', marginBottom: '4px' }}>{locCert.name}</h3>
                     <p style={{ fontSize: '0.78rem', color: 'var(--color-muted)', lineHeight: 1.4, margin: 0 }}>
-                      {isVi ? item.scopeVi : item.scopeEn}
+                      {locCert.scope}
                     </p>
                   </div>
                 </div>
@@ -299,12 +384,20 @@ export const Quality: React.FC = () => {
                   marginBottom: '10px',
                 }}
               >
-                {isVi ? '8 TIÊU CHUẨN QUỐC TẾ' : '8 INTERNATIONAL STANDARDS'}
+                {pick({
+                  vi: '8 TIÊU CHUẨN QUỐC TẾ',
+                  en: '8 INTERNATIONAL STANDARDS',
+                  ko: '8대 국제 표준 보유',
+                  zh: '8 项国际权威合规标准'
+                })}
               </div>
               <p style={{ fontSize: '0.88rem', color: 'rgba(255, 247, 236, 0.9)', lineHeight: 1.5, marginBottom: '12px' }}>
-                {isVi
-                  ? 'Bao gồm chứng nhận Costco GMP Audit và toàn bộ hồ sơ kiểm định chất lượng cung ứng cho các chuỗi siêu thị quốc tế.'
-                  : 'Including Costco GMP Audit & verified supply-chain dossier. Full certificate copies available on request.'}
+                {pick({
+                  vi: 'Bao gồm chứng nhận Costco GMP Audit và toàn bộ hồ sơ kiểm định chất lượng cung ứng cho các chuỗi siêu thị quốc tế.',
+                  en: 'Including Costco GMP Audit & verified supply-chain dossier. Full certificate copies available on request.',
+                  ko: '코스트코(Costco) GMP 감사 보고서를 비롯한 글로벌 리테일 공급망 품질 검증 서류 일체를 요청 시 제공합니다.',
+                  zh: '包含 Costco GMP 审核报告及面向全球商超供应链的完整品质文件，可随时联系索取完整副本。'
+                })}
               </p>
               <button
                 type="button"
@@ -312,7 +405,12 @@ export const Quality: React.FC = () => {
                 className="btn btn-primary btn-sm"
                 style={{ alignSelf: 'flex-start', marginTop: 'auto' }}
               >
-                {isVi ? 'Yêu cầu trọn bộ bản sao' : 'Request Certificate Pack'}
+                {pick({
+                  vi: 'Yêu cầu trọn bộ bản sao',
+                  en: 'Request Certificate Pack',
+                  ko: '전체 인증 사본 패키지 요청',
+                  zh: '申请全套资质证书副本'
+                })}
               </button>
             </div>
           </div>
@@ -328,19 +426,32 @@ export const Quality: React.FC = () => {
             }}
           >
             <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: 'var(--dark-chocolate)', marginBottom: '8px' }}>
-              {isVi ? 'Cam kết minh bạch hồ sơ kiểm định:' : 'Documentation & Audit Transparency:'}
+              {pick({
+                vi: 'Cam kết minh bạch hồ sơ kiểm định:',
+                en: 'Documentation & Audit Transparency:',
+                ko: '인증 서류 및 감사 투명성 원칙:',
+                zh: '检测文档与审计透明承诺：'
+              })}
             </h4>
             <p style={{ fontSize: '0.88rem', color: 'var(--color-body)', lineHeight: 1.6, margin: 0 }}>
-              {isVi
-                ? 'Các giấy chứng nhận BRCGS Food Safety (SGS), ISO 22000:2018 (TQC), HACCP (TQC), đăng ký US FDA, Kosher (OU), chứng nhận Halal cùng báo cáo kiểm toán SMETA (Sedex v6.1) và Costco GMP Audit được cung cấp bản đầy đủ theo yêu cầu từng đối tác.'
-                : 'Current scope certificates for BRCGS Food Safety (SGS), ISO 22000:2018 (TQC), HACCP (TQC), US FDA facility registration, Kosher (OU), Halal compliance, plus SMETA (Sedex v6.1) and Costco GMP audit documentation are available in full upon qualified buyer request.'}
+              {pick({
+                vi: 'Các giấy chứng nhận BRCGS Food Safety (SGS), ISO 22000:2018 (TQC), HACCP (TQC), đăng ký US FDA, Kosher (OU), chứng nhận Halal cùng báo cáo kiểm toán SMETA (Sedex v6.1) và Costco GMP Audit được cung cấp bản đầy đủ theo yêu cầu từng đối tác.',
+                en: 'Current scope certificates for BRCGS Food Safety (SGS), ISO 22000:2018 (TQC), HACCP (TQC), US FDA facility registration, Kosher (OU), Halal compliance, plus SMETA (Sedex v6.1) and Costco GMP audit documentation are available in full upon qualified buyer request.',
+                ko: 'BRCGS 식품안전(SGS), ISO 22000:2018(TQC), HACCP(TQC) 인증서, 미국 FDA 시설 등록증, 코셔(OU), 할랄 인증 및 Sedex SMETA(v6.1)·코스트코 GMP 감사 서류 원본 사본은 바이어 요청 시 전체 열람 및 제공이 가능합니다.',
+                zh: '我司可应合规采购商要求提供 BRCGS 食品安全（SGS）、ISO 22000:2018（TQC）、HACCP（TQC）认证、美国 FDA 设施注册、Kosher（OU）、Halal 认证及 Sedex SMETA（v6.1）、Costco GMP 审核报告完整文件。'
+              })}
             </p>
           </div>
 
           {/* Brochure Page 4 — Frequently Asked Questions */}
           <div style={{ marginTop: '72px', paddingTop: '56px', borderTop: '1px solid var(--soft-border)' }}>
             <span className="section-label">
-              {isVi ? 'CÂU HỎI THƯỜNG GẶP' : 'FREQUENTLY ASKED QUESTIONS'}
+              {pick({
+                vi: 'CÂU HỎI THƯỜNG GẶP',
+                en: 'FREQUENTLY ASKED QUESTIONS',
+                ko: '자주 묻는 질문 (FAQ)',
+                zh: '常见问题解答'
+              })}
             </span>
             <h3
               className="title-display"
@@ -351,16 +462,21 @@ export const Quality: React.FC = () => {
                 marginBottom: '28px',
               }}
             >
-              {isVi ? 'Giải Đáp Hợp Tác & Đặt Hàng B2B' : 'BROCHURE QUICK ANSWERS FOR BUYERS'}
+              {pick({
+                vi: 'Giải Đáp Hợp Tác & Đặt Hàng B2B',
+                en: 'BROCHURE QUICK ANSWERS FOR BUYERS',
+                ko: '글로벌 B2B 바이어 핵심 안내',
+                zh: 'B2B 合作与采购常见问题'
+              })}
             </h3>
             <div className="faq-grid-2">
               {BROCHURE_FAQS.map((faq) => (
                 <div key={faq.id}>
                   <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--vinaxo-red)', marginBottom: '6px' }}>
-                    {isVi ? faq.qVi : faq.qEn}
+                    {pick({ vi: faq.qVi, en: faq.qEn, ko: faq.qKo, zh: faq.qZh })}
                   </h4>
                   <p style={{ fontSize: '0.92rem', color: 'var(--color-body)', lineHeight: 1.6, margin: 0 }}>
-                    {isVi ? faq.aVi : faq.aEn}
+                    {pick({ vi: faq.aVi, en: faq.aEn, ko: faq.aKo, zh: faq.aZh })}
                   </p>
                 </div>
               ))}
@@ -372,7 +488,6 @@ export const Quality: React.FC = () => {
       {/* Lightbox Modal for High-Res Scanned Certificate Preview */}
       <CertificatePreviewModal
         certificate={previewCert}
-        isVi={isVi}
         onClose={() => setPreviewCert(null)}
       />
 
@@ -382,7 +497,12 @@ export const Quality: React.FC = () => {
       <section className="subpage-section subpage-cta-section section-white">
         <div className="container">
           <CorporateCTA
-            eyebrow={isVi ? 'ĐĂNG KÝ THAM QUAN NHÀ MÁY & GỬI MẪU' : 'FACILITY AUDIT & SAMPLE KIT'}
+            eyebrow={pick({
+              vi: 'ĐĂNG KÝ THAM QUAN NHÀ MÁY & GỬI MẪU',
+              en: 'FACILITY AUDIT & SAMPLE KIT',
+              ko: '공장 현장 실사 및 샘플 키트 신청',
+              zh: '预约工厂审厂与免费寄样'
+            })}
             title={t('qualityPage.section4.title')}
             description={t('qualityPage.section4.desc')}
             primaryText={t('qualityPage.section4.btnPrimary')}

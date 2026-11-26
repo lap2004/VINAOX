@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Sparkles, FileText, CheckCircle2 } from 'lucide-react';
-import { ProductItem } from '../../data/products';
+import { getProductLocalized, ProductItem } from '../../data/products';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 export interface ProductCardProps {
@@ -14,9 +14,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onViewDetails,
   onRequestQuote,
 }) => {
-  const { language } = useLanguage();
-  const isVi = language === 'vi';
-  const info = isVi ? product.vi : product.en;
+  const { language, pick } = useLanguage();
+  const loc = getProductLocalized(product, language);
 
   return (
     <div
@@ -47,7 +46,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <source srcSet={product.imageWebp} type="image/webp" />
           <img
             src={product.imageJpg}
-            alt={isVi ? product.nameVi : product.name}
+            alt={loc.name}
             loading="lazy"
             style={{
               position: 'absolute',
@@ -122,11 +121,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               whiteSpace: 'nowrap',
             }}
           >
-            {product.specs.brix.includes('Brix')
-              ? product.specs.brix
-              : isVi
-              ? product.categoryLabelVi
-              : product.categoryLabelEn}
+            {product.specs.brix.includes('Brix') ? product.specs.brix : loc.categoryLabel}
           </span>
         </div>
       </div>
@@ -151,7 +146,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             marginBottom: '6px',
           }}
         >
-          {isVi ? (product.originVi || info.origin) : info.origin}
+          {loc.origin}
         </div>
 
         {/* Product Name */}
@@ -165,7 +160,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             lineHeight: 1.3,
           }}
         >
-          {isVi ? product.nameVi : product.name}
+          {loc.name}
         </h3>
 
         {/* Short Description */}
@@ -178,7 +173,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             flex: 1,
           }}
         >
-          {isVi ? (product.shortDescriptionVi || info.desc) : (product.shortDescription || info.desc)}
+          {loc.desc}
         </p>
 
         {/* Action Buttons: Stacked Vertically with 100% Width to Prevent Text Squishing */}
@@ -193,7 +188,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* Primary Action: Request a Quote */}
           <button
             type="button"
-            onClick={() => onRequestQuote(isVi ? product.nameVi : product.name)}
+            onClick={() => onRequestQuote(loc.name)}
             className="btn btn-primary"
             style={{
               width: '100%',
@@ -212,7 +207,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               boxShadow: '0 3px 10px rgba(244, 168, 58, 0.28)',
             }}
           >
-            <span>{isVi ? 'Nhận báo giá xuất khẩu' : 'Request B2B Quote'}</span>
+            <span>
+              {pick({
+                vi: 'Nhận báo giá xuất khẩu',
+                en: 'Request B2B Quote',
+                ko: '수출 견적 요청',
+                zh: '获取出口报价'
+              })}
+            </span>
             <ArrowRight size={14} />
           </button>
 
@@ -248,7 +250,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             }}
           >
             <FileText size={13} />
-            <span>{isVi ? 'Xem thông số kỹ thuật' : 'View Specifications'}</span>
+            <span>
+              {pick({
+                vi: 'Xem thông số kỹ thuật',
+                en: 'View Specifications',
+                ko: '제품 규격 보기',
+                zh: '查看技术规格'
+              })}
+            </span>
           </button>
         </div>
       </div>

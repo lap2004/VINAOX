@@ -129,8 +129,12 @@ export default wrapHandler(async (req: any, res: any) => {
     });
   }
 
+  type ServerInquiryLang = 'vi' | 'en' | 'ko' | 'zh-CN';
+  const rawLang = String(rawBody.language || '').trim();
+  const language: ServerInquiryLang =
+    rawLang === 'en' ? 'en' : rawLang === 'ko' ? 'ko' : rawLang === 'zh-CN' || rawLang === 'zh' ? 'zh-CN' : 'vi';
+  const pickMsg = (m: Record<ServerInquiryLang, string>) => m[language];
   const formType = rawBody.formType === 'quote' ? 'quote' : 'contact';
-  const language = rawBody.language === 'en' ? 'en' : 'vi';
   const name = cleanText(rawBody.name, 100);
   const email = cleanText(rawBody.email, 120);
   const phone = cleanText(rawBody.phone, 30);
@@ -143,17 +147,37 @@ export default wrapHandler(async (req: any, res: any) => {
   const sourcePage = cleanText(rawBody.sourcePage, 200) || (formType === 'quote' ? 'QuoteModal' : '/contact');
 
   const errors: string[] = [];
-  if (name.length < 2) errors.push(language === 'vi' ? 'Họ tên phải có ít nhất 2 ký tự.' : 'Full name must be at least 2 characters.');
-  if (!EMAIL_REGEX.test(email)) errors.push(language === 'vi' ? 'Email không đúng định dạng.' : 'Invalid email address.');
+  if (name.length < 2) {
+    errors.push(pickMsg({
+      vi: 'Họ tên phải có ít nhất 2 ký tự.',
+      en: 'Full name must be at least 2 characters.',
+      ko: '성함은 2자 이상 입력해 주세요.',
+      'zh-CN': '姓名至少需包含 2 个字符。'
+    }));
+  }
+  if (!EMAIL_REGEX.test(email)) {
+    errors.push(pickMsg({
+      vi: 'Email không đúng định dạng.',
+      en: 'Invalid email address.',
+      ko: '올바른 이메일 주소를 입력해 주세요.',
+      'zh-CN': '电子邮箱格式无效。'
+    }));
+  }
   if (formType === 'quote' && phone.length < 6) {
-    errors.push(language === 'vi' ? 'Vui lòng cung cấp số điện thoại/WhatsApp hợp lệ.' : 'Please provide a valid phone/WhatsApp number.');
+    errors.push(pickMsg({
+      vi: 'Vui lòng cung cấp số điện thoại/WhatsApp hợp lệ.',
+      en: 'Please provide a valid phone/WhatsApp number.',
+      ko: '유효한 전화번호 또는 WhatsApp 번호를 입력해 주세요.',
+      'zh-CN': '请提供有效的电话或 WhatsApp 号码。'
+    }));
   }
   if (formType === 'contact' && (!inquiryType || message.length < 5)) {
-    errors.push(
-      language === 'vi'
-        ? 'Vui lòng chọn mục đích liên hệ và nhập nội dung yêu cầu (tối thiểu 5 ký tự).'
-        : 'Please select an inquiry purpose and provide your message (at least 5 characters).'
-    );
+    errors.push(pickMsg({
+      vi: 'Vui lòng chọn mục đích liên hệ và nhập nội dung yêu cầu (tối thiểu 5 ký tự).',
+      en: 'Please select an inquiry purpose and provide your message (at least 5 characters).',
+      ko: '문의 목적을 선택하시고 상세 내용(5자 이상)을 입력해 주세요.',
+      'zh-CN': '请选择咨询目的并填写详细说明（至少 5 个字符）。'
+    }));
   }
 
   if (errors.length > 0) {
@@ -177,10 +201,12 @@ export default wrapHandler(async (req: any, res: any) => {
       ok: false,
       delivered: false,
       code: 'DUPLICATE_SUBMISSION',
-      error:
-        language === 'vi'
-          ? 'Yêu cầu giống hệt vừa được gửi trước đó. Vui lòng đợi 1 phút trước khi gửi lại.'
-          : 'An identical inquiry was just submitted. Please wait 1 minute before retrying.',
+      error: pickMsg({
+        vi: 'Yêu cầu giống hệt vừa được gửi trước đó. Vui lòng đợi 1 phút trước khi gửi lại.',
+        en: 'An identical inquiry was just submitted. Please wait 1 minute before retrying.',
+        ko: '동일한 문의가 방금 접수되었습니다. 1분 후 다시 시도해 주세요.',
+        'zh-CN': '刚已提交相同的咨询内容，请等待 1 分钟后再试。'
+      }),
     });
   }
 
@@ -194,10 +220,12 @@ export default wrapHandler(async (req: any, res: any) => {
       delivered: false,
       code: 'DELIVERY_NOT_CONFIGURED',
       recipient: recipientEmail,
-      error:
-        language === 'vi'
-          ? 'Máy chủ chưa được cấu hình dịch vụ gửi email tự động (RESEND_API_KEY / INQUIRY_WEBHOOK_URL). Vui lòng dùng nút mở ứng dụng Email hoặc WhatsApp/Zalo bên dưới.'
-          : 'Server email delivery is not configured yet (RESEND_API_KEY / INQUIRY_WEBHOOK_URL). Please use the direct Email app, WhatsApp, or Zalo action below.',
+      error: pickMsg({
+        vi: 'Máy chủ chưa được cấu hình dịch vụ gửi email tự động (RESEND_API_KEY / INQUIRY_WEBHOOK_URL). Vui lòng dùng nút mở ứng dụng Email hoặc WhatsApp/Zalo bên dưới.',
+        en: 'Server email delivery is not configured yet (RESEND_API_KEY / INQUIRY_WEBHOOK_URL). Please use the direct Email app, WhatsApp, or Zalo action below.',
+        ko: '서버 자동 이메일 발송 서비스가 아직 설정되지 않았습니다. 아래의 이메일 앱, WhatsApp 또는 Zalo 직접 연결 버튼을 이용해 주세요.',
+        'zh-CN': '服务器暂未配置自动邮件发送服务，请点击下方的邮件客户端、WhatsApp 或 Zalo 直接联系我们。'
+      }),
     });
   }
 
@@ -284,10 +312,12 @@ export default wrapHandler(async (req: any, res: any) => {
         delivered: false,
         code: 'DELIVERY_UPSTREAM_FAILED',
         recipient: recipientEmail,
-        error:
-          language === 'vi'
-            ? 'Không thể chuyển email qua máy chủ gửi thư. Vui lòng sử dụng nút mở ứng dụng Email hoặc WhatsApp/Zalo bên dưới.'
-            : 'Unable to dispatch via email relay right now. Please use the direct Email app, WhatsApp, or Zalo options below.',
+        error: pickMsg({
+          vi: 'Không thể chuyển email qua máy chủ gửi thư. Vui lòng sử dụng nút mở ứng dụng Email hoặc WhatsApp/Zalo bên dưới.',
+          en: 'Unable to dispatch via email relay right now. Please use the direct Email app, WhatsApp, or Zalo options below.',
+          ko: '현재 메일 중계 서버를 통해 발송할 수 없습니다. 아래의 이메일 앱, WhatsApp 또는 Zalo 버튼을 이용해 주세요.',
+          'zh-CN': '暂时无法通过邮件中继发送，请使用下方邮件客户端、WhatsApp 或 Zalo 联系我们。'
+        }),
       });
     }
     deliveredChannels.push('resend');
@@ -321,10 +351,12 @@ export default wrapHandler(async (req: any, res: any) => {
         delivered: false,
         code: 'DELIVERY_UPSTREAM_FAILED',
         recipient: recipientEmail,
-        error:
-          language === 'vi'
-            ? 'Không thể kết nối cổng tiếp nhận yêu cầu. Vui lòng thử lại hoặc dùng Email/WhatsApp trực tiếp.'
-            : 'Unable to reach inquiry webhook. Please retry or use direct Email/WhatsApp below.',
+        error: pickMsg({
+          vi: 'Không thể kết nối cổng tiếp nhận yêu cầu. Vui lòng thử lại hoặc dùng Email/WhatsApp trực tiếp.',
+          en: 'Unable to reach inquiry webhook. Please retry or use direct Email/WhatsApp below.',
+          ko: '문의 접수 서버에 연결할 수 없습니다. 다시 시도하거나 아래 이메일/WhatsApp으로 직접 연락해 주세요.',
+          'zh-CN': '暂时无法连接咨询接收接口，请重试或通过下方邮件/WhatsApp 直接联系。'
+        }),
       });
     }
     if (webhookRes.ok) deliveredChannels.push('webhook');

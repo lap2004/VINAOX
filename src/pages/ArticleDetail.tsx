@@ -12,13 +12,19 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { getArticleBySlug, getAllArticles, toNewsItem, safeExternalUrl } from '../services/contentService';
+import {
+  getArticleBySlug,
+  getAllArticles,
+  getArticleLocalized,
+  getPersonQuotedTitle,
+  toNewsItem,
+  safeExternalUrl
+} from '../services/contentService';
 import { NewsCard } from '../components/news/NewsCard';
 
 export const ArticleDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { language } = useLanguage();
-  const isVi = language === 'vi';
+  const { language, pick } = useLanguage();
 
   const article = slug ? getArticleBySlug(slug) : undefined;
 
@@ -41,12 +47,15 @@ export const ArticleDetail: React.FC = () => {
             <Newspaper size={32} />
           </div>
           <h1 className="title-serif" style={{ fontSize: '1.8rem', color: 'var(--color-heading)', marginBottom: '16px' }}>
-            {isVi ? 'Không tìm thấy bài viết' : 'Article Not Found'}
+            {pick({ vi: 'Không tìm thấy bài viết', en: 'Article Not Found', ko: '기사를 찾을 수 없습니다', zh: '未找到相关文章' })}
           </h1>
           <p style={{ color: 'var(--color-body)', lineHeight: 1.6, marginBottom: '32px' }}>
-            {isVi 
-              ? 'Bài viết bạn đang tìm kiếm có thể đã được cập nhật đường dẫn hoặc tạm thời gỡ xuống.' 
-              : 'The article you are looking for may have been moved or is temporarily unavailable.'}
+            {pick({
+              vi: 'Bài viết bạn đang tìm kiếm có thể đã được cập nhật đường dẫn hoặc tạm thời gỡ xuống.',
+              en: 'The article you are looking for may have been moved or is temporarily unavailable.',
+              ko: '찾으시는 기사의 주소가 변경되었거나 현재 열람할 수 없습니다.',
+              zh: '您查找的文章可能已更新路径或暂时下线。'
+            })}
           </p>
           <Link
             to="/press-media"
@@ -64,18 +73,21 @@ export const ArticleDetail: React.FC = () => {
             }}
           >
             <ArrowLeft size={16} />
-            <span>{isVi ? 'Quay lại Báo chí & Tin tức' : 'Back to Press & Media'}</span>
+            <span>{pick({ vi: 'Quay lại Báo chí & Tin tức', en: 'Back to Press & Media', ko: '언론 및 뉴스 목록으로', zh: '返回新闻与媒体' })}</span>
           </Link>
         </div>
       </div>
     );
   }
 
-  const title = isVi ? article.title_vi : (article.title_en || article.title_vi);
-  const excerpt = isVi ? article.excerpt_vi : (article.excerpt_en || article.excerpt_vi);
-  const body = isVi ? article.body_vi : (article.body_en || article.body_vi);
-  const dateText = isVi ? (article.dateVi || article.published_at) : (article.dateEn || article.published_at);
-  const badgeText = isVi ? article.badgeTextVi : article.badgeTextEn;
+  const locArticle = getArticleLocalized(article, language);
+  const title = locArticle.title;
+  const excerpt = locArticle.excerpt;
+  const body = locArticle.body;
+  const dateText = locArticle.date;
+  const badgeText = locArticle.badgeText;
+  const coverAlt = locArticle.coverAlt || title;
+  const quotedTitle = getPersonQuotedTitle(article.personQuoted, language);
 
   // Related articles (exclude current)
   const relatedArticles = getAllArticles()
@@ -200,11 +212,11 @@ export const ArticleDetail: React.FC = () => {
         <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.86rem', color: 'var(--color-muted)' }}>
             <Link to="/" style={{ color: 'var(--color-muted)', textDecoration: 'none' }}>
-              {isVi ? 'Trang chủ' : 'Home'}
+              {pick({ vi: 'Trang chủ', en: 'Home', ko: '홈', zh: '首页' })}
             </Link>
             <span>/</span>
             <Link to="/press-media" style={{ color: 'var(--color-muted)', textDecoration: 'none' }}>
-              {isVi ? 'Báo chí & Tin tức' : 'Press & Media'}
+              {pick({ vi: 'Báo chí & Tin tức', en: 'Press & Media', ko: '언론 보도', zh: '新闻与媒体' })}
             </Link>
             <span>/</span>
             <span style={{ color: 'var(--brand-orange)', fontWeight: 600, maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -225,7 +237,7 @@ export const ArticleDetail: React.FC = () => {
             }}
           >
             <ArrowLeft size={15} />
-            <span>{isVi ? 'Tất cả bài viết' : 'All Articles'}</span>
+            <span>{pick({ vi: 'Tất cả bài viết', en: 'All Articles', ko: '전체 기사', zh: '全部文章' })}</span>
           </Link>
         </div>
       </div>
@@ -242,7 +254,7 @@ export const ArticleDetail: React.FC = () => {
             {article.verified && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.78rem', color: 'var(--primary-green)' }}>
                 <CheckCircle2 size={13} />
-                {isVi ? 'Nguồn xác thực' : 'Verified Coverage'}
+                {pick({ vi: 'Nguồn xác thực', en: 'Verified Coverage', ko: '검증된 언론 보도', zh: '权威核验来源' })}
               </span>
             )}
           </div>
@@ -285,9 +297,9 @@ export const ArticleDetail: React.FC = () => {
               </div>
             )}
 
-            {article.personQuoted && (
+            {article.personQuoted && quotedTitle && (
               <div style={{ color: 'var(--color-body)' }}>
-                <span>• {isVi ? article.personQuoted.titleVi : article.personQuoted.titleEn}</span>
+                <span>• {quotedTitle}</span>
               </div>
             )}
           </div>
@@ -316,12 +328,12 @@ export const ArticleDetail: React.FC = () => {
           <figure style={{ margin: '0 0 36px 0', overflow: 'hidden', borderRadius: 'var(--radius-xl)' }}>
             <img 
               src={article.cover_image} 
-              alt={isVi ? (article.cover_image_alt_vi || title) : (article.cover_image_alt_en || title)}
+              alt={coverAlt}
               style={{ width: '100%', maxHeight: '500px', objectFit: 'cover', display: 'block' }}
             />
-            {article.cover_image_alt_vi && (
+            {coverAlt && (
               <figcaption style={{ fontSize: '0.82rem', color: 'var(--color-muted)', padding: '10px 14px', background: 'var(--white)', textAlign: 'center' }}>
-                {isVi ? article.cover_image_alt_vi : (article.cover_image_alt_en || article.cover_image_alt_vi)}
+                {coverAlt}
               </figcaption>
             )}
           </figure>
@@ -358,10 +370,20 @@ export const ArticleDetail: React.FC = () => {
             >
               <div>
                 <p style={{ fontWeight: 600, color: 'var(--color-heading)', margin: '0 0 4px 0', fontSize: '0.94rem' }}>
-                  {isVi ? `Bài viết gốc xuất bản trên ${article.source}` : `Original report published on ${article.source}`}
+                  {pick({
+                    vi: `Bài viết gốc xuất bản trên ${article.source}`,
+                    en: `Original report published on ${article.source}`,
+                    ko: `원문 출처: ${article.source}`,
+                    zh: `原文首发媒体：${article.source}`
+                  })}
                 </p>
                 <p style={{ fontSize: '0.82rem', color: 'var(--color-muted)', margin: 0 }}>
-                  {isVi ? 'Quý đối tác và độc giả có thể tham khảo bài báo nguyên bản theo liên kết chính thức.' : 'Explore the full verified press report via the official editorial link.'}
+                  {pick({
+                    vi: 'Quý đối tác và độc giả có thể tham khảo bài báo nguyên bản theo liên kết chính thức.',
+                    en: 'Explore the full verified press report via the official editorial link.',
+                    ko: '공식 언론사 링크를 통해 원문 보도를 확인하실 수 있습니다.',
+                    zh: '欢迎通过官方媒体链接阅读完整原始报道。'
+                  })}
                 </p>
               </div>
 
@@ -382,7 +404,7 @@ export const ArticleDetail: React.FC = () => {
                   textDecoration: 'none'
                 }}
               >
-                <span>{isVi ? 'Xem bài viết gốc' : 'Read Original Press'}</span>
+                <span>{pick({ vi: 'Xem bài viết gốc', en: 'Read Original Press', ko: '원문 기사 읽기', zh: '阅读原文报道' })}</span>
                 <ExternalLink size={14} />
               </a>
             </div>
@@ -391,7 +413,7 @@ export const ArticleDetail: React.FC = () => {
           {/* Additional Secondary Links if any */}
           {article.secondaryUrls && article.secondaryUrls.length > 0 && (
             <div style={{ marginTop: '20px', fontSize: '0.84rem', color: 'var(--color-muted)' }}>
-              <span>{isVi ? 'Đăng lại và trích dẫn trên các báo: ' : 'Also syndicated on: '}</span>
+              <span>{pick({ vi: 'Đăng lại và trích dẫn trên các báo: ', en: 'Also syndicated on: ', ko: '공동 보도 언론사: ', zh: '联合转载与报道媒体：' })}</span>
               {article.secondaryUrls
                 .filter((s) => Boolean(safeExternalUrl(s.url)))
                 .map((s, idx, arr) => (
@@ -425,7 +447,7 @@ export const ArticleDetail: React.FC = () => {
             }}
           >
             <ArrowLeft size={16} />
-            <span>{isVi ? 'Quay lại danh sách tin tức' : 'Back to News List'}</span>
+            <span>{pick({ vi: 'Quay lại danh sách tin tức', en: 'Back to News List', ko: '뉴스 목록으로 돌아가기', zh: '返回新闻列表' })}</span>
           </Link>
 
           <Link
@@ -443,7 +465,7 @@ export const ArticleDetail: React.FC = () => {
               fontSize: '0.88rem'
             }}
           >
-            <span>{isVi ? 'Liên hệ Ban Biên Tập' : 'Contact Editorial Team'}</span>
+            <span>{pick({ vi: 'Liên hệ Ban Biên Tập', en: 'Contact Editorial Team', ko: '대외협력·편집팀 문의', zh: '联系媒体与公关团队' })}</span>
           </Link>
         </div>
 
@@ -451,7 +473,7 @@ export const ArticleDetail: React.FC = () => {
         {relatedArticles.length > 0 && (
           <section className="related-articles-section" style={{ borderTop: '1.5px solid var(--color-border)', paddingTop: '40px' }}>
             <h2 className="title-serif" style={{ fontSize: '1.5rem', color: 'var(--color-heading)', marginBottom: '24px', fontWeight: 700 }}>
-              {isVi ? 'Bài viết liên quan' : 'Related Articles'}
+              {pick({ vi: 'Bài viết liên quan', en: 'Related Articles', ko: '관련 기사', zh: '相关文章推荐' })}
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
               {relatedArticles.map((item) => (

@@ -471,16 +471,23 @@ function isValidUrl(url, allowRelative = true) {
 }
 
 // src/shared/schemas/settingsSchema.ts
+function sanitizeEnglishCompanyName(raw) {
+  const trimmed = raw.trim();
+  if (!trimmed || /VINAXO\s+COMPANY\s+LIMITED\s*\(.*Vinaxo/i.test(trimmed)) {
+    return "VINAXO COMPANY LIMITED";
+  }
+  return trimmed;
+}
 function validateCompanySettings(input) {
   const errors = [];
   const raw = typeof input === "object" && input !== null ? input : {};
   const company_name_vi = typeof raw.company_name_vi === "string" && raw.company_name_vi.trim() ? raw.company_name_vi.trim() : "C\xD4NG TY TNHH VINAXO";
-  const company_name_en = typeof raw.company_name_en === "string" && raw.company_name_en.trim() ? raw.company_name_en.trim() : "VINAXO COMPANY LIMITED";
-  const tax_id = typeof raw.tax_id === "string" ? raw.tax_id.trim() : "1402230784";
-  const address_vi = typeof raw.address_vi === "string" ? raw.address_vi.trim() : "T\u1ED5 24, \u1EA4p V\u0129nh B\xECnh, X\xE3 An Nh\u01A1n, Huy\u1EC7n Ch\xE2u Th\xE0nh, T\u1EC9nh \u0110\u1ED3ng Th\xE1p";
-  const address_en = typeof raw.address_en === "string" ? raw.address_en.trim() : "Vinh Binh Hamlet, An Nhon Commune, Chau Thanh District, Dong Thap Province, Vietnam";
-  const hotline = typeof raw.hotline === "string" ? raw.hotline.trim() : "(+84) 922 222 247";
-  const email = typeof raw.email === "string" ? raw.email.trim() : "cuonghoang0710@gmail.com";
+  const company_name_en = typeof raw.company_name_en === "string" && raw.company_name_en.trim() ? sanitizeEnglishCompanyName(raw.company_name_en) : "VINAXO COMPANY LIMITED";
+  const tax_id = typeof raw.tax_id === "string" && raw.tax_id.trim() ? raw.tax_id.trim() : "1201611681";
+  const address_vi = typeof raw.address_vi === "string" && raw.address_vi.trim() ? raw.address_vi.trim() : "Khu ph\u1ED1 5, X\xE3 V\u0129nh B\xECnh, T\u1EC9nh \u0110\u1ED3ng Th\xE1p, Vi\u1EC7t Nam";
+  const address_en = typeof raw.address_en === "string" && raw.address_en.trim() ? raw.address_en.trim() : "Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam";
+  const hotline = typeof raw.hotline === "string" && raw.hotline.trim() ? raw.hotline.trim() : "(+84) 984 815 016";
+  const email = typeof raw.email === "string" && raw.email.trim() ? raw.email.trim() : "cuonghoang0710@gmail.com";
   const website = typeof raw.website === "string" && isValidUrl(raw.website, false) ? raw.website.trim() : "https://www.vinaxo.net";
   return {
     valid: errors.length === 0,
@@ -491,30 +498,53 @@ function validateCompanySettings(input) {
       tax_id,
       address_vi,
       address_en,
+      ...typeof raw.address_ko === "string" && raw.address_ko.trim() ? { address_ko: raw.address_ko.trim() } : {},
+      ...typeof raw.address_zh === "string" && raw.address_zh.trim() ? { address_zh: raw.address_zh.trim() } : {},
+      ...typeof raw.legal_rep_vi === "string" && raw.legal_rep_vi.trim() ? { legal_rep_vi: raw.legal_rep_vi.trim() } : {},
+      ...typeof raw.intro_vi === "string" && raw.intro_vi.trim() ? { intro_vi: raw.intro_vi.trim() } : {},
+      ...typeof raw.intro_en === "string" && raw.intro_en.trim() ? { intro_en: raw.intro_en.trim() } : {},
+      ...typeof raw.intro_ko === "string" && raw.intro_ko.trim() ? { intro_ko: raw.intro_ko.trim() } : {},
+      ...typeof raw.intro_zh === "string" && raw.intro_zh.trim() ? { intro_zh: raw.intro_zh.trim() } : {},
       hotline,
       email,
       website
     }
   };
 }
+function sanitizePdfField(val) {
+  if (typeof val !== "string") return void 0;
+  const trimmed = val.trim();
+  if (!trimmed || !isValidUrl(trimmed, true) || !trimmed.toLowerCase().endsWith(".pdf")) return void 0;
+  return trimmed;
+}
 function validateBrochureSettings(input) {
   const errors = [];
   const raw = typeof input === "object" && input !== null ? input : {};
-  let pdf_file = typeof raw.pdf_file === "string" ? raw.pdf_file.trim() : "";
-  if (!pdf_file || !isValidUrl(pdf_file, true) || !pdf_file.toLowerCase().endsWith(".pdf")) {
-    pdf_file = "/brochures/vinaxo-company-brochure-2026.pdf";
-  }
+  const pdf_file = sanitizePdfField(raw.pdf_file) || "/brochures/vinaxo-company-brochure-2026.pdf";
+  const pdf_file_vi = sanitizePdfField(raw.pdf_file_vi);
+  const pdf_file_en = sanitizePdfField(raw.pdf_file_en) || pdf_file;
+  const pdf_file_ko = sanitizePdfField(raw.pdf_file_ko);
+  const pdf_file_zh = sanitizePdfField(raw.pdf_file_zh);
   const year = typeof raw.year === "string" && /^\d{4}$/.test(raw.year.trim()) ? raw.year.trim() : "2026";
-  const title_vi = typeof raw.title_vi === "string" ? raw.title_vi.trim() : "H\u1ED3 S\u01A1 Doanh Nghi\u1EC7p & N\u0103ng L\u1EF1c S\u1EA3n Xu\u1EA5t VINAXO";
-  const title_en = typeof raw.title_en === "string" ? raw.title_en.trim() : "VINAXO Corporate Profile & Manufacturing Capabilities";
+  const title_vi = typeof raw.title_vi === "string" && raw.title_vi.trim() ? raw.title_vi.trim() : "H\u1ED3 S\u01A1 N\u0103ng L\u1EF1c & Brochure VINAXO 2026";
+  const title_en = typeof raw.title_en === "string" && raw.title_en.trim() ? raw.title_en.trim() : "VINAXO Company Profile & Brochure 2026";
+  const title_ko = typeof raw.title_ko === "string" && raw.title_ko.trim() ? raw.title_ko.trim() : void 0;
+  const title_zh = typeof raw.title_zh === "string" && raw.title_zh.trim() ? raw.title_zh.trim() : void 0;
   return {
     valid: errors.length === 0,
     errors,
     data: {
       pdf_file,
+      ...pdf_file_vi ? { pdf_file_vi } : {},
+      pdf_file_en,
+      ...pdf_file_ko ? { pdf_file_ko } : {},
+      ...pdf_file_zh ? { pdf_file_zh } : {},
       year,
       title_vi,
-      title_en
+      title_en,
+      ...title_ko ? { title_ko } : {},
+      ...title_zh ? { title_zh } : {},
+      download_enabled: raw.download_enabled !== void 0 ? Boolean(raw.download_enabled) : true
     }
   };
 }

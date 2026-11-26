@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && tsc -p tsconfig.server.json --noEmit && node scripts/build-api.mjs && vite build && node scripts/generate-seo-artifacts.mjs",
+    "check:i18n": "node scripts/check-i18n-completeness.mjs",
+    "build": "node scripts/check-i18n-completeness.mjs && tsc -b && tsc -p tsconfig.server.json --noEmit && node scripts/build-api.mjs && vite build && node scripts/generate-seo-artifacts.mjs",
     "build:api": "node scripts/build-api.mjs",
     "preview": "vite preview"
   },

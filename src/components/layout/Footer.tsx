@@ -1,8 +1,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { MapPin, Phone, Mail, Globe } from 'lucide-react';
-import { useLanguage } from '../../i18n/LanguageContext';
-import { COMPANY_INFO } from '../../data/company';
+import { useLanguage, pickLocale } from '../../i18n/LanguageContext';
+import {
+  COMPANY_INFO,
+  getCompanyAddress,
+  getCompanyIntro,
+  getLegalCompanyName,
+} from '../../data/company';
 
 interface FooterProps {
   onOpenQuote?: (product?: string) => void;
@@ -13,7 +18,9 @@ export const Footer: React.FC<FooterProps> = () => {
   const location = useLocation();
   const currentYear = new Date().getFullYear();
 
-  const isVi = language === 'vi';
+  const legalName = getLegalCompanyName(language);
+  const companyAddress = getCompanyAddress(language);
+  const companyIntro = getCompanyIntro(language);
 
   const navColumnA = [
     { to: '/', label: t('nav.home', 'Home') },
@@ -124,30 +131,39 @@ export const Footer: React.FC<FooterProps> = () => {
               <div className="brand-text-wrap">
                 <span className="brand-name footer-brand-name">VINAXO</span>
                 <span className="brand-tagline footer-brand-tagline">
-                  {isVi
-                    ? 'NHÀ SẢN XUẤT TRÁI CÂY SẤY NHIỆT ĐỚI'
-                    : 'TROPICAL DRIED FRUIT MANUFACTURER'}
+                  {pickLocale(language, {
+                    vi: 'NHÀ SẢN XUẤT TRÁI CÂY SẤY NHIỆT ĐỚI',
+                    en: 'TROPICAL DRIED FRUIT MANUFACTURER',
+                    ko: '열대 건조 과일 제조·수출 전문 기업',
+                    'zh-CN': '热带果干生产与出口制造商',
+                  })}
                 </span>
               </div>
             </Link>
 
-            <p className="footer-brand-desc">
-              {isVi
-                ? 'Trái cây sấy nhiệt đới và đồ ăn nhẹ lành mạnh chuẩn Việt Nam, chế biến cho đối tác bán lẻ, dịch vụ ẩm thực và nhãn hàng riêng toàn cầu.'
-                : 'Premium Vietnamese tropical dried fruit and wholesome snacks, crafted for global retail, food-service and private-label partners.'}
-            </p>
+            <p className="footer-brand-desc">{companyIntro}</p>
 
-            {/* Verified direct contact/website icon links only (zero invented social URLs) */}
+            {/* Verified direct contact/website icon links only */}
             <div
               className="footer-verified-icons"
-              aria-label={isVi ? 'Kênh liên hệ trực tiếp VINAXO' : 'VINAXO verified contact links'}
+              aria-label={pickLocale(language, {
+                vi: 'Kênh liên hệ trực tiếp VINAXO',
+                en: 'VINAXO verified contact links',
+                ko: 'VINAXO 공식 연락 채널',
+                'zh-CN': 'VINAXO 官方直接联系渠道',
+              })}
             >
               <a
                 href={COMPANY_INFO.contacts.website}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-icon-btn"
-                aria-label={isVi ? 'Website chính thức VINAXO' : 'VINAXO Official Website'}
+                aria-label={pickLocale(language, {
+                  vi: 'Website chính thức VINAXO',
+                  en: 'VINAXO Official Website',
+                  ko: 'VINAXO 공식 웹사이트',
+                  'zh-CN': 'VINAXO 官方网站',
+                })}
                 title={COMPANY_INFO.contacts.websiteDisplay}
               >
                 <Globe size={17} aria-hidden="true" />
@@ -155,7 +171,12 @@ export const Footer: React.FC<FooterProps> = () => {
               <a
                 href={`mailto:${COMPANY_INFO.contacts.email}`}
                 className="footer-icon-btn"
-                aria-label={isVi ? 'Gửi email đến VINAXO' : 'Email VINAXO'}
+                aria-label={pickLocale(language, {
+                  vi: 'Gửi email đến VINAXO',
+                  en: 'Email VINAXO',
+                  ko: 'VINAXO에 이메일 보내기',
+                  'zh-CN': '发送邮件至 VINAXO',
+                })}
                 title={COMPANY_INFO.contacts.email}
               >
                 <Mail size={17} aria-hidden="true" />
@@ -163,7 +184,12 @@ export const Footer: React.FC<FooterProps> = () => {
               <a
                 href={`tel:${COMPANY_INFO.contacts.hotline}`}
                 className="footer-icon-btn"
-                aria-label={isVi ? 'Gọi hotline VINAXO' : 'Call VINAXO Hotline'}
+                aria-label={pickLocale(language, {
+                  vi: 'Gọi hotline VINAXO',
+                  en: 'Call VINAXO Hotline',
+                  ko: 'VINAXO 핫라인 전화',
+                  'zh-CN': '拨打 VINAXO 热线',
+                })}
                 title={COMPANY_INFO.contacts.phoneDisplay}
               >
                 <Phone size={17} aria-hidden="true" />
@@ -174,10 +200,20 @@ export const Footer: React.FC<FooterProps> = () => {
           {/* CENTER REGION — EXPLORE NAVIGATION (Two Columns) */}
           <nav
             className="footer-col footer-col-nav"
-            aria-label={isVi ? 'Khám phá VINAXO' : 'Explore VINAXO'}
+            aria-label={pickLocale(language, {
+              vi: 'Khám phá VINAXO',
+              en: 'Explore VINAXO',
+              ko: 'VINAXO 바로가기',
+              'zh-CN': '探索 VINAXO',
+            })}
           >
             <h2 className="footer-section-heading">
-              {isVi ? 'KHÁM PHÁ' : 'EXPLORE'}
+              {pickLocale(language, {
+                vi: 'KHÁM PHÁ',
+                en: 'EXPLORE',
+                ko: '바로가기',
+                'zh-CN': '快速导航',
+              })}
             </h2>
 
             <div className="footer-nav-columns">
@@ -214,21 +250,20 @@ export const Footer: React.FC<FooterProps> = () => {
           {/* RIGHT REGION — GET IN TOUCH */}
           <div className="footer-col footer-col-contact">
             <h2 className="footer-section-heading">
-              {isVi ? 'LIÊN HỆ' : 'GET IN TOUCH'}
+              {pickLocale(language, {
+                vi: 'LIÊN HỆ',
+                en: 'GET IN TOUCH',
+                ko: '연락처 정보',
+                'zh-CN': '联系信息',
+              })}
             </h2>
 
             <div className="footer-contact-details">
-              <div className="footer-contact-company">
-                {isVi ? COMPANY_INFO.legalNameVi : COMPANY_INFO.shortName}
-              </div>
+              <div className="footer-contact-company">{legalName}</div>
 
               <div className="footer-contact-item">
                 <MapPin size={17} className="footer-contact-icon" aria-hidden="true" />
-                <span>
-                  {isVi
-                    ? COMPANY_INFO.headquarters.addressVi
-                    : COMPANY_INFO.headquarters.addressEn}
-                </span>
+                <span>{companyAddress}</span>
               </div>
 
               <div className="footer-contact-item">
@@ -261,14 +296,17 @@ export const Footer: React.FC<FooterProps> = () => {
         </div>
       </div>
 
-      {/* Full-Width Mango-Orange Copyright Strip */}
+      {/* Full-Width Mango-Orange Copyright Strip — Single canonical legal entity name */}
       <div className="footer-bottom-strip">
         <div className="container footer-bottom-inner">
           <div className="footer-legal-line">
             © {currentYear}{' '}
-            {isVi
-              ? `${COMPANY_INFO.legalNameVi} · MST: ${COMPANY_INFO.taxCode} · Bảo lưu mọi quyền.`
-              : `${COMPANY_INFO.shortName} (${COMPANY_INFO.legalNameEn}) · Tax ID: ${COMPANY_INFO.taxCode} · All rights reserved.`}
+            {pickLocale(language, {
+              vi: `${legalName} · MST: ${COMPANY_INFO.taxCode} · Bảo lưu mọi quyền.`,
+              en: `${legalName} · Tax ID: ${COMPANY_INFO.taxCode} · All rights reserved.`,
+              ko: `${legalName} · 사업자등록번호: ${COMPANY_INFO.taxCode} · All rights reserved.`,
+              'zh-CN': `${legalName} · 企业税号: ${COMPANY_INFO.taxCode} · All rights reserved.`,
+            })}
           </div>
         </div>
       </div>

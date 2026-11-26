@@ -56,6 +56,23 @@ export function safeExternalUrl(url: string | undefined | null): string {
 }
 
 // Helper to convert ArticleContent to NewsItem for 100% backward compatibility with total fault tolerance
+export function formatNewsDate(publishedAt: string | undefined, lang: 'vi' | 'en' | 'ko' | 'zh-CN', explicitDate?: string): string {
+  if (explicitDate) return explicitDate;
+  if (!publishedAt) {
+    if (lang === 'vi') return '05/2026';
+    if (lang === 'ko') return '2026.05';
+    if (lang === 'zh-CN') return '2026年5月';
+    return 'May 2026';
+  }
+  const m = publishedAt.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return publishedAt;
+  const [, yyyy, mm, dd] = m;
+  if (lang === 'vi') return `${dd}/${mm}/${yyyy}`;
+  if (lang === 'ko') return `${yyyy}.${mm}.${dd}`;
+  if (lang === 'zh-CN') return `${yyyy}年${Number(mm)}月${Number(dd)}日`;
+  return publishedAt;
+}
+
 export function toNewsItem(article: ArticleContent): NewsItem {
   try {
     const safeSourceUrl = safeExternalUrl(article?.sourceUrl);
@@ -64,9 +81,14 @@ export function toNewsItem(article: ArticleContent): NewsItem {
     const source = article?.source || 'VINAXO';
     const titleVi = article?.title_vi || 'Tin tức VINAXO';
     const titleEn = article?.title_en || titleVi;
+    const titleKo = article?.title_ko || titleEn;
+    const titleZh = article?.title_zh || titleEn;
     const summaryVi = article?.excerpt_vi || article?.body_vi || '';
     const summaryEn = article?.excerpt_en || article?.body_en || summaryVi;
+    const summaryKo = article?.excerpt_ko || article?.body_ko || summaryEn;
+    const summaryZh = article?.excerpt_zh || article?.body_zh || summaryEn;
     const coverImage = article?.cover_image || '/assets/images/news/dried-fruit-export.webp';
+    const publishedAt = article?.published_at || new Date().toISOString().split('T')[0];
 
     return {
       id: article?.id || article?.slug || 'bai-viet',
@@ -74,14 +96,18 @@ export function toNewsItem(article: ArticleContent): NewsItem {
       badgeType,
       badgeTextVi: article?.badgeTextVi || (category === 'company' ? 'Hoạt động doanh nghiệp' : 'Báo chí đưa tin'),
       badgeTextEn: article?.badgeTextEn || (category === 'company' ? 'Company Operations' : 'Press Coverage'),
+      badgeTextKo: article?.badgeTextKo || (category === 'company' ? '기업 활동' : '언론 보도'),
+      badgeTextZh: article?.badgeTextZh || (category === 'company' ? '企业动态' : '媒体报道'),
       source,
       sourceUrl: safeSourceUrl,
       secondaryUrls: Array.isArray(article?.secondaryUrls)
         ? article.secondaryUrls.filter((s) => Boolean(safeExternalUrl(s?.url)))
         : [],
-      publishedAt: article?.published_at || new Date().toISOString().split('T')[0],
-      dateEn: article?.dateEn || article?.published_at || 'May 2026',
-      dateVi: article?.dateVi || article?.published_at || '05/2026',
+      publishedAt,
+      dateEn: formatNewsDate(publishedAt, 'en', article?.dateEn),
+      dateVi: formatNewsDate(publishedAt, 'vi', article?.dateVi),
+      dateKo: formatNewsDate(publishedAt, 'ko', article?.dateKo),
+      dateZh: formatNewsDate(publishedAt, 'zh-CN', article?.dateZh),
       verified: article?.verified ?? true,
       personQuoted: article?.personQuoted || undefined,
       imageWebp: coverImage,
@@ -97,12 +123,113 @@ export function toNewsItem(article: ArticleContent): NewsItem {
         sourceBadge: `${source} • Tin tức`,
         summary: summaryVi,
         readMore: safeSourceUrl ? 'Đọc bài báo gốc' : 'Xem chi tiết'
+      },
+      ko: {
+        title: titleKo,
+        sourceBadge: `${source} • 뉴스`,
+        summary: summaryKo,
+        readMore: safeSourceUrl ? '원문 기사 보기' : '상세 보기'
+      },
+      zh: {
+        title: titleZh,
+        sourceBadge: `${source} • 媒体报道`,
+        summary: summaryZh,
+        readMore: safeSourceUrl ? '阅读原文' : '查看详情'
       }
     };
   } catch (err) {
     console.error('[VINAXO toNewsItem] Error transforming article to NewsItem, using fallback:', err);
     return fallbackNewsData[0];
   }
+}
+
+export function getNewsLocalized(item: NewsItem, lang: 'vi' | 'en' | 'ko' | 'zh-CN') {
+  if (lang === 'vi') {
+    return {
+      ...item.vi,
+      badgeText: item.badgeTextVi,
+      date: item.dateVi
+    };
+  }
+  if (lang === 'ko') {
+    return {
+      ...(item.ko || item.en),
+      badgeText: item.badgeTextKo || item.badgeTextEn,
+      date: item.dateKo || formatNewsDate(item.publishedAt, 'ko')
+    };
+  }
+  if (lang === 'zh-CN') {
+    return {
+      ...(item.zh || item.en),
+      badgeText: item.badgeTextZh || item.badgeTextEn,
+      date: item.dateZh || formatNewsDate(item.publishedAt, 'zh-CN')
+    };
+  }
+  return {
+    ...item.en,
+    badgeText: item.badgeTextEn,
+    date: item.dateEn
+  };
+}
+
+export function getArticleLocalized(article: ArticleContent, lang: 'vi' | 'en' | 'ko' | 'zh-CN') {
+  if (lang === 'vi') {
+    return {
+      title: article.title_vi,
+      excerpt: article.excerpt_vi || article.body_vi,
+      body: article.body_vi || article.excerpt_vi,
+      coverAlt: article.cover_image_alt_vi || article.title_vi,
+      badgeText: article.badgeTextVi,
+      date: formatNewsDate(article.published_at, 'vi', article.dateVi),
+      seoTitle: article.seo_title_vi || article.title_vi,
+      seoDescription: article.seo_description_vi || article.excerpt_vi
+    };
+  }
+  if (lang === 'ko') {
+    return {
+      title: article.title_ko || article.title_en,
+      excerpt: article.excerpt_ko || article.excerpt_en || article.body_ko || article.body_en,
+      body: article.body_ko || article.body_en || article.excerpt_ko || article.excerpt_en,
+      coverAlt: article.cover_image_alt_ko || article.title_ko || article.title_en,
+      badgeText: article.badgeTextKo || article.badgeTextEn,
+      date: formatNewsDate(article.published_at, 'ko', article.dateKo),
+      seoTitle: article.seo_title_ko || article.title_ko || article.title_en,
+      seoDescription: article.seo_description_ko || article.excerpt_ko || article.excerpt_en
+    };
+  }
+  if (lang === 'zh-CN') {
+    return {
+      title: article.title_zh || article.title_en,
+      excerpt: article.excerpt_zh || article.excerpt_en || article.body_zh || article.body_en,
+      body: article.body_zh || article.body_en || article.excerpt_zh || article.excerpt_en,
+      coverAlt: article.cover_image_alt_zh || article.title_zh || article.title_en,
+      badgeText: article.badgeTextZh || article.badgeTextEn,
+      date: formatNewsDate(article.published_at, 'zh-CN', article.dateZh),
+      seoTitle: article.seo_title_zh || article.title_zh || article.title_en,
+      seoDescription: article.seo_description_zh || article.excerpt_zh || article.excerpt_en
+    };
+  }
+  return {
+    title: article.title_en || article.title_vi,
+    excerpt: article.excerpt_en || article.body_en || article.excerpt_vi,
+    body: article.body_en || article.excerpt_en || article.body_vi,
+    coverAlt: article.cover_image_alt_en || article.title_en,
+    badgeText: article.badgeTextEn,
+    date: formatNewsDate(article.published_at, 'en', article.dateEn),
+    seoTitle: article.seo_title_en || article.title_en,
+    seoDescription: article.seo_description_en || article.excerpt_en
+  };
+}
+
+export function getPersonQuotedTitle(
+  personQuoted: { titleVi?: string; titleEn?: string; titleKo?: string; titleZh?: string } | undefined,
+  lang: 'vi' | 'en' | 'ko' | 'zh-CN'
+): string {
+  if (!personQuoted) return '';
+  if (lang === 'vi') return personQuoted.titleVi || personQuoted.titleEn || '';
+  if (lang === 'ko') return personQuoted.titleKo || personQuoted.titleEn || personQuoted.titleVi || '';
+  if (lang === 'zh-CN') return personQuoted.titleZh || personQuoted.titleEn || personQuoted.titleVi || '';
+  return personQuoted.titleEn || personQuoted.titleVi || '';
 }
 
 /**

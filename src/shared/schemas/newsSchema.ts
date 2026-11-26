@@ -75,12 +75,18 @@ export function validateNewsArticle(input: unknown): ValidationResult<ArticleCon
   }
 
   const title_en = typeof raw.title_en === 'string' ? raw.title_en.trim() : title_vi;
+  const title_ko = typeof raw.title_ko === 'string' ? raw.title_ko.trim() : '';
+  const title_zh = typeof raw.title_zh === 'string' ? raw.title_zh.trim() : '';
 
   // 3. Excerpts & Body Content
   const excerpt_vi = typeof raw.excerpt_vi === 'string' ? raw.excerpt_vi.trim() : '';
   const excerpt_en = typeof raw.excerpt_en === 'string' ? raw.excerpt_en.trim() : excerpt_vi;
+  const excerpt_ko = typeof raw.excerpt_ko === 'string' ? raw.excerpt_ko.trim() : '';
+  const excerpt_zh = typeof raw.excerpt_zh === 'string' ? raw.excerpt_zh.trim() : '';
   const body_vi = typeof raw.body_vi === 'string' ? raw.body_vi.trim() : excerpt_vi;
   const body_en = typeof raw.body_en === 'string' ? raw.body_en.trim() : body_vi;
+  const body_ko = typeof raw.body_ko === 'string' ? raw.body_ko.trim() : '';
+  const body_zh = typeof raw.body_zh === 'string' ? raw.body_zh.trim() : '';
 
   if (body_vi.length > 150000) {
     errors.push('Nội dung bài viết tiếng Việt vượt quá giới hạn 150.000 ký tự.');
@@ -102,6 +108,12 @@ export function validateNewsArticle(input: unknown): ValidationResult<ArticleCon
   const badgeTextEn = typeof raw.badgeTextEn === 'string' && raw.badgeTextEn.trim()
     ? raw.badgeTextEn.trim()
     : (category === 'company' ? 'Company Operations' : 'Press Coverage');
+  const badgeTextKo = typeof raw.badgeTextKo === 'string' && raw.badgeTextKo.trim()
+    ? raw.badgeTextKo.trim()
+    : (category === 'company' ? '기업 활동' : '언론 보도');
+  const badgeTextZh = typeof raw.badgeTextZh === 'string' && raw.badgeTextZh.trim()
+    ? raw.badgeTextZh.trim()
+    : (category === 'company' ? '企业动态' : '媒体报道');
 
   // 6. Source & SourceUrl
   const source = typeof raw.source === 'string' && raw.source.trim() ? raw.source.trim() : 'VINAXO';
@@ -125,7 +137,9 @@ export function validateNewsArticle(input: unknown): ValidationResult<ArticleCon
       personQuoted = {
         name: pq.name.trim(),
         titleVi: typeof pq.titleVi === 'string' ? pq.titleVi.trim() : 'Đại diện VINAXO',
-        titleEn: typeof pq.titleEn === 'string' ? pq.titleEn.trim() : 'VINAXO Representative'
+        titleEn: typeof pq.titleEn === 'string' ? pq.titleEn.trim() : 'VINAXO Representative',
+        ...(typeof pq.titleKo === 'string' && pq.titleKo.trim() ? { titleKo: pq.titleKo.trim() } : {}),
+        ...(typeof pq.titleZh === 'string' && pq.titleZh.trim() ? { titleZh: pq.titleZh.trim() } : {}),
       };
     }
   }
@@ -143,6 +157,8 @@ export function validateNewsArticle(input: unknown): ValidationResult<ArticleCon
   const [y, m, d] = published_at.split('-');
   const dateVi = typeof raw.dateVi === 'string' && raw.dateVi.trim() ? raw.dateVi.trim() : `${d}/${m}/${y}`;
   const dateEn = typeof raw.dateEn === 'string' && raw.dateEn.trim() ? raw.dateEn.trim() : `${new Date(published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  const dateKo = typeof raw.dateKo === 'string' && raw.dateKo.trim() ? raw.dateKo.trim() : `${y}.${m}.${d}`;
+  const dateZh = typeof raw.dateZh === 'string' && raw.dateZh.trim() ? raw.dateZh.trim() : `${y}年${Number(m)}月${Number(d)}日`;
 
   // 10. Tags & Draft Status
   const tags: string[] = Array.isArray(raw.tags)
@@ -160,18 +176,28 @@ export function validateNewsArticle(input: unknown): ValidationResult<ArticleCon
     slug,
     title_vi,
     title_en,
+    ...(title_ko ? { title_ko } : {}),
+    ...(title_zh ? { title_zh } : {}),
     excerpt_vi,
     excerpt_en,
+    ...(excerpt_ko ? { excerpt_ko } : {}),
+    ...(excerpt_zh ? { excerpt_zh } : {}),
     body_vi,
     body_en,
+    ...(body_ko ? { body_ko } : {}),
+    ...(body_zh ? { body_zh } : {}),
     cover_image,
     cover_image_alt_vi: typeof raw.cover_image_alt_vi === 'string' ? raw.cover_image_alt_vi.trim() : title_vi,
     cover_image_alt_en: typeof raw.cover_image_alt_en === 'string' ? raw.cover_image_alt_en.trim() : title_en,
+    ...(typeof raw.cover_image_alt_ko === 'string' && raw.cover_image_alt_ko.trim() ? { cover_image_alt_ko: raw.cover_image_alt_ko.trim() } : {}),
+    ...(typeof raw.cover_image_alt_zh === 'string' && raw.cover_image_alt_zh.trim() ? { cover_image_alt_zh: raw.cover_image_alt_zh.trim() } : {}),
     gallery: Array.isArray(raw.gallery) ? raw.gallery.filter((g: any) => typeof g === 'string' && isValidUrl(g, true)) : [],
     category,
     badgeType,
     badgeTextVi,
     badgeTextEn,
+    badgeTextKo,
+    badgeTextZh,
     source,
     sourceUrl,
     secondaryUrls,
@@ -181,6 +207,8 @@ export function validateNewsArticle(input: unknown): ValidationResult<ArticleCon
     updated_at,
     dateVi,
     dateEn,
+    dateKo,
+    dateZh,
     featured: Boolean(raw.featured),
     tags: normalizedTags,
     status: isDraft ? 'draft' : 'published',
@@ -188,8 +216,12 @@ export function validateNewsArticle(input: unknown): ValidationResult<ArticleCon
     verified: raw.verified !== undefined ? Boolean(raw.verified) : true,
     seo_title_vi: typeof raw.seo_title_vi === 'string' ? raw.seo_title_vi.trim() : title_vi,
     seo_title_en: typeof raw.seo_title_en === 'string' ? raw.seo_title_en.trim() : title_en,
+    ...(typeof raw.seo_title_ko === 'string' && raw.seo_title_ko.trim() ? { seo_title_ko: raw.seo_title_ko.trim() } : {}),
+    ...(typeof raw.seo_title_zh === 'string' && raw.seo_title_zh.trim() ? { seo_title_zh: raw.seo_title_zh.trim() } : {}),
     seo_description_vi: typeof raw.seo_description_vi === 'string' ? raw.seo_description_vi.trim() : excerpt_vi,
-    seo_description_en: typeof raw.seo_description_en === 'string' ? raw.seo_description_en.trim() : excerpt_en
+    seo_description_en: typeof raw.seo_description_en === 'string' ? raw.seo_description_en.trim() : excerpt_en,
+    ...(typeof raw.seo_description_ko === 'string' && raw.seo_description_ko.trim() ? { seo_description_ko: raw.seo_description_ko.trim() } : {}),
+    ...(typeof raw.seo_description_zh === 'string' && raw.seo_description_zh.trim() ? { seo_description_zh: raw.seo_description_zh.trim() } : {}),
   };
 
   return {

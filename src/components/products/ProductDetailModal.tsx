@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { X, Sparkles, Check, ArrowRight, ShieldCheck, Thermometer, Clock, Droplets } from 'lucide-react';
-import { ProductItem } from '../../data/products';
+import { getProductLocalized, getProductSpecsLocalized, ProductItem } from '../../data/products';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { Button } from '../ui/Button';
 
@@ -15,7 +15,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   onClose,
   onRequestQuote,
 }) => {
-  const { language } = useLanguage();
+  const { language, pick } = useLanguage();
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
@@ -47,12 +47,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
   if (!product) return null;
 
-  const isVi = language === 'vi';
-  const name = isVi ? product.nameVi : product.name;
-  const origin = isVi ? (product.originVi || product.vi.origin) : (product.origin || product.en.origin);
-  const desc = isVi ? (product.shortDescriptionVi || product.vi.desc) : (product.shortDescription || product.en.desc);
-  const fullDesc = isVi ? (product.descriptionVi || product.vi.features) : (product.description || product.en.features);
-  const specs = product.specs;
+  const loc = getProductLocalized(product, language);
+  const specs = getProductSpecsLocalized(product.specs, language);
+  const name = loc.name;
+  const origin = loc.origin;
+  const desc = loc.desc;
+  const fullDesc = loc.features || loc.desc;
 
   const handleQuoteClick = () => {
     onClose();
@@ -104,7 +104,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 fontWeight: 600,
               }}
             >
-              {isVi ? product.categoryLabelVi : product.categoryLabelEn}
+              {loc.categoryLabel}
             </span>
             <span style={{ fontSize: '0.8rem', color: 'var(--color-muted)' }}>
               • {origin}
@@ -236,9 +236,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             >
               <ShieldCheck size={18} />
               <span>
-                {isVi
-                  ? 'Bảng Thông Số Kỹ Thuật B2B (Export Spec Sheet)'
-                  : 'B2B Technical Specifications & Quality Parameters'}
+                {pick({
+                  vi: 'Bảng Thông Số Kỹ Thuật B2B (Export Spec Sheet)',
+                  en: 'B2B Technical Specifications & Quality Parameters',
+                  ko: 'B2B 수출 기술 규격서 (Export Spec Sheet)',
+                  zh: 'B2B 出口技术规格与品质参数表'
+                })}
               </span>
             </h3>
 
@@ -260,7 +263,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: 'var(--color-muted)', marginBottom: '4px' }}>
                   <Droplets size={14} color="var(--primary-green)" />
-                  <span>{isVi ? 'Độ ẩm hoàn thiện' : 'Moisture Content'}</span>
+                  <span>{pick({ vi: 'Độ ẩm hoàn thiện', en: 'Moisture Content', ko: '완제품 수분 함량', zh: '成品水分含量' })}</span>
                 </div>
                 <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-heading)' }}>
                   {specs.moisture}
@@ -278,7 +281,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: 'var(--color-muted)', marginBottom: '4px' }}>
                   <Sparkles size={14} color="var(--primary-green)" />
-                  <span>{isVi ? 'Độ ngọt tự nhiên' : 'Natural Brix Degree'}</span>
+                  <span>{pick({ vi: 'Độ ngọt tự nhiên', en: 'Natural Brix Degree', ko: '천연 당도 (Brix)', zh: '天然糖度 (Brix)' })}</span>
                 </div>
                 <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-heading)' }}>
                   {specs.brix}
@@ -296,10 +299,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: 'var(--color-muted)', marginBottom: '4px' }}>
                   <Clock size={14} color="var(--primary-green)" />
-                  <span>{isVi ? 'Hạn sử dụng' : 'Shelf Life'}</span>
+                  <span>{pick({ vi: 'Hạn sử dụng', en: 'Shelf Life', ko: '유통기한', zh: '保质期' })}</span>
                 </div>
                 <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-heading)' }}>
-                  {isVi ? specs.shelfLifeVi : specs.shelfLifeEn}
+                  {specs.shelfLife}
                 </div>
               </div>
 
@@ -314,10 +317,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: 'var(--color-muted)', marginBottom: '4px' }}>
                   <Thermometer size={14} color="var(--primary-green)" />
-                  <span>{isVi ? 'Nhiệt độ sấy' : 'Drying Technology'}</span>
+                  <span>{pick({ vi: 'Nhiệt độ sấy', en: 'Drying Technology', ko: '건조 가공 공법', zh: '干燥工艺技术' })}</span>
                 </div>
                 <div style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--color-heading)' }}>
-                  {isVi ? specs.processVi : specs.processEn}
+                  {specs.process}
                 </div>
               </div>
             </div>
@@ -338,23 +341,23 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           >
             <div>
               <strong style={{ color: 'var(--forest-green)' }}>
-                {isVi ? '• Thành phần nguyên liệu: ' : '• Ingredients: '}
+                {pick({ vi: '• Thành phần nguyên liệu: ', en: '• Ingredients: ', ko: '• 원재료 구성: ', zh: '• 原料成分：' })}
               </strong>
-              <span>{isVi ? specs.ingredientsVi : specs.ingredientsEn}</span>
+              <span>{specs.ingredients}</span>
             </div>
 
             <div>
               <strong style={{ color: 'var(--forest-green)' }}>
-                {isVi ? '• Quy cách đóng gói B2B & Xuất khẩu: ' : '• Export & Bulk Packaging: '}
+                {pick({ vi: '• Quy cách đóng gói B2B & Xuất khẩu: ', en: '• Export & Bulk Packaging: ', ko: '• B2B 및 수출용 포장 규격: ', zh: '• B2B 及出口包装规格：' })}
               </strong>
-              <span>{isVi ? specs.packagingVi : specs.packagingEn}</span>
+              <span>{specs.packaging}</span>
             </div>
 
             <div>
               <strong style={{ color: 'var(--forest-green)' }}>
-                {isVi ? '• Tiêu chuẩn & Chứng nhận: ' : '• Standards & Certifications: '}
+                {pick({ vi: '• Tiêu chuẩn & Chứng nhận: ', en: '• Standards & Certifications: ', ko: '• 국제 표준 및 인증: ', zh: '• 执行标准与认证：' })}
               </strong>
-              <span>{isVi ? specs.certificationsVi : specs.certificationsEn}</span>
+              <span>{specs.certifications}</span>
             </div>
           </div>
         </div>
@@ -383,15 +386,18 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           >
             <Check size={16} color="var(--primary-green)" />
             <span>
-              {isVi
-                ? 'Nhận mẫu thử nghiệm (Sample Kit) cho đối tác B2B quốc tế.'
-                : 'Free evaluation sample kit available for qualified buyers.'}
+              {pick({
+                vi: 'Nhận mẫu thử nghiệm (Sample Kit) cho đối tác B2B quốc tế.',
+                en: 'Free evaluation sample kit available for qualified buyers.',
+                ko: '해외 B2B 바이어 대상 무료 평가용 샘플 키트를 제공합니다.',
+                zh: '面向全球 B2B 采购商提供免费试吃评估样品套装。'
+              })}
             </span>
           </div>
 
           <div style={{ display: 'flex', gap: '8px' }}>
             <Button variant="secondary" onClick={onClose} size="sm">
-              {isVi ? 'Đóng' : 'Close'}
+              {pick({ vi: 'Đóng', en: 'Close', ko: '닫기', zh: '关闭' })}
             </Button>
             <Button
               variant="primary"
@@ -399,7 +405,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               size="sm"
               icon={<ArrowRight size={14} />}
             >
-              {isVi ? 'Yêu cầu báo giá dòng này' : 'Request Product Quote'}
+              {pick({ vi: 'Yêu cầu báo giá dòng này', en: 'Request Product Quote', ko: '이 제품 견적 요청', zh: '询价此系列产品' })}
             </Button>
           </div>
         </div>

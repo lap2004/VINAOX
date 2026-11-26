@@ -3,18 +3,28 @@
   "slug": "press-nld-mango-sourcing",
   "title_vi": "VINAXO chủ động nguồn nguyên liệu xoài và dự trữ chế biến quanh năm",
   "title_en": "VINAXO Strengthens Mango Procurement & Processing Storage",
+  "title_ko": "VINAXO, 연중 망고 원료 수매 및 저온 저장 가공 공급망 강화",
+  "title_zh": "VINAXO 强化芒果季节性直采与全年加工原料储备",
   "excerpt_vi": "Vào vụ thu hoạch rộ, Vinaxo chủ động thu mua lượng lớn xoài tươi từ các vùng chuyên canh Đồng bằng Sông Cửu Long. Nhờ hệ thống kho lạnh và năng lực chế biến sâu, nhà máy trữ nguyên liệu để sản xuất liên tục đến tận tháng 10, vừa giúp nhà vườn ổn định đầu ra, vừa đảm bảo nguồn cung dồi dào cho các đơn hàng xuất khẩu quốc tế.",
   "excerpt_en": "During the main harvest season, Vinaxo actively procures tens of thousands of tons of fresh mangoes from concentrated Mekong Delta farming belts. By deploying large cold-storage capacity, Vinaxo stores and processes raw materials continuously through October, stabilizing farmer incomes and ensuring uninterrupted supply for international export contracts.",
+  "excerpt_ko": "성수기 수확철마다 VINAXO는 메콩 델타 망고 주산지에서 대규모 신선 망고를 직접 수매합니다. 대형 냉장·저온 저장 창고와 심층 가공 설비를 활용해 10월까지 연속 생산 체제를 유지함으로써 농가 판로 안정과 글로벌 수출 계약 물량의 중단 없는 공급을 동시에 실현합니다.",
+  "excerpt_zh": "在芒果集中上市旺季，VINAXO 深入湄公河三角洲核心产区大宗采购新鲜芒果，并依托大型冷库仓储与精深加工体系将原料加工持续至十月，既稳固了果农收购渠道，又保障了国际出口订单的全年稳定交付。",
   "body_vi": "Vào vụ thu hoạch rộ, Vinaxo chủ động thu mua lượng lớn xoài tươi từ các vùng chuyên canh Đồng bằng Sông Cửu Long. Nhờ hệ thống kho lạnh và năng lực chế biến sâu, nhà máy trữ nguyên liệu để sản xuất liên tục đến tận tháng 10, vừa giúp nhà vườn ổn định đầu ra, vừa đảm bảo nguồn cung dồi dào cho các đơn hàng xuất khẩu quốc tế.",
   "body_en": "During the main harvest season, Vinaxo actively procures tens of thousands of tons of fresh mangoes from concentrated Mekong Delta farming belts. By deploying large cold-storage capacity, Vinaxo stores and processes raw materials continuously through October, stabilizing farmer incomes and ensuring uninterrupted supply for international export contracts.",
+  "body_ko": "성수기 수확철마다 VINAXO는 메콩 델타 망고 주산지에서 대규모 신선 망고를 직접 수매합니다. 대형 냉장·저온 저장 창고와 심층 가공 설비를 활용해 10월까지 연속 생산 체제를 유지함으로써 농가 판로 안정과 글로벌 수출 계약 물량의 중단 없는 공급을 동시에 실현합니다.",
+  "body_zh": "在芒果集中上市旺季，VINAXO 深入湄公河三角洲核心产区大宗采购新鲜芒果，并依托大型冷库仓储与精深加工体系将原料加工持续至十月，既稳固了果农收购渠道，又保障了国际出口订单的全年稳定交付。",
   "cover_image": "https://www.vinaxo.net/assets/images/news/mango-procurement.webp",
   "cover_image_alt_vi": "VINAXO chủ động nguồn nguyên liệu xoài và dự trữ chế biến quanh năm",
   "cover_image_alt_en": "VINAXO Strengthens Mango Procurement & Processing Storage",
+  "cover_image_alt_ko": "VINAXO, 연중 망고 원료 수매 및 저온 저장 가공 공급망 강화",
+  "cover_image_alt_zh": "VINAXO 强化芒果季节性直采与全年加工原料储备",
   "gallery": [],
   "category": "company",
   "badgeType": "operation",
   "badgeTextVi": "Thu mua mùa vụ & Dự trữ",
   "badgeTextEn": "Procurement & Storage",
+  "badgeTextKo": "원료 수매 및 저장 가공",
+  "badgeTextZh": "季节直采与冷链储备",
   "source": "Báo Người Lao Động / CafeF / 24H",
   "sourceUrl": "https://nld.com.vn/xoai-re-hiem-co-nha-may-mua-tru-den-thang-10-196260524115321407.htm",
   "secondaryUrls": [
@@ -31,12 +41,16 @@
   "personQuoted": {
     "name": "Hoàng Mạnh Cường",
     "titleVi": "Giám đốc kinh doanh Công ty TNHH Vinaxo",
-    "titleEn": "Commercial Director, Vinaxo Co., Ltd."
+    "titleEn": "Commercial Director, VINAXO COMPANY LIMITED",
+    "titleKo": "영업이사, VINAXO COMPANY LIMITED",
+    "titleZh": "商务总监，VINAXO COMPANY LIMITED"
   },
   "published_at": "2026-05-24",
   "updated_at": "2026-11-25",
   "dateVi": "24/05/2026",
   "dateEn": "May 24, 2026",
+  "dateKo": "2026.05.24",
+  "dateZh": "2026年5月24日",
   "featured": false,
   "tags": [
     "company",
@@ -48,6 +62,10 @@
   "verified": true,
   "seo_title_vi": "VINAXO chủ động nguồn nguyên liệu xoài và dự trữ chế biến quanh năm",
   "seo_title_en": "VINAXO Strengthens Mango Procurement & Processing Storage",
+  "seo_title_ko": "VINAXO, 연중 망고 원료 수매 및 저온 저장 가공 공급망 강화",
+  "seo_title_zh": "VINAXO 强化芒果季节性直采与全年加工原料储备",
   "seo_description_vi": "Vào vụ thu hoạch rộ, Vinaxo chủ động thu mua lượng lớn xoài tươi từ các vùng chuyên canh Đồng bằng Sông Cửu Long. Nhờ hệ thống kho lạnh và năng lực chế biến sâu, nhà máy trữ nguyên liệu để sản xuất liên tục đến tận tháng 10, vừa giúp nhà vườn ổn định đầu ra, vừa đảm bảo nguồn cung dồi dào cho các đơn hàng xuất khẩu quốc tế.",
-  "seo_description_en": "During the main harvest season, Vinaxo actively procures tens of thousands of tons of fresh mangoes from concentrated Mekong Delta farming belts. By deploying large cold-storage capacity, Vinaxo stores and processes raw materials continuously through October, stabilizing farmer incomes and ensuring uninterrupted supply for international export contracts."
+  "seo_description_en": "During the main harvest season, Vinaxo actively procures tens of thousands of tons of fresh mangoes from concentrated Mekong Delta farming belts. By deploying large cold-storage capacity, Vinaxo stores and processes raw materials continuously through October, stabilizing farmer incomes and ensuring uninterrupted supply for international export contracts.",
+  "seo_description_ko": "메콩 델타 망고 주산지 직접 수매와 대규모 저온 저장을 통해 10월까지 수출용 건조 과일을 안정 생산하는 VINAXO 공급망 소식.",
+  "seo_description_zh": "VINAXO 依托湄公河三角洲旺季直采与冷链储备体系，保障全年芒果干稳定生产与国际出口交付。"
 }

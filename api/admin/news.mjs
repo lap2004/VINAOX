@@ -602,10 +602,16 @@ function validateNewsArticle(input) {
     errors.push("Ti\xEAu \u0111\u1EC1 ti\u1EBFng Vi\u1EC7t kh\xF4ng \u0111\u01B0\u1EE3c v\u01B0\u1EE3t qu\xE1 300 k\xFD t\u1EF1.");
   }
   const title_en = typeof raw.title_en === "string" ? raw.title_en.trim() : title_vi;
+  const title_ko = typeof raw.title_ko === "string" ? raw.title_ko.trim() : "";
+  const title_zh = typeof raw.title_zh === "string" ? raw.title_zh.trim() : "";
   const excerpt_vi = typeof raw.excerpt_vi === "string" ? raw.excerpt_vi.trim() : "";
   const excerpt_en = typeof raw.excerpt_en === "string" ? raw.excerpt_en.trim() : excerpt_vi;
+  const excerpt_ko = typeof raw.excerpt_ko === "string" ? raw.excerpt_ko.trim() : "";
+  const excerpt_zh = typeof raw.excerpt_zh === "string" ? raw.excerpt_zh.trim() : "";
   const body_vi = typeof raw.body_vi === "string" ? raw.body_vi.trim() : excerpt_vi;
   const body_en = typeof raw.body_en === "string" ? raw.body_en.trim() : body_vi;
+  const body_ko = typeof raw.body_ko === "string" ? raw.body_ko.trim() : "";
+  const body_zh = typeof raw.body_zh === "string" ? raw.body_zh.trim() : "";
   if (body_vi.length > 15e4) {
     errors.push("N\u1ED9i dung b\xE0i vi\u1EBFt ti\u1EBFng Vi\u1EC7t v\u01B0\u1EE3t qu\xE1 gi\u1EDBi h\u1EA1n 150.000 k\xFD t\u1EF1.");
   }
@@ -617,6 +623,8 @@ function validateNewsArticle(input) {
   const badgeType = ALLOWED_BADGE_TYPES.includes(raw.badgeType) ? raw.badgeType : category === "company" ? "operation" : "quote";
   const badgeTextVi = typeof raw.badgeTextVi === "string" && raw.badgeTextVi.trim() ? raw.badgeTextVi.trim() : category === "company" ? "Ho\u1EA1t \u0111\u1ED9ng doanh nghi\u1EC7p" : "B\xE1o ch\xED \u0111\u01B0a tin";
   const badgeTextEn = typeof raw.badgeTextEn === "string" && raw.badgeTextEn.trim() ? raw.badgeTextEn.trim() : category === "company" ? "Company Operations" : "Press Coverage";
+  const badgeTextKo = typeof raw.badgeTextKo === "string" && raw.badgeTextKo.trim() ? raw.badgeTextKo.trim() : category === "company" ? "\uAE30\uC5C5 \uD65C\uB3D9" : "\uC5B8\uB860 \uBCF4\uB3C4";
+  const badgeTextZh = typeof raw.badgeTextZh === "string" && raw.badgeTextZh.trim() ? raw.badgeTextZh.trim() : category === "company" ? "\u4F01\u4E1A\u52A8\u6001" : "\u5A92\u4F53\u62A5\u9053";
   const source = typeof raw.source === "string" && raw.source.trim() ? raw.source.trim() : "VINAXO";
   const sourceUrl = typeof raw.sourceUrl === "string" && isValidUrl(raw.sourceUrl, false) ? raw.sourceUrl.trim() : void 0;
   let secondaryUrls = void 0;
@@ -632,7 +640,9 @@ function validateNewsArticle(input) {
       personQuoted = {
         name: pq.name.trim(),
         titleVi: typeof pq.titleVi === "string" ? pq.titleVi.trim() : "\u0110\u1EA1i di\u1EC7n VINAXO",
-        titleEn: typeof pq.titleEn === "string" ? pq.titleEn.trim() : "VINAXO Representative"
+        titleEn: typeof pq.titleEn === "string" ? pq.titleEn.trim() : "VINAXO Representative",
+        ...typeof pq.titleKo === "string" && pq.titleKo.trim() ? { titleKo: pq.titleKo.trim() } : {},
+        ...typeof pq.titleZh === "string" && pq.titleZh.trim() ? { titleZh: pq.titleZh.trim() } : {}
       };
     }
   }
@@ -644,6 +654,8 @@ function validateNewsArticle(input) {
   const [y, m, d] = published_at.split("-");
   const dateVi = typeof raw.dateVi === "string" && raw.dateVi.trim() ? raw.dateVi.trim() : `${d}/${m}/${y}`;
   const dateEn = typeof raw.dateEn === "string" && raw.dateEn.trim() ? raw.dateEn.trim() : `${new Date(published_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+  const dateKo = typeof raw.dateKo === "string" && raw.dateKo.trim() ? raw.dateKo.trim() : `${y}.${m}.${d}`;
+  const dateZh = typeof raw.dateZh === "string" && raw.dateZh.trim() ? raw.dateZh.trim() : `${y}\u5E74${Number(m)}\u6708${Number(d)}\u65E5`;
   const tags = Array.isArray(raw.tags) ? raw.tags.filter((t) => typeof t === "string" && t.trim()).map((t) => t.trim()) : [category];
   const isDraft = raw.status === "draft" || raw.published === false || tags.includes("draft");
   const normalizedTags = isDraft ? Array.from(/* @__PURE__ */ new Set([...tags, "draft"])) : tags.filter((t) => t !== "draft");
@@ -652,18 +664,28 @@ function validateNewsArticle(input) {
     slug,
     title_vi,
     title_en,
+    ...title_ko ? { title_ko } : {},
+    ...title_zh ? { title_zh } : {},
     excerpt_vi,
     excerpt_en,
+    ...excerpt_ko ? { excerpt_ko } : {},
+    ...excerpt_zh ? { excerpt_zh } : {},
     body_vi,
     body_en,
+    ...body_ko ? { body_ko } : {},
+    ...body_zh ? { body_zh } : {},
     cover_image,
     cover_image_alt_vi: typeof raw.cover_image_alt_vi === "string" ? raw.cover_image_alt_vi.trim() : title_vi,
     cover_image_alt_en: typeof raw.cover_image_alt_en === "string" ? raw.cover_image_alt_en.trim() : title_en,
+    ...typeof raw.cover_image_alt_ko === "string" && raw.cover_image_alt_ko.trim() ? { cover_image_alt_ko: raw.cover_image_alt_ko.trim() } : {},
+    ...typeof raw.cover_image_alt_zh === "string" && raw.cover_image_alt_zh.trim() ? { cover_image_alt_zh: raw.cover_image_alt_zh.trim() } : {},
     gallery: Array.isArray(raw.gallery) ? raw.gallery.filter((g) => typeof g === "string" && isValidUrl(g, true)) : [],
     category,
     badgeType,
     badgeTextVi,
     badgeTextEn,
+    badgeTextKo,
+    badgeTextZh,
     source,
     sourceUrl,
     secondaryUrls,
@@ -673,6 +695,8 @@ function validateNewsArticle(input) {
     updated_at,
     dateVi,
     dateEn,
+    dateKo,
+    dateZh,
     featured: Boolean(raw.featured),
     tags: normalizedTags,
     status: isDraft ? "draft" : "published",
@@ -680,8 +704,12 @@ function validateNewsArticle(input) {
     verified: raw.verified !== void 0 ? Boolean(raw.verified) : true,
     seo_title_vi: typeof raw.seo_title_vi === "string" ? raw.seo_title_vi.trim() : title_vi,
     seo_title_en: typeof raw.seo_title_en === "string" ? raw.seo_title_en.trim() : title_en,
+    ...typeof raw.seo_title_ko === "string" && raw.seo_title_ko.trim() ? { seo_title_ko: raw.seo_title_ko.trim() } : {},
+    ...typeof raw.seo_title_zh === "string" && raw.seo_title_zh.trim() ? { seo_title_zh: raw.seo_title_zh.trim() } : {},
     seo_description_vi: typeof raw.seo_description_vi === "string" ? raw.seo_description_vi.trim() : excerpt_vi,
-    seo_description_en: typeof raw.seo_description_en === "string" ? raw.seo_description_en.trim() : excerpt_en
+    seo_description_en: typeof raw.seo_description_en === "string" ? raw.seo_description_en.trim() : excerpt_en,
+    ...typeof raw.seo_description_ko === "string" && raw.seo_description_ko.trim() ? { seo_description_ko: raw.seo_description_ko.trim() } : {},
+    ...typeof raw.seo_description_zh === "string" && raw.seo_description_zh.trim() ? { seo_description_zh: raw.seo_description_zh.trim() } : {}
   };
   return {
     valid: errors.length === 0,

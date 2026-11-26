@@ -540,6 +540,7 @@ var certificates_default = wrapHandler(async (req, res) => {
     }
     const { list, sha } = await loadCertificates(useGitHub);
     const existingIndex = list.findIndex((c) => c.id === id);
+    const existingItem = existingIndex >= 0 ? list[existingIndex] : void 0;
     const item = {
       id,
       code: typeof certInput.code === "string" ? certInput.code.toUpperCase() : id.toUpperCase(),
@@ -547,10 +548,16 @@ var certificates_default = wrapHandler(async (req, res) => {
       name: certInput.name || certInput.nameEn || id,
       nameVi: certInput.nameVi || certInput.name || id,
       nameEn: certInput.nameEn || certInput.name || id,
+      ...typeof certInput.nameKo === "string" && certInput.nameKo.trim() ? { nameKo: certInput.nameKo.trim() } : existingItem?.nameKo ? { nameKo: existingItem.nameKo } : {},
+      ...typeof certInput.nameZh === "string" && certInput.nameZh.trim() ? { nameZh: certInput.nameZh.trim() } : existingItem?.nameZh ? { nameZh: existingItem.nameZh } : {},
       kindEn: ["Certification", "Registration", "Audit"].includes(certInput.kindEn) ? certInput.kindEn : "Certification",
       kindVi: certInput.kindEn === "Registration" ? "\u0110\u0103ng k\xFD" : certInput.kindEn === "Audit" ? "Ki\u1EC3m to\xE1n" : "Ch\u1EE9ng nh\u1EADn",
+      kindKo: typeof certInput.kindKo === "string" && certInput.kindKo.trim() ? certInput.kindKo.trim() : certInput.kindEn === "Registration" ? "\uB4F1\uB85D" : certInput.kindEn === "Audit" ? "\uAC10\uC0AC" : "\uC778\uC99D",
+      kindZh: typeof certInput.kindZh === "string" && certInput.kindZh.trim() ? certInput.kindZh.trim() : certInput.kindEn === "Registration" ? "\u6CE8\u518C" : certInput.kindEn === "Audit" ? "\u5BA1\u6838" : "\u8BA4\u8BC1",
       scopeEn: certInput.scopeEn || "",
       scopeVi: certInput.scopeVi || "",
+      ...typeof certInput.scopeKo === "string" && certInput.scopeKo.trim() ? { scopeKo: certInput.scopeKo.trim() } : existingItem?.scopeKo ? { scopeKo: existingItem.scopeKo } : {},
+      ...typeof certInput.scopeZh === "string" && certInput.scopeZh.trim() ? { scopeZh: certInput.scopeZh.trim() } : existingItem?.scopeZh ? { scopeZh: existingItem.scopeZh } : {},
       certImageWebp: certInput.certImageWebp || certInput.image || "/assets/images/certs-2026/cert-brcgs.webp",
       certImageJpg: certInput.certImageJpg || certInput.certImageWebp || certInput.image,
       order: Number(certInput.order) || (existingIndex >= 0 ? list[existingIndex].order : list.length + 1),

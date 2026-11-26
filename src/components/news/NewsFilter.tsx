@@ -16,23 +16,22 @@ export const NewsFilter: React.FC<NewsFilterProps> = ({
   countPress,
   countCompany,
 }) => {
-  const { language } = useLanguage();
-  const isVi = language === 'vi';
+  const { pick } = useLanguage();
 
   const filterTabs = [
     {
       id: 'all',
-      label: isVi ? 'Tất cả bài viết' : 'All Articles',
+      label: pick({ vi: 'Tất cả bài viết', en: 'All Articles', ko: '전체 기사', zh: '全部文章' }),
       count: countAll,
     },
     {
       id: 'press',
-      label: isVi ? 'Báo chí nói về VINAXO' : 'VINAXO in the Press',
+      label: pick({ vi: 'Báo chí nói về VINAXO', en: 'VINAXO in the Press', ko: '언론 속 VINAXO', zh: '媒体报道 VINAXO' }),
       count: countPress,
     },
     {
       id: 'company',
-      label: isVi ? 'Sản xuất & Doanh nghiệp' : 'Company Operations',
+      label: pick({ vi: 'Sản xuất & Doanh nghiệp', en: 'Company Operations', ko: '생산 및 기업 동향', zh: '工厂生产与企业动态' }),
       count: countCompany,
     },
   ];
