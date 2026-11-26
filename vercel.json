@@ -83,28 +83,24 @@
   ],
   "rewrites": [
     {
-      "source": "/admin",
-      "destination": "/index.html"
+      "source": "/admin/:path*",
+      "destination": "/admin"
     },
     {
-      "source": "/admin/(.*)",
-      "destination": "/index.html"
+      "source": "/products/:path*",
+      "destination": "/products"
     },
     {
-      "source": "/products/(.*)",
-      "destination": "/index.html"
+      "source": "/tin-tuc/:path*",
+      "destination": "/news"
     },
     {
-      "source": "/tin-tuc/(.*)",
-      "destination": "/index.html"
+      "source": "/news/:path*",
+      "destination": "/news"
     },
     {
-      "source": "/news/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/press-media/(.*)",
-      "destination": "/index.html"
+      "source": "/press-media/:path*",
+      "destination": "/news"
     }
   ]
 }

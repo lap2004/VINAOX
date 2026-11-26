@@ -512,6 +512,21 @@ function main() {
     );
   }
 
+  // Generate Admin SPA shell HTML with strict noindex & zero canonical
+  writeRouteHtml(
+    'admin.html',
+    applySeoToHtml(templateHtml, {
+      title: 'VINAXO Admin CMS',
+      description: 'VINAXO Internal Content Management Portal.',
+      canonical: null,
+      robots: 'noindex, nofollow',
+      ogType: 'website',
+      ogUrl: `${SITE_URL}/admin`,
+      ogImage: DEFAULT_OG_IMAGE,
+      jsonLd: null,
+    })
+  );
+
   // Generate true HTTP 404 page with noindex & zero canonical
   writeRouteHtml(
     '404.html',
