@@ -1,5 +1,14 @@
 [
   {
+    "id": "pub-1795658625532",
+    "module": "products",
+    "moduleLabel": "Sản phẩm nhiệt đới",
+    "requestedBy": "admin",
+    "requestedAt": "2026-11-26T02:03:45.532Z",
+    "status": "QUEUED",
+    "message": "Cập nhật nhóm [Sản phẩm nhiệt đới] lên website vinaxo.net"
+  },
+  {
     "id": "pub-1795605739903",
     "module": "products",
     "moduleLabel": "Sản phẩm nhiệt đới",
