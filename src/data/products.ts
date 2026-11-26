@@ -3,16 +3,28 @@ export interface ProductSpecs {
   brix: string;
   shelfLifeEn: string;
   shelfLifeVi: string;
+  shelfLifeKo?: string;
+  shelfLifeZh?: string;
   storageEn: string;
   storageVi: string;
+  storageKo?: string;
+  storageZh?: string;
   ingredientsEn: string;
   ingredientsVi: string;
+  ingredientsKo?: string;
+  ingredientsZh?: string;
   processEn: string;
   processVi: string;
+  processKo?: string;
+  processZh?: string;
   packagingEn: string;
   packagingVi: string;
+  packagingKo?: string;
+  packagingZh?: string;
   certificationsEn: string;
   certificationsVi: string;
+  certificationsKo?: string;
+  certificationsZh?: string;
 }
 
 export interface ProductLocalizedContent {
@@ -30,31 +42,49 @@ export interface ProductItem {
   aliases?: string[];
   name: string;
   nameVi: string;
+  nameKo?: string;
+  nameZh?: string;
   category: ProductCategory;
   categoryLabelEn: string;
   categoryLabelVi: string;
+  categoryLabelKo?: string;
+  categoryLabelZh?: string;
   image: string;
   imageWebp: string;
   imageJpg: string;
   shortDescription: string;
   shortDescriptionVi: string;
+  shortDescriptionKo?: string;
+  shortDescriptionZh?: string;
   description: string;
   descriptionVi: string;
+  descriptionKo?: string;
+  descriptionZh?: string;
   origin?: string;
   originVi?: string;
+  originKo?: string;
+  originZh?: string;
   certifications?: string[];
   verified: boolean;
   ocop: string;
   specs: ProductSpecs;
   en: ProductLocalizedContent;
   vi: ProductLocalizedContent;
+  ko?: ProductLocalizedContent;
+  zh?: ProductLocalizedContent;
   // Compatibility aliases between snake_case CMS models and camelCase site models
   name_vi?: string;
   name_en?: string;
+  name_ko?: string;
+  name_zh?: string;
   description_vi?: string;
   description_en?: string;
+  description_ko?: string;
+  description_zh?: string;
   origin_vi?: string;
   origin_en?: string;
+  origin_ko?: string;
+  origin_zh?: string;
   shelf_life?: string;
   packaging?: string;
   order?: number;
@@ -679,6 +709,254 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
   }
 ];
 
+import type { Language } from '../i18n/localize.js';
+
+const CATEGORY_LABELS: Record<ProductCategory, { vi: string; en: string; ko: string; zh: string }> = {
+  'soft-dried': {
+    vi: 'Trái cây sấy dẻo',
+    en: 'Soft-Dried Fruits',
+    ko: '소프트 건조 과일',
+    zh: '软烘干果'
+  },
+  chips: {
+    vi: 'Trái cây sấy giòn',
+    en: 'Fruit Chips',
+    ko: '크리스피 과일 칩',
+    zh: '香脆果干片'
+  },
+  'nuts-seeds': {
+    vi: 'Hạt dinh dưỡng',
+    en: 'Nuts & Seeds',
+    ko: '견과류 및 연자육',
+    zh: '坚果与莲子'
+  },
+  mixed: {
+    vi: 'Trộn thập cẩm',
+    en: 'Mixed Products',
+    ko: '모듬 과일·채소',
+    zh: '综合果蔬'
+  }
+};
+
+const PRODUCT_SPECS_I18N: Record<string, { ko: Partial<ProductSpecs>; zh: Partial<ProductSpecs> }> = {
+  'soft-dried-red-dragonfruit': {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '서늘하고 건조한 곳 보관 (20 - 25°C), 직사광선 회피',
+      ingredientsKo: '100% 띠엔장성 쩌가오산 신선 적색 용과, 설탕 무첨가, 인공 색소 무첨가',
+      processKo: '저온 순환 히트펌프 건조 (~50 - 55°C)로 천연 베타시아닌 색소와 영양소 보존',
+      packagingKo: '지퍼 파우치 100g, 250g, 500g / 질소 충전 수출 마스터 카톤 5kg, 10kg / OEM',
+      certificationsKo: '베트남 OCOP 3성급, BRCGS Grade B 시설, 클린 라벨'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '阴凉干燥处储存（20 - 25°C），避免阳光直射',
+      ingredientsZh: '100% 鹅贡产区新鲜红心火龙果，不添加精制糖，无人工色素',
+      processZh: '低温热泵循环干燥（约 50 - 55°C），完整保留天然甜菜红素与营养成分',
+      packagingZh: '自封袋 100g、250g、500g / 充氮出口纸箱 5kg、10kg / OEM 贴牌',
+      certificationsZh: '越南 OCOP 三星级、BRCGS B级认证工厂、清洁标签'
+    }
+  },
+  'banana-chips': {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '서늘하고 건조한 곳 보관, 개봉 후 밀봉',
+      ingredientsKo: '100% 엄선된 완숙 바나나, 정제 식물성 유지',
+      processKo: '저온 진공 크리스핑 및 고효율 원심 탈유 공정',
+      packagingKo: '지퍼 파우치 100g, 250g, 500g / 벌크 카톤 10kg',
+      certificationsKo: 'BRCGS Grade B 시설, 클린 라벨, 수출 규격'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '置于阴凉干燥处保存，开封后请密封',
+      ingredientsZh: '100% 精选成熟香蕉、精炼植物油',
+      processZh: '低温真空脆化及高效离心脱油工艺',
+      packagingZh: '自封袋 100g、250g、500g / 散装纸箱 10kg',
+      certificationsZh: 'BRCGS B级认证工厂、清洁标签、出口品质'
+    }
+  },
+  cashew: {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '열기와 습기를 피해 서늘하고 건조한 곳에 보관',
+      ingredientsKo: '100% Grade A 베트남산 캐슈넛 커널 (W240 / W320)',
+      processKo: '과도한 유분 없이 정밀 열풍 커브 로스팅',
+      packagingKo: '진공 파우치 / 질소 충전 캔 250g, 500g / 벌크 진공 박스 10kg, 22.68kg',
+      certificationsKo: 'BRCGS 시설, ISO 22000:2018, HACCP 인증'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '远离高温和潮湿，置于阴凉干燥处储存',
+      ingredientsZh: '100% A级越南腰果仁（W240 / W320）',
+      processZh: '控温曲线轻柔热风烘焙，无多余油脂',
+      packagingZh: '真空袋 / 充氮罐 250g、500g / 出口真空大箱 10kg、22.68kg',
+      certificationsZh: 'BRCGS 工厂、ISO 22000:2018、HACCP 认证'
+    }
+  },
+  'soft-dried-jackfruit': {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '서늘하고 건조한 환경, 개봉 후 밀봉 보관',
+      ingredientsKo: '100% 나무에서 완숙한 태국 품종 잭프루트, 무콜레스테롤, 무방부제',
+      processKo: '저온 순환 열풍 건조 (~55 - 60°C)로 촉촉한 과육 섬유질 보존',
+      packagingKo: '지퍼 파우치 100g, 250g, 500g / 수출 마스터 카톤 5kg, 10kg',
+      certificationsKo: '베트남 OCOP 3성급, BRCGS Grade B 시설, 클린 라벨'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '阴凉干燥处储存，开封后请密封保存',
+      ingredientsZh: '100% 树熟泰国种菠萝蜜，零胆固醇，无人工防腐剂',
+      processZh: '低温热风循环软烘（约 55 - 60°C），保留饱满果肉纤维',
+      packagingZh: '自封袋 100g、250g、500g / 出口纸箱 5kg、10kg',
+      certificationsZh: '越南 OCOP 三星级、BRCGS B级认证工厂、清洁标签'
+    }
+  },
+  'mango-chips': {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '건조하고 서늘한 곳 보관, 개봉 후 즉시 밀봉',
+      ingredientsKo: '엄선된 신선 망고 (98%), 정제 식물성 유지',
+      processKo: '저온 진공 크리스핑 및 원심 탈유 공정',
+      packagingKo: '알루미늄 지퍼 파우치 50g, 100g, 200g / 마스터 카톤 10kg',
+      certificationsKo: 'BRCGS 시설, 클린 라벨, 수출 표준'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '阴凉干燥处保存；开封后请立即密封',
+      ingredientsZh: '新鲜精选芒果（98%）、精炼植物油',
+      processZh: '低温真空脆化及离心脱油技术',
+      packagingZh: '铝箔自封袋 50g、100g、200g / 出口纸箱 10kg',
+      certificationsZh: 'BRCGS 工厂、清洁标签、出口标准'
+    }
+  },
+  'macadamia-nuts': {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '열기와 직사광선을 피해 서늘하고 건조한 곳에 보관',
+      ingredientsKo: '100% 베트남산 크랙 인쉘 마카다미아 너트 (오프너 포함)',
+      processKo: '불포화지방산 보존을 위한 저온 다단계 열풍 건조',
+      packagingKo: '지퍼 파우치 / PET 용기 250g, 500g / 마스터 카톤 10kg',
+      certificationsKo: 'ISO 22000:2018, HACCP, 클린 라벨'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '避热避光，置于阴凉干燥处储存',
+      ingredientsZh: '100% 越南带壳开口夏威夷果（附赠开果器）',
+      processZh: '低温多段热风干燥工艺，锁住珍贵健康油脂',
+      packagingZh: '自封袋 / PET 罐 250g、500g / 出口纸箱 10kg',
+      certificationsZh: 'ISO 22000:2018、HACCP、清洁标签'
+    }
+  },
+  'soft-dried-mango': {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '서늘하고 건조한 곳 보관 (20 - 25°C), 직사광선 회피',
+      ingredientsKo: '100% 메콩 델타산 신선 망고 (깟추 & 호아록 품종), 설탕 무첨가, 무방부제',
+      processKo: '저온 순환 열풍 건조 (~60°C)로 황금빛 색감, 식이섬유 및 비타민 A·C 유지',
+      packagingKo: '지퍼 파우치 100g, 250g, 500g / 질소 충전 마스터 카톤 5kg, 10kg / OEM PB',
+      certificationsKo: '베트남 OCOP 3성급, BRCGS Grade B 시설, BSCI 사회적 책임 준수'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '阴凉干燥处储存（20 - 25°C），避免阳光直射',
+      ingredientsZh: '100% 湄公河三角洲新鲜芒果（Cat Chu & Hoa Loc），不添加蔗糖，无防腐剂',
+      processZh: '低温热风循环干燥（约 60°C），保留天然金黄色泽、膳食纤维与维生素 A、C',
+      packagingZh: '自封袋 100g、250g、500g / 充氮出口纸箱 5kg、10kg / OEM 贴牌',
+      certificationsZh: '越南 OCOP 三星级、BRCGS B级认证工厂、BSCI 社会责任审核'
+    }
+  },
+  'jackfruit-chips': {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '서늘하고 건조한 곳 보관, 개봉 후 밀봉',
+      ingredientsKo: '신선 완숙 태국 품종 잭프루트 (98%), 정제 식물성 유지',
+      processKo: '저온 진공 건조 및 고속 원심 유분 분리 공정',
+      packagingKo: '지퍼 파우치 100g, 250g, 500g / 벌크 마스터 카톤 10kg',
+      certificationsKo: 'BRCGS Grade B 시설, 클린 라벨, 수출 표준'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '阴凉干燥处储存，开封后请密封',
+      ingredientsZh: '新鲜树熟泰国种菠萝蜜（98%）、精炼植物油',
+      processZh: '低温真空干燥及高速离心脱油工艺',
+      packagingZh: '自封袋 100g、250g、500g / 出口大箱 10kg',
+      certificationsZh: 'BRCGS B级认证工厂、清洁标签、出口标准'
+    }
+  },
+  walnuts: {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '서늘하고 건조한 곳(15 - 20°C) 보관; 개봉 후 냉장 보관 권장',
+      ingredientsKo: '100% 엄선된 프리미엄 호두 커널 (라이트 하프 80%)',
+      processKo: '오메가 지방산 산패 방지를 위한 저온 열풍 순환 건조',
+      packagingKo: '질소 충전 호일 파우치 / 캔 200g, 400g / 마스터 카톤 10kg',
+      certificationsKo: 'ISO 22000, HACCP, 클린 라벨'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '阴凉干燥处（15 - 20°C）保存；开封后建议冷藏保鲜',
+      ingredientsZh: '100% 精选优质核桃仁（Light Halves 80%）',
+      processZh: '低温热对流干燥以稳定 Omega 脂肪酸活性',
+      packagingZh: '充氮铝箔袋 / 罐装 200g、400g / 出口纸箱 10kg',
+      certificationsZh: 'ISO 22000、HACCP、清洁标签'
+    }
+  },
+  'soft-dried-papaya': {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '서늘하고 건조한 곳 보관 (20 - 25°C), 직사광선 회피',
+      ingredientsKo: '100% 메콩 델타산 완숙 파파야, 인공 색소 무첨가, 무방부제',
+      processKo: '베타카로틴과 식감을 보존하는 저온 순환 히트펌프 건조',
+      packagingKo: '지퍼 파우치 100g, 250g, 500g / 수출 마스터 카톤 5kg, 10kg',
+      certificationsKo: 'BRCGS 시설, 클린 라벨, 수출 표준'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '阴凉干燥处储存（20 - 25°C），避免阳光直射',
+      ingredientsZh: '100% 湄公河三角洲成熟木瓜，无人工色素，无防腐剂',
+      processZh: '低温热泵循环干燥，保留 β-胡萝卜素与柔韧口感',
+      packagingZh: '自封袋 100g、250g、500g / 出口纸箱 5kg、10kg',
+      certificationsZh: 'BRCGS 工厂、清洁标签、出口标准'
+    }
+  },
+  'mix-fruits-and-vegetables': {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '서늘하고 건조한 곳 보관, 개봉 후 밀봉',
+      ingredientsKo: '잭프루트, 바나나, 고구마, 자색고구마, 토란, 당근, 풋강낭콩, 식물성 유지',
+      processKo: '저온 진공 건조 및 고속 원심 유분 분리 공정',
+      packagingKo: '지퍼 파우치 150g, 250g, 500g / 마스터 카톤 10kg',
+      certificationsKo: 'BRCGS 시설, 클린 라벨, 수출 표준'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '阴凉干燥处保存，开封后请密封',
+      ingredientsZh: '菠萝蜜、香蕉、红薯、紫薯、芋头、胡萝卜、四季豆、植物油',
+      processZh: '低温真空干燥及高速离心脱油工艺',
+      packagingZh: '自封袋 150g、250g、500g / 出口纸箱 10kg',
+      certificationsZh: 'BRCGS 工厂、清洁标签、出口标准'
+    }
+  },
+  'lotus-seeds': {
+    ko: {
+      shelfLifeKo: '12개월',
+      storageKo: '습기와 직사광선을 피해 서늘하고 건조한 곳에 보관',
+      ingredientsKo: '100% 엄선된 동탑성 연자육, 인공 방부제 무첨가',
+      processKo: '다공성 바삭한 식감과 아미노산을 유지하는 저온 진공 건조',
+      packagingKo: '지퍼 파우치 / 캔 150g, 250g, 500g / 마스터 카톤 10kg',
+      certificationsKo: '동탑성 지리적 특산물, BRCGS 시설, 클린 라벨'
+    },
+    zh: {
+      shelfLifeZh: '12个月',
+      storageZh: '防潮避光，置于阴凉干燥处储存',
+      ingredientsZh: '100% 精选同塔省莲子，无人工防腐剂',
+      processZh: '低温真空干燥，保留酥松多孔口感与天然氨基酸',
+      packagingZh: '自封袋 / 罐装 150g、250g、500g / 出口纸箱 10kg',
+      certificationsZh: '同塔省地理特色产品、BRCGS 工厂、清洁标签'
+    }
+  }
+};
+
 // Dynamically merge with content/products/*.json from CMS at build time
 let productCmsModules: Record<string, any> = {};
 try {
@@ -695,47 +973,198 @@ for (const mod of Object.values(productCmsModules)) {
 
 export const productsData: ProductItem[] = BASE_PRODUCTS_DATA.map((base) => {
   const cms = cmsProductMap.get(base.slug) || cmsProductMap.get(base.id);
-  if (!cms) return base;
+  const specI18n = PRODUCT_SPECS_I18N[base.slug];
+  const baseCats = CATEGORY_LABELS[base.category];
+
+  const baseWithKoZh: ProductItem = {
+    ...base,
+    categoryLabelKo: base.categoryLabelKo || baseCats?.ko || base.categoryLabelEn,
+    categoryLabelZh: base.categoryLabelZh || baseCats?.zh || base.categoryLabelEn,
+    specs: {
+      ...base.specs,
+      ...(specI18n?.ko || {}),
+      ...(specI18n?.zh || {})
+    }
+  };
+
+  if (!cms) return baseWithKoZh;
 
   const nameVi = cms.name_vi || cms.nameVi || base.nameVi;
   const nameEn = cms.name_en || cms.name || base.name;
+  const nameKo = cms.name_ko || cms.nameKo || cms.ko?.name || baseWithKoZh.nameKo || nameEn;
+  const nameZh = cms.name_zh || cms.nameZh || cms.zh?.name || baseWithKoZh.nameZh || nameEn;
+
+  const descVi = cms.description_vi || cms.descriptionVi || base.descriptionVi;
+  const descEn = cms.description_en || cms.description || base.description;
+  const descKo = cms.description_ko || cms.descriptionKo || cms.ko?.desc || baseWithKoZh.descriptionKo || descEn;
+  const descZh = cms.description_zh || cms.descriptionZh || cms.zh?.desc || baseWithKoZh.descriptionZh || descEn;
+
+  const originVi = cms.origin_vi || cms.originVi || base.originVi;
+  const originEn = cms.origin_en || cms.origin || base.origin;
+  const originKo = cms.origin_ko || cms.originKo || cms.ko?.origin || baseWithKoZh.originKo || originEn;
+  const originZh = cms.origin_zh || cms.originZh || cms.zh?.origin || baseWithKoZh.originZh || originEn;
+
   const category = (cms.category as ProductCategory) || base.category;
+  const cats = CATEGORY_LABELS[category] || baseCats;
   const img = cms.image || cms.imageWebp || base.imageWebp || base.image;
   const imgWebp = cms.imageWebp || (img.endsWith('.webp') ? img : (img.endsWith('.jpg') ? img.replace(/\.jpe?g$/, '.webp') : img));
   const imgJpg = cms.imageJpg || (img.endsWith('.webp') ? img.replace(/\.webp$/, '.jpg') : img);
 
   return {
-    ...base,
+    ...baseWithKoZh,
     nameVi,
     name: nameEn,
+    nameKo,
+    nameZh,
     category,
+    categoryLabelEn: cats?.en || baseWithKoZh.categoryLabelEn,
+    categoryLabelVi: cats?.vi || baseWithKoZh.categoryLabelVi,
+    categoryLabelKo: cats?.ko || baseWithKoZh.categoryLabelKo,
+    categoryLabelZh: cats?.zh || baseWithKoZh.categoryLabelZh,
     image: img,
     imageWebp: imgWebp,
     imageJpg: imgJpg,
-    shortDescriptionVi: cms.description_vi || base.shortDescriptionVi,
-    descriptionVi: cms.description_vi || base.descriptionVi,
-    shortDescription: cms.description_en || base.shortDescription,
-    description: cms.description_en || base.description,
-    originVi: cms.origin_vi || base.originVi,
-    origin: cms.origin_en || base.origin,
+    shortDescriptionVi: descVi,
+    descriptionVi: descVi,
+    shortDescription: descEn,
+    description: descEn,
+    shortDescriptionKo: cms.shortDescriptionKo || descKo,
+    descriptionKo: descKo,
+    shortDescriptionZh: cms.shortDescriptionZh || descZh,
+    descriptionZh: descZh,
+    originVi,
+    origin: originEn,
+    originKo,
+    originZh,
     certifications: cms.certifications || base.certifications,
     specs: {
-      ...base.specs,
-      shelfLifeVi: cms.shelf_life || base.specs.shelfLifeVi,
-      packagingVi: cms.packaging || base.specs.packagingVi
+      ...baseWithKoZh.specs,
+      ...(cms.specs || {}),
+      shelfLifeVi: cms.shelf_life || cms.specs?.shelfLifeVi || base.specs.shelfLifeVi,
+      shelfLifeKo: cms.shelf_life_ko || cms.specs?.shelfLifeKo || baseWithKoZh.specs.shelfLifeKo,
+      shelfLifeZh: cms.shelf_life_zh || cms.specs?.shelfLifeZh || baseWithKoZh.specs.shelfLifeZh,
+      packagingVi: cms.packaging || cms.specs?.packagingVi || base.specs.packagingVi,
+      packagingKo: cms.packaging_ko || cms.specs?.packagingKo || baseWithKoZh.specs.packagingKo,
+      packagingZh: cms.packaging_zh || cms.specs?.packagingZh || baseWithKoZh.specs.packagingZh
     },
     en: {
       ...base.en,
       name: nameEn,
-      desc: cms.description_en || base.en.desc,
-      origin: cms.origin_en || base.en.origin
+      desc: descEn,
+      origin: originEn || base.en.origin
     },
     vi: {
       ...base.vi,
       name: nameVi,
-      desc: cms.description_vi || base.vi.desc,
-      origin: cms.origin_vi || base.vi.origin
+      desc: descVi,
+      origin: originVi || base.vi.origin
+    },
+    ko: {
+      name: nameKo,
+      desc: descKo,
+      origin: originKo || originEn || base.en.origin,
+      features: cms.ko?.features || descKo
+    },
+    zh: {
+      name: nameZh,
+      desc: descZh,
+      origin: originZh || originEn || base.en.origin,
+      features: cms.zh?.features || descZh
     }
   };
 });
+
+export function getProductLocalized(product: ProductItem, lang: Language): {
+  name: string;
+  desc: string;
+  origin: string;
+  features: string;
+  categoryLabel: string;
+} {
+  const cat = CATEGORY_LABELS[product.category];
+  if (lang === 'vi') {
+    return {
+      name: product.nameVi || product.vi.name,
+      desc: product.descriptionVi || product.shortDescriptionVi || product.vi.desc,
+      origin: product.originVi || product.vi.origin,
+      features: product.vi.features || product.descriptionVi,
+      categoryLabel: cat?.vi || product.categoryLabelVi
+    };
+  }
+  if (lang === 'ko') {
+    return {
+      name: product.nameKo || product.ko?.name || product.name,
+      desc: product.descriptionKo || product.shortDescriptionKo || product.ko?.desc || product.description,
+      origin: product.originKo || product.ko?.origin || product.origin || product.en.origin,
+      features: product.ko?.features || product.descriptionKo || product.en.features,
+      categoryLabel: cat?.ko || product.categoryLabelKo || product.categoryLabelEn
+    };
+  }
+  if (lang === 'zh-CN') {
+    return {
+      name: product.nameZh || product.zh?.name || product.name,
+      desc: product.descriptionZh || product.shortDescriptionZh || product.zh?.desc || product.description,
+      origin: product.originZh || product.zh?.origin || product.origin || product.en.origin,
+      features: product.zh?.features || product.descriptionZh || product.en.features,
+      categoryLabel: cat?.zh || product.categoryLabelZh || product.categoryLabelEn
+    };
+  }
+  return {
+    name: product.name || product.en.name,
+    desc: product.description || product.shortDescription || product.en.desc,
+    origin: product.origin || product.en.origin,
+    features: product.en.features || product.description,
+    categoryLabel: cat?.en || product.categoryLabelEn
+  };
+}
+
+export function getProductSpecsLocalized(specs: ProductSpecs, lang: Language) {
+  if (lang === 'vi') {
+    return {
+      moisture: specs.moisture,
+      brix: specs.brix,
+      shelfLife: specs.shelfLifeVi,
+      storage: specs.storageVi,
+      ingredients: specs.ingredientsVi,
+      process: specs.processVi,
+      packaging: specs.packagingVi,
+      certifications: specs.certificationsVi
+    };
+  }
+  if (lang === 'ko') {
+    return {
+      moisture: specs.moisture,
+      brix: specs.brix,
+      shelfLife: specs.shelfLifeKo || specs.shelfLifeEn,
+      storage: specs.storageKo || specs.storageEn,
+      ingredients: specs.ingredientsKo || specs.ingredientsEn,
+      process: specs.processKo || specs.processEn,
+      packaging: specs.packagingKo || specs.packagingEn,
+      certifications: specs.certificationsKo || specs.certificationsEn
+    };
+  }
+  if (lang === 'zh-CN') {
+    return {
+      moisture: specs.moisture,
+      brix: specs.brix,
+      shelfLife: specs.shelfLifeZh || specs.shelfLifeEn,
+      storage: specs.storageZh || specs.storageEn,
+      ingredients: specs.ingredientsZh || specs.ingredientsEn,
+      process: specs.processZh || specs.processEn,
+      packaging: specs.packagingZh || specs.packagingEn,
+      certifications: specs.certificationsZh || specs.certificationsEn
+    };
+  }
+  return {
+    moisture: specs.moisture,
+    brix: specs.brix,
+    shelfLife: specs.shelfLifeEn,
+    storage: specs.storageEn,
+    ingredients: specs.ingredientsEn,
+    process: specs.processEn,
+    packaging: specs.packagingEn,
+    certifications: specs.certificationsEn
+  };
+}
+
 

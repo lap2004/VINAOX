@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ExternalLink, Calendar, MessageSquareQuote, Newspaper, Building2, Sparkles, ArrowRight } from 'lucide-react';
 import { NewsItem } from '../../data/news';
+import { getNewsLocalized, getPersonQuotedTitle } from '../../services/contentService';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 export interface NewsCardProps {
@@ -9,19 +10,20 @@ export interface NewsCardProps {
 }
 
 export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
-  const { language } = useLanguage();
-  const isVi = language === 'vi';
+  const { language, pick } = useLanguage();
 
   if (!news) return null;
 
-  const info = (isVi ? news.vi : news.en) || news.vi || news.en || {
-    title: 'Tin tức VINAXO',
-    sourceBadge: `${news.source || 'VINAXO'} • Tin tức`,
-    summary: '',
-    readMore: 'Xem chi tiết'
+  const loc = getNewsLocalized(news, language);
+  const info = {
+    title: loc.title || 'VINAXO',
+    sourceBadge: loc.sourceBadge || `${news.source || 'VINAXO'}`,
+    summary: loc.summary || '',
+    readMore: loc.readMore || pick({ vi: 'Đọc bài báo gốc', en: 'Read Original Article', ko: '원문 기사 보기', zh: '阅读原文' })
   };
-  const badgeText = (isVi ? news.badgeTextVi : news.badgeTextEn) || news.badgeTextVi || 'Tin tức';
-  const dateText = (isVi ? news.dateVi : news.dateEn) || news.dateVi || news.publishedAt || '';
+  const badgeText = loc.badgeText || pick({ vi: 'Tin tức', en: 'News', ko: '뉴스', zh: '新闻动态' });
+  const dateText = loc.date || news.publishedAt || '';
+  const quotedTitle = getPersonQuotedTitle(news.personQuoted, language);
 
   // Render badge by badgeType
   const renderBadge = () => {
@@ -155,9 +157,9 @@ export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
         >
           <Calendar size={13} />
           <time dateTime={news.publishedAt}>{dateText}</time>
-          {news.personQuoted && (
+          {news.personQuoted && quotedTitle && (
             <span>
-              • {isVi ? news.personQuoted.titleVi : news.personQuoted.titleEn}
+              • {quotedTitle}
             </span>
           )}
         </div>
@@ -229,7 +231,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({ news }) => {
               transition: 'opacity 0.18s ease',
             }}
           >
-            <span>{isVi ? 'Xem chi tiết' : 'View Article'}</span>
+            <span>{pick({ vi: 'Xem chi tiết', en: 'View Article', ko: '상세 보기', zh: '查看详情' })}</span>
             <ArrowRight size={14} />
           </Link>
 

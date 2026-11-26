@@ -8,23 +8,40 @@ import { CorporateCTA } from '../components/ui/CorporateCTA';
 import { MainLayoutContext } from '../components/layout/MainLayout';
 
 export const GlobalMarket: React.FC = () => {
-  const { language, t } = useLanguage();
+  const { t, pick } = useLanguage();
   const { onOpenQuote } = useOutletContext<MainLayoutContext>();
-  const isVi = language === 'vi';
 
   return (
     <div className="markets-page">
       {/* Page Hero */}
       <PageHero
-        badge={isVi ? 'MẠNG LƯỚI THỊ TRƯỜNG & XUẤT KHẨU TOÀN CẦU' : 'GLOBAL EXPORT REACH & TRADE NETWORK'}
-        title={t('pageBanners.markets.title') || (isVi ? 'Mạng Lưới Thị Trường & Xuất Khẩu Toàn Cầu' : 'Global Export Markets & Supply Chain')}
+        badge={pick({
+          vi: 'MẠNG LƯỚI THỊ TRƯỜNG & XUẤT KHẨU TOÀN CẦU',
+          en: 'GLOBAL EXPORT REACH & TRADE NETWORK',
+          ko: '글로벌 수출 네트워크 및 시장 현황',
+          zh: '全球出口网络与贸易版图'
+        })}
+        title={t('pageBanners.markets.title') || pick({
+          vi: 'Mạng Lưới Thị Trường & Xuất Khẩu Toàn Cầu',
+          en: 'Global Export Markets & Supply Chain',
+          ko: '글로벌 수출 시장 및 공급망',
+          zh: '全球出口市场与供应链布局'
+        })}
         description={
           t('pageBanners.markets.subtitle') ||
-          (isVi
-            ? 'Cung ứng nông sản trái cây sấy dẻo nhiệt đới tới các thị trường khó tính nhất: Hoa Kỳ (~70%), Liên minh Châu Âu (~20%), Hàn Quốc và Nga.'
-            : 'Delivering world-class Vietnamese agricultural produce across the United States (~70%), the European Union (~20%), Russia, and East Asia.')
+          pick({
+            vi: 'Cung ứng nông sản trái cây sấy dẻo nhiệt đới tới các thị trường khó tính nhất: Hoa Kỳ (~70%), Liên minh Châu Âu (~20%), Hàn Quốc và Nga.',
+            en: 'Delivering world-class Vietnamese agricultural produce across the United States (~70%), the European Union (~20%), Russia, and East Asia.',
+            ko: '미국(~70%), 유럽연합(~20%), 러시아 및 한국·동아시아 등 까다로운 국제 식품안전 기준을 요구하는 글로벌 시장에 베트남 열대 건조 과일을 공급합니다.',
+            zh: '稳定向美国（约 70%）、欧盟（约 20%）、俄罗斯及日韩等东亚高标准国际市场出口优质越南热带果干产品。'
+          })
         }
-        breadcrumbCurrent={isVi ? 'Thị Trường Xuất Khẩu' : 'Global Markets'}
+        breadcrumbCurrent={pick({
+          vi: 'Thị Trường Xuất Khẩu',
+          en: 'Global Markets',
+          ko: '글로벌 수출 시장',
+          zh: '全球出口市场'
+        })}
       />
 
       {/* ========================================================================
@@ -301,9 +318,19 @@ export const GlobalMarket: React.FC = () => {
             eyebrow={t('marketsPage.section4.label')}
             title={t('marketsPage.section4.title')}
             description={t('marketsPage.section4.desc')}
-            primaryText={isVi ? 'Yêu Cầu Báo Giá FCL/CIF' : 'Request FCL/CIF Quotation'}
+            primaryText={pick({
+              vi: 'Yêu Cầu Báo Giá FCL/CIF',
+              en: 'Request FCL/CIF Quotation',
+              ko: 'FCL/CIF 수출 견적 요청',
+              zh: '获取整柜 FCL / CIF 报价'
+            })}
             onPrimaryClick={() => onOpenQuote()}
-            secondaryText={isVi ? 'Liên Hệ Ban Lãnh Đạo' : 'Contact Leadership Directly'}
+            secondaryText={pick({
+              vi: 'Liên Hệ Ban Lãnh Đạo',
+              en: 'Contact Leadership Directly',
+              ko: '수출 경영진 직접 문의',
+              zh: '直接联系管理团队'
+            })}
             secondaryLink="/contact"
           />
         </div>

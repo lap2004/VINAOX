@@ -12,8 +12,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
   variant = 'compact',
   interactive = true,
 }) => {
-  const { language } = useLanguage();
-  const isVi = language === 'vi';
+  const { pick } = useLanguage();
   const [activeMarket, setActiveMarket] = useState<string | null>(null);
 
   const marketDetails: Record<
@@ -21,32 +20,132 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
     { title: string; share: string; port: string; transit: string; products: string }
   > = {
     usa: {
-      title: isVi ? 'Thị Trường Hoa Kỳ (United States)' : 'United States Export Market',
-      share: isVi ? '~70% Kim ngạch xuất khẩu' : '~70% Total Export Share',
-      port: isVi ? 'Cảng đến: Long Beach, Oakland, Los Angeles' : 'Ports of Entry: Long Beach, Oakland, Los Angeles',
-      transit: isVi ? 'Thời gian hải trình: 22 - 28 ngày' : 'Transit Time: 22 - 28 days',
-      products: isVi ? 'Xoài sấy dẻo, Thanh long sấy dẻo, Chuối sấy dẻo' : 'Soft-dried mango, dragon fruit, and banana',
+      title: pick({
+        vi: 'Thị Trường Hoa Kỳ (United States)',
+        en: 'United States Export Market',
+        ko: '미국 수출 시장 (United States)',
+        zh: '美国核心出口市场'
+      }),
+      share: pick({
+        vi: '~70% Kim ngạch xuất khẩu',
+        en: '~70% Total Export Share',
+        ko: '전체 수출 비중 약 70%',
+        zh: '占总出口比重约 70%'
+      }),
+      port: pick({
+        vi: 'Cảng đến: Long Beach, Oakland, Los Angeles',
+        en: 'Ports of Entry: Long Beach, Oakland, Los Angeles',
+        ko: '도착항: 롱비치, 오클랜드, 로스앤젤레스',
+        zh: '主要目的港：长滩、奥克兰、洛杉矶'
+      }),
+      transit: pick({
+        vi: 'Thời gian hải trình: 22 - 28 ngày',
+        en: 'Transit Time: 22 - 28 days',
+        ko: '해상 운송 기간: 22 ~ 28일',
+        zh: '海运时效：22 - 28 天'
+      }),
+      products: pick({
+        vi: 'Xoài sấy dẻo, Thanh long sấy dẻo, Chuối sấy dẻo',
+        en: 'Soft-dried mango, dragon fruit, and banana',
+        ko: '소프트 건망고, 건용과, 바나나 스낵',
+        zh: '软烘芒果干、红心火龙果干、香蕉片'
+      }),
     },
     eu: {
-      title: isVi ? 'Liên Minh Châu Âu (European Union)' : 'European Union Export Market',
-      share: isVi ? '~20% Kim ngạch xuất khẩu' : '~20% Total Export Share',
-      port: isVi ? 'Cảng đến: Hamburg (Đức), Rotterdam, Helsinki' : 'Ports of Entry: Hamburg, Rotterdam, Helsinki',
-      transit: isVi ? 'Thời gian hải trình: 28 - 35 ngày' : 'Transit Time: 28 - 35 days',
-      products: isVi ? 'Dòng sản phẩm đạt chuẩn BRCGS Hạng B & Thích ứng ESG' : 'BRCGS Grade B & ESG Compliant natural fruit lines',
+      title: pick({
+        vi: 'Liên Minh Châu Âu (European Union)',
+        en: 'European Union Export Market',
+        ko: '유럽연합(EU) 수출 시장',
+        zh: '欧盟出口市场'
+      }),
+      share: pick({
+        vi: '~20% Kim ngạch xuất khẩu',
+        en: '~20% Total Export Share',
+        ko: '전체 수출 비중 약 20%',
+        zh: '占总出口比重约 20%'
+      }),
+      port: pick({
+        vi: 'Cảng đến: Hamburg (Đức), Rotterdam, Helsinki',
+        en: 'Ports of Entry: Hamburg, Rotterdam, Helsinki',
+        ko: '도착항: 함부르크(독일), 로테르담, 헬싱키',
+        zh: '主要目的港：汉堡（德国）、鹿特丹、赫尔辛基'
+      }),
+      transit: pick({
+        vi: 'Thời gian hải trình: 28 - 35 ngày',
+        en: 'Transit Time: 28 - 35 days',
+        ko: '해상 운송 기간: 28 ~ 35일',
+        zh: '海运时效：28 - 35 天'
+      }),
+      products: pick({
+        vi: 'Dòng sản phẩm đạt chuẩn BRCGS Hạng B & Thích ứng ESG',
+        en: 'BRCGS Grade B & ESG Compliant natural fruit lines',
+        ko: 'BRCGS Grade B 인증 및 ESG 기준 충족 제품군',
+        zh: '符合 BRCGS B 级及 ESG 绿色标准产品线'
+      }),
     },
     russia: {
-      title: isVi ? 'Thị Trường Nga & Đông Âu (Russia & CIS)' : 'Russia & Eastern Europe Market',
-      share: isVi ? 'Đối tác xuất khẩu ổn định' : 'Longstanding Strategic Partners',
-      port: isVi ? 'Cảng đến: Vladivostok, Saint Petersburg' : 'Ports of Entry: Vladivostok, Saint Petersburg',
-      transit: isVi ? 'Thời gian hải trình: 18 - 25 ngày' : 'Transit Time: 18 - 25 days',
-      products: isVi ? 'Dòng trái cây sấy dẻo nhiệt đới & bao bì mùa vụ' : 'Tropical soft-dried fruits & seasonal packaging',
+      title: pick({
+        vi: 'Thị Trường Nga & Đông Âu (Russia & CIS)',
+        en: 'Russia & Eastern Europe Market',
+        ko: '러시아 및 동유럽 수출 시장',
+        zh: '俄罗斯及东欧出口市场'
+      }),
+      share: pick({
+        vi: 'Đối tác xuất khẩu ổn định',
+        en: 'Longstanding Strategic Partners',
+        ko: '장기 전략 수출 파트너',
+        zh: '长期稳定战略合作伙伴'
+      }),
+      port: pick({
+        vi: 'Cảng đến: Vladivostok, Saint Petersburg',
+        en: 'Ports of Entry: Vladivostok, Saint Petersburg',
+        ko: '도착항: 블라디보스토크, 상트페테르부르크',
+        zh: '主要目的港：符拉迪沃斯托克、圣彼得堡'
+      }),
+      transit: pick({
+        vi: 'Thời gian hải trình: 18 - 25 ngày',
+        en: 'Transit Time: 18 - 25 days',
+        ko: '해상 운송 기간: 18 ~ 25일',
+        zh: '海运时效：18 - 25 天'
+      }),
+      products: pick({
+        vi: 'Dòng trái cây sấy dẻo nhiệt đới & bao bì mùa vụ',
+        en: 'Tropical soft-dried fruits & seasonal packaging',
+        ko: '열대 소프트 건조 과일 및 시즌별 리테일 포장',
+        zh: '热带软烘干果及季节限定包装系列'
+      }),
     },
     korea: {
-      title: isVi ? 'Hàn Quốc & Đông Á (South Korea & East Asia)' : 'South Korea & East Asia Market',
-      share: isVi ? 'Thị trường tăng trưởng nhanh' : 'High-Growth Regional Market',
-      port: isVi ? 'Cảng đến: Busan, Incheon' : 'Ports of Entry: Busan, Incheon',
-      transit: isVi ? 'Thời gian hải trình: 7 - 10 ngày' : 'Transit Time: 7 - 10 days',
-      products: isVi ? 'Xoài sấy dẻo Cát Chu, Thơm sấy dẻo Tân Phước' : 'Premium Cat Chu mango & Tan Phuoc pineapple',
+      title: pick({
+        vi: 'Hàn Quốc & Đông Á (South Korea & East Asia)',
+        en: 'South Korea & East Asia Market',
+        ko: '대한민국 및 동아시아 시장',
+        zh: '韩国及东亚核心市场'
+      }),
+      share: pick({
+        vi: 'Thị trường tăng trưởng nhanh',
+        en: 'High-Growth Regional Market',
+        ko: '고성장 핵심 아시아 시장',
+        zh: '高增长亚洲区域市场'
+      }),
+      port: pick({
+        vi: 'Cảng đến: Busan, Incheon',
+        en: 'Ports of Entry: Busan, Incheon',
+        ko: '도착항: 부산항, 인천항',
+        zh: '主要目的港：釜山港、仁川港'
+      }),
+      transit: pick({
+        vi: 'Thời gian hải trình: 7 - 10 ngày',
+        en: 'Transit Time: 7 - 10 days',
+        ko: '해상 운송 기간: 7 ~ 10일',
+        zh: '海运时效：7 - 10 天'
+      }),
+      products: pick({
+        vi: 'Xoài sấy dẻo Cát Chu, Thơm sấy dẻo Tân Phước',
+        en: 'Premium Cat Chu mango & Tan Phuoc pineapple',
+        ko: '프리미엄 깟추 건망고 및 떤프억 건파인애플',
+        zh: '优质 Cat Chu 软烘芒果干及新福菠萝干'
+      }),
     },
   };
 
@@ -239,7 +338,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 fill={activeMarket === 'usa' ? '#F4A83A' : '#3A2417'}
                 textAnchor="middle"
               >
-                {isVi ? 'Hoa Kỳ (~70%)' : 'USA (~70%)'}
+                {pick({ vi: 'Hoa Kỳ (~70%)', en: 'USA (~70%)', ko: '미국 (~70%)', zh: '美国 (~70%)' })}
               </text>
             </g>
           </g>
@@ -275,7 +374,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 fill={activeMarket === 'eu' ? '#F4A83A' : '#3A2417'}
                 textAnchor="middle"
               >
-                {isVi ? 'Châu Âu (~20%)' : 'EU (~20%)'}
+                {pick({ vi: 'Châu Âu (~20%)', en: 'EU (~20%)', ko: '유럽연합 (~20%)', zh: '欧盟 (~20%)' })}
               </text>
             </g>
           </g>
@@ -311,7 +410,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 fill={activeMarket === 'russia' ? '#F4A83A' : '#3A2417'}
                 textAnchor="middle"
               >
-                {isVi ? 'NGA & ĐÔNG ÂU' : 'RUSSIA & E. EUROPE'}
+                {pick({ vi: 'NGA & ĐÔNG ÂU', en: 'RUSSIA & E. EUROPE', ko: '러시아 · 동유럽', zh: '俄罗斯与东欧' })}
               </text>
             </g>
           </g>
@@ -347,7 +446,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 fill={activeMarket === 'korea' ? '#F4A83A' : '#3A2417'}
                 textAnchor="middle"
               >
-                {isVi ? 'HÀN QUỐC & ĐÔNG Á' : 'KOREA & E. ASIA'}
+                {pick({ vi: 'HÀN QUỐC & ĐÔNG Á', en: 'KOREA & E. ASIA', ko: '한국 · 동아시아', zh: '韩国与东亚' })}
               </text>
             </g>
           </g>
@@ -398,7 +497,7 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
                 textAnchor="middle"
                 letterSpacing="0.3"
               >
-                {isVi ? 'VINAXO (ĐBSCL)' : 'VINAXO (VIETNAM HUB)'}
+                {pick({ vi: 'VINAXO (ĐBSCL)', en: 'VINAXO (VIETNAM HUB)', ko: 'VINAXO (베트남 거점)', zh: 'VINAXO（越南总部）' })}
               </text>
             </g>
           </g>
@@ -410,11 +509,11 @@ export const WorldMapSvg: React.FC<WorldMapSvgProps> = ({
         <div className="map-stats-badge">
           <span className="badge-accent-dot"></span>
           <span className="badge-stat">
-            {isVi ? '70% Mỹ • 20% EU' : '70% US • 20% EU'}
+            {pick({ vi: '70% Mỹ • 20% EU', en: '70% US • 20% EU', ko: '미국 70% • EU 20%', zh: '美国 70% • 欧盟 20%' })}
           </span>
           <span className="badge-sep">—</span>
           <span className="badge-label">
-            {isVi ? 'TỶ TRỌNG XUẤT KHẨU CHÍNH' : 'CORE EXPORT SHARE'}
+            {pick({ vi: 'TỶ TRỌNG XUẤT KHẨU CHÍNH', en: 'CORE EXPORT SHARE', ko: '핵심 수출 비중', zh: '核心出口占比' })}
           </span>
         </div>
       </div>

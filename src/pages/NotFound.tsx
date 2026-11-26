@@ -5,7 +5,7 @@ import { Button } from '../components/ui/Button';
 import { Home, ArrowLeft } from 'lucide-react';
 
 export const NotFound: React.FC = () => {
-  const { language } = useLanguage();
+  const { pick } = useLanguage();
 
   return (
     <div style={{
@@ -45,7 +45,12 @@ export const NotFound: React.FC = () => {
           color: 'var(--dark-chocolate)',
           marginBottom: '1rem'
         }}>
-          {language === 'vi' ? 'Không tìm thấy trang' : 'Page Not Found'}
+          {pick({
+            vi: 'Không tìm thấy trang',
+            en: 'Page Not Found',
+            ko: '페이지를 찾을 수 없습니다',
+            zh: '未找到该页面'
+          })}
         </h1>
 
         <p style={{
@@ -54,9 +59,12 @@ export const NotFound: React.FC = () => {
           lineHeight: 1.6,
           marginBottom: '2rem'
         }}>
-          {language === 'vi'
-            ? 'Đường dẫn bạn yêu cầu không tồn tại hoặc đã được chuyển sang địa chỉ mới. Vui lòng quay lại trang chủ hoặc kiểm tra danh mục sản phẩm VINAXO.'
-            : 'The page you requested does not exist or has been moved. Please return to the homepage or explore our verified export catalog.'}
+          {pick({
+            vi: 'Đường dẫn bạn yêu cầu không tồn tại hoặc đã được chuyển sang địa chỉ mới. Vui lòng quay lại trang chủ hoặc kiểm tra danh mục sản phẩm VINAXO.',
+            en: 'The page you requested does not exist or has been moved. Please return to the homepage or explore our verified export catalog.',
+            ko: '요청하신 페이지가 존재하지 않거나 주소가 변경되었습니다. 홈페이지로 돌아가거나 VINAXO 수출 제품 카탈로그를 확인해 주세요.',
+            zh: '您访问的页面不存在或已迁移。请返回首页或浏览 VINAXO 出口产品目录。'
+          })}
         </p>
 
         <div style={{
@@ -67,12 +75,12 @@ export const NotFound: React.FC = () => {
         }}>
           <Link to="/" style={{ textDecoration: 'none' }}>
             <Button variant="primary" icon={<Home size={18} />}>
-              {language === 'vi' ? 'Trang chủ' : 'Return Home'}
+              {pick({ vi: 'Trang chủ', en: 'Return Home', ko: '홈으로 돌아가기', zh: '返回首页' })}
             </Button>
           </Link>
           <Link to="/products" style={{ textDecoration: 'none' }}>
             <Button variant="outline" icon={<ArrowLeft size={18} />}>
-              {language === 'vi' ? 'Xem sản phẩm' : 'Our Products'}
+              {pick({ vi: 'Xem sản phẩm', en: 'Our Products', ko: '제품 보기', zh: '浏览产品' })}
             </Button>
           </Link>
         </div>

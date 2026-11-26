@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import { ComplianceBadge } from '../../data/brochureData';
+import { ComplianceBadge, getComplianceLocalized } from '../../data/brochureData';
+import { useLanguage } from '../../i18n/LanguageContext';
 
 export interface CertificatePreviewModalProps {
   certificate: ComplianceBadge | null;
-  isVi: boolean;
+  isVi?: boolean;
   onClose: () => void;
 }
 
@@ -13,9 +14,9 @@ export interface CertificatePreviewModalProps {
  */
 export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = ({
   certificate,
-  isVi,
   onClose,
 }) => {
+  const { language, pick } = useLanguage();
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
@@ -44,13 +45,21 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
     return null;
   }
 
+  const localized = getComplianceLocalized(certificate, language);
+  const closeAriaLabel = pick({
+    vi: 'Đóng bản xem trước',
+    en: 'Close preview',
+    ko: '미리보기 닫기',
+    zh: '关闭预览'
+  });
+
   return (
     <div
       className="modal-backdrop"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label={certificate.name}
+      aria-label={localized.name}
     >
       <div
         className="modal-content"
@@ -68,17 +77,17 @@ export const CertificatePreviewModal: React.FC<CertificatePreviewModalProps> = (
         >
           <div>
             <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--dark-chocolate)' }}>
-              {certificate.name}
+              {localized.name}
             </h3>
             <p style={{ margin: '4px 0 0', fontSize: '0.84rem', color: 'var(--muted-text)' }}>
-              {isVi ? certificate.scopeVi : certificate.scopeEn}
+              {localized.scope}
             </p>
           </div>
           <button
             ref={closeBtnRef}
             type="button"
             onClick={onClose}
-            aria-label={isVi ? 'Đóng bản xem trước' : 'Close preview'}
+            aria-label={closeAriaLabel}
             style={{
               border: '1px solid var(--soft-border)',
               backgroundColor: 'var(--brand-bg)',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, CheckCircle, Send, ShieldCheck, Mail, Copy, Check, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { productsData } from '../../data/products';
+import { getProductLocalized, productsData } from '../../data/products';
 import {
   InquiryPayload,
   buildInquiryPlainText,
@@ -51,8 +51,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
   onClose,
   defaultProduct = '',
 }) => {
-  const { t, language } = useLanguage();
-  const isVi = language === 'vi';
+  const { t, language, pick } = useLanguage();
 
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -144,9 +143,12 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
 
     if (!trimmedName || !trimmedEmail || !trimmedPhone) {
       setErrorMsg(
-        isVi
-          ? 'Vui lòng điền họ tên, email và số điện thoại liên hệ.'
-          : 'Please provide your full name, email address, and phone number.'
+        pick({
+          vi: 'Vui lòng điền họ tên, email và số điện thoại liên hệ.',
+          en: 'Please provide your full name, email address, and phone number.',
+          ko: '성함, 기업 이메일, 전화번호를 모두 입력해 주세요.',
+          zh: '请填写您的姓名、企业邮箱和联系电话。'
+        })
       );
       return;
     }
@@ -154,9 +156,12 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(trimmedEmail)) {
       setErrorMsg(
-        isVi
-          ? 'Địa chỉ email không đúng định dạng. Vui lòng kiểm tra lại.'
-          : 'Please provide a valid business email address (e.g. name@company.com).'
+        pick({
+          vi: 'Địa chỉ email không đúng định dạng. Vui lòng kiểm tra lại.',
+          en: 'Please provide a valid business email address (e.g. name@company.com).',
+          ko: '올바른 기업 이메일 주소(예: name@company.com)를 입력해 주세요.',
+          zh: '电子邮箱格式无效，请输入有效的企业邮箱（如 name@company.com）。'
+        })
       );
       return;
     }
@@ -186,9 +191,12 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
 
     setErrorMsg(
       result.error ||
-        (isVi
-          ? 'Không thể gửi yêu cầu qua máy chủ lúc này. Dữ liệu của bạn vẫn được giữ nguyên.'
-          : 'Could not dispatch via server right now. Your form details are preserved.')
+        pick({
+          vi: 'Không thể gửi yêu cầu qua máy chủ lúc này. Dữ liệu của bạn vẫn được giữ nguyên.',
+          en: 'Could not dispatch via server right now. Your form details are preserved.',
+          ko: '현재 서버를 통해 요청을 발송할 수 없습니다. 입력하신 정보는 그대로 유지됩니다.',
+          zh: '暂时无法通过服务器提交，您填写的表单内容已安全保留。'
+        })
     );
     setFallbackPayload(payload);
     setFallbackRecipient(result.recipient || '');
@@ -233,7 +241,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
           ref={closeBtnRef}
           type="button"
           onClick={onClose}
-          aria-label={isVi ? 'Đóng hộp thoại báo giá' : 'Close modal'}
+          aria-label={pick({ vi: 'Đóng hộp thoại báo giá', en: 'Close modal', ko: '견적 창 닫기', zh: '关闭报价弹窗' })}
           style={{
             position: 'absolute',
             top: '16px',
@@ -291,9 +299,12 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                 margin: '0 auto 14px',
               }}
             >
-              {isVi
-                ? 'Yêu cầu báo giá của bạn đã được chuyển tiếp đến Bộ phận Xuất khẩu VINAXO. Đội ngũ thương mại quốc tế sẽ phản hồi trong vòng 24 giờ làm việc.'
-                : 'Your B2B quote inquiry has been forwarded to VINAXO Export Desk. Our team will review your specifications and contact you within 24 business hours.'}
+              {pick({
+                vi: 'Yêu cầu báo giá của bạn đã được chuyển tiếp đến Bộ phận Xuất khẩu VINAXO. Đội ngũ thương mại quốc tế sẽ phản hồi trong vòng 24 giờ làm việc.',
+                en: 'Your B2B quote inquiry has been forwarded to VINAXO Export Desk. Our team will review your specifications and contact you within 24 business hours.',
+                ko: '견적 문의가 VINAXO 수출 사업부로 전달되었습니다. 해외 영업팀이 사양 검토 후 영업일 기준 24시간 이내에 회신드리겠습니다.',
+                zh: '您的B2B报价请求已转交 VINAXO 出口部。我们的国际贸易团队将在 24 个工作小时内与您联系。'
+              })}
             </p>
             {referenceId && (
               <div
@@ -309,7 +320,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                   color: 'var(--dark-chocolate)',
                 }}
               >
-                {isVi ? `Mã tham chiếu: ${referenceId}` : `Reference ID: ${referenceId}`}
+                {pick({ vi: `Mã tham chiếu: ${referenceId}`, en: `Reference ID: ${referenceId}`, ko: `접수 번호: ${referenceId}`, zh: `受理编号：${referenceId}` })}
               </div>
             )}
             <div>
@@ -392,7 +403,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                       style={{ padding: '7px 12px', fontSize: '0.78rem', textDecoration: 'none' }}
                     >
                       <Mail size={14} />
-                      <span>{isVi ? 'Mở ứng dụng Email' : 'Open Email App'}</span>
+                      <span>{pick({ vi: 'Mở ứng dụng Email', en: 'Open Email App', ko: '이메일 앱 열기', zh: '打开邮件客户端' })}</span>
                     </a>
                     <button
                       type="button"
@@ -403,12 +414,8 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                       {copied ? <Check size={14} /> : <Copy size={14} />}
                       <span>
                         {copied
-                          ? isVi
-                            ? 'Đã sao chép'
-                            : 'Copied'
-                          : isVi
-                          ? 'Sao chép nội dung'
-                          : 'Copy Inquiry'}
+                          ? pick({ vi: 'Đã sao chép', en: 'Copied', ko: '복사됨', zh: '已复制' })
+                          : pick({ vi: 'Sao chép nội dung', en: 'Copy Inquiry', ko: '문의 내용 복사', zh: '复制询盘内容' })}
                       </span>
                     </button>
                     <a
@@ -551,22 +558,33 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                   style={{ padding: '9px 12px', cursor: 'pointer' }}
                 >
                   <option value="">
-                    {isVi ? '-- Chọn sản phẩm hoặc dịch vụ quan tâm --' : '-- Select product of interest --'}
+                    {pick({
+                      vi: '-- Chọn sản phẩm hoặc dịch vụ quan tâm --',
+                      en: '-- Select product of interest --',
+                      ko: '-- 관심 제품 또는 서비스 선택 --',
+                      zh: '-- 请选择意向产品或代工服务 --'
+                    })}
                   </option>
                   {productsData.map((p) => (
                     <option key={p.id} value={p.slug}>
-                      {isVi ? p.nameVi : p.name}
+                      {getProductLocalized(p, language).name}
                     </option>
                   ))}
                   <option value={VALUE_ADDED_VALUE}>
-                    {isVi
-                      ? 'Trái cây sấy tẩm mật ong / Phủ Sô-cô-la / Granola'
-                      : 'Honey-Infused & Chocolate-Dipped / Granola'}
+                    {pick({
+                      vi: 'Trái cây sấy tẩm mật ong / Phủ Sô-cô-la / Granola',
+                      en: 'Honey-Infused & Chocolate-Dipped / Granola',
+                      ko: '천연 벌꿀 인퓨즈드 / 초콜릿 디핑 / 그래놀라',
+                      zh: '蜂蜜浸渍果干 / 巧克力蘸酱果干 / 格兰诺拉麦片'
+                    })}
                   </option>
                   <option value={OEM_VALUE}>
-                    {isVi
-                      ? 'Gia công OEM / ODM & Đóng gói Nhãn riêng (Private Label)'
-                      : 'OEM / ODM & Private Label Project'}
+                    {pick({
+                      vi: 'Gia công OEM / ODM & Đóng gói Nhãn riêng (Private Label)',
+                      en: 'OEM / ODM & Private Label Project',
+                      ko: 'OEM / ODM 자체 브랜드(PB) 위탁 생산',
+                      zh: 'OEM / ODM 自有品牌贴牌代工项目'
+                    })}
                   </option>
                   {!hasKnownProductOption && (
                     <option value={formData.product}>{formData.product}</option>
@@ -585,11 +603,12 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                   value={formData.message}
                   onChange={handleChange}
                   maxLength={2000}
-                  placeholder={
-                    isVi
-                      ? 'Sản lượng dự kiến (VD: 1 cont 20ft), cảng đích, quy cách đóng gói OEM hoặc ghi chú...'
-                      : 'Estimated volume (e.g. 1x20ft FCL), target destination, OEM packing or requirements...'
-                  }
+                  placeholder={pick({
+                    vi: 'Sản lượng dự kiến (VD: 1 cont 20ft), cảng đích, quy cách đóng gói OEM hoặc ghi chú...',
+                    en: 'Estimated volume (e.g. 1x20ft FCL), target destination, OEM packing or requirements...',
+                    ko: '예상 물량(예: 20ft FCL 1컨테이너), 도착항, OEM 포장 사양 등 기재...',
+                    zh: '预计采购量（如 1×20尺整柜）、目的港、OEM 包装规格或特殊要求...'
+                  })}
                   className="form-textarea"
                   style={{
                     minHeight: '66px',
@@ -621,9 +640,12 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                 >
                   <ShieldCheck size={15} color="var(--primary-green)" />
                   <span>
-                    {isVi
-                      ? 'Bảo mật thông tin thương mại B2B'
-                      : 'Protected B2B confidentiality'}
+                    {pick({
+                      vi: 'Bảo mật thông tin thương mại B2B',
+                      en: 'Protected B2B confidentiality',
+                      ko: 'B2B 기업 거래 정보 비밀 보장',
+                      zh: '严格保护 B2B 商业询盘隐私'
+                    })}
                   </span>
                 </div>
 
@@ -635,9 +657,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                   style={{ padding: '10px 20px', fontSize: '0.9rem' }}
                 >
                   {isSubmitting
-                    ? isVi
-                      ? 'Đang gửi...'
-                      : 'Submitting...'
+                    ? pick({ vi: 'Đang gửi...', en: 'Submitting...', ko: '전송 중...', zh: '正在提交...' })
                     : t('modal.submitBtn', 'Submit Quote Request')}
                 </Button>
               </div>

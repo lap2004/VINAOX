@@ -1,8 +1,9 @@
 import { COMPANY_INFO } from '../data/company';
+import { pickLocale, type Language } from '../i18n/localize';
 
 export interface InquiryPayload {
   formType: 'contact' | 'quote';
-  language: 'vi' | 'en';
+  language: Language;
   name: string;
   email: string;
   phone?: string;
@@ -93,9 +94,12 @@ export async function submitInquiry(payload: InquiryPayload): Promise<InquiryRes
       recipient: data?.recipient || COMPANY_INFO.contacts.email,
       error:
         data?.error ||
-        (payload.language === 'vi'
-          ? 'Hệ thống chưa thể gửi yêu cầu tự động lúc này. Vui lòng sử dụng kênh liên hệ thay thế bên dưới.'
-          : 'Automatic dispatch is currently unavailable. Please use one of the direct fallback options below.'),
+        pickLocale(payload.language, {
+          vi: 'Hệ thống chưa thể gửi yêu cầu tự động lúc này. Vui lòng sử dụng kênh liên hệ thay thế bên dưới.',
+          en: 'Automatic dispatch is currently unavailable. Please use one of the direct fallback options below.',
+          ko: '현재 자동 이메일 전송을 이용할 수 없습니다. 아래의 직접 연락 채널을 이용해 주세요.',
+          zh: '当前暂时无法自动发送请求，请使用下方直接联系方式与我们取得联系。'
+        }),
     };
   } catch (err: any) {
     const isAbort = err?.name === 'AbortError';
@@ -105,12 +109,18 @@ export async function submitInquiry(payload: InquiryPayload): Promise<InquiryRes
       code: isAbort ? 'TIMEOUT' : 'NETWORK_ERROR',
       recipient: COMPANY_INFO.contacts.email,
       error: isAbort
-        ? payload.language === 'vi'
-          ? 'Kết nối quá thời gian chờ (timeout). Dữ liệu của bạn vẫn được giữ nguyên — vui lòng thử lại hoặc mở ứng dụng Email.'
-          : 'Request timed out. Your entered details are preserved — please retry or use your Email app below.'
-        : payload.language === 'vi'
-        ? 'Lỗi kết nối mạng. Dữ liệu của bạn vẫn được giữ nguyên — vui lòng thử lại hoặc mở ứng dụng Email.'
-        : 'Network error occurred. Your entered details are preserved — please retry or use your Email app below.',
+        ? pickLocale(payload.language, {
+            vi: 'Kết nối quá thời gian chờ (timeout). Dữ liệu của bạn vẫn được giữ nguyên — vui lòng thử lại hoặc mở ứng dụng Email.',
+            en: 'Request timed out. Your entered details are preserved — please retry or use your Email app below.',
+            ko: '요청 시간이 초과되었습니다. 입력하신 정보는 그대로 유지되오니 다시 시도하거나 이메일 앱을 이용해 주세요.',
+            zh: '请求超时。您填写的内容已保留，请重试或通过下方邮件客户端发送。'
+          })
+        : pickLocale(payload.language, {
+            vi: 'Lỗi kết nối mạng. Dữ liệu của bạn vẫn được giữ nguyên — vui lòng thử lại hoặc mở ứng dụng Email.',
+            en: 'Network error occurred. Your entered details are preserved — please retry or use your Email app below.',
+            ko: '네트워크 연결 오류가 발생했습니다. 입력 정보는 유지되오니 다시 시도하거나 아래 이메일 앱을 이용해 주세요.',
+            zh: '网络连接错误。您填写的内容已保留，请重试或使用下方邮件客户端。'
+          }),
     };
   } finally {
     window.clearTimeout(timer);

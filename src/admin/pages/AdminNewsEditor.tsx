@@ -36,17 +36,27 @@ export const AdminNewsEditor: React.FC = () => {
     slug: '',
     title_vi: '',
     title_en: '',
+    title_ko: '',
+    title_zh: '',
     excerpt_vi: '',
     excerpt_en: '',
+    excerpt_ko: '',
+    excerpt_zh: '',
     body_vi: '',
     body_en: '',
+    body_ko: '',
+    body_zh: '',
     cover_image: '/assets/images/news/dried-fruit-export.webp',
     cover_image_alt_vi: '',
     cover_image_alt_en: '',
+    cover_image_alt_ko: '',
+    cover_image_alt_zh: '',
     category: 'press',
     badgeType: 'quote',
     badgeTextVi: 'Tin tức',
     badgeTextEn: 'News',
+    badgeTextKo: '뉴스',
+    badgeTextZh: '新闻',
     source: 'VINAXO',
     sourceUrl: '',
     author: 'Ban Biên Tập VINAXO',
@@ -59,12 +69,16 @@ export const AdminNewsEditor: React.FC = () => {
     seo_title_vi: '',
     seo_description_vi: '',
     seo_title_en: '',
-    seo_description_en: ''
+    seo_description_en: '',
+    seo_title_ko: '',
+    seo_description_ko: '',
+    seo_title_zh: '',
+    seo_description_zh: ''
   });
 
   const [fileSha, setFileSha] = useState<string | undefined>(undefined);
   const [slugLockedByUser, setSlugLockedByUser] = useState<boolean>(isEditing);
-  const [activeTab, setActiveTab] = useState<'vi' | 'en' | 'seo' | 'preview'>('vi');
+  const [activeTab, setActiveTab] = useState<'vi' | 'en' | 'ko' | 'zh-CN' | 'seo' | 'preview'>('vi');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoadingArticle, setIsLoadingArticle] = useState(false);
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
@@ -122,7 +136,15 @@ export const AdminNewsEditor: React.FC = () => {
   };
 
   const insertMarkdown = (syntax: string) => {
-    const currentBody = activeTab === 'en' ? (formData.body_en || '') : (formData.body_vi || '');
+    const bodyKey =
+      activeTab === 'en'
+        ? 'body_en'
+        : activeTab === 'ko'
+          ? 'body_ko'
+          : activeTab === 'zh-CN'
+            ? 'body_zh'
+            : 'body_vi';
+    const currentBody = (formData[bodyKey] || '') as string;
     let newBody = currentBody;
 
     if (syntax === 'b') newBody += ' **in đậm** ';
@@ -137,11 +159,7 @@ export const AdminNewsEditor: React.FC = () => {
     else if (syntax === 'align-center') newBody += '\n<div align="center">\n\nNội dung căn giữa\n\n</div>\n';
     else if (syntax === 'align-left') newBody += '\n<div align="left">\n\nNội dung căn trái\n\n</div>\n';
 
-    if (activeTab === 'en') {
-      setFormData(prev => ({ ...prev, body_en: newBody }));
-    } else {
-      setFormData(prev => ({ ...prev, body_vi: newBody }));
-    }
+    setFormData(prev => ({ ...prev, [bodyKey]: newBody }));
   };
 
   // Poll commit deployment status when article is published to Git
@@ -554,39 +572,42 @@ export const AdminNewsEditor: React.FC = () => {
 
             {/* Language Switch Tabs */}
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                onClick={() => setActiveTab('vi')}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: '6px',
-                  fontSize: '0.84rem',
-                  fontWeight: 600,
-                  border: 'none',
-                  cursor: 'pointer',
-                  backgroundColor: activeTab === 'vi' ? '#3A251B' : '#FAF7F2',
-                  color: activeTab === 'vi' ? '#FFFFFF' : '#6E6259'
-                }}
-              >
-                🇻🇳 Tiếng Việt
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('en')}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: '6px',
-                  fontSize: '0.84rem',
-                  fontWeight: 600,
-                  border: 'none',
-                  cursor: 'pointer',
-                  backgroundColor: activeTab === 'en' ? '#3A251B' : '#FAF7F2',
-                  color: activeTab === 'en' ? '#FFFFFF' : '#6E6259'
-                }}
-              >
-                🇬🇧 Tiếng Anh
-              </button>
+              {[
+                { key: 'vi' as const, label: '🇻🇳 Tiếng Việt', complete: Boolean(formData.title_vi?.trim() && formData.body_vi?.trim()) },
+                { key: 'en' as const, label: '🇬🇧 Tiếng Anh', complete: Boolean(formData.title_en?.trim() && formData.body_en?.trim()) },
+                { key: 'ko' as const, label: '🇰🇷 한국어', complete: Boolean(formData.title_ko?.trim() && formData.body_ko?.trim()) },
+                { key: 'zh-CN' as const, label: '🇨🇳 简体中文', complete: Boolean(formData.title_zh?.trim() && formData.body_zh?.trim()) },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setActiveTab(tab.key)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 14px',
+                    borderRadius: '6px',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: 'pointer',
+                    backgroundColor: activeTab === tab.key ? '#3A251B' : '#FAF7F2',
+                    color: activeTab === tab.key ? '#FFFFFF' : '#6E6259'
+                  }}
+                >
+                  <span>{tab.label}</span>
+                  <span
+                    title={tab.complete ? 'Đã có tiêu đề & nội dung' : 'Chưa đủ tiêu đề hoặc nội dung'}
+                    style={{
+                      width: '7px',
+                      height: '7px',
+                      borderRadius: '50%',
+                      backgroundColor: tab.complete ? '#10B981' : '#D97706'
+                    }}
+                  />
+                </button>
+              ))}
 
               <button
                 type="button"
@@ -749,6 +770,120 @@ export const AdminNewsEditor: React.FC = () => {
             </div>
           )}
 
+          {/* Tab 2b: Korean Content */}
+          {activeTab === 'ko' && (
+            <div>
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  Korean Title (제목 - 한국어)
+                </label>
+                <input
+                  type="text"
+                  value={formData.title_ko || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, title_ko: e.target.value }))}
+                  placeholder="한국어 기사 제목을 입력하세요..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '1rem', fontWeight: 600 }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  Korean Excerpt (요약 - 한국어)
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.excerpt_ko || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, excerpt_ko: e.target.value }))}
+                  placeholder="간략한 한국어 요약을 입력하세요..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.9rem', lineHeight: 1.5 }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  Korean Body Content (본문 - Markdown 지원)
+                </label>
+                <textarea
+                  rows={14}
+                  value={formData.body_ko || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, body_ko: e.target.value }))}
+                  placeholder="전체 한국어 본문을 입력하세요..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.92rem', lineHeight: 1.6, fontFamily: 'monospace' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  Cover Image Alt Text (한국어)
+                </label>
+                <input
+                  type="text"
+                  value={formData.cover_image_alt_ko || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, cover_image_alt_ko: e.target.value }))}
+                  placeholder="대표 이미지 설명..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Tab 2c: Simplified Chinese Content */}
+          {activeTab === 'zh-CN' && (
+            <div>
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  Simplified Chinese Title (标题 - 简体中文)
+                </label>
+                <input
+                  type="text"
+                  value={formData.title_zh || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, title_zh: e.target.value }))}
+                  placeholder="请输入简体中文文章标题..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '1rem', fontWeight: 600 }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  Simplified Chinese Excerpt (摘要 - 简体中文)
+                </label>
+                <textarea
+                  rows={3}
+                  value={formData.excerpt_zh || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, excerpt_zh: e.target.value }))}
+                  placeholder="请输入简短中文摘要..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '10px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.9rem', lineHeight: 1.5 }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '18px' }}>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  Simplified Chinese Body Content (正文 - 支持 Markdown)
+                </label>
+                <textarea
+                  rows={14}
+                  value={formData.body_zh || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, body_zh: e.target.value }))}
+                  placeholder="请输入完整简体中文正文内容..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '12px 14px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.92rem', lineHeight: 1.6, fontFamily: 'monospace' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                  Cover Image Alt Text (简体中文)
+                </label>
+                <input
+                  type="text"
+                  value={formData.cover_image_alt_zh || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, cover_image_alt_zh: e.target.value }))}
+                  placeholder="封面图片说明文字..."
+                  style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                />
+              </div>
+            </div>
+          )}
+
           {/* Tab 3: SEO & Display */}
           {activeTab === 'seo' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -786,6 +921,30 @@ export const AdminNewsEditor: React.FC = () => {
                     style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
                   />
                 </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                    SEO Title (한국어)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.seo_title_ko || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, seo_title_ko: e.target.value }))}
+                    placeholder="검색 엔진용 한국어 SEO 제목..."
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                    SEO Title (简体中文)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.seo_title_zh || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, seo_title_zh: e.target.value }))}
+                    placeholder="搜索引擎简体中文 SEO 标题..."
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                  />
+                </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
@@ -810,6 +969,30 @@ export const AdminNewsEditor: React.FC = () => {
                     value={formData.seo_description_en || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, seo_description_en: e.target.value }))}
                     placeholder="Short SEO meta description..."
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                    SEO Meta Description (한국어)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={formData.seo_description_ko || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, seo_description_ko: e.target.value }))}
+                    placeholder="한국어 SEO 메타 설명 (최대 160자 권장)..."
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#3A251B', marginBottom: '6px' }}>
+                    SEO Meta Description (简体中文)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={formData.seo_description_zh || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, seo_description_zh: e.target.value }))}
+                    placeholder="简体中文 SEO 元描述..."
                     style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '6px', border: '1.5px solid #D1C7BD', fontSize: '0.88rem' }}
                   />
                 </div>

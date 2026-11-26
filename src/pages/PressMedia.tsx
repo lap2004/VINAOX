@@ -3,15 +3,14 @@ import { Link } from 'react-router-dom';
 import { ExternalLink, MessageSquareQuote, Mail, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { NewsItem } from '../data/news';
-import { getAllNewsItems } from '../services/contentService';
+import { getAllNewsItems, getNewsLocalized, getPersonQuotedTitle } from '../services/contentService';
 import { COMPANY_INFO } from '../data/company';
 import { PageHero } from '../components/ui/PageHero';
 import { NewsCard } from '../components/news/NewsCard';
 import { NewsFilter } from '../components/news/NewsFilter';
 
 export const PressMedia: React.FC = () => {
-  const { t, language } = useLanguage();
-  const isVi = language === 'vi';
+  const { t, language, pick } = useLanguage();
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const newsData = getAllNewsItems();
@@ -24,7 +23,8 @@ export const PressMedia: React.FC = () => {
 
   // Featured article (safely handle empty newsData)
   const featuredArticle: NewsItem | undefined = newsData[0];
-  const featuredInfo = featuredArticle ? (isVi ? featuredArticle.vi : featuredArticle.en) : undefined;
+  const featuredInfo = featuredArticle ? getNewsLocalized(featuredArticle, language) : undefined;
+  const featuredQuotedTitle = featuredArticle ? getPersonQuotedTitle(featuredArticle.personQuoted, language) : '';
 
   const countAll = newsData.length;
   const countPress = newsData.filter((i) => i.category === 'press').length;
@@ -34,15 +34,33 @@ export const PressMedia: React.FC = () => {
     <div className="news-page">
       {/* Page Hero */}
       <PageHero
-        badge={isVi ? 'BÁO CHÍ & TRUYỀN THÔNG • PRESS ARCHIVE' : 'PRESS ARCHIVE • VERIFIED COVERAGE'}
-        title={t('pageBanners.news.title') || (isVi ? 'Báo Chí Nói Về VINAXO & Hoạt Động Doanh Nghiệp' : 'VINAXO in the Press & Media')}
+        badge={pick({
+          vi: 'BÁO CHÍ & TRUYỀN THÔNG • PRESS ARCHIVE',
+          en: 'PRESS ARCHIVE • VERIFIED COVERAGE',
+          ko: '언론 보도 및 미디어 아카이브',
+          zh: '官方媒体报道与新闻档案馆'
+        })}
+        title={t('pageBanners.news.title') || pick({
+          vi: 'Báo Chí Nói Về VINAXO & Hoạt Động Doanh Nghiệp',
+          en: 'VINAXO in the Press & Media',
+          ko: '언론 속 VINAXO 및 기업 뉴스',
+          zh: '媒体眼中的 VINAXO 与企业动态'
+        })}
         description={
           t('pageBanners.news.subtitle') ||
-          (isVi
-            ? 'Tổng hợp các bài viết, phóng sự và trích dẫn từ các cơ quan báo chí chính thống về hoạt động chế biến, xuất khẩu nông sản của VINAXO.'
-            : 'Explore verified media coverage, executive interviews, and factory operation news published across Vietnam’s national press outlets.')
+          pick({
+            vi: 'Tổng hợp các bài viết, phóng sự và trích dẫn từ các cơ quan báo chí chính thống về hoạt động chế biến, xuất khẩu nông sản của VINAXO.',
+            en: 'Explore verified media coverage, executive interviews, and factory operation news published across Vietnam’s national press outlets.',
+            ko: '베트남 주요 언론사가 보도한 VINAXO의 가공 공장, 수출 전략 및 경영진 인터뷰 소식을 확인하세요.',
+            zh: '汇集各大权威媒体关于 VINAXO 深加工工厂、出口物流及管理层专访的真实报道与资讯。'
+          })
         }
-        breadcrumbCurrent={isVi ? 'Báo Chí & Tin Tức' : 'Press & Media'}
+        breadcrumbCurrent={pick({
+          vi: 'Báo Chí & Tin Tức',
+          en: 'Press & Media',
+          ko: '뉴스 및 언론 보도',
+          zh: '新闻与媒体'
+        })}
       />
 
       {/* ======================================================================
@@ -68,10 +86,10 @@ export const PressMedia: React.FC = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
                 <span className="badge badge-blue">
                   <MessageSquareQuote size={13} />
-                  {isVi ? 'Bài Báo Nổi Bật' : 'Featured Coverage'}
+                  {pick({ vi: 'Bài Báo Nổi Bật', en: 'Featured Coverage', ko: '주요 보도 기사', zh: '焦点专题报道' })}
                 </span>
                 <span style={{ fontSize: '0.8rem', color: 'var(--color-muted)' }}>
-                  • {featuredArticle.source} ({isVi ? featuredArticle.dateVi : featuredArticle.dateEn})
+                  • {featuredArticle.source} ({featuredInfo.date})
                 </span>
               </div>
 
@@ -124,9 +142,9 @@ export const PressMedia: React.FC = () => {
 
                 {featuredArticle.personQuoted && (
                   <span style={{ fontSize: '0.82rem', color: 'var(--color-muted)' }}>
-                    {isVi ? 'Phát ngôn: ' : 'Quote: '}
-                    <strong>{featuredArticle.personQuoted.name}</strong> (
-                    {isVi ? featuredArticle.personQuoted.titleVi : featuredArticle.personQuoted.titleEn})
+                    {pick({ vi: 'Phát ngôn: ', en: 'Quote: ', ko: '발언자: ', zh: '受访嘉宾：' })}
+                    <strong>{featuredArticle.personQuoted.name}</strong>
+                    {featuredQuotedTitle ? ` (${featuredQuotedTitle})` : ''}
                   </span>
                 )}
               </div>

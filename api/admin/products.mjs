@@ -596,6 +596,8 @@ function validateProduct(input) {
     errors.push("T\xEAn s\u1EA3n ph\u1EA9m ti\u1EBFng Vi\u1EC7t l\xE0 tr\u01B0\u1EDDng b\u1EAFt bu\u1ED9c.");
   }
   const name = typeof raw.name === "string" && raw.name.trim() ? raw.name.trim() : typeof raw.name_en === "string" ? raw.name_en.trim() : nameVi;
+  const nameKo = typeof raw.name_ko === "string" && raw.name_ko.trim() ? raw.name_ko.trim() : typeof raw.nameKo === "string" ? raw.nameKo.trim() : typeof raw.ko?.name === "string" ? raw.ko.name.trim() : "";
+  const nameZh = typeof raw.name_zh === "string" && raw.name_zh.trim() ? raw.name_zh.trim() : typeof raw.nameZh === "string" ? raw.nameZh.trim() : typeof raw.zh?.name === "string" ? raw.zh.name.trim() : "";
   const category = ALLOWED_CATEGORIES.includes(raw.category) ? raw.category : "soft-dried";
   let image = typeof raw.image === "string" ? raw.image.trim() : typeof raw.imageWebp === "string" ? raw.imageWebp.trim() : "";
   if (!image || !isValidUrl(image, true)) {
@@ -618,6 +620,10 @@ function validateProduct(input) {
   const shortDescription = typeof raw.shortDescription === "string" ? raw.shortDescription.trim() : typeof raw.description_en === "string" ? raw.description_en.trim() : shortDescriptionVi;
   const descriptionVi = typeof raw.descriptionVi === "string" ? raw.descriptionVi.trim() : typeof raw.description_vi === "string" ? raw.description_vi.trim() : shortDescriptionVi;
   const description = typeof raw.description === "string" ? raw.description.trim() : typeof raw.description_en === "string" ? raw.description_en.trim() : shortDescription;
+  const descriptionKo = typeof raw.description_ko === "string" && raw.description_ko.trim() ? raw.description_ko.trim() : typeof raw.descriptionKo === "string" ? raw.descriptionKo.trim() : typeof raw.ko?.desc === "string" ? raw.ko.desc.trim() : "";
+  const descriptionZh = typeof raw.description_zh === "string" && raw.description_zh.trim() ? raw.description_zh.trim() : typeof raw.descriptionZh === "string" ? raw.descriptionZh.trim() : typeof raw.zh?.desc === "string" ? raw.zh.desc.trim() : "";
+  const originKo = typeof raw.origin_ko === "string" && raw.origin_ko.trim() ? raw.origin_ko.trim() : typeof raw.originKo === "string" ? raw.originKo.trim() : typeof raw.ko?.origin === "string" ? raw.ko.origin.trim() : "";
+  const originZh = typeof raw.origin_zh === "string" && raw.origin_zh.trim() ? raw.origin_zh.trim() : typeof raw.originZh === "string" ? raw.originZh.trim() : typeof raw.zh?.origin === "string" ? raw.zh.origin.trim() : "";
   const defaultSpecs = {
     moisture: "< 16%",
     brix: "50\xB0 - 55\xB0 Brix",
@@ -642,6 +648,8 @@ function validateProduct(input) {
     aliases: Array.isArray(raw.aliases) ? raw.aliases : [],
     name,
     nameVi,
+    ...nameKo ? { nameKo } : {},
+    ...nameZh ? { nameZh } : {},
     category,
     categoryLabelEn: typeof raw.categoryLabelEn === "string" ? raw.categoryLabelEn : "Tropical Dried Fruits",
     categoryLabelVi: typeof raw.categoryLabelVi === "string" ? raw.categoryLabelVi : "Tr\xE1i c\xE2y s\u1EA5y nhi\u1EC7t \u0111\u1EDBi",
@@ -652,8 +660,12 @@ function validateProduct(input) {
     shortDescriptionVi,
     description: typeof raw.description === "string" ? raw.description.trim() : shortDescription,
     descriptionVi: typeof raw.descriptionVi === "string" ? raw.descriptionVi.trim() : shortDescriptionVi,
+    ...descriptionKo ? { descriptionKo, shortDescriptionKo: descriptionKo } : {},
+    ...descriptionZh ? { descriptionZh, shortDescriptionZh: descriptionZh } : {},
     origin: typeof raw.origin === "string" ? raw.origin : "Mekong Delta, Vietnam",
     originVi: typeof raw.originVi === "string" ? raw.originVi : "\u0110\u1ED3ng b\u1EB1ng S\xF4ng C\u1EEDu Long, Vi\u1EC7t Nam",
+    ...originKo ? { originKo } : {},
+    ...originZh ? { originZh } : {},
     certifications: Array.isArray(raw.certifications) ? raw.certifications : ["BRCGS", "Clean Label"],
     verified: raw.verified !== void 0 ? Boolean(raw.verified) : true,
     ocop: typeof raw.ocop === "string" ? raw.ocop : "3-Star OCOP",
@@ -670,13 +682,35 @@ function validateProduct(input) {
       origin: typeof raw.vi?.origin === "string" ? raw.vi.origin : "\u0110\u1ED3ng b\u1EB1ng S\xF4ng C\u1EEDu Long, Vi\u1EC7t Nam",
       features: typeof raw.vi?.features === "string" ? raw.vi.features : shortDescriptionVi
     },
+    ...nameKo || descriptionKo ? {
+      ko: {
+        name: nameKo || name,
+        desc: descriptionKo || description,
+        origin: originKo || (typeof raw.origin === "string" ? raw.origin : "Vietnam"),
+        features: typeof raw.ko?.features === "string" ? raw.ko.features : descriptionKo || description
+      }
+    } : {},
+    ...nameZh || descriptionZh ? {
+      zh: {
+        name: nameZh || name,
+        desc: descriptionZh || description,
+        origin: originZh || (typeof raw.origin === "string" ? raw.origin : "Vietnam"),
+        features: typeof raw.zh?.features === "string" ? raw.zh.features : descriptionZh || description
+      }
+    } : {},
     // Compatibility fields
     name_vi: nameVi,
     name_en: name,
+    ...nameKo ? { name_ko: nameKo } : {},
+    ...nameZh ? { name_zh: nameZh } : {},
     description_vi: descriptionVi,
     description_en: description,
+    ...descriptionKo ? { description_ko: descriptionKo } : {},
+    ...descriptionZh ? { description_zh: descriptionZh } : {},
     origin_vi: typeof raw.originVi === "string" ? raw.originVi : "\u0110\u1ED3ng b\u1EB1ng S\xF4ng C\u1EEDu Long, Vi\u1EC7t Nam",
     origin_en: typeof raw.origin === "string" ? raw.origin : "Mekong Delta, Vietnam",
+    ...originKo ? { origin_ko: originKo } : {},
+    ...originZh ? { origin_zh: originZh } : {},
     shelf_life: specs.shelfLifeVi,
     packaging: specs.packagingVi,
     order: Number(raw.order) || 999
@@ -698,11 +732,21 @@ function mergeProduct(existing, incoming) {
   }
   const merged = {
     ...base,
-    ...update,
     specs: { ...base.specs || {}, ...update.specs || {} },
     en: { ...base.en || {}, ...update.en || {} },
-    vi: { ...base.vi || {}, ...update.vi || {} }
+    vi: { ...base.vi || {}, ...update.vi || {} },
+    ...base.ko || update.ko ? { ko: { ...base.ko || {}, ...update.ko || {} } } : {},
+    ...base.zh || update.zh ? { zh: { ...base.zh || {}, ...update.zh || {} } } : {}
   };
+  for (const [key, value] of Object.entries(update)) {
+    if (key === "specs" || key === "en" || key === "vi" || key === "ko" || key === "zh") continue;
+    if (value !== void 0 && value !== null) {
+      if (typeof value === "string" && value.trim() === "" && base[key]) {
+        continue;
+      }
+      merged[key] = value;
+    }
+  }
   return validateProduct(merged).data;
 }
 
@@ -720,6 +764,8 @@ var products_default = wrapHandler(async (req, res) => {
       const normalizeRawProduct = (raw, idx = 0) => {
         const nameVi = raw.name_vi || raw.nameVi || raw.vi?.name || "S\u1EA3n ph\u1EA9m VINAXO";
         const nameEn = raw.name_en || raw.name || raw.nameEn || raw.en?.name || nameVi;
+        const nameKo = raw.name_ko || raw.nameKo || raw.ko?.name || "";
+        const nameZh = raw.name_zh || raw.nameZh || raw.zh?.name || "";
         const slug = raw.slug || raw.id || `product-${idx}`;
         return {
           ...raw,
@@ -727,14 +773,20 @@ var products_default = wrapHandler(async (req, res) => {
           slug,
           name_vi: nameVi,
           name_en: nameEn,
+          name_ko: nameKo,
+          name_zh: nameZh,
           nameVi,
           name: nameEn,
           category: raw.category || "soft-dried",
           image: raw.image || raw.imageWebp || raw.imageJpg || "/assets/images/products/placeholder.webp",
           description_vi: raw.description_vi || raw.descriptionVi || raw.shortDescriptionVi || raw.vi?.desc || "",
           description_en: raw.description_en || raw.description || raw.shortDescription || raw.en?.desc || "",
-          origin_vi: raw.origin_vi || raw.originVi || raw.origin || "",
-          origin_en: raw.origin_en || raw.origin || "",
+          description_ko: raw.description_ko || raw.descriptionKo || raw.shortDescriptionKo || raw.ko?.desc || "",
+          description_zh: raw.description_zh || raw.descriptionZh || raw.shortDescriptionZh || raw.zh?.desc || "",
+          origin_vi: raw.origin_vi || raw.originVi || raw.vi?.origin || raw.origin || "",
+          origin_en: raw.origin_en || raw.originEn || raw.en?.origin || raw.origin || "",
+          origin_ko: raw.origin_ko || raw.originKo || raw.ko?.origin || "",
+          origin_zh: raw.origin_zh || raw.originZh || raw.zh?.origin || "",
           shelf_life: raw.shelf_life || raw.specs?.shelfLifeVi || "12 Th\xE1ng",
           packaging: raw.packaging || raw.specs?.packagingVi || "T\xFAi zip / Th\xF9ng carton xu\u1EA5t kh\u1EA9u",
           certifications: Array.isArray(raw.certifications) ? raw.certifications : [],

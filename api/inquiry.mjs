@@ -204,8 +204,10 @@ var inquiry_default = wrapHandler(async (req, res) => {
       error: "Too many requests. Please wait a few minutes before sending another inquiry."
     });
   }
+  const rawLang = String(rawBody.language || "").trim();
+  const language = rawLang === "en" ? "en" : rawLang === "ko" ? "ko" : rawLang === "zh-CN" || rawLang === "zh" ? "zh-CN" : "vi";
+  const pickMsg = (m) => m[language];
   const formType = rawBody.formType === "quote" ? "quote" : "contact";
-  const language = rawBody.language === "en" ? "en" : "vi";
   const name = cleanText(rawBody.name, 100);
   const email = cleanText(rawBody.email, 120);
   const phone = cleanText(rawBody.phone, 30);
@@ -217,15 +219,37 @@ var inquiry_default = wrapHandler(async (req, res) => {
   const message = cleanText(rawBody.message, 3e3);
   const sourcePage = cleanText(rawBody.sourcePage, 200) || (formType === "quote" ? "QuoteModal" : "/contact");
   const errors = [];
-  if (name.length < 2) errors.push(language === "vi" ? "H\u1ECD t\xEAn ph\u1EA3i c\xF3 \xEDt nh\u1EA5t 2 k\xFD t\u1EF1." : "Full name must be at least 2 characters.");
-  if (!EMAIL_REGEX.test(email)) errors.push(language === "vi" ? "Email kh\xF4ng \u0111\xFAng \u0111\u1ECBnh d\u1EA1ng." : "Invalid email address.");
+  if (name.length < 2) {
+    errors.push(pickMsg({
+      vi: "H\u1ECD t\xEAn ph\u1EA3i c\xF3 \xEDt nh\u1EA5t 2 k\xFD t\u1EF1.",
+      en: "Full name must be at least 2 characters.",
+      ko: "\uC131\uD568\uC740 2\uC790 \uC774\uC0C1 \uC785\uB825\uD574 \uC8FC\uC138\uC694.",
+      "zh-CN": "\u59D3\u540D\u81F3\u5C11\u9700\u5305\u542B 2 \u4E2A\u5B57\u7B26\u3002"
+    }));
+  }
+  if (!EMAIL_REGEX.test(email)) {
+    errors.push(pickMsg({
+      vi: "Email kh\xF4ng \u0111\xFAng \u0111\u1ECBnh d\u1EA1ng.",
+      en: "Invalid email address.",
+      ko: "\uC62C\uBC14\uB978 \uC774\uBA54\uC77C \uC8FC\uC18C\uB97C \uC785\uB825\uD574 \uC8FC\uC138\uC694.",
+      "zh-CN": "\u7535\u5B50\u90AE\u7BB1\u683C\u5F0F\u65E0\u6548\u3002"
+    }));
+  }
   if (formType === "quote" && phone.length < 6) {
-    errors.push(language === "vi" ? "Vui l\xF2ng cung c\u1EA5p s\u1ED1 \u0111i\u1EC7n tho\u1EA1i/WhatsApp h\u1EE3p l\u1EC7." : "Please provide a valid phone/WhatsApp number.");
+    errors.push(pickMsg({
+      vi: "Vui l\xF2ng cung c\u1EA5p s\u1ED1 \u0111i\u1EC7n tho\u1EA1i/WhatsApp h\u1EE3p l\u1EC7.",
+      en: "Please provide a valid phone/WhatsApp number.",
+      ko: "\uC720\uD6A8\uD55C \uC804\uD654\uBC88\uD638 \uB610\uB294 WhatsApp \uBC88\uD638\uB97C \uC785\uB825\uD574 \uC8FC\uC138\uC694.",
+      "zh-CN": "\u8BF7\u63D0\u4F9B\u6709\u6548\u7684\u7535\u8BDD\u6216 WhatsApp \u53F7\u7801\u3002"
+    }));
   }
   if (formType === "contact" && (!inquiryType || message.length < 5)) {
-    errors.push(
-      language === "vi" ? "Vui l\xF2ng ch\u1ECDn m\u1EE5c \u0111\xEDch li\xEAn h\u1EC7 v\xE0 nh\u1EADp n\u1ED9i dung y\xEAu c\u1EA7u (t\u1ED1i thi\u1EC3u 5 k\xFD t\u1EF1)." : "Please select an inquiry purpose and provide your message (at least 5 characters)."
-    );
+    errors.push(pickMsg({
+      vi: "Vui l\xF2ng ch\u1ECDn m\u1EE5c \u0111\xEDch li\xEAn h\u1EC7 v\xE0 nh\u1EADp n\u1ED9i dung y\xEAu c\u1EA7u (t\u1ED1i thi\u1EC3u 5 k\xFD t\u1EF1).",
+      en: "Please select an inquiry purpose and provide your message (at least 5 characters).",
+      ko: "\uBB38\uC758 \uBAA9\uC801\uC744 \uC120\uD0DD\uD558\uC2DC\uACE0 \uC0C1\uC138 \uB0B4\uC6A9(5\uC790 \uC774\uC0C1)\uC744 \uC785\uB825\uD574 \uC8FC\uC138\uC694.",
+      "zh-CN": "\u8BF7\u9009\u62E9\u54A8\u8BE2\u76EE\u7684\u5E76\u586B\u5199\u8BE6\u7EC6\u8BF4\u660E\uFF08\u81F3\u5C11 5 \u4E2A\u5B57\u7B26\uFF09\u3002"
+    }));
   }
   if (errors.length > 0) {
     return sendJson(res, 400, {
@@ -243,7 +267,12 @@ var inquiry_default = wrapHandler(async (req, res) => {
       ok: false,
       delivered: false,
       code: "DUPLICATE_SUBMISSION",
-      error: language === "vi" ? "Y\xEAu c\u1EA7u gi\u1ED1ng h\u1EC7t v\u1EEBa \u0111\u01B0\u1EE3c g\u1EEDi tr\u01B0\u1EDBc \u0111\xF3. Vui l\xF2ng \u0111\u1EE3i 1 ph\xFAt tr\u01B0\u1EDBc khi g\u1EEDi l\u1EA1i." : "An identical inquiry was just submitted. Please wait 1 minute before retrying."
+      error: pickMsg({
+        vi: "Y\xEAu c\u1EA7u gi\u1ED1ng h\u1EC7t v\u1EEBa \u0111\u01B0\u1EE3c g\u1EEDi tr\u01B0\u1EDBc \u0111\xF3. Vui l\xF2ng \u0111\u1EE3i 1 ph\xFAt tr\u01B0\u1EDBc khi g\u1EEDi l\u1EA1i.",
+        en: "An identical inquiry was just submitted. Please wait 1 minute before retrying.",
+        ko: "\uB3D9\uC77C\uD55C \uBB38\uC758\uAC00 \uBC29\uAE08 \uC811\uC218\uB418\uC5C8\uC2B5\uB2C8\uB2E4. 1\uBD84 \uD6C4 \uB2E4\uC2DC \uC2DC\uB3C4\uD574 \uC8FC\uC138\uC694.",
+        "zh-CN": "\u521A\u5DF2\u63D0\u4EA4\u76F8\u540C\u7684\u54A8\u8BE2\u5185\u5BB9\uFF0C\u8BF7\u7B49\u5F85 1 \u5206\u949F\u540E\u518D\u8BD5\u3002"
+      })
     });
   }
   const recipientEmail = (process.env.INQUIRY_TO_EMAIL || DEFAULT_RECIPIENT).trim();
@@ -255,7 +284,12 @@ var inquiry_default = wrapHandler(async (req, res) => {
       delivered: false,
       code: "DELIVERY_NOT_CONFIGURED",
       recipient: recipientEmail,
-      error: language === "vi" ? "M\xE1y ch\u1EE7 ch\u01B0a \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh d\u1ECBch v\u1EE5 g\u1EEDi email t\u1EF1 \u0111\u1ED9ng (RESEND_API_KEY / INQUIRY_WEBHOOK_URL). Vui l\xF2ng d\xF9ng n\xFAt m\u1EDF \u1EE9ng d\u1EE5ng Email ho\u1EB7c WhatsApp/Zalo b\xEAn d\u01B0\u1EDBi." : "Server email delivery is not configured yet (RESEND_API_KEY / INQUIRY_WEBHOOK_URL). Please use the direct Email app, WhatsApp, or Zalo action below."
+      error: pickMsg({
+        vi: "M\xE1y ch\u1EE7 ch\u01B0a \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh d\u1ECBch v\u1EE5 g\u1EEDi email t\u1EF1 \u0111\u1ED9ng (RESEND_API_KEY / INQUIRY_WEBHOOK_URL). Vui l\xF2ng d\xF9ng n\xFAt m\u1EDF \u1EE9ng d\u1EE5ng Email ho\u1EB7c WhatsApp/Zalo b\xEAn d\u01B0\u1EDBi.",
+        en: "Server email delivery is not configured yet (RESEND_API_KEY / INQUIRY_WEBHOOK_URL). Please use the direct Email app, WhatsApp, or Zalo action below.",
+        ko: "\uC11C\uBC84 \uC790\uB3D9 \uC774\uBA54\uC77C \uBC1C\uC1A1 \uC11C\uBE44\uC2A4\uAC00 \uC544\uC9C1 \uC124\uC815\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uC544\uB798\uC758 \uC774\uBA54\uC77C \uC571, WhatsApp \uB610\uB294 Zalo \uC9C1\uC811 \uC5F0\uACB0 \uBC84\uD2BC\uC744 \uC774\uC6A9\uD574 \uC8FC\uC138\uC694.",
+        "zh-CN": "\u670D\u52A1\u5668\u6682\u672A\u914D\u7F6E\u81EA\u52A8\u90AE\u4EF6\u53D1\u9001\u670D\u52A1\uFF0C\u8BF7\u70B9\u51FB\u4E0B\u65B9\u7684\u90AE\u4EF6\u5BA2\u6237\u7AEF\u3001WhatsApp \u6216 Zalo \u76F4\u63A5\u8054\u7CFB\u6211\u4EEC\u3002"
+      })
     });
   }
   const referenceId = `VNX-${new Date(now).toISOString().slice(0, 10).replace(/-/g, "")}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
@@ -333,7 +367,12 @@ var inquiry_default = wrapHandler(async (req, res) => {
         delivered: false,
         code: "DELIVERY_UPSTREAM_FAILED",
         recipient: recipientEmail,
-        error: language === "vi" ? "Kh\xF4ng th\u1EC3 chuy\u1EC3n email qua m\xE1y ch\u1EE7 g\u1EEDi th\u01B0. Vui l\xF2ng s\u1EED d\u1EE5ng n\xFAt m\u1EDF \u1EE9ng d\u1EE5ng Email ho\u1EB7c WhatsApp/Zalo b\xEAn d\u01B0\u1EDBi." : "Unable to dispatch via email relay right now. Please use the direct Email app, WhatsApp, or Zalo options below."
+        error: pickMsg({
+          vi: "Kh\xF4ng th\u1EC3 chuy\u1EC3n email qua m\xE1y ch\u1EE7 g\u1EEDi th\u01B0. Vui l\xF2ng s\u1EED d\u1EE5ng n\xFAt m\u1EDF \u1EE9ng d\u1EE5ng Email ho\u1EB7c WhatsApp/Zalo b\xEAn d\u01B0\u1EDBi.",
+          en: "Unable to dispatch via email relay right now. Please use the direct Email app, WhatsApp, or Zalo options below.",
+          ko: "\uD604\uC7AC \uBA54\uC77C \uC911\uACC4 \uC11C\uBC84\uB97C \uD1B5\uD574 \uBC1C\uC1A1\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uC544\uB798\uC758 \uC774\uBA54\uC77C \uC571, WhatsApp \uB610\uB294 Zalo \uBC84\uD2BC\uC744 \uC774\uC6A9\uD574 \uC8FC\uC138\uC694.",
+          "zh-CN": "\u6682\u65F6\u65E0\u6CD5\u901A\u8FC7\u90AE\u4EF6\u4E2D\u7EE7\u53D1\u9001\uFF0C\u8BF7\u4F7F\u7528\u4E0B\u65B9\u90AE\u4EF6\u5BA2\u6237\u7AEF\u3001WhatsApp \u6216 Zalo \u8054\u7CFB\u6211\u4EEC\u3002"
+        })
       });
     }
     deliveredChannels.push("resend");
@@ -366,7 +405,12 @@ var inquiry_default = wrapHandler(async (req, res) => {
         delivered: false,
         code: "DELIVERY_UPSTREAM_FAILED",
         recipient: recipientEmail,
-        error: language === "vi" ? "Kh\xF4ng th\u1EC3 k\u1EBFt n\u1ED1i c\u1ED5ng ti\u1EBFp nh\u1EADn y\xEAu c\u1EA7u. Vui l\xF2ng th\u1EED l\u1EA1i ho\u1EB7c d\xF9ng Email/WhatsApp tr\u1EF1c ti\u1EBFp." : "Unable to reach inquiry webhook. Please retry or use direct Email/WhatsApp below."
+        error: pickMsg({
+          vi: "Kh\xF4ng th\u1EC3 k\u1EBFt n\u1ED1i c\u1ED5ng ti\u1EBFp nh\u1EADn y\xEAu c\u1EA7u. Vui l\xF2ng th\u1EED l\u1EA1i ho\u1EB7c d\xF9ng Email/WhatsApp tr\u1EF1c ti\u1EBFp.",
+          en: "Unable to reach inquiry webhook. Please retry or use direct Email/WhatsApp below.",
+          ko: "\uBB38\uC758 \uC811\uC218 \uC11C\uBC84\uC5D0 \uC5F0\uACB0\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uC2DC\uB3C4\uD558\uAC70\uB098 \uC544\uB798 \uC774\uBA54\uC77C/WhatsApp\uC73C\uB85C \uC9C1\uC811 \uC5F0\uB77D\uD574 \uC8FC\uC138\uC694.",
+          "zh-CN": "\u6682\u65F6\u65E0\u6CD5\u8FDE\u63A5\u54A8\u8BE2\u63A5\u6536\u63A5\u53E3\uFF0C\u8BF7\u91CD\u8BD5\u6216\u901A\u8FC7\u4E0B\u65B9\u90AE\u4EF6/WhatsApp \u76F4\u63A5\u8054\u7CFB\u3002"
+        })
       });
     }
     if (webhookRes.ok) deliveredChannels.push("webhook");

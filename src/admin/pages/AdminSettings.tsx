@@ -20,6 +20,9 @@ interface CompanySettings {
   company_name_en: string;
   tax_id: string;
   address_vi: string;
+  address_en?: string;
+  address_ko?: string;
+  address_zh?: string;
   legal_rep_vi: string;
   hotline: string;
   email: string;
@@ -29,8 +32,12 @@ interface CompanySettings {
 interface BrochureSettings {
   title_vi: string;
   title_en: string;
+  title_ko?: string;
+  title_zh?: string;
   year: string;
   pdf_file: string;
+  pdf_file_ko?: string;
+  pdf_file_zh?: string;
   download_enabled: boolean;
 }
 
@@ -46,20 +53,27 @@ export const AdminSettings: React.FC = () => {
 
   const [companyData, setCompanyData] = useState<CompanySettings>({
     company_name_vi: 'CÔNG TY TNHH VINAXO',
-    company_name_en: 'VINAXO COMPANY LIMITED (Vinaxo Co., Ltd.)',
+    company_name_en: 'VINAXO COMPANY LIMITED',
     tax_id: '1201611681',
     address_vi: 'Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp, Việt Nam',
+    address_en: 'Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam',
+    address_ko: '베트남 동탑성 빈빈 5구역',
+    address_zh: '越南同塔省永平镇第5区',
     legal_rep_vi: 'Ông Nguyễn Anh Khoa',
     hotline: '(+84) 984 815 016',
     email: 'cuonghoang0710@gmail.com',
-    website: 'www.vinaxo.net'
+    website: 'https://www.vinaxo.net'
   });
 
   const [brochureData, setBrochureData] = useState<BrochureSettings>({
     title_vi: 'Hồ Sơ Năng Lực & Brochure VINAXO 2026',
     title_en: 'VINAXO Company Profile & Brochure 2026',
+    title_ko: 'VINAXO 기업 소개서 및 브로슈어 2026',
+    title_zh: 'VINAXO 公司简介与产品手册 2026',
     year: '2026',
     pdf_file: '/brochures/vinaxo-company-brochure-2026.pdf',
+    pdf_file_ko: '',
+    pdf_file_zh: '',
     download_enabled: true
   });
 
@@ -349,7 +363,7 @@ export const AdminSettings: React.FC = () => {
 
           <div style={{ marginBottom: '16px' }}>
             <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
-              Địa chỉ trụ sở / Nhà máy *
+              Địa chỉ trụ sở / Nhà máy (Tiếng Việt) *
             </label>
             <input
               type="text"
@@ -358,6 +372,44 @@ export const AdminSettings: React.FC = () => {
               onChange={(e) => setCompanyData({ ...companyData, address_vi: e.target.value })}
               style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
             />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                Địa chỉ (English)
+              </label>
+              <input
+                type="text"
+                value={companyData.address_en || ''}
+                onChange={(e) => setCompanyData({ ...companyData, address_en: e.target.value })}
+                style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                Địa chỉ (한국어 - KO)
+              </label>
+              <input
+                type="text"
+                value={companyData.address_ko || ''}
+                onChange={(e) => setCompanyData({ ...companyData, address_ko: e.target.value })}
+                style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                Địa chỉ (简体中文 - ZH-CN)
+              </label>
+              <input
+                type="text"
+                value={companyData.address_zh || ''}
+                onChange={(e) => setCompanyData({ ...companyData, address_zh: e.target.value })}
+                style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+              />
+            </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '24px' }}>
@@ -472,6 +524,30 @@ export const AdminSettings: React.FC = () => {
                 required
                 value={brochureData.title_en}
                 onChange={(e) => setBrochureData({ ...brochureData, title_en: e.target.value })}
+                style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                Tiêu đề tài liệu (한국어 - KO)
+              </label>
+              <input
+                type="text"
+                value={brochureData.title_ko || ''}
+                onChange={(e) => setBrochureData({ ...brochureData, title_ko: e.target.value })}
+                style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                Tiêu đề tài liệu (简体中文 - ZH-CN)
+              </label>
+              <input
+                type="text"
+                value={brochureData.title_zh || ''}
+                onChange={(e) => setBrochureData({ ...brochureData, title_zh: e.target.value })}
                 style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
               />
             </div>

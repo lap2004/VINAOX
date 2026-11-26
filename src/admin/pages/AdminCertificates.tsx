@@ -25,10 +25,16 @@ export interface CertificateItem {
   name: string;
   nameVi: string;
   nameEn: string;
+  nameKo?: string;
+  nameZh?: string;
   kindEn: 'Certification' | 'Registration' | 'Audit';
   kindVi: 'Chứng nhận' | 'Đăng ký' | 'Kiểm toán';
+  kindKo?: string;
+  kindZh?: string;
   scopeEn: string;
   scopeVi: string;
+  scopeKo?: string;
+  scopeZh?: string;
   certImageWebp: string;
   certImageJpg?: string;
   order: number;
@@ -42,10 +48,16 @@ const EMPTY_CERT: CertificateItem = {
   name: '',
   nameVi: '',
   nameEn: '',
+  nameKo: '',
+  nameZh: '',
   kindEn: 'Certification',
   kindVi: 'Chứng nhận',
+  kindKo: '인증',
+  kindZh: '认证',
   scopeEn: '',
   scopeVi: '',
+  scopeKo: '',
+  scopeZh: '',
   certImageWebp: '/assets/images/certs-2026/cert-brcgs.webp',
   order: 1,
   published: true
@@ -541,7 +553,16 @@ export const AdminCertificates: React.FC = () => {
                   </label>
                   <select
                     value={editingCert.kindEn}
-                    onChange={(e) => setEditingCert({ ...editingCert, kindEn: e.target.value as any, kindVi: e.target.value === 'Registration' ? 'Đăng ký' : e.target.value === 'Audit' ? 'Kiểm toán' : 'Chứng nhận' })}
+                    onChange={(e) => {
+                      const val = e.target.value as 'Certification' | 'Registration' | 'Audit';
+                      setEditingCert({
+                        ...editingCert,
+                        kindEn: val,
+                        kindVi: val === 'Registration' ? 'Đăng ký' : val === 'Audit' ? 'Kiểm toán' : 'Chứng nhận',
+                        kindKo: val === 'Registration' ? '등록' : val === 'Audit' ? '심사' : '인증',
+                        kindZh: val === 'Registration' ? '注册' : val === 'Audit' ? '审核' : '认证',
+                      });
+                    }}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
                   >
                     <option value="Certification">Chứng nhận (Certification)</option>
@@ -580,6 +601,35 @@ export const AdminCertificates: React.FC = () => {
                 </div>
               </div>
 
+              {/* Name KO / ZH-CN */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                    Tên chứng chỉ (한국어)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingCert.nameKo || ''}
+                    onChange={(e) => setEditingCert({ ...editingCert, nameKo: e.target.value })}
+                    placeholder="예: BRCGS 식품 안전 인증"
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                    Tên chứng chỉ (简体中文)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingCert.nameZh || ''}
+                    onChange={(e) => setEditingCert({ ...editingCert, nameZh: e.target.value })}
+                    placeholder="例如：BRCGS 食品安全认证"
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+
               {/* Scope VI / EN */}
               <div style={{ marginBottom: '16px' }}>
                 <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
@@ -603,6 +653,35 @@ export const AdminCertificates: React.FC = () => {
                   onChange={(e) => setEditingCert({ ...editingCert, scopeEn: e.target.value })}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box', resize: 'vertical' }}
                 />
+              </div>
+
+              {/* Scope KO / ZH-CN */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                    Phạm vi kiểm toán & đánh giá (한국어)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={editingCert.scopeKo || ''}
+                    onChange={(e) => setEditingCert({ ...editingCert, scopeKo: e.target.value })}
+                    placeholder="심사 범위 (한국어)..."
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box', resize: 'vertical' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                    Phạm vi kiểm toán & đánh giá (简体中文)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={editingCert.scopeZh || ''}
+                    onChange={(e) => setEditingCert({ ...editingCert, scopeZh: e.target.value })}
+                    placeholder="审核范围 (简体中文)..."
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box', resize: 'vertical' }}
+                  />
+                </div>
               </div>
 
               {/* Image Picker */}

@@ -7,6 +7,8 @@ export interface PersonQuoted {
   name: string;
   titleVi: string;
   titleEn: string;
+  titleKo?: string;
+  titleZh?: string;
 }
 
 export interface NewsLocalizedContent {
@@ -22,18 +24,24 @@ export interface NewsItem {
   badgeType: 'quote' | 'interview' | 'operation' | 'event';
   badgeTextVi: string;
   badgeTextEn: string;
+  badgeTextKo?: string;
+  badgeTextZh?: string;
   source: string;
   sourceUrl: string;
   secondaryUrls?: SecondaryUrl[];
   publishedAt: string;
   dateEn: string;
   dateVi: string;
+  dateKo?: string;
+  dateZh?: string;
   verified: boolean;
   personQuoted?: PersonQuoted;
   imageWebp: string;
   imageJpg: string;
   en: NewsLocalizedContent;
   vi: NewsLocalizedContent;
+  ko?: NewsLocalizedContent;
+  zh?: NewsLocalizedContent;
 }
 
 export const newsData: NewsItem[] = [

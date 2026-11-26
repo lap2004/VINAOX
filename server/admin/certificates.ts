@@ -24,10 +24,16 @@ export interface CertificateItem {
   name: string;
   nameVi: string;
   nameEn: string;
+  nameKo?: string;
+  nameZh?: string;
   kindEn: 'Certification' | 'Registration' | 'Audit';
   kindVi: 'Chứng nhận' | 'Đăng ký' | 'Kiểm toán';
+  kindKo?: string;
+  kindZh?: string;
   scopeEn: string;
   scopeVi: string;
+  scopeKo?: string;
+  scopeZh?: string;
   certImageWebp: string;
   certImageJpg?: string;
   order: number;
@@ -126,6 +132,7 @@ export default wrapHandler(async (req: any, res: any) => {
     const { list, sha } = await loadCertificates(useGitHub);
     const existingIndex = list.findIndex(c => c.id === id);
 
+    const existingItem = existingIndex >= 0 ? list[existingIndex] : undefined;
     const item: CertificateItem = {
       id,
       code: typeof certInput.code === 'string' ? certInput.code.toUpperCase() : id.toUpperCase(),
@@ -133,10 +140,44 @@ export default wrapHandler(async (req: any, res: any) => {
       name: certInput.name || certInput.nameEn || id,
       nameVi: certInput.nameVi || certInput.name || id,
       nameEn: certInput.nameEn || certInput.name || id,
+      ...(typeof certInput.nameKo === 'string' && certInput.nameKo.trim()
+        ? { nameKo: certInput.nameKo.trim() }
+        : existingItem?.nameKo
+        ? { nameKo: existingItem.nameKo }
+        : {}),
+      ...(typeof certInput.nameZh === 'string' && certInput.nameZh.trim()
+        ? { nameZh: certInput.nameZh.trim() }
+        : existingItem?.nameZh
+        ? { nameZh: existingItem.nameZh }
+        : {}),
       kindEn: ['Certification', 'Registration', 'Audit'].includes(certInput.kindEn) ? certInput.kindEn : 'Certification',
       kindVi: certInput.kindEn === 'Registration' ? 'Đăng ký' : certInput.kindEn === 'Audit' ? 'Kiểm toán' : 'Chứng nhận',
+      kindKo: typeof certInput.kindKo === 'string' && certInput.kindKo.trim()
+        ? certInput.kindKo.trim()
+        : certInput.kindEn === 'Registration'
+        ? '등록'
+        : certInput.kindEn === 'Audit'
+        ? '감사'
+        : '인증',
+      kindZh: typeof certInput.kindZh === 'string' && certInput.kindZh.trim()
+        ? certInput.kindZh.trim()
+        : certInput.kindEn === 'Registration'
+        ? '注册'
+        : certInput.kindEn === 'Audit'
+        ? '审核'
+        : '认证',
       scopeEn: certInput.scopeEn || '',
       scopeVi: certInput.scopeVi || '',
+      ...(typeof certInput.scopeKo === 'string' && certInput.scopeKo.trim()
+        ? { scopeKo: certInput.scopeKo.trim() }
+        : existingItem?.scopeKo
+        ? { scopeKo: existingItem.scopeKo }
+        : {}),
+      ...(typeof certInput.scopeZh === 'string' && certInput.scopeZh.trim()
+        ? { scopeZh: certInput.scopeZh.trim() }
+        : existingItem?.scopeZh
+        ? { scopeZh: existingItem.scopeZh }
+        : {}),
       certImageWebp: certInput.certImageWebp || certInput.image || '/assets/images/certs-2026/cert-brcgs.webp',
       certImageJpg: certInput.certImageJpg || certInput.certImageWebp || certInput.image,
       order: Number(certInput.order) || (existingIndex >= 0 ? list[existingIndex].order : list.length + 1),

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Download, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { BROCHURE_DOCUMENT, BROCHURE_PAGES } from '../data/brochureData';
+import { BROCHURE_DOCUMENT, BROCHURE_PAGES, resolveBrochureDocumentForLang } from '../data/brochureData';
 import { PageHero } from '../components/ui/PageHero';
 
 const MOBILE_READER_QUERY = '(max-width: 767px)';
-const DESKTOP_PDF_EMBED_URL = `${BROCHURE_DOCUMENT.pdfUrl}#toolbar=1&navpanes=0&view=FitH`;
 
 export const Brochure: React.FC = () => {
-  const { t, language } = useLanguage();
-  const isVi = language === 'vi';
+  const { t, language, pick } = useLanguage();
+  const brochureInfo = resolveBrochureDocumentForLang(language);
+  const DESKTOP_PDF_EMBED_URL = `${brochureInfo.pdfUrl}#toolbar=1&navpanes=0&view=FitH`;
 
   const [hasEmbedError, setHasEmbedError] = useState<boolean>(false);
   const [isMobileReader, setIsMobileReader] = useState<boolean>(() =>
@@ -41,7 +41,7 @@ export const Brochure: React.FC = () => {
     },
     {
       label: t('brochure.languageLabel', 'Language'),
-      value: t('brochure.languageVal', 'English'),
+      value: brochureInfo.hasNativePdf ? t('brochure.languageVal', 'English') : brochureInfo.badgeLabel,
     },
   ];
 
@@ -63,12 +63,34 @@ export const Brochure: React.FC = () => {
                 'Explore our tropical dried fruit collections, manufacturing capabilities and quality standards.'
               )}
             </p>
+            {brochureInfo.noticeText && (
+              <p
+                role="note"
+                style={{
+                  marginTop: '10px',
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(244, 168, 58, 0.14)',
+                  border: '1px solid rgba(244, 168, 58, 0.45)',
+                  color: 'var(--dark-chocolate)',
+                  fontSize: '0.78rem',
+                  lineHeight: 1.45,
+                }}
+              >
+                {brochureInfo.noticeText}
+              </p>
+            )}
           </header>
 
           {/* Continuous Vertical 4-Page Brochure Stream */}
           <div
             className="brochure-mobile-stream"
-            aria-label={isVi ? 'Nội dung 4 trang Brochure Công ty VINAXO 2026' : 'VINAXO Company Brochure 2026 — 4 pages'}
+            aria-label={pick({
+              vi: 'Nội dung 4 trang Brochure Công ty VINAXO 2026',
+              en: 'VINAXO Company Brochure 2026 — 4 pages',
+              ko: 'VINAXO 기업 브로슈어 2026 — 총 4페이지',
+              zh: 'VINAXO 公司简介与产品手册 2026 — 共 4 页'
+            })}
           >
             {BROCHURE_PAGES.map((page, idx) => (
               <figure key={page.pageNumber} className="brochure-mobile-page">
@@ -76,7 +98,12 @@ export const Brochure: React.FC = () => {
                   <source srcSet={page.webp} type="image/webp" />
                   <img
                     src={page.jpg}
-                    alt={isVi ? page.titleVi : page.titleEn}
+                    alt={pick({
+                      vi: page.titleVi,
+                      en: page.titleEn,
+                      ko: page.titleKo,
+                      zh: page.titleZh
+                    })}
                     width={page.width}
                     height={page.height}
                     loading={idx === 0 ? 'eager' : 'lazy'}
@@ -91,7 +118,7 @@ export const Brochure: React.FC = () => {
           {/* Single Clean Bottom Download & Original PDF Action */}
           <div className="brochure-mobile-download-bar">
             <a
-              href={BROCHURE_DOCUMENT.pdfUrl}
+              href={brochureInfo.pdfUrl}
               download={BROCHURE_DOCUMENT.downloadFilename}
               className="brochure-action-download brochure-mobile-download-btn"
             >
@@ -99,7 +126,7 @@ export const Brochure: React.FC = () => {
               <span>{t('brochure.mobileDownloadBtn', 'Download Brochure (PDF)')}</span>
             </a>
             <a
-              href={BROCHURE_DOCUMENT.pdfUrl}
+              href={brochureInfo.pdfUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="brochure-mobile-open-link"
@@ -139,7 +166,7 @@ export const Brochure: React.FC = () => {
 
             <div className="brochure-primary-actions">
               <a
-                href={BROCHURE_DOCUMENT.pdfUrl}
+                href={brochureInfo.pdfUrl}
                 download={BROCHURE_DOCUMENT.downloadFilename}
                 className="brochure-action-download"
               >
@@ -150,7 +177,7 @@ export const Brochure: React.FC = () => {
               </a>
 
               <a
-                href={BROCHURE_DOCUMENT.pdfUrl}
+                href={brochureInfo.pdfUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="brochure-action-external"
@@ -161,16 +188,30 @@ export const Brochure: React.FC = () => {
             </div>
           </div>
 
+          {brochureInfo.noticeText && (
+            <div
+              role="note"
+              style={{
+                marginBottom: '18px',
+                padding: '10px 16px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(244, 168, 58, 0.14)',
+                border: '1px solid rgba(244, 168, 58, 0.45)',
+                color: 'var(--dark-chocolate)',
+                fontSize: '0.86rem',
+                lineHeight: 1.5,
+              }}
+            >
+              {brochureInfo.noticeText}
+            </div>
+          )}
+
           {/* Spacious Distraction-Free Native PDF Viewer (Desktop & Tablet >= 768px) */}
           <div className="brochure-viewer-shell">
             <div className="brochure-iframe-stage">
               <iframe
                 src={DESKTOP_PDF_EMBED_URL}
-                title={
-                  isVi
-                    ? 'Brochure Công ty TNHH VINAXO 2026 (PDF)'
-                    : 'VINAXO Company Brochure 2026 (PDF)'
-                }
+                title={brochureInfo.title}
                 className="brochure-pdf-iframe"
                 onLoad={() => setHasEmbedError(false)}
                 onError={() => setHasEmbedError(true)}
@@ -187,7 +228,7 @@ export const Brochure: React.FC = () => {
                 </span>
                 <div className="brochure-fallback-links">
                   <a
-                    href={BROCHURE_DOCUMENT.pdfUrl}
+                    href={brochureInfo.pdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -195,7 +236,7 @@ export const Brochure: React.FC = () => {
                   </a>
                   <span aria-hidden="true">·</span>
                   <a
-                    href={BROCHURE_DOCUMENT.pdfUrl}
+                    href={brochureInfo.pdfUrl}
                     download={BROCHURE_DOCUMENT.downloadFilename}
                   >
                     {t('brochure.downloadCta', 'Download PDF')}

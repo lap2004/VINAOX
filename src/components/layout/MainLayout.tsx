@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Phone, MessageCircle, FileText, X } from 'lucide-react';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { useLanguage, pickLocale } from '../../i18n/LanguageContext';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { QuoteModal } from '../ui/QuoteModal';
@@ -14,7 +14,6 @@ export interface MainLayoutContext {
 export const MainLayout: React.FC = () => {
   const { language } = useLanguage();
   const { pathname } = useLocation();
-  const isVi = language === 'vi';
   const isContactPage = pathname === '/contact' || pathname === '/contact.html';
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<string | undefined>(undefined);
@@ -77,7 +76,12 @@ export const MainLayout: React.FC = () => {
         className={`floating-b2b-speed-dial${isFooterInView || isQuoteOpen || isContactPage ? ' is-footer-visible' : ''}${
           isQuickContactOpen ? ' is-open' : ''
         }`}
-        aria-label={isVi ? 'Liên hệ nhanh B2B' : 'B2B Quick Contact'}
+        aria-label={pickLocale(language, {
+          vi: 'Liên hệ nhanh B2B',
+          en: 'B2B Quick Contact',
+          ko: 'B2B 빠른 문의',
+          'zh-CN': 'B2B 快速联系',
+        })}
         aria-hidden={isFooterInView || isQuoteOpen || isContactPage}
       >
         {isQuickContactOpen && (
@@ -88,7 +92,14 @@ export const MainLayout: React.FC = () => {
               className="floating-menu-item floating-menu-quote"
             >
               <FileText size={16} aria-hidden="true" />
-              <span>{isVi ? 'Yêu Cầu Báo Giá B2B' : 'Request B2B Quote'}</span>
+              <span>
+                {pickLocale(language, {
+                  vi: 'Yêu Cầu Báo Giá B2B',
+                  en: 'Request B2B Quote',
+                  ko: 'B2B 견적 요청',
+                  'zh-CN': '申请 B2B 报价',
+                })}
+              </span>
             </button>
 
             <a
@@ -115,7 +126,14 @@ export const MainLayout: React.FC = () => {
 
             <a href="tel:+84984815016" className="floating-menu-item">
               <Phone size={16} aria-hidden="true" />
-              <span>{(isVi ? 'Hotline: ' : 'Call: ') + '(+84) 984 815 016'}</span>
+              <span>
+                {pickLocale(language, {
+                  vi: 'Hotline: ',
+                  en: 'Call: ',
+                  ko: '전화: ',
+                  'zh-CN': '热线: ',
+                }) + '(+84) 984 815 016'}
+              </span>
             </a>
           </div>
         )}
@@ -127,19 +145,30 @@ export const MainLayout: React.FC = () => {
           aria-controls="b2b-quick-contact-panel"
           aria-label={
             isQuickContactOpen
-              ? isVi
-                ? 'Đóng menu liên hệ nhanh'
-                : 'Close quick contact menu'
-              : isVi
-              ? 'Mở liên hệ nhanh B2B'
-              : 'Open B2B quick contact menu'
+              ? pickLocale(language, {
+                  vi: 'Đóng menu liên hệ nhanh',
+                  en: 'Close quick contact menu',
+                  ko: '빠른 문의 메뉴 닫기',
+                  'zh-CN': '关闭快速联系菜单',
+                })
+              : pickLocale(language, {
+                  vi: 'Mở liên hệ nhanh B2B',
+                  en: 'Open B2B quick contact menu',
+                  ko: 'B2B 빠른 문의 메뉴 열기',
+                  'zh-CN': '打开 B2B 快速联系菜单',
+                })
           }
           tabIndex={isFooterInView || isQuoteOpen || isContactPage ? -1 : 0}
           className="floating-contact-trigger"
         >
           {isQuickContactOpen ? <X size={18} aria-hidden="true" /> : <MessageCircle size={18} aria-hidden="true" />}
           <span className="floating-trigger-label">
-            {isVi ? 'Liên Hệ B2B' : 'Quick Contact'}
+            {pickLocale(language, {
+              vi: 'Liên Hệ B2B',
+              en: 'Quick Contact',
+              ko: 'B2B 문의',
+              'zh-CN': '快速联系',
+            })}
           </span>
         </button>
       </div>

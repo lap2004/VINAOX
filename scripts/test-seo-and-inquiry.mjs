@@ -221,14 +221,18 @@ async function main() {
     checkHtml('404.html', null, '404');
   });
 
-  // 7. Bundle & test routeMetadata.ts directly
-  await testCase('SEO routeMetadata: VI/EN titles, descriptions, canonicals, and noindex guards resolve cleanly', async () => {
+  // 7. Bundle & test routeMetadata.ts + 4-language SEO + partial-update schema preservation
+  await testCase('SEO routeMetadata & schemas: VI/EN/KO/ZH-CN metadata, canonicals, noindex, company legal names & merge preservation', async () => {
     const tmpOut = path.join(process.cwd(), 'dist', '.tmp-seo-test.mjs');
     await build({
       stdin: {
         contents: `
           export { resolveRouteSeo } from './src/components/seo/routeMetadata.ts';
           export { SITE_CONFIG, normalizeCanonicalUrl } from './src/config/siteConfig.ts';
+          export { getLegalCompanyName } from './src/data/company.ts';
+          export { mergeNewsArticle } from './src/shared/schemas/newsSchema.ts';
+          export { mergeProduct } from './src/shared/schemas/productSchema.ts';
+          export { validateCompanySettings } from './src/shared/schemas/settingsSchema.ts';
         `,
         resolveDir: process.cwd(),
         loader: 'ts',
@@ -244,12 +248,89 @@ async function main() {
       const mod = await import('file:///' + tmpOut.replace(/\\/g, '/'));
       const homeVi = mod.resolveRouteSeo('/', 'vi');
       const homeEn = mod.resolveRouteSeo('/', 'en');
+      const homeKo = mod.resolveRouteSeo('/', 'ko');
+      const homeZh = mod.resolveRouteSeo('/', 'zh-CN');
+
       assert.strictEqual(homeVi.canonical, 'https://www.vinaxo.net/');
       assert.strictEqual(homeEn.canonical, 'https://www.vinaxo.net/');
+      assert.strictEqual(homeKo.canonical, 'https://www.vinaxo.net/');
+      assert.strictEqual(homeZh.canonical, 'https://www.vinaxo.net/');
       assert.notStrictEqual(homeVi.title, homeEn.title);
+      assert.notStrictEqual(homeKo.title, homeEn.title);
+      assert.notStrictEqual(homeZh.title, homeEn.title);
       assert.notStrictEqual(homeVi.description, homeEn.description);
       assert.strictEqual(homeVi.ogLocale, 'vi_VN');
       assert.strictEqual(homeEn.ogLocale, 'en_US');
+      assert.strictEqual(homeKo.ogLocale, 'ko_KR');
+      assert.strictEqual(homeZh.ogLocale, 'zh_CN');
+
+      // Legal name standardization (P2-01)
+      assert.strictEqual(mod.getLegalCompanyName('vi'), 'CÔNG TY TNHH VINAXO');
+      assert.strictEqual(mod.getLegalCompanyName('en'), 'VINAXO COMPANY LIMITED');
+      assert.strictEqual(mod.getLegalCompanyName('ko'), 'VINAXO COMPANY LIMITED');
+      assert.strictEqual(mod.getLegalCompanyName('zh-CN'), 'VINAXO COMPANY LIMITED');
+
+      const jsonLdKoStr = JSON.stringify(homeKo.jsonLd);
+      const jsonLdZhStr = JSON.stringify(homeZh.jsonLd);
+      assert(jsonLdKoStr.includes('VINAXO COMPANY LIMITED'), 'KO JSON-LD must include VINAXO COMPANY LIMITED');
+      assert(!jsonLdKoStr.includes('Vinaxo Co., Ltd.'), 'KO JSON-LD must not contain duplicated Vinaxo Co., Ltd.');
+      assert(!jsonLdZhStr.includes('Vinaxo Co., Ltd.'), 'ZH-CN JSON-LD must not contain duplicated Vinaxo Co., Ltd.');
+
+      // Schema partial-update preservation for KO/ZH fields
+      const mergedNews = mod.mergeNewsArticle(
+        {
+          id: 'test-news',
+          slug: 'test-news',
+          title_vi: 'Tiêu đề gốc',
+          title_en: 'Original Title',
+          title_ko: '한국어 제목 보존',
+          title_zh: '保留中文标题',
+          excerpt_ko: '한국어 요약 보존',
+          excerpt_zh: '保留中文摘要',
+          body_ko: '한국어 본문',
+          body_zh: '中文正文',
+          seo_title_ko: 'KO SEO',
+          seo_description_zh: 'ZH SEO DESC',
+          personQuoted: { name: 'A', titleVi: 'GĐ', titleEn: 'Director', titleKo: '대표', titleZh: '总监' },
+        },
+        { slug: 'test-news', title_vi: 'Tiêu đề mới' }
+      );
+      assert.strictEqual(mergedNews.title_vi, 'Tiêu đề mới');
+      assert.strictEqual(mergedNews.title_ko, '한국어 제목 보존');
+      assert.strictEqual(mergedNews.title_zh, '保留中文标题');
+      assert.strictEqual(mergedNews.seo_title_ko, 'KO SEO');
+      assert.strictEqual(mergedNews.seo_description_zh, 'ZH SEO DESC');
+      assert.strictEqual(mergedNews.personQuoted.titleKo, '대표');
+      assert.strictEqual(mergedNews.personQuoted.titleZh, '总监');
+
+      const mergedProd = mod.mergeProduct(
+        {
+          id: 'soft-dried-mango',
+          slug: 'soft-dried-mango',
+          name_vi: 'Xoài sấy dẻo',
+          name_en: 'Soft-Dried Mango',
+          name_ko: '소프트 건조 망고',
+          name_zh: '软干芒果',
+          description_ko: '망고 설명',
+          description_zh: '芒果简介',
+          ko: { name: '소프트 건조 망고', desc: '망고 설명', origin: '메콩 델타, 베트남' },
+          zh: { name: '软干芒果', desc: '芒果简介', origin: '越南湄公河三角洲' },
+        },
+        { slug: 'soft-dried-mango', name_vi: 'Xoài sấy dẻo cập nhật' }
+      );
+      assert.strictEqual(mergedProd.name_vi, 'Xoài sấy dẻo cập nhật');
+      assert.strictEqual(mergedProd.name_ko, '소프트 건조 망고');
+      assert.strictEqual(mergedProd.name_zh, '软干芒果');
+      assert.strictEqual(mergedProd.ko?.origin, '메콩 델타, 베트남');
+      assert.strictEqual(mergedProd.zh?.origin, '越南湄公河三角洲');
+
+      // Sanitize duplicate company name in Admin settings validator
+      const settingsRes = mod.validateCompanySettings({
+        company_name_vi: 'CÔNG TY TNHH VINAXO',
+        company_name_en: 'Vinaxo Co., Ltd. (VINAXO COMPANY LIMITED (Vinaxo Co., Ltd.))',
+      });
+      assert.strictEqual(settingsRes.valid, true);
+      assert.strictEqual(settingsRes.data.company_name_en, 'VINAXO COMPANY LIMITED');
 
       const prodEn = mod.resolveRouteSeo('/products', 'en');
       assert.strictEqual(prodEn.canonical, 'https://www.vinaxo.net/products');
@@ -264,6 +345,66 @@ async function main() {
       assert.strictEqual(notFoundSeo.robots, 'noindex, nofollow');
     } finally {
       if (fs.existsSync(tmpOut)) fs.unlinkSync(tmpOut);
+    }
+  });
+
+  // 8. Inquiry API accepts KO and ZH-CN locales without 400 validation errors
+  await testCase('Inquiry API: accepts language="ko" and language="zh-CN" payloads', async () => {
+    const prevFetch = globalThis.fetch;
+    const prevKey = process.env.RESEND_API_KEY;
+    const prevHook = process.env.INQUIRY_WEBHOOK_URL;
+    process.env.RESEND_API_KEY = 're_test_ephemeral_multilingual_key';
+    delete process.env.INQUIRY_WEBHOOK_URL;
+    const seenLanguages = [];
+    globalThis.fetch = async (_url, init) => {
+      const payload = JSON.parse(init.body);
+      seenLanguages.push(payload.subject);
+      return { ok: true, status: 200, text: async () => '{"id":"msg_ml_123"}' };
+    };
+    try {
+      const resKo = createMockRes();
+      await inquiryHandler(
+        createReq({
+          ip: '198.51.100.31',
+          body: {
+            formType: 'quote',
+            language: 'ko',
+            name: 'Kim Min-jun',
+            email: 'buyer@seoulfoods.example',
+            phone: '+82 10-5555-1234',
+            product: '소프트 건조 망고',
+            message: 'Requesting FOB Ho Chi Minh CIF Busan quotation for 1x20ft container.',
+          },
+        }),
+        resKo
+      );
+      assert.strictEqual(resKo.statusCode, 200);
+      assert.strictEqual(resKo.body.delivered, true);
+
+      const resZh = createMockRes();
+      await inquiryHandler(
+        createReq({
+          ip: '198.51.100.32',
+          body: {
+            formType: 'contact',
+            language: 'zh-CN',
+            name: 'Wang Wei',
+            email: 'sourcing@shanghaiimport.example',
+            inquiryType: 'Export Quotation (FCL/LCL)',
+            product: '软干芒果',
+            message: 'Need BRCGS certificate copy and 2026 wholesale FOB pricing sheet.',
+          },
+        }),
+        resZh
+      );
+      assert.strictEqual(resZh.statusCode, 200);
+      assert.strictEqual(resZh.body.delivered, true);
+      assert.strictEqual(seenLanguages.length, 2);
+    } finally {
+      globalThis.fetch = prevFetch;
+      if (prevKey !== undefined) process.env.RESEND_API_KEY = prevKey;
+      else delete process.env.RESEND_API_KEY;
+      if (prevHook !== undefined) process.env.INQUIRY_WEBHOOK_URL = prevHook;
     }
   });
 

@@ -1,10 +1,17 @@
 {
   "company_name_vi": "CÔNG TY TNHH VINAXO",
-  "company_name_en": "VINAXO COMPANY LIMITED (Vinaxo Co., Ltd.)",
+  "company_name_en": "VINAXO COMPANY LIMITED",
   "tax_id": "1201611681",
   "address_vi": "Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp, Việt Nam",
+  "address_en": "Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam",
+  "address_ko": "베트남 동탑성 빈빈면 5구역 (Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam)",
+  "address_zh": "越南同塔省永平社第5区 (Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam)",
+  "intro_vi": "Công ty TNHH VINAXO hoạt động trong lĩnh vực chế biến trái cây sấy và nông sản Việt Nam, cung cấp sản phẩm cho thị trường trong nước và quốc tế, hướng đến chất lượng và hợp tác bền vững.",
+  "intro_en": "VINAXO COMPANY LIMITED specializes in processed Vietnamese agricultural products and tropical dried fruits, serving domestic and international B2B markets with strict food safety and long-term partnerships.",
+  "intro_ko": "VINAXO COMPANY LIMITED는 베트남 열대 건조 과일 및 농산물 가공·수출 전문 기업으로, 글로벌 기준의 식품 안전과 지속 가능한 B2B 파트너십을 제공합니다.",
+  "intro_zh": "VINAXO COMPANY LIMITED 专注于越南热带果干及农产品加工与出口，严守国际食品安全标准，为全球客户提供稳定供应与长期B2B合作。",
   "legal_rep_vi": "Ông Hoàng Mạnh Cường (Jimmy)",
   "hotline": "(+84) 984 815 016",
   "email": "cuonghoang0710@gmail.com",
-  "website": "www.vinaxo.net"
+  "website": "https://www.vinaxo.net"
 }

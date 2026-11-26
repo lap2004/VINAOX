@@ -2,16 +2,17 @@ import React from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Download } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { COMPANY_INFO } from '../data/company';
-import { BROCHURE_DOCUMENT } from '../data/brochureData';
+import { COMPANY_INFO, getLegalCompanyName } from '../data/company';
+import { BROCHURE_DOCUMENT, resolveBrochureDocumentForLang } from '../data/brochureData';
 import { PageHero } from '../components/ui/PageHero';
 import { CorporateCTA } from '../components/ui/CorporateCTA';
 import { MainLayoutContext } from '../components/layout/MainLayout';
 
 export const About: React.FC = () => {
-  const { language, t } = useLanguage();
+  const { language, t, pick } = useLanguage();
   const { onOpenQuote } = useOutletContext<MainLayoutContext>();
-  const isVi = language === 'vi';
+  const legalName = getLegalCompanyName(language);
+  const brochureInfo = resolveBrochureDocumentForLang(language);
 
   const milestones = [
     {
@@ -48,21 +49,36 @@ export const About: React.FC = () => {
 
   const galleryItems = [
     {
-      tag: isVi ? 'TỔ HỢP NHÀ MÁY 25.000 M²' : '25,000 M² FACILITY COMPLEX',
+      tag: pick({
+        vi: 'TỔ HỢP NHÀ MÁY 25.000 M²',
+        en: '25,000 M² FACILITY COMPLEX',
+        ko: '25,000 m² 통합 가공 공장',
+        zh: '25,000 平方米现代化工厂'
+      }),
       title: t('aboutPage.gallery.card1Title'),
       desc: t('aboutPage.gallery.card1Desc'),
       img: '/assets/images/factory-2026/factory-featured.webp',
       imgFallback: '/assets/images/factory-2026/factory-featured.jpg',
     },
     {
-      tag: isVi ? 'XẾP KHAY & SẤY VÔ TRÙNG' : 'HYGIENIC TRAY RACKING',
+      tag: pick({
+        vi: 'XẾP KHAY & SẤY VÔ TRÙNG',
+        en: 'HYGIENIC TRAY RACKING',
+        ko: '위생 트레이 적재 및 저온 건조',
+        zh: '无尘摆盘与卫生烘干工段'
+      }),
       title: t('aboutPage.gallery.card2Title'),
       desc: t('aboutPage.gallery.card2Desc'),
       img: '/assets/images/factory-2026/factory-sub-1.webp',
       imgFallback: '/assets/images/factory-2026/factory-sub-1.jpg',
     },
     {
-      tag: isVi ? 'HỆ THỐNG KHAY SẤY & SƠ CHẾ' : 'DRYING & WASHING INFRASTRUCTURE',
+      tag: pick({
+        vi: 'HỆ THỐNG KHAY SẤY & SƠ CHẾ',
+        en: 'DRYING & WASHING INFRASTRUCTURE',
+        ko: '산업용 건조 설비 및 원료 세척',
+        zh: '多层烘干通道与鲜果清洗线'
+      }),
       title: t('aboutPage.gallery.card3Title'),
       desc: t('aboutPage.gallery.card3Desc'),
       img: '/assets/images/factory-2026/factory-sub-2.webp',
@@ -74,15 +90,28 @@ export const About: React.FC = () => {
     <div className="about-page">
       {/* Page Hero */}
       <PageHero
-        badge={isVi ? 'HỒ SƠ DOANH NGHIỆP • CÔNG TY TNHH VINAXO' : 'CORPORATE PROFILE • VINAXO COMPANY LIMITED'}
-        title={t('pageBanners.about.title') || (isVi ? 'Về Công Ty TNHH VINAXO' : 'About VINAXO Company Limited')}
+        badge={pick({
+          vi: `HỒ SƠ DOANH NGHIỆP • ${legalName}`,
+          en: `CORPORATE PROFILE • ${legalName}`,
+          ko: `기업 프로필 • ${legalName}`,
+          zh: `企业简介 • ${legalName}`
+        })}
+        title={t('pageBanners.about.title') || pick({
+          vi: 'Về Công Ty TNHH VINAXO',
+          en: `About ${legalName}`,
+          ko: 'VINAXO 기업 소개',
+          zh: '关于 VINAXO'
+        })}
         description={
           t('pageBanners.about.subtitle') ||
-          (isVi
-            ? 'Doanh nghiệp chế biến và xuất khẩu trái cây sấy tự nhiên từ đồng bằng sông Cửu Long, nâng tầm nông sản Việt với tiêu chuẩn an toàn thực phẩm quốc tế.'
-            : 'Pioneering premium Vietnamese dried fruits from the fertile Mekong Delta to world tables, built upon direct farmer partnerships and BRCGS food safety excellence.')
+          pick({
+            vi: 'Doanh nghiệp chế biến và xuất khẩu trái cây sấy tự nhiên từ đồng bằng sông Cửu Long, nâng tầm nông sản Việt với tiêu chuẩn an toàn thực phẩm quốc tế.',
+            en: 'Pioneering premium Vietnamese dried fruits from the fertile Mekong Delta to world tables, built upon direct farmer partnerships and BRCGS food safety excellence.',
+            ko: '비옥한 메콩 델타산 열대 과일을 원료로 국제 BRCGS 식품안전 기준과 직영 농가 파트너십 기반의 프리미엄 건조 과일을 생산·수출하는 기업입니다.',
+            zh: '扎根物产丰饶的湄公河三角洲，携手果农直采优质鲜果并遵循 BRCGS 国际食品安全标准，致力将越南天然热带果干推向全球餐桌。'
+          })
         }
-        breadcrumbCurrent={isVi ? 'Giới Thiệu' : 'About Us'}
+        breadcrumbCurrent={pick({ vi: 'Giới Thiệu', en: 'About Us', ko: '회사 소개', zh: '关于我们' })}
       />
 
       {/* ========================================================================
@@ -101,7 +130,7 @@ export const About: React.FC = () => {
               <p>{t('about.description')}</p>
               <div style={{ marginTop: '16px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <Link to="/contact" className="btn btn-primary">
-                  <span>{isVi ? 'Liên Hệ Phòng Xuất Khẩu' : 'Contact Export Dept'}</span>
+                  <span>{pick({ vi: 'Liên Hệ Phòng Xuất Khẩu', en: 'Contact Export Dept', ko: '수출 사업부 문의', zh: '联系出口事业部' })}</span>
                   <ArrowRight size={16} />
                 </Link>
                 <Link to="/brochure" className="btn btn-secondary">
@@ -116,7 +145,12 @@ export const About: React.FC = () => {
                 <source srcSet="/assets/images/about_vietnam.webp" type="image/webp" />
                 <img
                   src="/assets/images/about_vietnam.jpg"
-                  alt={isVi ? "Vùng trồng nông sản Đồng bằng sông Cửu Long" : "Lush karst mountains and river valleys in Vietnam"}
+                  alt={pick({
+                    vi: 'Vùng trồng nông sản Đồng bằng sông Cửu Long',
+                    en: 'Lush karst mountains and river valleys in Vietnam',
+                    ko: '베트남 메콩 델타 농산물 재배 산지',
+                    zh: '越南湄公河三角洲生态水果产区'
+                  })}
                   loading="lazy"
                   width={512}
                   height={300}
@@ -182,11 +216,12 @@ export const About: React.FC = () => {
                   <source srcSet={BROCHURE_DOCUMENT.coverWebp} type="image/webp" />
                   <img
                     src={BROCHURE_DOCUMENT.coverJpg}
-                    alt={
-                      isVi
-                        ? 'Ảnh bìa Brochure Công ty TNHH VINAXO 2026'
-                        : 'Official VINAXO Company Brochure 2026 cover'
-                    }
+                    alt={pick({
+                      vi: 'Ảnh bìa Brochure Công ty TNHH VINAXO 2026',
+                      en: 'Official VINAXO Company Brochure 2026 cover',
+                      ko: 'VINAXO 기업 공식 브로슈어 2026 표지',
+                      zh: 'VINAXO 2026 官方企业产品手册封面'
+                    })}
                     className="about-brochure-cover-img"
                     loading="lazy"
                   />
@@ -223,7 +258,7 @@ export const About: React.FC = () => {
                 </div>
                 <div className="about-brochure-meta-item">
                   <dt>{t('brochure.languageLabel', 'Language')}</dt>
-                  <dd>{t('brochure.languageVal', 'English')}</dd>
+                  <dd>{brochureInfo.hasNativePdf ? t('brochure.languageVal', 'English') : brochureInfo.badgeLabel}</dd>
                 </div>
               </dl>
 
@@ -233,7 +268,7 @@ export const About: React.FC = () => {
                   <ArrowRight size={17} aria-hidden="true" />
                 </Link>
                 <a
-                  href={BROCHURE_DOCUMENT.pdfUrl}
+                  href={brochureInfo.pdfUrl}
                   download={BROCHURE_DOCUMENT.downloadFilename}
                   className="brochure-download-btn"
                 >
@@ -509,16 +544,22 @@ export const About: React.FC = () => {
       <section className="subpage-section subpage-cta-section">
         <div className="container">
           <CorporateCTA
-            eyebrow={isVi ? 'KẾT NỐI HỢP TÁC B2B' : 'B2B PARTNERSHIP'}
-            title={isVi ? 'Đồng Hành Cùng VINAXO Nâng Tầm Nông Sản Việt' : 'Partner with VINAXO for Global Agricultural Growth'}
-            description={
-              isVi
-                ? 'Tổ hợp nhà máy 25.000 m² tại Xã Vĩnh Bình, Đồng Tháp với sản lượng 300 tấn/tháng sẵn sàng đáp ứng đơn hàng xuất khẩu và gia công OEM (MOQ từ 200 kg).'
-                : 'Our 25,000 m² processing complex in Dong Thap Province (300 t monthly output) is ready for bulk export orders and OEM private labeling from 200 kg MOQ.'
-            }
-            primaryText={isVi ? 'Yêu Cầu Báo Giá Ngay' : 'Request Quotation'}
+            eyebrow={pick({ vi: 'KẾT NỐI HỢP TÁC B2B', en: 'B2B PARTNERSHIP', ko: 'B2B 파트너십', zh: 'B2B 战略合作' })}
+            title={pick({
+              vi: 'Đồng Hành Cùng VINAXO Nâng Tầm Nông Sản Việt',
+              en: 'Partner with VINAXO for Global Agricultural Growth',
+              ko: 'VINAXO와 함께 글로벌 농식품 시장을 선도하세요',
+              zh: '携手 VINAXO 共拓全球热带果干市场'
+            })}
+            description={pick({
+              vi: 'Tổ hợp nhà máy 25.000 m² tại Xã Vĩnh Bình, Đồng Tháp với sản lượng 300 tấn/tháng sẵn sàng đáp ứng đơn hàng xuất khẩu và gia công OEM (MOQ từ 200 kg).',
+              en: 'Our 25,000 m² processing complex in Dong Thap Province (300 t monthly output) is ready for bulk export orders and OEM private labeling from 200 kg MOQ.',
+              ko: '베트남 동탑성 빈빈 소재 25,000 m² 규모 공장(월 300톤 생산 능력)이 대량 수출 오더 및 MOQ 200kg부터 가능한 OEM/PB 맞춤 생산을 완벽히 지원합니다.',
+              zh: '位于同塔省永平的 25,000 平方米一体化工厂（月产能 300 吨）竭诚为您承接整柜出口订单及 200 公斤起订的 OEM 贴牌代工。'
+            })}
+            primaryText={pick({ vi: 'Yêu Cầu Báo Giá Ngay', en: 'Request Quotation', ko: '견적 요청하기', zh: '立即获取报价' })}
             onPrimaryClick={() => onOpenQuote()}
-            secondaryText={isVi ? 'Liên Hệ Ban Lãnh Đạo' : 'Contact Leadership'}
+            secondaryText={pick({ vi: 'Liên Hệ Ban Lãnh Đạo', en: 'Contact Leadership', ko: '경영진 및 수출팀 문의', zh: '联系管理层团队' })}
             secondaryLink="/contact"
           />
         </div>

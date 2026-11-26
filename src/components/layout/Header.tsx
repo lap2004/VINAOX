@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Menu, X, Globe, ChevronDown, ArrowRight, Check } from 'lucide-react';
-import { useLanguage, Language } from '../../i18n/LanguageContext';
+import {
+  useLanguage,
+  Language,
+  SUPPORTED_LANGUAGES,
+  pickLocale,
+} from '../../i18n/LanguageContext';
 
 export interface HeaderProps {
   onOpenQuote: (product?: string) => void;
@@ -177,9 +182,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
               <div className="brand-text-wrap">
                 <span className="brand-name">VINAXO</span>
                 <span className="brand-tagline">
-                  {language === 'vi'
-                    ? 'NHÀ SẢN XUẤT TRÁI CÂY SẤY NHIỆT ĐỚI'
-                    : 'TROPICAL DRIED FRUIT MANUFACTURER'}
+                  {pickLocale(language, {
+                    vi: 'NHÀ SẢN XUẤT TRÁI CÂY SẤY NHIỆT ĐỚI',
+                    en: 'TROPICAL DRIED FRUIT MANUFACTURER',
+                    ko: '열대 건조 과일 제조·수출 전문 기업',
+                    'zh-CN': '热带果干生产与出口制造商',
+                  })}
                 </span>
               </div>
             </Link>
@@ -240,7 +248,9 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                 }}
               >
                 <Globe size={14} color="var(--vinaxo-red)" />
-                <span>{language.toUpperCase()}</span>
+                <span>
+                  {SUPPORTED_LANGUAGES.find((l) => l.code === language)?.shortLabel || 'VI'}
+                </span>
                 <ChevronDown
                   size={13}
                   style={{
@@ -266,80 +276,51 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                   <div
                     role="menu"
                     style={{
-                      minWidth: '84px',
-                      width: '100%',
+                      minWidth: '164px',
+                      width: 'max-content',
                       backgroundColor: 'var(--white)',
                       borderRadius: 'var(--radius-md)',
                       border: '1px solid var(--color-border)',
                       boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04)',
-                      padding: '4px',
+                      padding: '6px',
                       animation: 'dropdownFade 0.18s ease',
                     }}
                   >
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => handleSelectLang('vi')}
-                      style={{
-                        width: '100%',
-                        padding: '7px 10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        borderRadius: 'var(--radius-sm)',
-                        border: 'none',
-                        backgroundColor:
-                          language === 'vi'
-                            ? 'var(--brand-orange-soft)'
-                            : 'transparent',
-                        color:
-                          language === 'vi'
-                            ? 'var(--dark-chocolate)'
-                            : 'var(--color-heading)',
-                        fontWeight: language === 'vi' ? 700 : 600,
-                        fontSize: '0.82rem',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        transition: 'background-color 0.15s ease',
-                      }}
-                    >
-                      <span>VI</span>
-                      {language === 'vi' && (
-                        <Check size={13} strokeWidth={2.5} color="var(--vinaxo-red)" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => handleSelectLang('en')}
-                      style={{
-                        width: '100%',
-                        padding: '7px 10px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        borderRadius: 'var(--radius-sm)',
-                        border: 'none',
-                        backgroundColor:
-                          language === 'en'
-                            ? 'var(--brand-orange-soft)'
-                            : 'transparent',
-                        color:
-                          language === 'en'
-                            ? 'var(--dark-chocolate)'
-                            : 'var(--color-heading)',
-                        fontWeight: language === 'en' ? 700 : 600,
-                        fontSize: '0.82rem',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        transition: 'background-color 0.15s ease',
-                      }}
-                    >
-                      <span>EN</span>
-                      {language === 'en' && (
-                        <Check size={13} strokeWidth={2.5} color="var(--vinaxo-red)" />
-                      )}
-                    </button>
+                    {SUPPORTED_LANGUAGES.map((opt) => {
+                      const active = language === opt.code;
+                      return (
+                        <button
+                          key={opt.code}
+                          type="button"
+                          role="menuitem"
+                          onClick={() => handleSelectLang(opt.code)}
+                          style={{
+                            width: '100%',
+                            padding: '8px 10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '10px',
+                            borderRadius: 'var(--radius-sm)',
+                            border: 'none',
+                            backgroundColor: active ? 'var(--brand-orange-soft)' : 'transparent',
+                            color: active ? 'var(--dark-chocolate)' : 'var(--color-heading)',
+                            fontWeight: active ? 700 : 600,
+                            fontSize: '0.82rem',
+                            cursor: 'pointer',
+                            textAlign: 'left',
+                            whiteSpace: 'nowrap',
+                            transition: 'background-color 0.15s ease',
+                          }}
+                        >
+                          <span>
+                            <strong style={{ marginRight: '6px' }}>{opt.shortLabel}</strong>
+                            <span>· {opt.nativeLabel}</span>
+                          </span>
+                          {active && <Check size={13} strokeWidth={2.5} color="var(--vinaxo-red)" />}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -442,9 +423,12 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                 <div className="brand-text-wrap">
                   <span className="brand-name" style={{ fontSize: '1.25rem' }}>VINAXO</span>
                   <span className="brand-tagline" style={{ fontSize: '0.44rem' }}>
-                    {language === 'vi'
-                      ? 'NHÀ SẢN XUẤT TRÁI CÂY SẤY NHIỆT ĐỚI'
-                      : 'TROPICAL DRIED FRUIT MANUFACTURER'}
+                    {pickLocale(language, {
+                      vi: 'NHÀ SẢN XUẤT TRÁI CÂY SẤY NHIỆT ĐỚI',
+                      en: 'TROPICAL DRIED FRUIT MANUFACTURER',
+                      ko: '열대 건조 과일 제조·수출 전문 기업',
+                      'zh-CN': '热带果干生产与出口制造商',
+                    })}
                   </span>
                 </div>
               </Link>
@@ -510,59 +494,39 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                 gap: '16px',
               }}
             >
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  type="button"
-                  onClick={() => handleSelectLang('vi')}
-                  style={{
-                    flex: 1,
-                    padding: '10px 12px',
-                    borderRadius: 'var(--radius-sm)',
-                    border:
-                      language === 'vi'
-                        ? '1.5px solid var(--dark-chocolate)'
-                        : '1px solid var(--color-border)',
-                    backgroundColor:
-                      language === 'vi' ? 'var(--dark-chocolate)' : 'var(--white)',
-                    color: language === 'vi' ? '#FFFFFF' : 'var(--color-heading)',
-                    fontWeight: 700,
-                    fontSize: '0.88rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span>VI</span>
-                  {language === 'vi' && <Check size={15} strokeWidth={2.5} />}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSelectLang('en')}
-                  style={{
-                    flex: 1,
-                    padding: '10px 12px',
-                    borderRadius: 'var(--radius-sm)',
-                    border:
-                      language === 'en'
-                        ? '1.5px solid var(--dark-chocolate)'
-                        : '1px solid var(--color-border)',
-                    backgroundColor:
-                      language === 'en' ? 'var(--dark-chocolate)' : 'var(--white)',
-                    color: language === 'en' ? '#FFFFFF' : 'var(--color-heading)',
-                    fontWeight: 700,
-                    fontSize: '0.88rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span>EN</span>
-                  {language === 'en' && <Check size={15} strokeWidth={2.5} />}
-                </button>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                {SUPPORTED_LANGUAGES.map((opt) => {
+                  const active = language === opt.code;
+                  return (
+                    <button
+                      key={opt.code}
+                      type="button"
+                      onClick={() => handleSelectLang(opt.code)}
+                      style={{
+                        padding: '10px 8px',
+                        borderRadius: 'var(--radius-sm)',
+                        border: active
+                          ? '1.5px solid var(--dark-chocolate)'
+                          : '1px solid var(--color-border)',
+                        backgroundColor: active ? 'var(--dark-chocolate)' : 'var(--white)',
+                        color: active ? '#FFFFFF' : 'var(--color-heading)',
+                        fontWeight: 700,
+                        fontSize: '0.82rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '5px',
+                      }}
+                    >
+                      <span>{opt.shortLabel}</span>
+                      <span style={{ fontWeight: 500, fontSize: '0.75rem', opacity: 0.9 }}>
+                        {opt.nativeLabel}
+                      </span>
+                      {active && <Check size={14} strokeWidth={2.5} />}
+                    </button>
+                  );
+                })}
               </div>
 
               <button

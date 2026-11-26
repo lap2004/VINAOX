@@ -25,14 +25,20 @@ export interface ProductItemData {
   slug: string;
   name_vi: string;
   name_en: string;
+  name_ko?: string;
+  name_zh?: string;
   category: string;
   image: string;
   imageWebp?: string;
   imageJpg?: string;
   description_vi: string;
   description_en: string;
+  description_ko?: string;
+  description_zh?: string;
   origin_vi?: string;
   origin_en?: string;
+  origin_ko?: string;
+  origin_zh?: string;
   shelf_life?: string;
   packaging?: string;
   certifications?: string[];
@@ -48,10 +54,16 @@ export function normalizeProductItem(raw: any, idx = 0): ProductItemData {
       slug: `prod-${idx}`,
       name_vi: 'Sản phẩm VINAXO',
       name_en: 'VINAXO Product',
+      name_ko: '',
+      name_zh: '',
       category: 'soft-dried',
       image: '/images/products/placeholder.webp',
       description_vi: '',
       description_en: '',
+      description_ko: '',
+      description_zh: '',
+      origin_ko: '',
+      origin_zh: '',
       order: idx + 1,
       published: true,
       status: 'published'
@@ -62,12 +74,18 @@ export function normalizeProductItem(raw: any, idx = 0): ProductItemData {
   const id = String(raw.id || slug).trim();
   const name_vi = String(raw.name_vi || raw.nameVi || raw.vi?.name || slug).trim();
   const name_en = String(raw.name_en || raw.name || raw.nameEn || raw.en?.name || name_vi).trim();
+  const name_ko = String(raw.name_ko || raw.nameKo || raw.ko?.name || '').trim();
+  const name_zh = String(raw.name_zh || raw.nameZh || raw.zh?.name || '').trim();
   const category = String(raw.category || 'soft-dried').trim();
   const image = String(raw.image || raw.imageWebp || raw.imageJpg || '/images/products/placeholder.webp').trim();
   const description_vi = String(raw.description_vi || raw.descriptionVi || raw.shortDescriptionVi || raw.vi?.desc || '').trim();
   const description_en = String(raw.description_en || raw.description || raw.shortDescription || raw.en?.desc || description_vi).trim();
+  const description_ko = String(raw.description_ko || raw.descriptionKo || raw.shortDescriptionKo || raw.ko?.desc || '').trim();
+  const description_zh = String(raw.description_zh || raw.descriptionZh || raw.shortDescriptionZh || raw.zh?.desc || '').trim();
   const origin_vi = String(raw.origin_vi || raw.originVi || raw.vi?.origin || raw.origin || '').trim();
-  const origin_en = String(raw.origin_en || raw.origin || raw.en?.origin || origin_vi || '').trim();
+  const origin_en = String(raw.origin_en || raw.originEn || raw.en?.origin || raw.origin || origin_vi || '').trim();
+  const origin_ko = String(raw.origin_ko || raw.originKo || raw.ko?.origin || '').trim();
+  const origin_zh = String(raw.origin_zh || raw.originZh || raw.zh?.origin || '').trim();
   const shelf_life = String(raw.shelf_life || raw.specs?.shelfLifeVi || raw.specs?.shelfLifeEn || '12 Tháng').trim();
   const packaging = String(raw.packaging || raw.specs?.packagingVi || raw.specs?.packagingEn || 'Túi zip / Thùng carton xuất khẩu').trim();
   const certifications = Array.isArray(raw.certifications) ? raw.certifications : [];
@@ -80,14 +98,20 @@ export function normalizeProductItem(raw: any, idx = 0): ProductItemData {
     slug,
     name_vi,
     name_en,
+    name_ko,
+    name_zh,
     category,
     image,
     imageWebp: raw.imageWebp || image,
     imageJpg: raw.imageJpg || image,
     description_vi,
     description_en,
+    description_ko,
+    description_zh,
     origin_vi,
     origin_en,
+    origin_ko,
+    origin_zh,
     shelf_life,
     packaging,
     certifications,
@@ -102,12 +126,18 @@ const EMPTY_PRODUCT: ProductItemData = {
   slug: '',
   name_vi: '',
   name_en: '',
+  name_ko: '',
+  name_zh: '',
   category: 'soft-dried',
   image: '/images/products/placeholder.webp',
   description_vi: '',
   description_en: '',
+  description_ko: '',
+  description_zh: '',
   origin_vi: 'Đồng bằng Sông Cửu Long, Việt Nam',
   origin_en: 'Mekong Delta, Vietnam',
+  origin_ko: '메콩 델타, 베트남',
+  origin_zh: '越南湄公河三角洲',
   shelf_life: '12 Tháng',
   packaging: 'Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu',
   certifications: ['BRCGS', 'Clean Label'],
@@ -223,6 +253,8 @@ export const AdminProducts: React.FC = () => {
       slug: copySlug,
       name_vi: copyNameVi,
       name_en: copyNameEn,
+      name_ko: prod.name_ko ? `${prod.name_ko} (복사본)` : '',
+      name_zh: prod.name_zh ? `${prod.name_zh}（副本）` : '',
       order: (prod.order || 0) + 1,
       status: 'draft',
       published: false
@@ -717,6 +749,35 @@ export const AdminProducts: React.FC = () => {
                 </div>
               </div>
 
+              {/* Name Fields KO / ZH-CN */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                    Tên tiếng Hàn (한국어)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct.name_ko || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, name_ko: e.target.value })}
+                    placeholder="VD: 소프트 건조 망고"
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                    Tên tiếng Trung (简体中文)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct.name_zh || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, name_zh: e.target.value })}
+                    placeholder="VD: 软干芒果"
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+
               {/* Slug & Category */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '16px' }}>
                 <div>
@@ -816,6 +877,62 @@ export const AdminProducts: React.FC = () => {
                   onChange={(e) => setEditingProduct({ ...editingProduct, description_en: e.target.value })}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box', resize: 'vertical' }}
                 />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                    Mô tả sản phẩm (한국어)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={editingProduct.description_ko || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, description_ko: e.target.value })}
+                    placeholder="제품 설명 (한국어)..."
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box', resize: 'vertical' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                    Mô tả sản phẩm (简体中文)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={editingProduct.description_zh || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, description_zh: e.target.value })}
+                    placeholder="产品简介 (简体中文)..."
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box', resize: 'vertical' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                    Vùng nguyên liệu (한국어)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct.origin_ko || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, origin_ko: e.target.value })}
+                    placeholder="메콩 델타, 베트남"
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                    Vùng nguyên liệu (简体中文)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct.origin_zh || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, origin_zh: e.target.value })}
+                    placeholder="越南湄公河三角洲"
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+                  />
+                </div>
               </div>
 
               {/* Shelf Life & Packaging */}
