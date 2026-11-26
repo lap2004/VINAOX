@@ -657,6 +657,17 @@
     padding: 24px 18px !important;
   }
 
+  /* Prevent iOS Safari automatic viewport zoom on form controls */
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 16px !important;
+  }
+
+  .specs-table-wrapper {
+    max-width: 100%;
+  }
+
   .subpage-cta-section {
     padding-bottom: 56px !important;
   }
@@ -796,6 +807,11 @@
 
   .brochure-pdf-iframe {
     height: 440px !important;
+  }
+
+  .product-modal-top-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
   }
 
   .hero-dual-photos {

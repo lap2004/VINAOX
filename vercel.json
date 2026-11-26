@@ -1,5 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "headers": [
     {
       "source": "/admin(.*)",
@@ -81,7 +83,27 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!api/|uploads/|assets/).*)",
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/products/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/tin-tuc/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/news/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/press-media/(.*)",
       "destination": "/index.html"
     }
   ]

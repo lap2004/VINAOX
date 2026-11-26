@@ -510,7 +510,9 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 640px;
   width: 100%;
   max-height: 90vh;
+  max-height: 90dvh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: var(--shadow-xl);
   border: 1px solid var(--soft-border);
   position: relative;
@@ -3485,7 +3487,7 @@ h1, h2, h3, h4, h5, h6 {
    ========================================================================== */
 .scroll-to-top-btn {
   position: fixed;
-  bottom: 24px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   left: 24px;
   width: 44px;
   height: 44px;
@@ -3516,7 +3518,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .floating-b2b-speed-dial {
   position: fixed;
-  bottom: 24px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   right: 24px;
   z-index: 990;
   display: flex;
@@ -3624,14 +3626,14 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 600px) {
   .scroll-to-top-btn {
-    bottom: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     left: 16px;
     width: 40px;
     height: 40px;
   }
 
   .floating-b2b-speed-dial {
-    bottom: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     right: 16px;
   }
 

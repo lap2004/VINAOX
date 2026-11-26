@@ -1,3 +1,5 @@
+import { normalizeSiteUrl, SITE_CONFIG } from '../config/siteConfig';
+
 export interface LeadershipMember {
   name: string;
   titleVi: string;
@@ -99,7 +101,7 @@ const BASE_COMPANY_INFO: CompanyInfo = {
     secondaryHotline: "+84 907 494 177",
     email: "cuonghoang0710@gmail.com",
     secondaryEmail: "thaovinaxo@gmail.com",
-    website: "https://www.vinaxo.net",
+    website: SITE_CONFIG.siteUrl,
     websiteDisplay: "www.vinaxo.net",
   },
   auditStatus: {
@@ -132,7 +134,7 @@ export const COMPANY_INFO: CompanyInfo = {
     hotline: cmsComp.hotline || BASE_COMPANY_INFO.contacts.hotline,
     phoneDisplay: cmsComp.hotline || BASE_COMPANY_INFO.contacts.phoneDisplay,
     email: cmsComp.email || BASE_COMPANY_INFO.contacts.email,
-    website: cmsComp.website || BASE_COMPANY_INFO.contacts.website
+    website: normalizeSiteUrl(cmsComp.website || BASE_COMPANY_INFO.contacts.website)
   }
 };
 

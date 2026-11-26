@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   Calendar, 
@@ -21,16 +21,6 @@ export const ArticleDetail: React.FC = () => {
   const isVi = language === 'vi';
 
   const article = slug ? getArticleBySlug(slug) : undefined;
-
-  // Dynamic document title
-  useEffect(() => {
-    if (article) {
-      const title = isVi ? article.title_vi : (article.title_en || article.title_vi);
-      document.title = `${title} | VINAXO News`;
-    } else {
-      document.title = isVi ? 'Bài viết không tồn tại | VINAXO' : 'Article Not Found | VINAXO';
-    }
-  }, [article, isVi]);
 
   // Handle article not found
   if (!article) {

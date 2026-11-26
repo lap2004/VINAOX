@@ -5,6 +5,7 @@ import { AdminAuthProvider } from './admin/context/AdminAuthContext';
 import { AdminProtectedRoute } from './admin/components/AdminProtectedRoute';
 import { AdminLayout } from './admin/components/AdminLayout';
 import { ErrorBoundary, RouteErrorBoundary } from './components/common/ErrorBoundary';
+import { SEOManager } from './components/seo/SEOManager';
 
 // Public pages - Route-level code splitting
 const Home = lazy(() => import('./pages/Home'));
@@ -71,6 +72,7 @@ const PageLoader: React.FC = () => (
 export const App: React.FC = () => {
   return (
     <AdminAuthProvider>
+      <SEOManager />
       <Routes>
         {/* VINAXO Custom Admin Portal */}
         <Route

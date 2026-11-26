@@ -1,5 +1,5 @@
 Contact: mailto:thaovinaxo@gmail.com
 Expires: 2027-10-26T00:00:00.000Z
 Preferred-Languages: vi, en
-Canonical: https://vinaxo.vn/.well-known/security.txt
-Policy: https://vinaxo.vn/
+Canonical: https://www.vinaxo.net/.well-known/security.txt
+Policy: https://www.vinaxo.net/

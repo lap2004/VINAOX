@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Phone, MessageCircle, FileText, X } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { Header } from './Header';
@@ -13,7 +13,9 @@ export interface MainLayoutContext {
 
 export const MainLayout: React.FC = () => {
   const { language } = useLanguage();
+  const { pathname } = useLocation();
   const isVi = language === 'vi';
+  const isContactPage = pathname === '/contact' || pathname === '/contact.html';
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<string | undefined>(undefined);
   const [isQuickContactOpen, setIsQuickContactOpen] = useState(false);
@@ -70,13 +72,13 @@ export const MainLayout: React.FC = () => {
       </main>
       <Footer onOpenQuote={handleOpenQuote} />
 
-      {/* Consolidated B2B Quick Contact Hub (auto-yields cleanly when footer is visible) */}
+      {/* Consolidated B2B Quick Contact Hub (auto-yields cleanly on footer, modal, or /contact form page) */}
       <div
-        className={`floating-b2b-speed-dial${isFooterInView ? ' is-footer-visible' : ''}${
+        className={`floating-b2b-speed-dial${isFooterInView || isQuoteOpen || isContactPage ? ' is-footer-visible' : ''}${
           isQuickContactOpen ? ' is-open' : ''
         }`}
         aria-label={isVi ? 'Liên hệ nhanh B2B' : 'B2B Quick Contact'}
-        aria-hidden={isFooterInView}
+        aria-hidden={isFooterInView || isQuoteOpen || isContactPage}
       >
         {isQuickContactOpen && (
           <div id="b2b-quick-contact-panel" className="floating-contact-menu" role="region">
@@ -132,7 +134,7 @@ export const MainLayout: React.FC = () => {
               ? 'Mở liên hệ nhanh B2B'
               : 'Open B2B quick contact menu'
           }
-          tabIndex={isFooterInView ? -1 : 0}
+          tabIndex={isFooterInView || isQuoteOpen || isContactPage ? -1 : 0}
           className="floating-contact-trigger"
         >
           {isQuickContactOpen ? <X size={18} aria-hidden="true" /> : <MessageCircle size={18} aria-hidden="true" />}
