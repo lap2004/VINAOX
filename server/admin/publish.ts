@@ -11,12 +11,13 @@ import { commitFile, getRepoFile, hasGitHubToken, getCommitDeployStatus } from '
 import fs from 'fs';
 import path from 'path';
 
-const ALLOWED_MODULES = ['news', 'products', 'certificates', 'media', 'brochure', 'company', 'all'] as const;
+const ALLOWED_MODULES = ['news', 'products', 'about', 'certificates', 'media', 'brochure', 'company', 'all'] as const;
 type PublishModule = typeof ALLOWED_MODULES[number];
 
 const MODULE_LABELS: Record<PublishModule, string> = {
   news: 'Tin tức & Báo chí',
   products: 'Sản phẩm nhiệt đới',
+  about: 'Trang Về chúng tôi',
   certificates: 'Chứng nhận & Tiêu chuẩn',
   media: 'Thư viện hình ảnh',
   brochure: 'Hồ sơ năng lực (Brochure)',
@@ -73,6 +74,19 @@ export default wrapHandler(async (req: any, res: any) => {
     let productsCount = 0;
     let certsCount = 0;
     let mediaCount = 0;
+    let aboutGalleryTotal = 0;
+    let aboutGalleryVisible = 0;
+
+    try {
+      const aboutFile = path.join(process.cwd(), 'content/settings/about.json');
+      if (fs.existsSync(aboutFile)) {
+        const rawAbout = JSON.parse(fs.readFileSync(aboutFile, 'utf-8').replace(/^\uFEFF/, ''));
+        if (Array.isArray(rawAbout?.gallery)) {
+          aboutGalleryTotal = rawAbout.gallery.length;
+          aboutGalleryVisible = rawAbout.gallery.filter((g: any) => g && g.visible !== false).length;
+        }
+      }
+    } catch {}
 
     try {
       const newsDir = path.join(process.cwd(), 'content/news');
@@ -131,6 +145,7 @@ export default wrapHandler(async (req: any, res: any) => {
       stats: {
         news: { total: newsCount, published: newsCount - newsDrafts, drafts: newsDrafts },
         products: { total: productsCount },
+        aboutGallery: { total: aboutGalleryTotal, visible: aboutGalleryVisible },
         certificates: { total: certsCount },
         media: { total: mediaCount }
       },

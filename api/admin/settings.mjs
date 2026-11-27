@@ -629,6 +629,319 @@ function validateBrochureSettings(input) {
   };
 }
 
+// src/shared/schemas/aboutSchema.ts
+var ABOUT_GALLERY_CATEGORIES = [
+  "raw-material",
+  "harvest",
+  "factory",
+  "preparation",
+  "processing",
+  "quality",
+  "packaging",
+  "warehouse",
+  "team",
+  "export"
+];
+var EMPTY_LOCALIZED_TEXT = {
+  vi: "",
+  en: "",
+  ko: "",
+  zh: ""
+};
+var SAFE_RELATIVE_IMAGE_PREFIXES = ["/assets/", "/uploads/", "/images/"];
+function isSafeAboutImageUrl(url) {
+  if (typeof url !== "string") return false;
+  const trimmed = url.trim();
+  if (!trimmed) return false;
+  const lower = trimmed.toLowerCase();
+  if (lower.startsWith("javascript:") || lower.startsWith("data:") || lower.startsWith("vbscript:")) {
+    return false;
+  }
+  if (trimmed.includes("..") || /[<>"'\\|?*]/.test(trimmed)) {
+    return false;
+  }
+  if (trimmed.startsWith("/")) {
+    if (trimmed.startsWith("//")) return false;
+    return SAFE_RELATIVE_IMAGE_PREFIXES.some((prefix) => trimmed.startsWith(prefix));
+  }
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+function sanitizeId(raw, fallback) {
+  if (typeof raw !== "string") return fallback;
+  const cleaned = raw.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
+  return cleaned || fallback;
+}
+function mergeLocalized(existing, incoming) {
+  const base = existing || EMPTY_LOCALIZED_TEXT;
+  if (typeof incoming === "string") {
+    const trimmed = incoming.trim();
+    return {
+      vi: trimmed,
+      en: base.en,
+      ko: base.ko,
+      zh: base.zh
+    };
+  }
+  if (!incoming || typeof incoming !== "object") {
+    return { ...base };
+  }
+  const src = incoming;
+  return {
+    vi: typeof src.vi === "string" ? src.vi.trim() : base.vi,
+    en: typeof src.en === "string" ? src.en.trim() : base.en,
+    ko: typeof src.ko === "string" ? src.ko.trim() : base.ko,
+    zh: typeof src.zh === "string" ? src.zh.trim() : base.zh
+  };
+}
+function sanitizeCategory(raw, fallback = "factory") {
+  if (typeof raw === "string" && ABOUT_GALLERY_CATEGORIES.includes(raw.trim())) {
+    return raw.trim();
+  }
+  return fallback;
+}
+function inferImageFallback(image, explicitFallback) {
+  if (typeof explicitFallback === "string" && isSafeAboutImageUrl(explicitFallback)) {
+    return explicitFallback.trim();
+  }
+  if (image.startsWith("/assets/") && image.toLowerCase().endsWith(".webp")) {
+    return image.slice(0, -5) + ".jpg";
+  }
+  return void 0;
+}
+function mergeAboutContent(base, incoming) {
+  const raw = incoming && typeof incoming === "object" ? incoming : {};
+  const heroRaw = raw.hero && typeof raw.hero === "object" ? raw.hero : {};
+  const hero = {
+    badge: mergeLocalized(base.hero.badge, heroRaw.badge),
+    title: mergeLocalized(base.hero.title, heroRaw.title),
+    subtitle: mergeLocalized(base.hero.subtitle, heroRaw.subtitle)
+  };
+  const storyRaw = raw.story && typeof raw.story === "object" ? raw.story : {};
+  const story = {
+    label: mergeLocalized(base.story.label, storyRaw.label),
+    titleLine1: mergeLocalized(base.story.titleLine1, storyRaw.titleLine1),
+    titleLine2: mergeLocalized(base.story.titleLine2, storyRaw.titleLine2),
+    description: mergeLocalized(base.story.description, storyRaw.description)
+  };
+  const vmRaw = raw.visionMission && typeof raw.visionMission === "object" ? raw.visionMission : {};
+  const visionMission = {
+    enabled: typeof vmRaw.enabled === "boolean" ? vmRaw.enabled : base.visionMission.enabled,
+    label: mergeLocalized(base.visionMission.label, vmRaw.label),
+    visionTitle: mergeLocalized(base.visionMission.visionTitle, vmRaw.visionTitle),
+    visionDesc: mergeLocalized(base.visionMission.visionDesc, vmRaw.visionDesc),
+    missionTitle: mergeLocalized(base.visionMission.missionTitle, vmRaw.missionTitle),
+    missionDesc: mergeLocalized(base.visionMission.missionDesc, vmRaw.missionDesc),
+    coreValuesTitle: mergeLocalized(base.visionMission.coreValuesTitle, vmRaw.coreValuesTitle),
+    coreValuesDesc: mergeLocalized(base.visionMission.coreValuesDesc, vmRaw.coreValuesDesc)
+  };
+  const hvRaw = raw.highlightVisual && typeof raw.highlightVisual === "object" ? raw.highlightVisual : {};
+  const hvImg = typeof hvRaw.image === "string" && isSafeAboutImageUrl(hvRaw.image) ? hvRaw.image.trim() : base.highlightVisual.image;
+  const highlightVisual = {
+    image: hvImg,
+    imageFallback: inferImageFallback(hvImg, hvRaw.imageFallback ?? (hvRaw.image ? void 0 : base.highlightVisual.imageFallback)),
+    overlayTag: mergeLocalized(base.highlightVisual.overlayTag, hvRaw.overlayTag),
+    overlayLine1: mergeLocalized(base.highlightVisual.overlayLine1, hvRaw.overlayLine1),
+    overlayLine2: mergeLocalized(base.highlightVisual.overlayLine2, hvRaw.overlayLine2),
+    alt: mergeLocalized(base.highlightVisual.alt, hvRaw.alt)
+  };
+  const metrics = Array.isArray(raw.metrics) && raw.metrics.length > 0 ? raw.metrics.map((m, idx) => {
+    const prev = base.metrics.find((b) => b.id === m?.id) || base.metrics[idx];
+    return {
+      id: sanitizeId(m?.id, prev?.id || `metric-${idx + 1}`),
+      num: mergeLocalized(prev?.num, m?.num),
+      label: mergeLocalized(prev?.label, m?.label),
+      note: mergeLocalized(prev?.note, m?.note),
+      source: mergeLocalized(prev?.source, m?.source)
+    };
+  }) : base.metrics.map((m) => ({ ...m }));
+  const milestones = Array.isArray(raw.milestones) && raw.milestones.length > 0 ? raw.milestones.map((ms, idx) => {
+    const prev = base.milestones.find((b) => b.id === ms?.id) || base.milestones[idx];
+    return {
+      id: sanitizeId(ms?.id, prev?.id || `milestone-${idx + 1}`),
+      badge: mergeLocalized(prev?.badge, ms?.badge),
+      title: mergeLocalized(prev?.title, ms?.title),
+      desc: mergeLocalized(prev?.desc, ms?.desc)
+    };
+  }) : base.milestones.map((ms) => ({ ...ms }));
+  const infraRaw = raw.infrastructure && typeof raw.infrastructure === "object" ? raw.infrastructure : {};
+  const infraImg = typeof infraRaw.image === "string" && isSafeAboutImageUrl(infraRaw.image) ? infraRaw.image.trim() : base.infrastructure.image;
+  const infraFeatures = Array.isArray(infraRaw.features) && infraRaw.features.length > 0 ? infraRaw.features.map((ft, idx) => {
+    const prev = base.infrastructure.features.find((b) => b.id === ft?.id) || base.infrastructure.features[idx];
+    return {
+      id: sanitizeId(ft?.id, prev?.id || `feature-${idx + 1}`),
+      title: mergeLocalized(prev?.title, ft?.title),
+      desc: mergeLocalized(prev?.desc, ft?.desc)
+    };
+  }) : base.infrastructure.features.map((ft) => ({ ...ft }));
+  const infrastructure = {
+    label: mergeLocalized(base.infrastructure.label, infraRaw.label),
+    title: mergeLocalized(base.infrastructure.title, infraRaw.title),
+    desc: mergeLocalized(base.infrastructure.desc, infraRaw.desc),
+    image: infraImg,
+    imageFallback: inferImageFallback(infraImg, infraRaw.imageFallback ?? (infraRaw.image ? void 0 : base.infrastructure.imageFallback)),
+    imageAlt: mergeLocalized(base.infrastructure.imageAlt, infraRaw.imageAlt),
+    features: infraFeatures
+  };
+  const srcRaw = raw.sourcing && typeof raw.sourcing === "object" ? raw.sourcing : {};
+  const sourcingRows = Array.isArray(srcRaw.rows) ? srcRaw.rows.map((row, idx) => {
+    const prev = base.sourcing.rows.find((b) => b.id === row?.id) || base.sourcing.rows[idx];
+    return {
+      id: sanitizeId(row?.id, prev?.id || `sourcing-${idx + 1}`),
+      label: mergeLocalized(prev?.label, row?.label),
+      value: mergeLocalized(prev?.value, row?.value)
+    };
+  }) : base.sourcing.rows.map((r) => ({ ...r }));
+  const sourcing = {
+    label: mergeLocalized(base.sourcing.label, srcRaw.label),
+    title: mergeLocalized(base.sourcing.title, srcRaw.title),
+    desc: mergeLocalized(base.sourcing.desc, srcRaw.desc),
+    rows: sourcingRows
+  };
+  const gsRaw = raw.gallerySection && typeof raw.gallerySection === "object" ? raw.gallerySection : {};
+  const gallerySection = {
+    label: mergeLocalized(base.gallerySection.label, gsRaw.label),
+    title: mergeLocalized(base.gallerySection.title, gsRaw.title),
+    desc: mergeLocalized(base.gallerySection.desc, gsRaw.desc)
+  };
+  let gallery;
+  if (Array.isArray(raw.gallery)) {
+    const usedIds = /* @__PURE__ */ new Set();
+    gallery = raw.gallery.map((item, idx) => {
+      const prev = base.gallery.find((g) => g.id === item?.id);
+      let id = sanitizeId(item?.id, `gallery-item-${idx + 1}`);
+      while (usedIds.has(id)) {
+        id = `${id}-${idx + 1}`;
+      }
+      usedIds.add(id);
+      const rawImage = typeof item?.image === "string" ? item.image.trim() : "";
+      const image = isSafeAboutImageUrl(rawImage) ? rawImage : prev?.image || "";
+      const explicitFallback = item?.imageFallback;
+      const imageFallback = image ? inferImageFallback(image, explicitFallback ?? (rawImage && rawImage === prev?.image ? prev?.imageFallback : void 0)) : void 0;
+      const sortOrder = Number.isFinite(Number(item?.sortOrder)) ? Number(item.sortOrder) : idx + 1;
+      return {
+        id,
+        image,
+        ...imageFallback ? { imageFallback } : {},
+        category: sanitizeCategory(item?.category, prev?.category || "factory"),
+        label: mergeLocalized(prev?.label, item?.label),
+        title: mergeLocalized(prev?.title, item?.title),
+        description: mergeLocalized(prev?.description, item?.description),
+        alt: mergeLocalized(prev?.alt, item?.alt),
+        sortOrder,
+        visible: item?.visible !== void 0 ? Boolean(item.visible) : true
+      };
+    }).sort((a, b) => a.sortOrder - b.sortOrder).map((item, idx) => ({ ...item, sortOrder: idx + 1 }));
+  } else {
+    gallery = base.gallery.map((g, idx) => ({ ...g, sortOrder: idx + 1 }));
+  }
+  return {
+    hero,
+    story,
+    visionMission,
+    highlightVisual,
+    metrics,
+    milestones,
+    infrastructure,
+    sourcing,
+    gallerySection,
+    gallery
+  };
+}
+function validateAboutContent(input, existing) {
+  const errors = [];
+  const raw = input && typeof input === "object" ? input : {};
+  if (raw.highlightVisual?.image !== void 0 && !isSafeAboutImageUrl(raw.highlightVisual.image)) {
+    errors.push("\u0110\u01B0\u1EDDng d\u1EABn \u1EA3nh n\u1ED5i b\u1EADt (highlightVisual.image) kh\xF4ng h\u1EE3p l\u1EC7 ho\u1EB7c ch\u1EE9a giao th\u1EE9c kh\xF4ng an to\xE0n.");
+  }
+  if (raw.infrastructure?.image !== void 0 && !isSafeAboutImageUrl(raw.infrastructure.image)) {
+    errors.push("\u0110\u01B0\u1EDDng d\u1EABn \u1EA3nh nh\xE0 m\xE1y (infrastructure.image) kh\xF4ng h\u1EE3p l\u1EC7 ho\u1EB7c ch\u1EE9a giao th\u1EE9c kh\xF4ng an to\xE0n.");
+  }
+  if (Array.isArray(raw.gallery)) {
+    const seenIds = /* @__PURE__ */ new Set();
+    raw.gallery.forEach((item, idx) => {
+      const labelIdx = `\u1EA2nh th\u01B0 vi\u1EC7n #${idx + 1}`;
+      if (!item || typeof item !== "object") {
+        errors.push(`${labelIdx}: \u0110\u1ECBnh d\u1EA1ng b\u1EA3n ghi kh\xF4ng h\u1EE3p l\u1EC7.`);
+        return;
+      }
+      if (!isSafeAboutImageUrl(item.image)) {
+        errors.push(`${labelIdx}: \u0110\u01B0\u1EDDng d\u1EABn \u1EA3nh (image) kh\xF4ng h\u1EE3p l\u1EC7 ho\u1EB7c kh\xF4ng \u0111\u01B0\u1EE3c ph\xE9p.`);
+      }
+      if (item.imageFallback && !isSafeAboutImageUrl(item.imageFallback)) {
+        errors.push(`${labelIdx}: \u0110\u01B0\u1EDDng d\u1EABn \u1EA3nh d\u1EF1 ph\xF2ng (imageFallback) kh\xF4ng h\u1EE3p l\u1EC7.`);
+      }
+      if (typeof item.category === "string" && !ABOUT_GALLERY_CATEGORIES.includes(item.category.trim())) {
+        errors.push(`${labelIdx}: Danh m\u1EE5c "${item.category}" kh\xF4ng n\u1EB1m trong danh s\xE1ch cho ph\xE9p.`);
+      }
+      const id = sanitizeId(item.id, "");
+      if (!id) {
+        errors.push(`${labelIdx}: Thi\u1EBFu m\xE3 \u0111\u1ECBnh danh (id).`);
+      } else if (seenIds.has(id)) {
+        errors.push(`${labelIdx}: Tr\xF9ng m\xE3 \u0111\u1ECBnh danh "${id}".`);
+      } else {
+        seenIds.add(id);
+      }
+      const titleVi = typeof item.title?.vi === "string" ? item.title.vi.trim() : "";
+      const titleEn = typeof item.title?.en === "string" ? item.title.en.trim() : "";
+      if (!titleVi && !titleEn) {
+        errors.push(`${labelIdx}: C\u1EA7n nh\u1EADp \xEDt nh\u1EA5t ti\xEAu \u0111\u1EC1 ti\u1EBFng Vi\u1EC7t ho\u1EB7c ti\u1EBFng Anh.`);
+      }
+      const labelVi = typeof item.label?.vi === "string" ? item.label.vi.trim() : "";
+      const labelEn = typeof item.label?.en === "string" ? item.label.en.trim() : "";
+      if (!labelVi && !labelEn) {
+        errors.push(`${labelIdx}: C\u1EA7n nh\u1EADp \xEDt nh\u1EA5t nh\xE3n hi\u1EC3n th\u1ECB ti\u1EBFng Vi\u1EC7t ho\u1EB7c ti\u1EBFng Anh.`);
+      }
+    });
+  }
+  const base = existing || {
+    hero: { badge: EMPTY_LOCALIZED_TEXT, title: EMPTY_LOCALIZED_TEXT, subtitle: EMPTY_LOCALIZED_TEXT },
+    story: { label: EMPTY_LOCALIZED_TEXT, titleLine1: EMPTY_LOCALIZED_TEXT, titleLine2: EMPTY_LOCALIZED_TEXT, description: EMPTY_LOCALIZED_TEXT },
+    visionMission: {
+      enabled: false,
+      label: EMPTY_LOCALIZED_TEXT,
+      visionTitle: EMPTY_LOCALIZED_TEXT,
+      visionDesc: EMPTY_LOCALIZED_TEXT,
+      missionTitle: EMPTY_LOCALIZED_TEXT,
+      missionDesc: EMPTY_LOCALIZED_TEXT,
+      coreValuesTitle: EMPTY_LOCALIZED_TEXT,
+      coreValuesDesc: EMPTY_LOCALIZED_TEXT
+    },
+    highlightVisual: {
+      image: "/assets/images/factory/factory-quality-sorting.webp",
+      imageFallback: "/assets/images/factory/factory-quality-sorting.jpg",
+      overlayTag: EMPTY_LOCALIZED_TEXT,
+      overlayLine1: EMPTY_LOCALIZED_TEXT,
+      overlayLine2: EMPTY_LOCALIZED_TEXT,
+      alt: EMPTY_LOCALIZED_TEXT
+    },
+    metrics: [],
+    milestones: [],
+    infrastructure: {
+      label: EMPTY_LOCALIZED_TEXT,
+      title: EMPTY_LOCALIZED_TEXT,
+      desc: EMPTY_LOCALIZED_TEXT,
+      image: "/assets/images/factory/factory-fresh-prep.webp",
+      imageFallback: "/assets/images/factory/factory-fresh-prep.jpg",
+      imageAlt: EMPTY_LOCALIZED_TEXT,
+      features: []
+    },
+    sourcing: { label: EMPTY_LOCALIZED_TEXT, title: EMPTY_LOCALIZED_TEXT, desc: EMPTY_LOCALIZED_TEXT, rows: [] },
+    gallerySection: { label: EMPTY_LOCALIZED_TEXT, title: EMPTY_LOCALIZED_TEXT, desc: EMPTY_LOCALIZED_TEXT },
+    gallery: []
+  };
+  const merged = mergeAboutContent(base, raw);
+  return {
+    valid: errors.length === 0,
+    errors,
+    data: merged
+  };
+}
+
 // server/admin/settings.ts
 import fs from "fs";
 import path from "path";
@@ -637,7 +950,8 @@ var settings_default = wrapHandler(async (req, res) => {
   if (!user) {
     return res.status(401).json({ error: "Y\xEAu c\u1EA7u \u0111\u0103ng nh\u1EADp qu\u1EA3n tr\u1ECB." });
   }
-  const section = req.query?.section === "brochure" ? "brochure" : "company";
+  const rawSection = req.query?.section;
+  const section = rawSection === "brochure" ? "brochure" : rawSection === "about" ? "about" : "company";
   const filePath = `content/settings/${section}.json`;
   const useGitHub = hasGitHubToken();
   if (req.method === "GET") {
@@ -672,12 +986,36 @@ var settings_default = wrapHandler(async (req, res) => {
     const requestSha = typeof rawBody.sha === "string" ? rawBody.sha : void 0;
     const incomingData = stripUnsafeKeys(rawBody);
     let validatedData = incomingData;
+    let commitMessage = `cms(settings): update ${section} settings`;
     if (section === "brochure") {
       const v = validateBrochureSettings(incomingData);
       if (!v.valid) {
         return res.status(400).json({ error: `D\u1EEF li\u1EC7u c\u1EA5u h\xECnh Brochure kh\xF4ng h\u1EE3p l\u1EC7: ${v.errors.join("; ")}` });
       }
       validatedData = v.data;
+    } else if (section === "about") {
+      let existingAbout = void 0;
+      try {
+        if (useGitHub) {
+          const existingFile = await getRepoFile(filePath);
+          if (existingFile) {
+            existingAbout = JSON.parse(existingFile.content);
+          }
+        } else {
+          const localPath = path.join(process.cwd(), filePath);
+          if (fs.existsSync(localPath)) {
+            existingAbout = JSON.parse(fs.readFileSync(localPath, "utf-8").replace(/^\uFEFF/, ""));
+          }
+        }
+      } catch {
+        existingAbout = void 0;
+      }
+      const v = validateAboutContent(incomingData, existingAbout);
+      if (!v.valid) {
+        return res.status(400).json({ error: `D\u1EEF li\u1EC7u trang V\u1EC1 ch\xFAng t\xF4i kh\xF4ng h\u1EE3p l\u1EC7: ${v.errors.join("; ")}` });
+      }
+      validatedData = v.data;
+      commitMessage = "cms(about): update about page content & gallery";
     } else {
       const v = validateCompanySettings(incomingData);
       if (!v.valid) {
@@ -686,7 +1024,6 @@ var settings_default = wrapHandler(async (req, res) => {
       validatedData = v.data;
     }
     const contentStr = JSON.stringify(validatedData, null, 2);
-    const commitMessage = `cms(settings): update ${section} settings`;
     let result = null;
     if (useGitHub) {
       result = await commitFile(filePath, contentStr, commitMessage, requestSha);

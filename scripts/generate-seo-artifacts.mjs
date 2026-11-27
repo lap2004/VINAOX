@@ -255,7 +255,7 @@ function main() {
         robots: 'index, follow',
         ogType: 'website',
         ogUrl: `${SITE_URL}/about`,
-        ogImage: `${SITE_URL}/assets/images/about_vietnam.jpg`,
+        ogImage: `${SITE_URL}/assets/images/factory-2026/factory-featured.jpg`,
         jsonLd: buildBreadcrumbSchema([
           { name: 'Trang chủ', path: '/' },
           { name: 'Về chúng tôi', path: '/about' },

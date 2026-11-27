@@ -96,3 +96,21 @@
 | **Sản phẩm thập cẩm** | Sản phẩm thập cẩm | Mixed Products | 모듬 과일·채소 | 综合果蔬 |
 | **Sản phẩm đang yêu cầu báo giá** | Sản phẩm đang yêu cầu báo giá | Quoting Selected Product | 견적 요청 선택 품목 | 当前询价产品 |
 | **Quy cách đóng gói mong muốn** | Quy cách đóng gói mong muốn | Preferred Packaging | 희망 포장 규격 | 期望包装规格 |
+
+
+---
+
+## 7. Thuật ngữ Nhà máy, Công đoạn Sản xuất & Thư viện Hình ảnh Trang Về chúng tôi (Chuẩn hóa 4 Ngôn ngữ)
+
+> **Quy tắc thuật ngữ kỹ thuật:** Chỉ dùng thuật ngữ công đoạn phản ánh đúng nội dung ảnh thực tế và hồ sơ đã xác minh. **Không dùng** các cụm `"sấy vô trùng"` hoặc `"đóng gói vô trùng"` nếu chưa có xác nhận thiết bị/quy trình tiệt trùng thương mại tương ứng; ưu tiên `"đồng phục bảo hộ vệ sinh"`, `"đóng gói vệ sinh khép kín"`, `"xếp lát trái cây lên khay chuẩn bị sấy"`.
+
+| Khái niệm | Tiếng Việt (`vi`) | English (`en`) | 한국어 (`ko`) | 简体中文 (`zh-CN`) |
+|---|---|---|---|---|
+| **Nhà máy chế biến** | Nhà máy chế biến | Processing Facility | 가공 공장 | 加工厂房 |
+| **Chuẩn bị nguyên liệu** | Chuẩn bị nguyên liệu | Material Preparation | 원료 준비 및 전처리 | 原料准备与预处理 |
+| **Xếp khay chuẩn bị sấy** | Xếp lát trái cây lên khay chuẩn bị sấy | Arranging Sliced Fruit onto Drying Trays | 건조 트레이 과일 슬라이스 배열 작업 | 鲜果切片平铺上盘准备烘干 |
+| **Hạ tầng khay sấy** | Hệ thống xe đẩy khay sấy công nghiệp đa tầng | Multi-Tier Food-Grade Drying Rack Trolleys | 다단 식품 등급 건조 대차 시스템 | 多层食品级烘干推车系统 |
+| **Sơ chế nguyên liệu tươi** | Sơ chế và tách múi trái cây tươi trên bàn inox | Manual Trimming & Preparation on Stainless Steel Tables | 스테인리스 작업대 생과 전처리 및 손질 | 不锈钢操作台鲜果去壳与分选预处理 |
+| **Kiểm tra & định lượng** | Kiểm tra cảm quan và cân định lượng thành phẩm sau sấy | Visual Grading and Precision Weighing of Dried Fruit | 건조 과일 육안 선별 및 정밀 계량 | 果干感官分级筛选与精密定量称重 |
+| **Đóng gói thành phẩm** | Đóng gói túi zipper thành phẩm | Packing Finished Goods into Stand-Up Zipper Pouches | 완제품 스탠드형 지퍼 파우치 포장 | 成品立式拉链袋包装 |
+| **Xem ảnh lớn** | Xem ảnh lớn | View Large | 크게 보기 | 查看大图 |

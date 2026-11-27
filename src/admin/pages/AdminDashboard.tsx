@@ -16,7 +16,8 @@ import {
   RefreshCw,
   Clock,
   AlertCircle,
-  Zap
+  Zap,
+  Info
 } from 'lucide-react';
 import { getAllArticles, isArticleDraft } from '../../services/contentService';
 import { productsData } from '../../data/products';
@@ -41,6 +42,7 @@ export const AdminDashboard: React.FC = () => {
   const [productsCount, setProductsCount] = useState<number>(productsData.length);
   const [mediaCount, setMediaCount] = useState<number>(0);
   const [certsCount, setCertsCount] = useState<number>(6);
+  const [aboutGalleryStats, setAboutGalleryStats] = useState<{ total: number; visible: number }>({ total: 6, visible: 6 });
   
   const [publishingModule, setPublishingModule] = useState<string | null>(null);
   const [publishHistory, setPublishHistory] = useState<PublishHistoryItem[]>([]);
@@ -60,6 +62,7 @@ export const AdminDashboard: React.FC = () => {
           if (pubData.latestDeployStatus) setDeployStatus(pubData.latestDeployStatus);
           if (pubData.stats?.certificates?.total) setCertsCount(pubData.stats.certificates.total);
           if (pubData.stats?.media?.total) setMediaCount(pubData.stats.media.total);
+          if (pubData.stats?.aboutGallery) setAboutGalleryStats(pubData.stats.aboutGallery);
         }
       }
     } catch {}
@@ -141,6 +144,15 @@ export const AdminDashboard: React.FC = () => {
       bg: '#FEF3C7',
       link: '/admin/news',
       manageLabel: 'Quản lý tin tức'
+    },
+    {
+      key: 'about',
+      name: 'Trang Về chúng tôi',
+      desc: `${aboutGalleryStats.total} ảnh thư viện (${aboutGalleryStats.visible} hiển thị), nội dung & vùng nguyên liệu 4 ngôn ngữ`,
+      icon: <Info size={20} color="#0D9488" />,
+      bg: '#F0FDFA',
+      link: '/admin/about',
+      manageLabel: 'Quản lý Về chúng tôi'
     },
     {
       key: 'products',
