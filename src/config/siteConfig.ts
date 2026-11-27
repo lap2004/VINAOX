@@ -21,12 +21,25 @@ export function normalizeSiteUrl(pathOrUrl?: string | null): string {
   const trimmed = pathOrUrl.trim();
   if (!trimmed) return `${base}/`;
 
+  if (/^(mailto:|tel:)/i.test(trimmed)) {
+    return trimmed;
+  }
+
   if (trimmed.startsWith('/')) {
+    // Guard against bare domain strings accidentally prefixed with '/'
+    if (/^\/(www\.)?vinaxo\.(net|vn)(\/|$)/i.test(trimmed)) {
+      const rest = trimmed.replace(/^\/(www\.)?vinaxo\.(net|vn)/i, '') || '/';
+      return `${base}${rest.startsWith('/') ? rest : `/${rest}`}`;
+    }
     return `${base}${trimmed}`;
   }
 
+  const candidate = /^[a-z0-9-]+(\.[a-z0-9-]+)+([/?#].*)?$/i.test(trimmed)
+    ? `https://${trimmed}`
+    : trimmed;
+
   try {
-    const parsed = new URL(trimmed);
+    const parsed = new URL(candidate);
     const host = parsed.hostname.toLowerCase();
     if (
       host === 'vinaxo.vn' ||
@@ -34,11 +47,33 @@ export function normalizeSiteUrl(pathOrUrl?: string | null): string {
       host === 'vinaxo.net' ||
       host === 'www.vinaxo.net'
     ) {
-      return `${base}${parsed.pathname}${parsed.search}${parsed.hash}`;
+      return `${base}${parsed.pathname || '/'}${parsed.search}${parsed.hash}`;
     }
-    return trimmed;
+    return parsed.href;
   } catch {
-    return `${base}/${trimmed.replace(/^\/+/, '')}`;
+    return `${base}/`;
+  }
+}
+
+/**
+ * Normalizes public corporate/social website URLs without corrupting mailto:, tel:,
+ * or relative app paths starting with '/'.
+ */
+export function normalizeExternalWebsiteUrl(url?: string | null, fallback = `${SITE_CONFIG.siteUrl}/`): string {
+  if (!url || typeof url !== 'string') return fallback;
+  const trimmed = url.trim();
+  if (!trimmed) return fallback;
+  if (/^(mailto:|tel:)/i.test(trimmed)) return trimmed;
+  if (trimmed === '/') return '/';
+  return normalizeSiteUrl(trimmed);
+}
+
+export function getWebsiteDisplayLabel(url?: string | null): string {
+  const normalized = normalizeExternalWebsiteUrl(url);
+  try {
+    return new URL(normalized).hostname || 'www.vinaxo.net';
+  } catch {
+    return 'www.vinaxo.net';
   }
 }
 

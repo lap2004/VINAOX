@@ -10,10 +10,13 @@ import {
   ShieldCheck,
   FileCheck,
   Sparkles,
-  Upload
+  Upload,
+  MapPin,
+  ExternalLink
 } from 'lucide-react';
 import { adminFetch } from '../lib/adminFetch';
 import { MediaPicker } from '../components/MediaPicker';
+import { getGoogleMapsDirectionsUrl, getGoogleMapsEmbedUrl, getGoogleMapsSearchUrl } from '../../data/company';
 
 interface CompanySettings {
   company_name_vi: string;
@@ -24,9 +27,16 @@ interface CompanySettings {
   address_ko?: string;
   address_zh?: string;
   legal_rep_vi: string;
+  factory_name_vi?: string;
+  factory_name_en?: string;
+  latitude?: number | string;
+  longitude?: number | string;
+  google_place_id?: string;
   hotline: string;
   email: string;
   website: string;
+  whatsapp?: string;
+  zalo?: string;
 }
 
 interface BrochureSettings {
@@ -59,10 +69,17 @@ export const AdminSettings: React.FC = () => {
     address_en: 'Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam',
     address_ko: '베트남 동탑성 빈빈 5구역',
     address_zh: '越南同塔省永平镇第5区',
-    legal_rep_vi: 'Ông Nguyễn Anh Khoa',
+    legal_rep_vi: 'Ông Hoàng Mạnh Cường (Jimmy)',
+    factory_name_vi: 'Nhà Máy Chế Biến VINAXO',
+    factory_name_en: 'VINAXO Processing Plant',
+    latitude: 10.380295,
+    longitude: 106.516139,
+    google_place_id: '',
     hotline: '(+84) 984 815 016',
     email: 'cuonghoang0710@gmail.com',
-    website: 'https://www.vinaxo.net'
+    website: 'https://www.vinaxo.net/',
+    whatsapp: 'https://wa.me/84984815016',
+    zalo: 'https://zalo.me/0984815016'
   });
 
   const [brochureData, setBrochureData] = useState<BrochureSettings>({
@@ -412,10 +429,10 @@ export const AdminSettings: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
-                Email giao dịch chính thức *
+                Email liên hệ công khai *
               </label>
               <input
                 type="email"
@@ -428,15 +445,178 @@ export const AdminSettings: React.FC = () => {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
-                Địa chỉ Website
+                Địa chỉ Website (chuẩn https://)
               </label>
               <input
                 type="text"
                 value={companyData.website}
                 onChange={(e) => setCompanyData({ ...companyData, website: e.target.value })}
+                placeholder="https://www.vinaxo.net/"
                 style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
               />
             </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                WhatsApp Link
+              </label>
+              <input
+                type="text"
+                value={companyData.whatsapp || ''}
+                onChange={(e) => setCompanyData({ ...companyData, whatsapp: e.target.value })}
+                placeholder="https://wa.me/84984815016"
+                style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                Zalo Official Link
+              </label>
+              <input
+                type="text"
+                value={companyData.zalo || ''}
+                onChange={(e) => setCompanyData({ ...companyData, zalo: e.target.value })}
+                placeholder="https://zalo.me/0984815016"
+                style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+              />
+            </div>
+          </div>
+
+          <div style={{
+            marginBottom: '20px',
+            padding: '16px',
+            borderRadius: '10px',
+            backgroundColor: '#FAF7F2',
+            border: '1px solid #EADCCE'
+          }}>
+            <h4 style={{ fontSize: '0.94rem', fontWeight: 700, color: '#3A251B', margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MapPin size={16} color="#E28D1B" />
+              <span>Vị trí Nhà máy & Google Maps (Single Source of Truth)</span>
+            </h4>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', marginBottom: '12px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
+                  Tên nhà máy (VI)
+                </label>
+                <input
+                  type="text"
+                  value={companyData.factory_name_vi || ''}
+                  onChange={(e) => setCompanyData({ ...companyData, factory_name_vi: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.86rem', boxSizing: 'border-box', backgroundColor: '#FFF' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
+                  Factory Name (EN)
+                </label>
+                <input
+                  type="text"
+                  value={companyData.factory_name_en || ''}
+                  onChange={(e) => setCompanyData({ ...companyData, factory_name_en: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.86rem', boxSizing: 'border-box', backgroundColor: '#FFF' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '12px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
+                  Vĩ độ (Latitude) *
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  required
+                  value={companyData.latitude ?? ''}
+                  onChange={(e) => setCompanyData({ ...companyData, latitude: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.86rem', boxSizing: 'border-box', backgroundColor: '#FFF' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
+                  Kinh độ (Longitude) *
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  required
+                  value={companyData.longitude ?? ''}
+                  onChange={(e) => setCompanyData({ ...companyData, longitude: e.target.value })}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.86rem', boxSizing: 'border-box', backgroundColor: '#FFF' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '4px' }}>
+                  Google Place ID (tùy chọn)
+                </label>
+                <input
+                  type="text"
+                  value={companyData.google_place_id || ''}
+                  onChange={(e) => setCompanyData({ ...companyData, google_place_id: e.target.value })}
+                  placeholder="ChIJ..."
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.86rem', boxSizing: 'border-box', backgroundColor: '#FFF' }}
+                />
+              </div>
+            </div>
+
+            {(() => {
+              const previewLat = Number.isFinite(Number(companyData.latitude)) ? Number(companyData.latitude) : 10.380295;
+              const previewLng = Number.isFinite(Number(companyData.longitude)) ? Number(companyData.longitude) : 106.516139;
+              const previewLoc = {
+                nameVi: companyData.factory_name_vi || 'Nhà Máy Chế Biến VINAXO',
+                nameEn: companyData.factory_name_en || 'VINAXO Processing Plant',
+                addressVi: companyData.address_vi,
+                addressEn: companyData.address_en || '',
+                latitude: previewLat,
+                longitude: previewLng,
+                placeId: companyData.google_place_id || '',
+              };
+              return (
+                <div>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                    <a
+                      href={getGoogleMapsSearchUrl(previewLoc)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, color: '#3A251B', textDecoration: 'none', padding: '6px 12px', borderRadius: '6px', backgroundColor: '#FFF', border: '1px solid #D1C7BD' }}
+                    >
+                      <span>Kiểm tra pin trên Google Maps</span>
+                      <ExternalLink size={13} />
+                    </a>
+                    <a
+                      href={getGoogleMapsDirectionsUrl(previewLoc)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, color: '#3A251B', textDecoration: 'none', padding: '6px 12px', borderRadius: '6px', backgroundColor: '#FFF', border: '1px solid #D1C7BD' }}
+                    >
+                      <span>Kiểm tra link Chỉ đường</span>
+                      <ExternalLink size={13} />
+                    </a>
+                  </div>
+                  <iframe
+                    src={getGoogleMapsEmbedUrl(previewLoc, 'vi')}
+                    title="Xem trước vị trí nhà máy VINAXO"
+                    loading="lazy"
+                    style={{ width: '100%', height: '220px', border: '1px solid #EADCCE', borderRadius: '8px', display: 'block', backgroundColor: '#FFF' }}
+                  />
+                </div>
+              );
+            })()}
+          </div>
+
+          <div style={{
+            marginBottom: '20px',
+            padding: '12px 14px',
+            borderRadius: '8px',
+            backgroundColor: '#FFFBEB',
+            border: '1px solid #FDE68A',
+            fontSize: '0.8rem',
+            color: '#92400E',
+            lineHeight: 1.5
+          }}>
+            <strong>Lưu ý bảo mật cấu hình gửi email:</strong> Địa chỉ email hiển thị công khai ở trên được xuất ra website. Khóa API gửi thư (`RESEND_API_KEY` / `BREVO_API_KEY`) và địa chỉ nhận báo giá nội bộ phía máy chủ (`CONTACT_TO_EMAIL`) được cấu hình riêng trong Vercel Environment Variables, không lưu vào Git/JSON công khai.
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', flexWrap: 'wrap' }}>

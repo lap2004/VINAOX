@@ -470,6 +470,54 @@ function isValidUrl(url, allowRelative = true) {
   }
 }
 
+// src/config/siteConfig.ts
+var SITE_CONFIG = {
+  name: "VINAXO",
+  legalNameVi: "C\xD4NG TY TNHH VINAXO",
+  legalNameEn: "VINAXO COMPANY LIMITED",
+  siteUrl: "https://www.vinaxo.net",
+  apexUrl: "https://vinaxo.net",
+  defaultOgImage: "https://www.vinaxo.net/assets/images/hero_fruits.jpg",
+  brochureOgImage: "https://www.vinaxo.net/assets/images/brochure-2026-cover.jpg",
+  logoUrl: "https://www.vinaxo.net/assets/logo/vinaxo-logo.svg",
+  twitterCard: "summary_large_image"
+};
+function normalizeSiteUrl(pathOrUrl) {
+  const base = SITE_CONFIG.siteUrl.replace(/\/+$/, "");
+  if (!pathOrUrl || typeof pathOrUrl !== "string") return `${base}/`;
+  const trimmed = pathOrUrl.trim();
+  if (!trimmed) return `${base}/`;
+  if (/^(mailto:|tel:)/i.test(trimmed)) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("/")) {
+    if (/^\/(www\.)?vinaxo\.(net|vn)(\/|$)/i.test(trimmed)) {
+      const rest = trimmed.replace(/^\/(www\.)?vinaxo\.(net|vn)/i, "") || "/";
+      return `${base}${rest.startsWith("/") ? rest : `/${rest}`}`;
+    }
+    return `${base}${trimmed}`;
+  }
+  const candidate = /^[a-z0-9-]+(\.[a-z0-9-]+)+([/?#].*)?$/i.test(trimmed) ? `https://${trimmed}` : trimmed;
+  try {
+    const parsed = new URL(candidate);
+    const host = parsed.hostname.toLowerCase();
+    if (host === "vinaxo.vn" || host === "www.vinaxo.vn" || host === "vinaxo.net" || host === "www.vinaxo.net") {
+      return `${base}${parsed.pathname || "/"}${parsed.search}${parsed.hash}`;
+    }
+    return parsed.href;
+  } catch {
+    return `${base}/`;
+  }
+}
+function normalizeExternalWebsiteUrl(url, fallback = `${SITE_CONFIG.siteUrl}/`) {
+  if (!url || typeof url !== "string") return fallback;
+  const trimmed = url.trim();
+  if (!trimmed) return fallback;
+  if (/^(mailto:|tel:)/i.test(trimmed)) return trimmed;
+  if (trimmed === "/") return "/";
+  return normalizeSiteUrl(trimmed);
+}
+
 // src/shared/schemas/settingsSchema.ts
 function sanitizeEnglishCompanyName(raw) {
   const trimmed = raw.trim();
@@ -488,7 +536,32 @@ function validateCompanySettings(input) {
   const address_en = typeof raw.address_en === "string" && raw.address_en.trim() ? raw.address_en.trim() : "Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam";
   const hotline = typeof raw.hotline === "string" && raw.hotline.trim() ? raw.hotline.trim() : "(+84) 984 815 016";
   const email = typeof raw.email === "string" && raw.email.trim() ? raw.email.trim() : "cuonghoang0710@gmail.com";
-  const website = typeof raw.website === "string" && isValidUrl(raw.website, false) ? raw.website.trim() : "https://www.vinaxo.net";
+  const website = normalizeExternalWebsiteUrl(
+    typeof raw.website === "string" ? raw.website : "https://www.vinaxo.net/"
+  );
+  let latitude = 10.380295;
+  if (raw.latitude !== void 0 && raw.latitude !== null && String(raw.latitude).trim() !== "") {
+    const parsedLat = Number(raw.latitude);
+    if (!Number.isFinite(parsedLat) || parsedLat < -90 || parsedLat > 90) {
+      errors.push("V\u0129 \u0111\u1ED9 (latitude) kh\xF4ng h\u1EE3p l\u1EC7 (y\xEAu c\u1EA7u s\u1ED1 t\u1EEB -90 \u0111\u1EBFn 90).");
+    } else {
+      latitude = Number(parsedLat.toFixed(6));
+    }
+  }
+  let longitude = 106.516139;
+  if (raw.longitude !== void 0 && raw.longitude !== null && String(raw.longitude).trim() !== "") {
+    const parsedLng = Number(raw.longitude);
+    if (!Number.isFinite(parsedLng) || parsedLng < -180 || parsedLng > 180) {
+      errors.push("Kinh \u0111\u1ED9 (longitude) kh\xF4ng h\u1EE3p l\u1EC7 (y\xEAu c\u1EA7u s\u1ED1 t\u1EEB -180 \u0111\u1EBFn 180).");
+    } else {
+      longitude = Number(parsedLng.toFixed(6));
+    }
+  }
+  const factory_name_vi = typeof raw.factory_name_vi === "string" && raw.factory_name_vi.trim() ? raw.factory_name_vi.trim() : "Nh\xE0 M\xE1y Ch\u1EBF Bi\u1EBFn VINAXO";
+  const factory_name_en = typeof raw.factory_name_en === "string" && raw.factory_name_en.trim() ? raw.factory_name_en.trim() : "VINAXO Processing Plant";
+  const google_place_id = typeof raw.google_place_id === "string" ? raw.google_place_id.trim() : "";
+  const whatsapp = typeof raw.whatsapp === "string" && isValidUrl(raw.whatsapp, false) ? raw.whatsapp.trim() : "https://wa.me/84984815016";
+  const zalo = typeof raw.zalo === "string" && isValidUrl(raw.zalo, false) ? raw.zalo.trim() : "https://zalo.me/0984815016";
   return {
     valid: errors.length === 0,
     errors,
@@ -501,13 +574,20 @@ function validateCompanySettings(input) {
       ...typeof raw.address_ko === "string" && raw.address_ko.trim() ? { address_ko: raw.address_ko.trim() } : {},
       ...typeof raw.address_zh === "string" && raw.address_zh.trim() ? { address_zh: raw.address_zh.trim() } : {},
       ...typeof raw.legal_rep_vi === "string" && raw.legal_rep_vi.trim() ? { legal_rep_vi: raw.legal_rep_vi.trim() } : {},
+      factory_name_vi,
+      factory_name_en,
+      latitude,
+      longitude,
+      google_place_id,
       ...typeof raw.intro_vi === "string" && raw.intro_vi.trim() ? { intro_vi: raw.intro_vi.trim() } : {},
       ...typeof raw.intro_en === "string" && raw.intro_en.trim() ? { intro_en: raw.intro_en.trim() } : {},
       ...typeof raw.intro_ko === "string" && raw.intro_ko.trim() ? { intro_ko: raw.intro_ko.trim() } : {},
       ...typeof raw.intro_zh === "string" && raw.intro_zh.trim() ? { intro_zh: raw.intro_zh.trim() } : {},
       hotline,
       email,
-      website
+      website,
+      whatsapp,
+      zalo
     }
   };
 }

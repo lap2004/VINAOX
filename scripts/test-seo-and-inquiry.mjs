@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { build } from 'esbuild';
 import inquiryHandler from '../api/inquiry.mjs';
+import contactHandler from '../api/contact.mjs';
 
 function createMockRes() {
   const headers = {};
@@ -98,22 +99,23 @@ async function main() {
   // 4. Honest 503 when server delivery is unconfigured
   await testCase('Inquiry API: returns 503 DELIVERY_NOT_CONFIGURED when no mail/webhook env is set', async () => {
     const prevKey = process.env.RESEND_API_KEY;
+    const prevBrevo = process.env.BREVO_API_KEY;
     const prevHook = process.env.INQUIRY_WEBHOOK_URL;
     delete process.env.RESEND_API_KEY;
+    delete process.env.BREVO_API_KEY;
     delete process.env.INQUIRY_WEBHOOK_URL;
     try {
       const resUnconf = createMockRes();
-      await inquiryHandler(
+      await contactHandler(
         createReq({
           ip: '198.51.100.13',
           body: {
-            formType: 'contact',
-            language: 'vi',
-            name: 'Nguyễn Văn QA',
+            requestType: 'contact',
+            locale: 'vi',
+            fullName: 'Nguyễn Văn QA',
             email: 'qa@vinaxo.test',
-            inquiryType: 'Báo giá đơn hàng xuất khẩu container (FCL/LCL)',
-            product: 'Xoài sấy dẻo',
-            message: '[VINAXO QA TEST – PRE-HANDOVER] Kiểm tra gửi tiếng Việt UTF-8.',
+            productId: 'soft-dried-mango',
+            message: '[VINAXO QA TEST – CONTACT FORM] Kiểm tra gửi tiếng Việt UTF-8.',
           },
         }),
         resUnconf
@@ -123,6 +125,7 @@ async function main() {
       assert.strictEqual(resUnconf.body.code, 'DELIVERY_NOT_CONFIGURED');
     } finally {
       if (prevKey !== undefined) process.env.RESEND_API_KEY = prevKey;
+      if (prevBrevo !== undefined) process.env.BREVO_API_KEY = prevBrevo;
       if (prevHook !== undefined) process.env.INQUIRY_WEBHOOK_URL = prevHook;
     }
   });
@@ -363,36 +366,37 @@ async function main() {
     };
     try {
       const resKo = createMockRes();
-      await inquiryHandler(
+      await contactHandler(
         createReq({
           ip: '198.51.100.31',
           body: {
-            formType: 'quote',
-            language: 'ko',
-            name: 'Kim Min-jun',
+            requestType: 'quotation',
+            locale: 'ko',
+            fullName: 'Kim Min-jun',
             email: 'buyer@seoulfoods.example',
-            phone: '+82 10-5555-1234',
-            product: '소프트 건조 망고',
-            message: 'Requesting FOB Ho Chi Minh CIF Busan quotation for 1x20ft container.',
+            productId: 'soft-dried-red-dragonfruit',
+            productName: 'SPOOFED NAME SHOULD BE IGNORED',
+            message: 'Requesting FOB Ho Chi Minh CIF Busan quotation for 1x20ft container without phone.',
           },
         }),
         resKo
       );
       assert.strictEqual(resKo.statusCode, 200);
       assert.strictEqual(resKo.body.delivered, true);
+      assert.strictEqual(resKo.body.providerMessageId, 'msg_ml_123');
+      assert.strictEqual(resKo.body.verifiedProductId, 'soft-dried-red-dragonfruit');
 
       const resZh = createMockRes();
-      await inquiryHandler(
+      await contactHandler(
         createReq({
           ip: '198.51.100.32',
           body: {
-            formType: 'contact',
-            language: 'zh-CN',
-            name: 'Wang Wei',
+            requestType: 'contact',
+            locale: 'zh-CN',
+            fullName: 'Wang Wei',
             email: 'sourcing@shanghaiimport.example',
-            inquiryType: 'Export Quotation (FCL/LCL)',
             product: '软干芒果',
-            message: 'Need BRCGS certificate copy and 2026 wholesale FOB pricing sheet.',
+            message: 'Need BRCGS certificate copy without inquiryType.',
           },
         }),
         resZh
@@ -400,10 +404,110 @@ async function main() {
       assert.strictEqual(resZh.statusCode, 200);
       assert.strictEqual(resZh.body.delivered, true);
       assert.strictEqual(seenLanguages.length, 2);
+      assert(seenLanguages[0].includes('Soft Dried Red Dragonfruit'), 'Subject must use server-verified catalog product name');
+
+      // Header injection rejection
+      const resCrlf = createMockRes();
+      await contactHandler(
+        createReq({
+          ip: '198.51.100.33',
+          body: {
+            requestType: 'contact',
+            locale: 'en',
+            fullName: 'Attacker',
+            email: 'bad@example.com\r\nBcc:victim@example.com',
+            message: 'Testing CRLF injection guard.',
+          },
+        }),
+        resCrlf
+      );
+      assert.strictEqual(resCrlf.statusCode, 400);
+      assert.strictEqual(resCrlf.body.code, 'VALIDATION_ERROR');
     } finally {
       globalThis.fetch = prevFetch;
       if (prevKey !== undefined) process.env.RESEND_API_KEY = prevKey;
       else delete process.env.RESEND_API_KEY;
+      if (prevHook !== undefined) process.env.INQUIRY_WEBHOOK_URL = prevHook;
+    }
+  });
+
+  // 9. URL normalization & FactoryLocation Single Source of Truth + Brevo delivery
+  await testCase('URL normalization, FactoryLocation Google Maps consistency, and Brevo relay support', async () => {
+    const tmpOut = path.join(process.cwd(), 'dist', '.tmp-contact-maps-test.mjs');
+    await build({
+      stdin: {
+        contents: `
+          export { normalizeSiteUrl, normalizeExternalWebsiteUrl } from './src/config/siteConfig.ts';
+          export { COMPANY_INFO, getGoogleMapsSearchUrl, getGoogleMapsDirectionsUrl, getGoogleMapsEmbedUrl } from './src/data/company.ts';
+        `,
+        resolveDir: process.cwd(),
+        loader: 'ts',
+      },
+      bundle: true,
+      format: 'esm',
+      platform: 'node',
+      outfile: tmpOut,
+      logLevel: 'silent',
+    });
+
+    try {
+      const mod = await import('file:///' + tmpOut.replace(/\\/g, '/'));
+      assert.strictEqual(mod.normalizeSiteUrl('www.vinaxo.net'), 'https://www.vinaxo.net/');
+      assert.strictEqual(mod.normalizeSiteUrl('/www.vinaxo.net'), 'https://www.vinaxo.net/');
+      assert.strictEqual(mod.normalizeExternalWebsiteUrl('www.vinaxo.net'), 'https://www.vinaxo.net/');
+      assert.strictEqual(mod.normalizeExternalWebsiteUrl('mailto:cuonghoang0710@gmail.com'), 'mailto:cuonghoang0710@gmail.com');
+
+      const { latitude, longitude } = mod.COMPANY_INFO.location;
+      const coordNeedle = encodeURIComponent(`${latitude},${longitude}`);
+      const searchUrl = mod.getGoogleMapsSearchUrl();
+      const dirUrl = mod.getGoogleMapsDirectionsUrl();
+      const embedUrl = mod.getGoogleMapsEmbedUrl();
+      assert(searchUrl.includes(coordNeedle), `Search URL must use ${latitude},${longitude}: ${searchUrl}`);
+      assert(dirUrl.includes(coordNeedle), `Directions URL must use ${latitude},${longitude}: ${dirUrl}`);
+      assert(embedUrl.includes(coordNeedle), `Embed URL must use ${latitude},${longitude}: ${embedUrl}`);
+    } finally {
+      if (fs.existsSync(tmpOut)) fs.unlinkSync(tmpOut);
+    }
+
+    // Verify Brevo API path cleanly
+    const prevFetch = globalThis.fetch;
+    const prevResend = process.env.RESEND_API_KEY;
+    const prevBrevo = process.env.BREVO_API_KEY;
+    const prevHook = process.env.INQUIRY_WEBHOOK_URL;
+    delete process.env.RESEND_API_KEY;
+    delete process.env.INQUIRY_WEBHOOK_URL;
+    process.env.BREVO_API_KEY = 'xkeysib-test-ephemeral';
+    const brevoCalls = [];
+    globalThis.fetch = async (url, init) => {
+      brevoCalls.push({ url, body: JSON.parse(init.body) });
+      return { ok: true, status: 201, text: async () => '{"messageId":"<brevo-123@relay>"}' };
+    };
+    try {
+      const resBrevo = createMockRes();
+      await contactHandler(
+        createReq({
+          ip: '198.51.100.39',
+          body: {
+            requestType: 'quotation',
+            locale: 'en',
+            fullName: 'Emma Watson',
+            email: 'emma@buyer.example',
+            productId: 'banana-chips',
+            message: 'Quote for 1x20ft Banana Chips FOB Ho Chi Minh.',
+          },
+        }),
+        resBrevo
+      );
+      assert.strictEqual(resBrevo.statusCode, 200);
+      assert.strictEqual(resBrevo.body.channel, 'brevo');
+      assert.strictEqual(resBrevo.body.providerMessageId, '<brevo-123@relay>');
+      assert.strictEqual(brevoCalls[0].url, 'https://api.brevo.com/v3/smtp/email');
+      assert.strictEqual(brevoCalls[0].body.replyTo.email, 'emma@buyer.example');
+    } finally {
+      globalThis.fetch = prevFetch;
+      if (prevResend !== undefined) process.env.RESEND_API_KEY = prevResend;
+      if (prevBrevo !== undefined) process.env.BREVO_API_KEY = prevBrevo;
+      else delete process.env.BREVO_API_KEY;
       if (prevHook !== undefined) process.env.INQUIRY_WEBHOOK_URL = prevHook;
     }
   });

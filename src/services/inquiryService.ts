@@ -1,77 +1,71 @@
-import { COMPANY_INFO } from '../data/company';
+import type { ContactRequest } from '../components/contact/contactSchema';
 import { pickLocale, type Language } from '../i18n/localize';
 
-export interface InquiryPayload {
-  formType: 'contact' | 'quote';
-  language: Language;
-  name: string;
-  email: string;
-  phone?: string;
-  company?: string;
-  country?: string;
-  inquiryType?: string;
-  product?: string;
-  volume?: string;
-  message?: string;
-  sourcePage?: string;
-  hp_website?: string;
-}
+export type InquiryPayload = ContactRequest;
 
 export interface InquiryResult {
   ok: boolean;
   delivered: boolean;
   code?: string;
   channel?: string;
+  providerMessageId?: string;
   referenceId?: string;
   timestamp?: string;
   recipient?: string;
   error?: string;
 }
 
-export function buildInquirySubject(payload: InquiryPayload): string {
-  const tag = payload.formType === 'quote' ? 'VINAXO B2B Quote Request' : 'VINAXO B2B Inquiry';
-  const topic = payload.product || payload.inquiryType || 'Agricultural Export';
-  return `[${tag}] ${topic} - ${payload.name}`;
-}
-
-export function buildInquiryPlainText(payload: InquiryPayload): string {
+export function buildInquiryPlainText(payload: ContactRequest): string {
+  const fullName = payload.fullName || payload.name || '';
+  const productLabel = payload.productName || payload.product || payload.productId || 'General Catalog';
+  const qty = payload.quantity || payload.volume || 'N/A';
+  const loc = payload.locale || payload.language || 'vi';
   return [
     'VINAXO B2B WHOLESALE & EXPORT INQUIRY',
     '----------------------------------------',
-    `Full Name: ${payload.name}`,
+    `Request Type: ${payload.requestType}`,
+    `Full Name: ${fullName}`,
     `Company: ${payload.company || 'N/A'}`,
     `Email: ${payload.email}`,
     `Phone / WhatsApp: ${payload.phone || 'N/A'}`,
     `Country / Market: ${payload.country || 'N/A'}`,
     `Inquiry Type: ${payload.inquiryType || 'N/A'}`,
-    `Product of Interest: ${payload.product || 'General Catalog'}`,
-    `Volume & Packaging: ${payload.volume || 'N/A'}`,
-    `Language: ${payload.language.toUpperCase()}`,
+    `Product ID: ${payload.productId || 'general'}`,
+    `Product of Interest: ${productLabel}`,
+    `Estimated Quantity / Packaging: ${qty}`,
+    `Language: ${loc.toUpperCase()}`,
+    `Source: ${payload.source || payload.sourcePage || '/'}`,
     '----------------------------------------',
     'Requirements / Message:',
-    payload.message || 'Standard export CIF/FOB quotation requested.',
+    payload.message,
   ].join('\n');
 }
 
-export function buildMailtoHref(payload: InquiryPayload, recipient?: string): string {
-  const target = recipient || COMPANY_INFO.contacts.email;
-  const subject = encodeURIComponent(buildInquirySubject(payload));
-  const body = encodeURIComponent(buildInquiryPlainText(payload));
-  return `mailto:${target}?subject=${subject}&body=${body}`;
-}
-
-export async function submitInquiry(payload: InquiryPayload): Promise<InquiryResult> {
+export async function submitInquiry(payload: ContactRequest): Promise<InquiryResult> {
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort(), 15000);
+  const locale: Language = payload.locale || payload.language || 'vi';
+
+  const requestBody: ContactRequest = {
+    ...payload,
+    name: payload.fullName || payload.name || '',
+    fullName: payload.fullName || payload.name || '',
+    formType: payload.requestType === 'quotation' ? 'quote' : 'contact',
+    locale,
+    language: locale,
+    product: payload.productName || payload.product || payload.productId || '',
+    volume: payload.quantity || payload.volume || '',
+    sourcePage: payload.source || payload.sourcePage || '/',
+  };
 
   try {
-    const res = await fetch('/api/inquiry', {
+    const res = await fetch('/api/contact', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(requestBody),
       signal: controller.signal,
     });
 
@@ -81,6 +75,7 @@ export async function submitInquiry(payload: InquiryPayload): Promise<InquiryRes
         ok: true,
         delivered: true,
         channel: data.channel,
+        providerMessageId: data.providerMessageId,
         referenceId: data.referenceId,
         timestamp: data.timestamp,
         recipient: data.recipient,
@@ -91,14 +86,14 @@ export async function submitInquiry(payload: InquiryPayload): Promise<InquiryRes
       ok: false,
       delivered: false,
       code: data?.code || `HTTP_${res.status}`,
-      recipient: data?.recipient || COMPANY_INFO.contacts.email,
+      recipient: data?.recipient,
       error:
         data?.error ||
-        pickLocale(payload.language, {
-          vi: 'Hệ thống chưa thể gửi yêu cầu tự động lúc này. Vui lòng sử dụng kênh liên hệ thay thế bên dưới.',
-          en: 'Automatic dispatch is currently unavailable. Please use one of the direct fallback options below.',
-          ko: '현재 자동 이메일 전송을 이용할 수 없습니다. 아래의 직접 연락 채널을 이용해 주세요.',
-          zh: '当前暂时无法自动发送请求，请使用下方直接联系方式与我们取得联系。'
+        pickLocale(locale, {
+          vi: 'Hệ thống chưa thể gửi yêu cầu tự động lúc này. Dữ liệu bạn đã nhập vẫn được giữ nguyên — bạn có thể thử lại hoặc dùng kênh hỗ trợ trực tiếp bên dưới.',
+          en: 'Automatic dispatch is unavailable right now. Your entered information is preserved — please retry or use one of the direct channels below.',
+          ko: '현재 자동 전송 서비스를 이용할 수 없습니다. 입력하신 정보는 유지되오니 다시 시도하거나 아래 직통 채널을 이용해 주세요.',
+          'zh-CN': '当前暂时无法自动提交，您填写的内容已保留。请点击重试或通过下方直连渠道联系我们。',
         }),
     };
   } catch (err: any) {
@@ -107,19 +102,18 @@ export async function submitInquiry(payload: InquiryPayload): Promise<InquiryRes
       ok: false,
       delivered: false,
       code: isAbort ? 'TIMEOUT' : 'NETWORK_ERROR',
-      recipient: COMPANY_INFO.contacts.email,
       error: isAbort
-        ? pickLocale(payload.language, {
-            vi: 'Kết nối quá thời gian chờ (timeout). Dữ liệu của bạn vẫn được giữ nguyên — vui lòng thử lại hoặc mở ứng dụng Email.',
-            en: 'Request timed out. Your entered details are preserved — please retry or use your Email app below.',
-            ko: '요청 시간이 초과되었습니다. 입력하신 정보는 그대로 유지되오니 다시 시도하거나 이메일 앱을 이용해 주세요.',
-            zh: '请求超时。您填写的内容已保留，请重试或通过下方邮件客户端发送。'
+        ? pickLocale(locale, {
+            vi: 'Kết nối quá thời gian chờ. Dữ liệu của bạn vẫn được giữ nguyên — vui lòng bấm Thử gửi lại.',
+            en: 'Request timed out. Your details are preserved — please click Retry Submission.',
+            ko: '요청 시간이 초과되었습니다. 입력 내용은 유지되오니 다시 전송을 눌러 주세요.',
+            'zh-CN': '请求超时。您的填写内容已保留，请点击重新提交。',
           })
-        : pickLocale(payload.language, {
-            vi: 'Lỗi kết nối mạng. Dữ liệu của bạn vẫn được giữ nguyên — vui lòng thử lại hoặc mở ứng dụng Email.',
-            en: 'Network error occurred. Your entered details are preserved — please retry or use your Email app below.',
-            ko: '네트워크 연결 오류가 발생했습니다. 입력 정보는 유지되오니 다시 시도하거나 아래 이메일 앱을 이용해 주세요.',
-            zh: '网络连接错误。您填写的内容已保留，请重试或使用下方邮件客户端。'
+        : pickLocale(locale, {
+            vi: 'Lỗi kết nối mạng. Dữ liệu của bạn vẫn được giữ nguyên — vui lòng kiểm tra mạng và thử lại.',
+            en: 'Network error occurred. Your details are preserved — please check your connection and retry.',
+            ko: '네트워크 연결 오류가 발생했습니다. 입력 내용은 유지되오니 연결 확인 후 다시 시도해 주세요.',
+            'zh-CN': '网络连接出错。您的填写内容已保留，请检查网络后重试。',
           }),
     };
   } finally {
