@@ -178,10 +178,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {loc.origin && (
           <div
             style={{
-              fontSize: '0.72rem',
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              letterSpacing: '0.01em',
               color: 'var(--primary-green)',
               marginBottom: '6px',
             }}
@@ -192,13 +191,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Product Name */}
         <h3
-          className="title-serif"
           style={{
-            fontSize: '1.15rem',
-            fontWeight: 700,
+            fontFamily: 'var(--font-sans)',
+            fontSize: '1.1rem',
+            fontWeight: 600,
             color: 'var(--color-heading)',
             marginBottom: '8px',
-            lineHeight: 1.3,
+            lineHeight: 1.35,
           }}
         >
           {loc.name}
@@ -210,7 +209,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             fontSize: '0.86rem',
             color: 'var(--color-body)',
             lineHeight: 1.55,
-            marginBottom: '20px',
+            marginBottom: '18px',
             flex: 1,
           }}
         >
@@ -237,7 +236,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               padding: '0 16px',
               borderRadius: 'var(--radius-pill)',
               fontSize: '0.84rem',
-              fontWeight: 700,
+              fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -245,15 +244,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               whiteSpace: 'nowrap',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 3px 10px rgba(244, 168, 58, 0.28)',
+              boxShadow: '0 3px 10px rgba(244, 168, 58, 0.25)',
             }}
           >
             <span>
               {pick({
-                vi: 'Nhận báo giá xuất khẩu',
-                en: 'Request B2B Quote',
-                ko: '수출 견적 요청',
-                zh: '获取出口报价',
+                vi: 'Nhận báo giá',
+                en: 'Request Quote',
+                ko: '견적 요청',
+                zh: '获取报价',
               })}
             </span>
             <ArrowRight size={14} />
@@ -272,7 +271,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               backgroundColor: 'var(--brand-bg)',
               color: 'var(--dark-chocolate)',
               fontSize: '0.82rem',
-              fontWeight: 700,
+              fontWeight: 600,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -293,10 +292,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <FileText size={13} />
             <span>
               {pick({
-                vi: 'Xem thông số kỹ thuật',
-                en: 'View Specifications',
-                ko: '제품 규격 보기',
-                zh: '查看技术规格',
+                vi: 'Xem thông số',
+                en: 'View Specs',
+                ko: '사양 보기',
+                zh: '查看规格',
               })}
             </span>
           </button>

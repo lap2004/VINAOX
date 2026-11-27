@@ -183,8 +183,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                 <span className="brand-name">VINAXO</span>
                 <span className="brand-tagline">
                   {pickLocale(language, {
-                    vi: 'NHÀ SẢN XUẤT TRÁI CÂY SẤY NHIỆT ĐỚI',
-                    en: 'TROPICAL DRIED FRUIT MANUFACTURER',
+                    vi: 'Nhà sản xuất trái cây sấy nhiệt đới',
+                    en: 'Tropical Dried Fruit Manufacturer',
                     ko: '열대 건조 과일 제조·수출 전문 기업',
                     'zh-CN': '热带果干生产与出口制造商',
                   })}
@@ -326,16 +326,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
               )}
             </div>
 
-            {/* Request a Quote CTA Button - fixed minimum width prevents layout jitter */}
+            {/* Request a Quote CTA Button */}
             <button
               type="button"
               onClick={() => onOpenQuote()}
               className="btn btn-primary btn-sm header-quote-btn"
               style={{
-                padding: '9px 18px',
+                padding: '8px 16px',
                 fontSize: '0.84rem',
                 borderRadius: 'var(--radius-pill)',
-                minWidth: '172px',
                 justifyContent: 'center',
                 flexShrink: 0,
                 whiteSpace: 'nowrap',

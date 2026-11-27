@@ -204,7 +204,7 @@ export const zhCN: Translations = {
     "hqTitle": "总部与加工厂区",
     "hqSub": "25,000 m² 厂区 • 越南同塔省永平社 • 月产能 300 吨",
     "contactTitle": "出口业务直通联系方式",
-    "contactSub": "邮箱: cuonghoang0710@gmail.com • 电话: (+84) 984 815 016 • www.vinaxo.net"
+    "contactSub": "B2B 出口贸易专项支持 • www.vinaxo.net"
   },
   "modal": {
     "eyebrow": "VINAXO 出口询盘",
@@ -301,7 +301,7 @@ export const zhCN: Translations = {
     "messageLabel": "详细采购需求与技术规格 *",
     "messagePlaceholder": "请说明意向产品、预计采购量（吨/柜）、包装规格及目的港 (CIF/FOB)...",
     "submitBtn": "向 VINAXO 发送报价请求",
-    "connectNote": "您的询盘将直接发送至 VINAXO 出口业务官方邮箱 cuonghoang0710@gmail.com。",
+    "connectNote": "您的询盘将通过 VINAXO 系统直接提交，无需打开个人邮箱客户端。",
     "cardLegalTitle": "企业法人信息与总部",
     "cardFacilityTitle": "加工厂区与原料基地",
     "cardHotlineTitle": "商务热线与贸易咨询",
@@ -736,8 +736,8 @@ export const zhCN: Translations = {
     "taxCodeLabel": "企业税号",
     "taxCode": "1201611681",
     "address": "越南同塔省永平社第5区 (Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam)",
-    "phone": "(+84) 984 815 016",
-    "email": "cuonghoang0710@gmail.com",
+    "phone": "商务热线",
+    "email": "官方邮箱",
     "website": "https://www.vinaxo.net",
     "privacy": "隐私政策",
     "terms": "使用条款",

@@ -212,6 +212,7 @@ export const COMPANY_INFO: CompanyInfo = {
     hotline: cmsComp.hotline || BASE_COMPANY_INFO.contacts.hotline,
     phoneDisplay: cmsComp.hotline || BASE_COMPANY_INFO.contacts.phoneDisplay,
     email: cmsComp.email || BASE_COMPANY_INFO.contacts.email,
+    secondaryEmail: cmsComp.sales_email || BASE_COMPANY_INFO.contacts.secondaryEmail,
     website: normalizeExternalWebsiteUrl(cmsComp.website || BASE_COMPANY_INFO.contacts.website),
     websiteDisplay: getWebsiteDisplayLabel(cmsComp.website || BASE_COMPANY_INFO.contacts.website),
     whatsapp: normalizeExternalWebsiteUrl(cmsComp.whatsapp || BASE_COMPANY_INFO.contacts.whatsapp, BASE_COMPANY_INFO.contacts.whatsapp),

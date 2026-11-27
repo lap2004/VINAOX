@@ -204,7 +204,7 @@ export const vi: Translations = {
     "hqTitle": "Trụ Sở & Nhà Máy Chế Biến",
     "hqSub": "Tổng diện tích 25.000 m² • Xã Vĩnh Bình, Tỉnh Đồng Tháp • Công suất 300 tấn/tháng",
     "contactTitle": "Liên Hệ Xuất Khẩu Trực Tiếp",
-    "contactSub": "Email: cuonghoang0710@gmail.com • Tel: (+84) 984 815 016 • www.vinaxo.net"
+    "contactSub": "Hỗ trợ xuất khẩu B2B trực tiếp • www.vinaxo.net"
   },
   "modal": {
     "eyebrow": "KẾT NỐI HỢP TÁC B2B",
@@ -778,8 +778,8 @@ export const vi: Translations = {
     "taxCodeLabel": "Mã số thuế",
     "taxCode": "1201611681",
     "address": "Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp, Việt Nam",
-    "phone": "(+84) 984 815 016",
-    "email": "cuonghoang0710@gmail.com",
+    "phone": "Hotline doanh nghiệp",
+    "email": "Email doanh nghiệp",
     "website": "https://www.vinaxo.net",
     "privacy": "Chính sách bảo mật",
     "terms": "Điều khoản sử dụng",

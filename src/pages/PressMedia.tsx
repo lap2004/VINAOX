@@ -34,29 +34,23 @@ export const PressMedia: React.FC = () => {
     <div className="news-page">
       {/* Page Hero */}
       <PageHero
-        badge={pick({
-          vi: 'BÁO CHÍ & TRUYỀN THÔNG • PRESS ARCHIVE',
-          en: 'PRESS ARCHIVE • VERIFIED COVERAGE',
-          ko: '언론 보도 및 미디어 아카이브',
-          zh: '官方媒体报道与新闻档案馆'
-        })}
         title={t('pageBanners.news.title') || pick({
-          vi: 'Báo Chí Nói Về VINAXO & Hoạt Động Doanh Nghiệp',
-          en: 'VINAXO in the Press & Media',
-          ko: '언론 속 VINAXO 및 기업 뉴스',
-          zh: '媒体眼中的 VINAXO 与企业动态'
+          vi: 'Báo chí & Tin tức',
+          en: 'Press & Media',
+          ko: '뉴스 및 보도',
+          zh: '新闻与媒体'
         })}
         description={
           t('pageBanners.news.subtitle') ||
           pick({
-            vi: 'Tổng hợp các bài viết, phóng sự và trích dẫn từ các cơ quan báo chí chính thống về hoạt động chế biến, xuất khẩu nông sản của VINAXO.',
-            en: 'Explore verified media coverage, executive interviews, and factory operation news published across Vietnam’s national press outlets.',
-            ko: '베트남 주요 언론사가 보도한 VINAXO의 가공 공장, 수출 전략 및 경영진 인터뷰 소식을 확인하세요.',
-            zh: '汇集各大权威媒体关于 VINAXO 深加工工厂、出口物流及管理层专访的真实报道与资讯。'
+            vi: 'Tổng hợp bài viết báo chí và tin tức hoạt động thu mua, chế biến, xuất khẩu của VINAXO.',
+            en: 'Media coverage, executive interviews, and factory operation updates from VINAXO.',
+            ko: '주요 언론 보도, 경영진 인터뷰 및 VINAXO 생산·수출 소식을 확인하세요.',
+            zh: '汇集各大权威媒体报道与 VINAXO 工厂生产及出口最新动态。'
           })
         }
         breadcrumbCurrent={pick({
-          vi: 'Báo Chí & Tin Tức',
+          vi: 'Báo chí & Tin tức',
           en: 'Press & Media',
           ko: '뉴스 및 언론 보도',
           zh: '新闻与媒体'
@@ -67,7 +61,7 @@ export const PressMedia: React.FC = () => {
           FEATURED PRESS ARTICLE
           ====================================================================== */}
       {featuredArticle && featuredInfo && (
-      <section className="section section-white" style={{ paddingBottom: '40px' }}>
+      <section className="section section-white" style={{ paddingTop: 'clamp(28px, 3vw, 44px)', paddingBottom: '28px' }}>
         <div className="container">
           <div
             className="card grid-mobile-1"

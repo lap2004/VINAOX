@@ -15,29 +15,23 @@ export const GlobalMarket: React.FC = () => {
     <div className="markets-page">
       {/* Page Hero */}
       <PageHero
-        badge={pick({
-          vi: 'MẠNG LƯỚI THỊ TRƯỜNG & XUẤT KHẨU TOÀN CẦU',
-          en: 'GLOBAL EXPORT REACH & TRADE NETWORK',
-          ko: '글로벌 수출 네트워크 및 시장 현황',
-          zh: '全球出口网络与贸易版图'
-        })}
         title={t('pageBanners.markets.title') || pick({
-          vi: 'Mạng Lưới Thị Trường & Xuất Khẩu Toàn Cầu',
-          en: 'Global Export Markets & Supply Chain',
-          ko: '글로벌 수출 시장 및 공급망',
-          zh: '全球出口市场与供应链布局'
+          vi: 'Thị trường xuất khẩu',
+          en: 'Export Markets',
+          ko: '수출 시장',
+          zh: '出口市场',
         })}
         description={
           t('pageBanners.markets.subtitle') ||
           pick({
-            vi: 'Cung ứng nông sản trái cây sấy dẻo nhiệt đới tới các thị trường khó tính nhất: Hoa Kỳ (~70%), Liên minh Châu Âu (~20%), Hàn Quốc và Nga.',
-            en: 'Delivering world-class Vietnamese agricultural produce across the United States (~70%), the European Union (~20%), Russia, and East Asia.',
-            ko: '미국(~70%), 유럽연합(~20%), 러시아 및 한국·동아시아 등 까다로운 국제 식품안전 기준을 요구하는 글로벌 시장에 베트남 열대 건조 과일을 공급합니다.',
-            zh: '稳定向美国（约 70%）、欧盟（约 20%）、俄罗斯及日韩等东亚高标准国际市场出口优质越南热带果干产品。'
+            vi: 'Cung ứng nông sản sấy Việt Nam tới Hoa Kỳ (~70%), Liên minh Châu Âu (~20%), Hàn Quốc, Nga và hơn 15 quốc gia.',
+            en: 'Supplying Vietnamese dried fruits & nuts across the United States (~70%), the European Union (~20%), Russia, and East Asia.',
+            ko: '미국(~70%), 유럽연합(~20%), 러시아 및 동아시아 등 주요 시장에 베트남산 건조 과일·견과류를 공급합니다.',
+            zh: '向美国（约 70%）、欧盟（约 20%）、俄罗斯及东亚等国际市场出口优质越南热带果干与坚果产品。'
           })
         }
         breadcrumbCurrent={pick({
-          vi: 'Thị Trường Xuất Khẩu',
+          vi: 'Thị trường xuất khẩu',
           en: 'Global Markets',
           ko: '글로벌 수출 시장',
           zh: '全球出口市场'
@@ -45,11 +39,11 @@ export const GlobalMarket: React.FC = () => {
       />
 
       {/* ========================================================================
-          SECTION 1: OVERVIEW & 4 VERIFIED EXPORT PILLARS (MATCHING HTML 1:1)
+          SECTION 1: OVERVIEW & 4 VERIFIED EXPORT PILLARS
           ======================================================================== */}
-      <section className="subpage-section">
+      <section className="subpage-section" style={{ paddingTop: 'clamp(28px, 3vw, 44px)' }}>
         <div className="container">
-          <div className="text-center" style={{ maxWidth: '820px', margin: '0 auto 48px auto' }}>
+          <div className="text-center" style={{ maxWidth: '780px', margin: '0 auto 28px auto' }}>
             <span className="section-label">{t('marketsPage.section1.label')}</span>
             <h2 className="section-title">
               {t('marketsPage.section1.title')}

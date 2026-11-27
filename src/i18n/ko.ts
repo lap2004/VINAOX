@@ -204,7 +204,7 @@ export const ko: Translations = {
     "hqTitle": "본사 및 생산 공장",
     "hqSub": "25,000 m² 생산 단지 • 동탑성 빈빈면 • 월 생산 300톤",
     "contactTitle": "수출 직통 연락처",
-    "contactSub": "Email: cuonghoang0710@gmail.com • Tel: (+84) 984 815 016 • www.vinaxo.net"
+    "contactSub": "B2B 수출 전담 지원 • www.vinaxo.net"
   },
   "modal": {
     "eyebrow": "VINAXO 수출 견적 문의",
@@ -301,7 +301,7 @@ export const ko: Translations = {
     "messageLabel": "상세 요청 사항 및 규격 *",
     "messagePlaceholder": "관심 품목, 예상 수량(kg/톤), 포장 형태, 목적지 항구(CIF/FOB) 등을 입력해 주세요...",
     "submitBtn": "VINAXO에 견적 요청 보내기",
-    "connectNote": "이 양식은 VINAXO 수출팀 대표 이메일(cuonghoang0710@gmail.com)로 직접 연결됩니다.",
+    "connectNote": "이 양식은 VINAXO 시스템으로 직접 접수됩니다 (별도 이메일 앱 실행 불필요).",
     "cardLegalTitle": "법인 정보 및 본사",
     "cardFacilityTitle": "생산 단지 및 원료 허브",
     "cardHotlineTitle": "수출 직통 핫라인",
@@ -736,8 +736,8 @@ export const ko: Translations = {
     "taxCodeLabel": "사업자등록번호",
     "taxCode": "1201611681",
     "address": "베트남 동탑성 빈빈면 5구역 (Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam)",
-    "phone": "(+84) 984 815 016",
-    "email": "cuonghoang0710@gmail.com",
+    "phone": "대표 핫라인",
+    "email": "공식 이메일",
     "website": "https://www.vinaxo.net",
     "privacy": "개인정보처리방침",
     "terms": "이용약관",

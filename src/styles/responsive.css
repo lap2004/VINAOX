@@ -43,24 +43,35 @@
   display: grid;
 }
 
-/* Laptop Compact (1201px - 1380px) */
-@media (min-width: 1201px) and (max-width: 1380px) {
+/* Laptop Compact (1201px - 1440px, covers 1280x720, 1366x768, 1440x900) */
+@media (min-width: 1201px) and (max-width: 1440px) {
+  :root {
+    --header-height: 68px;
+  }
+
   .header-logo-zone {
-    width: 224px;
+    width: 210px;
+  }
+
+  .brand-logo {
+    min-width: 210px;
+    width: 210px;
   }
 
   .desktop-nav {
-    margin: 0 12px;
+    margin: 0 10px;
     gap: 2px;
   }
 
   .desktop-nav .nav-link {
-    padding: 8px 9px;
+    padding: 7px 9px;
     font-size: 0.84rem;
   }
 
   .header-quote-btn {
-    min-width: 150px !important;
+    min-width: 136px !important;
+    padding: 7px 14px !important;
+    font-size: 0.82rem !important;
   }
 
   .quality-global-grid {
@@ -249,8 +260,12 @@
 /* Tablet Portrait (<= 992px) */
 @media (max-width: 992px) {
   :root {
-    --section-space: 72px;
+    --section-space: 48px;
     --card-gap: 20px;
+  }
+
+  .page-banner {
+    padding: 18px 0 22px 0;
   }
 
   .grid-3,
@@ -390,9 +405,23 @@
 /* Mobile Devices (<= 768px) */
 @media (max-width: 768px) {
   :root {
-    --header-height: 68px;
-    --section-space: 56px;
-    --card-gap: 18px;
+    --header-height: 60px;
+    --section-space: 40px;
+    --card-gap: 16px;
+  }
+
+  .page-banner {
+    padding: 16px 0 20px 0;
+  }
+
+  .page-banner-title {
+    font-size: clamp(1.5rem, 6.2vw, 1.85rem) !important;
+    line-height: 1.2 !important;
+  }
+
+  .page-banner-desc {
+    font-size: 0.88rem !important;
+    line-height: 1.5 !important;
   }
 
   .header-quote-btn {
@@ -429,11 +458,11 @@
   }
 
   .product-range-showcase-section {
-    padding: 60px 0 !important;
+    padding: 40px 0 !important;
   }
 
   .about-editorial-section {
-    padding: 60px 0 !important;
+    padding: 40px 0 !important;
   }
 
   .collection-header {
@@ -498,7 +527,7 @@
   }
 
   .certifications-showcase-section {
-    padding: 56px 0 !important;
+    padding: 40px 0 !important;
   }
 
   .cert-showcase-header {
@@ -734,11 +763,11 @@
   }
 
   .page-banner {
-    padding: 96px 0 44px 0 !important;
+    padding: 14px 0 18px 0 !important;
   }
 
   .page-banner-title {
-    font-size: 2rem !important;
+    font-size: clamp(1.38rem, 5.5vw, 1.7rem) !important;
   }
 }
 

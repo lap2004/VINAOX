@@ -23,28 +23,28 @@
   ],
   "hero": {
     "eyebrow": {
-      "vi": "VINAXO · NHÀ SẢN XUẤT & XUẤT KHẨU NÔNG SẢN VIỆT NAM",
-      "en": "VINAXO · VIETNAMESE TROPICAL FRUIT MANUFACTURER & EXPORTER",
-      "ko": "VINAXO · 베트남 열대 건조 과일·견과 제조 수출 기업",
-      "zh": "VINAXO · 越南热带果干与坚果源头出口制造商"
+      "vi": "VINAXO · Nhà sản xuất nông sản Việt Nam",
+      "en": "VINAXO · Dried Fruit Manufacturer & Exporter",
+      "ko": "VINAXO · 베트남 열대 건조 과일·견과 제조사",
+      "zh": "VINAXO · 越南热带果干与坚果源头制造商"
     },
     "headlineLine1": {
-      "vi": "TRÁI CÂY SẤY",
-      "en": "TROPICAL DRIED",
+      "vi": "Trái cây sấy,",
+      "en": "Tropical Dried",
       "ko": "베트남 열대",
       "zh": "越南热带果干"
     },
     "headlineLine2": {
-      "vi": "HẠT DINH DƯỠNG",
-      "en": "FRUIT & NUTS",
+      "vi": "Hạt dinh dưỡng",
+      "en": "Fruits & Nuts",
       "ko": "건조 과일 &",
       "zh": "与精选坚果"
     },
     "headlineHighlight": {
-      "vi": "& GIA CÔNG OEM B2B",
-      "en": "FOR GLOBAL B2B SUPPLY",
-      "ko": "B2B · OEM 수출 공급",
-      "zh": "全球 B2B 与 OEM 供应"
+      "vi": "& Gia công OEM",
+      "en": "& Custom OEM",
+      "ko": "OEM 맞춤 생산",
+      "zh": "与 OEM 定制供应"
     },
     "description": {
       "vi": "Chế biến từ trái cây và nông sản tuyển chọn Việt Nam — cung ứng 4 nhóm danh mục xuất khẩu cùng giải pháp gia công OEM cho nhà nhập khẩu, chuỗi bán lẻ và dịch vụ ẩm thực tại hơn 15 quốc gia.",
@@ -125,16 +125,16 @@
   },
   "categoriesSection": {
     "label": {
-      "vi": "DANH MỤC SẢN PHẨM CHÍNH THỨC",
-      "en": "OFFICIAL EXPORT CATEGORIES",
-      "ko": "정식 수출 제품 카테고리",
-      "zh": "官方出口产品分类"
+      "vi": "Danh mục sản phẩm",
+      "en": "Product Categories",
+      "ko": "제품 카테고리",
+      "zh": "产品分类"
     },
     "title": {
-      "vi": "4 Nhóm Sản Phẩm Xuất Khẩu Chủ Lực",
-      "en": "Four Core Export Product Categories",
-      "ko": "4대 정식 수출 제품 카테고리",
-      "zh": "四大核心出口产品系列"
+      "vi": "4 Nhóm Sản phẩm Chính",
+      "en": "Four Core Product Categories",
+      "ko": "4대 핵심 제품 카테고리",
+      "zh": "四大核心产品系列"
     },
     "description": {
       "vi": "Mỗi danh mục phản ánh đúng nhóm nguyên liệu và công nghệ chế biến thực tế tại VINAXO — bấm vào từng nhóm để xem danh sách sản phẩm và bảng thông số kỹ thuật đồng bộ.",
@@ -401,16 +401,16 @@
   ],
   "featuredProductsSection": {
     "label": {
-      "vi": "SẢN PHẨM TIÊU BIỂU",
-      "en": "FEATURED EXPORT PRODUCTS",
-      "ko": "대표 수출 품목",
-      "zh": "主力推荐产品"
+      "vi": "Sản phẩm tiêu biểu",
+      "en": "Featured Products",
+      "ko": "대표 제품",
+      "zh": "主打产品"
     },
     "title": {
-      "vi": "4 Mặt Hàng Xuất Khẩu Nổi Bật",
-      "en": "4 Featured Export Products",
-      "ko": "대표 B2B 수출 제품 4선",
-      "zh": "四款精选 B2B 出口主打单品"
+      "vi": "Sản phẩm tiêu biểu",
+      "en": "Featured Products",
+      "ko": "대표 제품 4선",
+      "zh": "精选主力单品"
     },
     "description": {
       "vi": "Đại diện cho các nhóm trái cây sấy dẻo, trái cây sấy giòn và hạt dinh dưỡng — xem đầy đủ 12 sản phẩm và thông số kỹ thuật tại trang Danh mục Sản phẩm.",
@@ -434,16 +434,16 @@
   ],
   "productionOem": {
     "label": {
-      "vi": "NĂNG LỰC NHÀ MÁY & GIA CÔNG OEM",
-      "en": "PRODUCTION CAPACITY & OEM SOLUTIONS",
-      "ko": "공장 역량 및 OEM 맞춤 생산",
-      "zh": "生产制造实力与 OEM 贴牌代工"
+      "vi": "Năng lực sản xuất & OEM",
+      "en": "Production & OEM",
+      "ko": "생산 역량 및 OEM",
+      "zh": "生产实力与 OEM"
     },
     "title": {
-      "vi": "Nhà Máy 25.000 m² & Giải Pháp Nhãn Riêng Toàn Diện",
-      "en": "25,000 m² Processing Complex & End-to-End OEM Manufacturing",
-      "ko": "25,000 m² 가공 단지 기반 맞춤형 OEM / PB 솔루션",
-      "zh": "25,000 m² 一体化工厂与全方位 OEM 贴牌方案"
+      "vi": "Nhà máy 25.000 m² & Giải pháp OEM",
+      "en": "25,000 m² Facility & OEM Solutions",
+      "ko": "25,000 m² 공장 및 맞춤형 OEM",
+      "zh": "25,000 m² 工厂与 OEM 方案"
     },
     "description": {
       "vi": "Sẵn sàng đáp ứng từ đơn hàng thử nghiệm (MOQ từ 200 kg) tới hợp đồng xuất khẩu container quy mô lớn, hỗ trợ tùy chỉnh công thức và bao bì nhãn riêng.",
@@ -495,16 +495,16 @@
   },
   "qualityCerts": {
     "label": {
-      "vi": "CHẤT LƯỢNG & CHỨNG NHẬN QUỐC TẾ",
-      "en": "QUALITY & VERIFIED COMPLIANCE",
-      "ko": "품질 시스템 및 국제 인증",
-      "zh": "品质管控与国际认证体系"
+      "vi": "Chất lượng & Chứng nhận",
+      "en": "Quality & Certifications",
+      "ko": "품질 및 인증",
+      "zh": "品质与认证"
     },
     "title": {
-      "vi": "Hệ Thống Tiêu Chuẩn Cấp Nhà Máy Đã Xác Minh",
-      "en": "Audited Facility Food Safety & Quality Systems",
-      "ko": "국제 공인을 받은 공장 품질·안전 경영 체계",
-      "zh": "经权威审核验证的工厂食品安全管理体系"
+      "vi": "Chất lượng và chứng nhận",
+      "en": "Quality and Certifications",
+      "ko": "공장 품질 및 안전 인증",
+      "zh": "品质体系与国际认证"
     },
     "description": {
       "vi": "Cơ sở chế biến của VINAXO áp dụng đồng bộ các hệ thống quản lý an toàn thực phẩm quốc tế cùng quy trình đối chiếu mẫu chuẩn trước sản xuất và sẵn sàng kiểm định độc lập.",
@@ -528,16 +528,16 @@
   },
   "exportMarkets": {
     "label": {
-      "vi": "THỊ TRƯỜNG XUẤT KHẨU TOÀN CẦU",
-      "en": "GLOBAL EXPORT FOOTPRINT",
-      "ko": "글로벌 수출 네트워크",
-      "zh": "全球出口市场网络"
+      "vi": "Thị trường xuất khẩu",
+      "en": "Export Markets",
+      "ko": "수출 시장",
+      "zh": "出口市场"
     },
     "titleLine1": {
-      "vi": "Hiện Diện Tại Hơn 15 Quốc Gia",
-      "en": "Trusted Across 15+ Countries",
-      "ko": "15개국 이상 신뢰받는 수출 공급망",
-      "zh": "产品远销全球 15+ 个国家及地区"
+      "vi": "Thị trường xuất khẩu",
+      "en": "Global Export Markets",
+      "ko": "글로벌 수출 시장",
+      "zh": "全球出口市场"
     },
     "titleLine2": {
       "vi": "Hoa Kỳ (~70%) • Châu Âu (~20%) • Châu Á",
@@ -561,22 +561,22 @@
   },
   "newsSection": {
     "label": {
-      "vi": "TIN TỨC & HOẠT ĐỘNG DOANH NGHIỆP",
-      "en": "NEWS & EXPORT INSIGHTS",
-      "ko": "언론 보도 및 기업 소식",
-      "zh": "企业新闻与行业动态"
+      "vi": "Tin tức & Báo chí",
+      "en": "Press & News",
+      "ko": "뉴스 및 보도",
+      "zh": "新闻与媒体"
     },
     "titleLine1": {
-      "vi": "Báo Chí &",
-      "en": "Press Coverage &",
-      "ko": "최신 언론 보도 및",
-      "zh": "最新新闻与"
+      "vi": "Báo chí &",
+      "en": "Press &",
+      "ko": "언론 보도 및",
+      "zh": "新闻与"
     },
     "titleLine2": {
-      "vi": "Tin Tức Nổi Bật",
+      "vi": "Tin tức nổi bật",
       "en": "Featured Stories",
-      "ko": "주요 수출 소식",
-      "zh": "权威媒体报道"
+      "ko": "주요 소식",
+      "zh": "行业动态"
     },
     "description": {
       "vi": "Các bài viết mới nhất về hoạt động thu mua vùng nguyên liệu, xuất khẩu và công bố tiêu chuẩn của VINAXO.",
@@ -594,16 +594,16 @@
   },
   "closingCta": {
     "eyebrow": {
-      "vi": "KẾT NỐI HỢP TÁC B2B",
-      "en": "B2B EXPORT INQUIRY",
-      "ko": "B2B 수출 파트너십",
-      "zh": "开启 B2B 供货合作"
+      "vi": "Hợp tác cùng VINAXO",
+      "en": "Partner With VINAXO",
+      "ko": "VINAXO 수출 파트너십",
+      "zh": "与 VINAXO 合作"
     },
     "title": {
-      "vi": "Bạn Đang Tìm Kiếm Đối Tác Cung Ứng Trái Cây Sấy & Hạt Dinh Dưỡng?",
-      "en": "Looking for a Reliable Dried Fruit & Nut Manufacturing Partner?",
-      "ko": "신뢰할 수 있는 열대 건조 과일·견과류 제조 파트너를 찾고 계신가요?",
-      "zh": "正在寻找可靠的热带果干与坚果出口制造合作伙伴？"
+      "vi": "Kết nối đối tác cung ứng trái cây sấy & hạt dinh dưỡng",
+      "en": "Connect With VINAXO for Dried Fruit & Nut Supply",
+      "ko": "열대 건조 과일·견과류 제조 파트너를 찾고 계신가요?",
+      "zh": "与 VINAXO 携手打造稳定的果干与坚果供应链"
     },
     "description": {
       "vi": "Liên hệ trực tiếp phòng xuất khẩu VINAXO để trao đổi quy cách sản phẩm, điều kiện thương mại FOB/CIF, vận chuyển FCL/LCL hoặc dự án gia công nhãn riêng OEM.",

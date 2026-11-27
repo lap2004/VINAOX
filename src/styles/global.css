@@ -13,8 +13,14 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-height) + 16px);
   -webkit-text-size-adjust: 100%;
   overflow-x: clip;
+}
+
+section[id],
+[id] {
+  scroll-margin-top: calc(var(--header-height) + 16px);
 }
 
 body {
@@ -112,19 +118,19 @@ button, input, textarea, select {
 }
 
 /* ==========================================================================
-   TYPOGRAPHY SYSTEM (BOLD CONDENSED BROCHURE DISPLAY + READABLE SANS)
+   TYPOGRAPHY SYSTEM (CLEAN CORPORATE HIERARCHY)
    ========================================================================== */
 
 h1, h2, h3, h4, h5, h6 {
   color: var(--color-heading);
-  font-weight: 700;
-  line-height: 1.18;
+  font-weight: 600;
+  line-height: 1.24;
 }
 
 .title-display,
 .title-serif {
-  font-family: var(--font-display);
-  letter-spacing: 0.015em;
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
 }
 
 .title-uppercase {
@@ -136,12 +142,12 @@ h1, h2, h3, h4, h5, h6 {
 .title-display em,
 .title-display i {
   font-style: normal;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--vinaxo-red);
 }
 
 .section-heading {
-  margin-bottom: clamp(40px, 4.5vw, 60px);
+  margin-bottom: clamp(28px, 3.2vw, 42px);
 }
 
 .section-heading.text-center {
@@ -153,14 +159,13 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 8px;
   font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   color: var(--vinaxo-red);
   background-color: var(--vinaxo-red-soft);
-  padding: 5px 14px;
+  padding: 5px 12px;
   border-radius: var(--radius-pill);
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   border: 1px solid rgba(172, 62, 49, 0.22);
 }
 
@@ -173,12 +178,12 @@ h1, h2, h3, h4, h5, h6 {
 .section-label {
   display: inline-block;
   font-family: var(--font-sans);
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
   color: var(--vinaxo-red);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .tag-pill {
@@ -187,18 +192,18 @@ h1, h2, h3, h4, h5, h6 {
   padding: 6px 14px;
   border-radius: var(--radius-pill);
   border: 1px solid rgba(244, 168, 58, 0.45);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.04em;
 }
 
 .section-title {
-  font-family: var(--font-display);
-  font-size: clamp(2.15rem, 3.6vw, 3rem); /* 34px -> 48px */
-  font-weight: 700;
+  font-family: var(--font-sans);
+  font-size: clamp(1.5rem, 2.2vw, 2rem); /* 24px -> 32px */
+  font-weight: 600;
   color: var(--dark-chocolate);
-  line-height: 1.1;
-  letter-spacing: 0.015em;
-  text-transform: uppercase;
-  margin-bottom: 18px;
+  line-height: 1.24;
+  letter-spacing: -0.015em;
+  text-transform: none;
+  margin-bottom: 12px;
 }
 
 .section-title em {
@@ -258,10 +263,10 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  padding: 12px 26px;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 10px 22px;
   border-radius: var(--radius-pill);
   cursor: pointer;
   transition: all var(--transition-base);
@@ -272,14 +277,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-sm {
-  padding: 8px 18px;
+  padding: 7px 16px;
   font-size: 0.84rem;
 }
 
 .btn-lg {
-  min-height: 54px;
-  padding: 15px 34px;
-  font-size: 1rem;
+  min-height: 48px;
+  padding: 12px 26px;
+  font-size: 0.95rem;
 }
 
 .btn-primary {
@@ -608,16 +613,16 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px clamp(9px, 0.8vw, 14px);
+  padding: 7px clamp(8px, 0.7vw, 12px);
   border-radius: var(--radius-pill);
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--dark-chocolate);
   background-color: transparent;
   transition: all var(--transition-fast);
   white-space: nowrap;
   text-decoration: none;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .desktop-nav .nav-link:hover {
@@ -628,22 +633,22 @@ h1, h2, h3, h4, h5, h6 {
 .desktop-nav .nav-link.active {
   color: var(--dark-chocolate);
   background-color: rgba(244, 168, 58, 0.28);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 10px;
   flex: 0 0 auto;
 }
 
 .header-quote-btn {
-  min-width: 168px !important;
-  justify-content: center !important;
-  flex-shrink: 0 !important;
-  white-space: nowrap !important;
+  min-width: 142px;
+  justify-content: center;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .mobile-menu-btn {
@@ -712,20 +717,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .brand-name {
   font-family: var(--font-display);
-  font-size: 1.625rem; /* 26px crisp condensed brand mark */
+  font-size: 1.45rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--dark-chocolate);
   line-height: 1;
 }
 
 .brand-tagline {
-  font-size: 0.54rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
+  font-size: 0.58rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.02em;
   color: var(--muted-text);
-  margin-top: 3px;
+  margin-top: 2px;
   white-space: nowrap;
   display: block;
   line-height: 1.2;
@@ -773,14 +778,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hero-headline-condensed {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 3.85vw, 4rem); /* ~52px at 1366px -> ~55px at 1440px -> 64px at 1792px+ */
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 3.3vw, 3.15rem); /* 32px -> ~50px balanced international corporate display */
   font-weight: 700;
-  line-height: 1.09;
-  letter-spacing: 0.005em;
-  text-transform: uppercase;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-transform: none;
   color: var(--dark-chocolate);
-  margin-bottom: clamp(24px, 2vw, 32px);
+  margin-bottom: clamp(18px, 1.8vw, 24px);
 }
 
 .hero-headline-line {
@@ -1129,7 +1134,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .cert-typographic-mark.is-audit .cert-mark-kicker {
   font-size: 0.52rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--muted-text);
 }
@@ -1249,8 +1254,8 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 6px;
   padding: 4px 10px;
   font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   margin-bottom: 10px;
 }
@@ -1338,8 +1343,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .trust-badge-kind {
   font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 2px 7px;
   border-radius: 4px;
@@ -1569,14 +1574,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .about-editorial-heading {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(2.5rem, 3.6vw, 3.5rem); /* 40px -> 56px */
-  line-height: 1.05;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: clamp(1.65rem, 2.5vw, 2.25rem); /* 26px -> 36px */
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+  text-transform: none;
   color: var(--dark-chocolate-ink);
-  margin: 0 0 clamp(22px, 2vw, 30px) 0;
+  margin: 0 0 clamp(14px, 1.5vw, 20px) 0;
 }
 
 .about-heading-accent {
@@ -2150,7 +2155,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .map-stats-badge .badge-stat {
   font-size: 0.875rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--dark-chocolate);
 }
 
@@ -2202,7 +2207,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .market-pill-share {
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--vinaxo-red);
 }
 
@@ -2371,8 +2376,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .logistics-item-title {
   font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--brand-orange);
   margin-bottom: 6px;
@@ -2422,12 +2427,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .process-step-title {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-transform: none;
   color: var(--dark-chocolate);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .process-step-desc {
@@ -2517,13 +2522,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .cert-title {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-transform: none;
   color: var(--dark-chocolate);
   margin: 0 0 6px 0;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .cert-subtitle {
@@ -2670,14 +2675,14 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: var(--font-display);
-  font-size: clamp(1.25rem, 1.38vw, 1.45rem); /* 20–23px */
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-size: clamp(1.08rem, 1.25vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--vinaxo-terracotta);
-  line-height: 1.2;
-  margin: 0 0 16px 0;
+  line-height: 1.25;
+  margin: 0 0 14px 0;
 }
 
 .contact-section-icon {
@@ -2884,11 +2889,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .contact-form-title {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-family: var(--font-sans);
+  font-size: 1.45rem;
   color: var(--dark-chocolate);
-  text-transform: uppercase;
-  font-weight: 700;
+  text-transform: none;
+  font-weight: 600;
   margin: 0 0 6px 0;
 }
 
@@ -2975,13 +2980,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .contact-partnership-title {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-size: 1.45rem;
+  text-transform: none;
   color: var(--white);
-  font-weight: 700;
+  font-weight: 600;
   margin: 0 0 8px 0;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .contact-partnership-desc {
@@ -3029,7 +3034,7 @@ h1, h2, h3, h4, h5, h6 {
    ========================================================================== */
 .page-banner {
   background: linear-gradient(135deg, var(--dark-chocolate-deep) 0%, var(--dark-chocolate) 65%, #4B3023 100%);
-  padding: clamp(92px, 8vw, 128px) 0 clamp(60px, 5.5vw, 84px) 0;
+  padding: clamp(18px, 1.9vw, 26px) 0 clamp(20px, 2vw, 28px) 0;
   position: relative;
   overflow: hidden;
   color: var(--white);
@@ -3054,11 +3059,11 @@ h1, h2, h3, h4, h5, h6 {
 .page-banner-breadcrumbs {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.8125rem;
-  font-weight: 600;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
   color: var(--brand-orange);
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 
 .page-banner-breadcrumbs svg {
@@ -3080,21 +3085,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .page-banner-title {
-  font-family: var(--font-display);
-  font-size: clamp(2.1rem, 3.8vw, 3.1rem);
+  font-family: var(--font-sans);
+  font-size: clamp(1.625rem, 2.45vw, 2.25rem); /* 26px -> 36px clean international hierarchy */
   font-weight: 700;
-  text-transform: uppercase;
-  line-height: 1.1;
+  text-transform: none;
+  line-height: 1.2;
   color: var(--white);
-  margin-bottom: 14px;
-  letter-spacing: 0.015em;
+  margin-bottom: 8px;
+  letter-spacing: -0.015em;
 }
 
 .page-banner-desc {
-  max-width: 720px;
-  font-size: 1.05rem;
-  line-height: 1.65;
+  max-width: 780px;
+  font-size: 0.94rem;
+  line-height: 1.55;
   color: rgba(255, 247, 236, 0.88);
+  margin-bottom: 0;
 }
 
 .subpage-section {
@@ -3153,13 +3159,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .corporate-cta-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.85rem, 3.2vw, 2.65rem);
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-size: clamp(1.45rem, 2.2vw, 1.95rem);
+  text-transform: none;
+  letter-spacing: -0.01em;
   color: var(--white);
-  margin: 0 0 14px 0;
-  line-height: 1.12;
-  font-weight: 700;
+  margin: 0 0 10px 0;
+  line-height: 1.25;
+  font-weight: 600;
 }
 
 .corporate-cta-desc {
@@ -3315,7 +3322,9 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.62rem;
   color: var(--vinaxo-muted);
   opacity: 1;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-weight: 500;
   line-height: 1.35;
   white-space: normal;
 }
@@ -3360,16 +3369,16 @@ h1, h2, h3, h4, h5, h6 {
   outline-offset: 3px;
 }
 
-/* Shared Terracotta Section Headings: EXPLORE & GET IN TOUCH */
+/* Shared Terracotta Section Headings: Explore & Contact */
 .footer-section-heading {
-  font-family: var(--font-display);
-  font-size: clamp(1.25rem, 1.38vw, 1.5rem); /* 20–24px */
+  font-family: var(--font-sans);
+  font-size: clamp(1rem, 1.15vw, 1.15rem); /* 16–18.4px */
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  text-transform: none;
   color: var(--vinaxo-terracotta);
-  line-height: 1.2;
-  margin: 0 0 24px 0;
+  line-height: 1.25;
+  margin: 0 0 18px 0;
 }
 
 /* Two-Column Explore Navigation */
@@ -3601,7 +3610,7 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #0068FF;
   color: #FFFFFF;
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -3721,13 +3730,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .about-brochure-heading {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 3vw, 2.75rem);
-  font-weight: 700;
+  font-family: var(--font-sans);
+  font-size: clamp(1.55rem, 2.3vw, 2.05rem);
+  font-weight: 600;
   color: var(--dark-chocolate-ink);
-  text-transform: uppercase;
-  line-height: 1.08;
-  margin: 0 0 16px 0;
+  text-transform: none;
+  line-height: 1.22;
+  margin: 0 0 12px 0;
 }
 
 .about-brochure-desc {
@@ -3948,11 +3957,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .brochure-mobile-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 6.2vw, 1.95rem);
+  font-family: var(--font-sans);
+  font-size: clamp(1.35rem, 5.2vw, 1.75rem);
   font-weight: 700;
-  line-height: 1.08;
-  text-transform: uppercase;
+  line-height: 1.2;
+  text-transform: none;
   color: var(--dark-chocolate-ink);
   margin: 0 0 6px 0;
 }

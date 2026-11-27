@@ -400,11 +400,11 @@ export const Contact: React.FC = () => {
                       <div className="contact-direct-body">
                         <span className="contact-direct-label">{pick({ vi: 'Hỗ trợ trực tuyến:', en: 'Online Support:', ko: '실시간 상담:', zh: '在线即时通讯：' })}</span>{' '}
                         <a href={COMPANY_INFO.contacts.whatsapp} target="_blank" rel="noopener noreferrer" className="contact-link-plain">
-                          WhatsApp (+84 984 815 016)
+                          WhatsApp ({COMPANY_INFO.contacts.phoneDisplay})
                         </a>
                         {' • '}
                         <a href={COMPANY_INFO.contacts.zalo} target="_blank" rel="noopener noreferrer" className="contact-link-plain">
-                          Zalo (0984 815 016)
+                          Zalo ({COMPANY_INFO.contacts.phoneDisplay})
                         </a>
                       </div>
                     </div>
