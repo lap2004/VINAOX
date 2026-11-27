@@ -188,7 +188,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* Primary Action: Request a Quote */}
           <button
             type="button"
-            onClick={() => onRequestQuote(loc.name)}
+            onClick={() => onRequestQuote(product.slug)}
             className="btn btn-primary"
             style={{
               width: '100%',

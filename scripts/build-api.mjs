@@ -5,6 +5,7 @@ import { build } from 'esbuild';
 const SRC_ADMIN_DIR = path.join(process.cwd(), 'server', 'admin');
 const OUT_ADMIN_DIR = path.join(process.cwd(), 'api', 'admin');
 const SRC_INQUIRY = path.join(process.cwd(), 'server', 'inquiry.ts');
+const SRC_CONTACT = path.join(process.cwd(), 'server', 'contact.ts');
 const OUT_API_DIR = path.join(process.cwd(), 'api');
 
 async function main() {
@@ -40,9 +41,10 @@ async function main() {
     }
   });
 
-  if (fs.existsSync(SRC_INQUIRY)) {
+  const publicEntries = [SRC_INQUIRY, SRC_CONTACT].filter((p) => fs.existsSync(p));
+  if (publicEntries.length > 0) {
     await build({
-      entryPoints: [SRC_INQUIRY],
+      entryPoints: publicEntries,
       outdir: OUT_API_DIR,
       outExtension: { '.js': '.mjs' },
       bundle: true,
@@ -51,12 +53,12 @@ async function main() {
       format: 'esm',
       logLevel: 'silent',
       banner: {
-        js: '// Auto-generated standalone ESM bundle from server/inquiry.ts via scripts/build-api.mjs'
+        js: '// Auto-generated standalone ESM bundle from server/ via scripts/build-api.mjs'
       }
     });
   }
 
-  console.log(`Built ${tsEntries.length} admin API handlers + inquiry handler -> api/`);
+  console.log(`Built ${tsEntries.length} admin API handlers + ${publicEntries.length} contact/inquiry handlers -> api/`);
 }
 
 main().catch((err) => {

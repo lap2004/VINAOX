@@ -1,5 +1,19 @@
-import { normalizeSiteUrl, SITE_CONFIG } from '../config/siteConfig';
-import { Language, pickLocale } from '../i18n/localize';
+import {
+  getWebsiteDisplayLabel,
+  normalizeExternalWebsiteUrl,
+  SITE_CONFIG,
+} from '../config/siteConfig.js';
+import { Language, pickLocale } from '../i18n/localize.js';
+
+export interface FactoryLocation {
+  nameVi: string;
+  nameEn: string;
+  addressVi: string;
+  addressEn: string;
+  latitude: number;
+  longitude: number;
+  placeId?: string;
+}
 
 export interface LeadershipMember {
   name: string;
@@ -55,7 +69,10 @@ export interface CompanyInfo {
     secondaryEmail: string;
     website: string;
     websiteDisplay: string;
+    whatsapp: string;
+    zalo: string;
   };
+  location: FactoryLocation;
   auditStatus: {
     lastAudited: string;
     verifiedBy: string;
@@ -142,8 +159,19 @@ const BASE_COMPANY_INFO: CompanyInfo = {
     secondaryHotline: '+84 907 494 177',
     email: 'cuonghoang0710@gmail.com',
     secondaryEmail: 'thaovinaxo@gmail.com',
-    website: SITE_CONFIG.siteUrl,
+    website: `${SITE_CONFIG.siteUrl}/`,
     websiteDisplay: 'www.vinaxo.net',
+    whatsapp: 'https://wa.me/84984815016',
+    zalo: 'https://zalo.me/0984815016',
+  },
+  location: {
+    nameVi: 'Nhà Máy Chế Biến VINAXO',
+    nameEn: 'VINAXO Processing Plant',
+    addressVi: 'Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp, Việt Nam',
+    addressEn: 'Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam',
+    latitude: 10.380295,
+    longitude: 106.516139,
+    placeId: '',
   },
   auditStatus: {
     lastAudited: '2026-11-26',
@@ -184,9 +212,46 @@ export const COMPANY_INFO: CompanyInfo = {
     hotline: cmsComp.hotline || BASE_COMPANY_INFO.contacts.hotline,
     phoneDisplay: cmsComp.hotline || BASE_COMPANY_INFO.contacts.phoneDisplay,
     email: cmsComp.email || BASE_COMPANY_INFO.contacts.email,
-    website: normalizeSiteUrl(cmsComp.website || BASE_COMPANY_INFO.contacts.website),
+    website: normalizeExternalWebsiteUrl(cmsComp.website || BASE_COMPANY_INFO.contacts.website),
+    websiteDisplay: getWebsiteDisplayLabel(cmsComp.website || BASE_COMPANY_INFO.contacts.website),
+    whatsapp: normalizeExternalWebsiteUrl(cmsComp.whatsapp || BASE_COMPANY_INFO.contacts.whatsapp, BASE_COMPANY_INFO.contacts.whatsapp),
+    zalo: normalizeExternalWebsiteUrl(cmsComp.zalo || BASE_COMPANY_INFO.contacts.zalo, BASE_COMPANY_INFO.contacts.zalo),
+  },
+  location: {
+    nameVi: cmsComp.factory_name_vi || BASE_COMPANY_INFO.location.nameVi,
+    nameEn: cmsComp.factory_name_en || BASE_COMPANY_INFO.location.nameEn,
+    addressVi: cmsComp.address_vi || BASE_COMPANY_INFO.headquarters.addressVi,
+    addressEn: cmsComp.address_en || BASE_COMPANY_INFO.headquarters.addressEn,
+    latitude: Number.isFinite(Number(cmsComp.latitude)) ? Number(cmsComp.latitude) : BASE_COMPANY_INFO.location.latitude,
+    longitude: Number.isFinite(Number(cmsComp.longitude)) ? Number(cmsComp.longitude) : BASE_COMPANY_INFO.location.longitude,
+    placeId: typeof cmsComp.google_place_id === 'string' ? cmsComp.google_place_id.trim() : BASE_COMPANY_INFO.location.placeId,
   },
 };
+
+export function getFactoryName(language: Language, loc: FactoryLocation = COMPANY_INFO.location): string {
+  return language === 'vi' ? loc.nameVi : loc.nameEn;
+}
+
+export function getGoogleMapsSearchUrl(loc: FactoryLocation = COMPANY_INFO.location): string {
+  const coords = `${loc.latitude},${loc.longitude}`;
+  const base = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coords)}`;
+  return loc.placeId ? `${base}&query_place_id=${encodeURIComponent(loc.placeId)}` : base;
+}
+
+export function getGoogleMapsDirectionsUrl(loc: FactoryLocation = COMPANY_INFO.location): string {
+  const coords = `${loc.latitude},${loc.longitude}`;
+  const base = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(coords)}`;
+  return loc.placeId ? `${base}&destination_place_id=${encodeURIComponent(loc.placeId)}` : base;
+}
+
+export function getGoogleMapsEmbedUrl(
+  loc: FactoryLocation = COMPANY_INFO.location,
+  language: Language = 'vi'
+): string {
+  const hl = language === 'vi' ? 'vi' : language === 'ko' ? 'ko' : language === 'zh-CN' ? 'zh-CN' : 'en';
+  const coords = `${loc.latitude},${loc.longitude}`;
+  return `https://maps.google.com/maps?q=${encodeURIComponent(coords)}&hl=${encodeURIComponent(hl)}&z=15&output=embed`;
+}
 
 /**
  * Returns the single canonical corporate legal name for the active language.

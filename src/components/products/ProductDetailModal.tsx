@@ -56,7 +56,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
   const handleQuoteClick = () => {
     onClose();
-    onRequestQuote(name);
+    onRequestQuote(product.slug);
   };
 
   return (
