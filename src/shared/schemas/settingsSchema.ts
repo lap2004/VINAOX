@@ -21,6 +21,7 @@ export interface CompanySettings {
   intro_zh?: string;
   hotline: string;
   email: string;
+  sales_email?: string;
   website: string;
   whatsapp?: string;
   zalo?: string;
@@ -48,9 +49,18 @@ function sanitizeEnglishCompanyName(raw: string): string {
   return trimmed;
 }
 
+const EMAIL_FORMAT_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const FORBIDDEN_SECRET_KEYS = ['password', 'smtp_pass', 'smtp_password', 'api_key', 'resend_api_key', 'brevo_api_key', 'secret'];
+
 export function validateCompanySettings(input: unknown): { valid: boolean; errors: string[]; data: CompanySettings } {
   const errors: string[] = [];
   const raw = (typeof input === 'object' && input !== null ? input : {}) as Record<string, any>;
+
+  for (const forbidden of FORBIDDEN_SECRET_KEYS) {
+    if (Object.prototype.hasOwnProperty.call(raw, forbidden)) {
+      errors.push(`Không được phép lưu trường nhạy cảm (${forbidden}) trong cấu hình công khai.`);
+    }
+  }
 
   const company_name_vi = typeof raw.company_name_vi === 'string' && raw.company_name_vi.trim()
     ? raw.company_name_vi.trim()
@@ -66,7 +76,27 @@ export function validateCompanySettings(input: unknown): { valid: boolean; error
     ? raw.address_en.trim()
     : 'Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam';
   const hotline = typeof raw.hotline === 'string' && raw.hotline.trim() ? raw.hotline.trim() : '(+84) 984 815 016';
-  const email = typeof raw.email === 'string' && raw.email.trim() ? raw.email.trim() : 'cuonghoang0710@gmail.com';
+
+  let email = 'cuonghoang0710@gmail.com';
+  if (raw.email !== undefined && raw.email !== null) {
+    const trimmedEmail = typeof raw.email === 'string' ? raw.email.trim() : '';
+    if (!trimmedEmail || !EMAIL_FORMAT_REGEX.test(trimmedEmail)) {
+      errors.push('Email liên hệ công khai không đúng định dạng (ví dụ: sales@vinaxo.net).');
+    } else {
+      email = trimmedEmail;
+    }
+  }
+
+  let sales_email: string | undefined = undefined;
+  if (typeof raw.sales_email === 'string' && raw.sales_email.trim()) {
+    const trimmedSales = raw.sales_email.trim();
+    if (!EMAIL_FORMAT_REGEX.test(trimmedSales)) {
+      errors.push('Email bộ phận kinh doanh (sales_email) không đúng định dạng.');
+    } else {
+      sales_email = trimmedSales;
+    }
+  }
+
   const website = normalizeExternalWebsiteUrl(
     typeof raw.website === 'string' ? raw.website : 'https://www.vinaxo.net/'
   );
@@ -128,6 +158,7 @@ export function validateCompanySettings(input: unknown): { valid: boolean; error
       ...(typeof raw.intro_zh === 'string' && raw.intro_zh.trim() ? { intro_zh: raw.intro_zh.trim() } : {}),
       hotline,
       email,
+      ...(sales_email ? { sales_email } : {}),
       website,
       whatsapp,
       zalo,

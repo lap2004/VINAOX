@@ -1067,6 +1067,85 @@ async function runTests() {
     }
   });
 
+  // 23. Company Settings Single Source of Truth, Email Validation & Security Guard
+  await runCase('Company Settings: Validates email format, blocks secret keys & syncs Single Source of Truth', async () => {
+    const { validateCompanySettings } = await import('../src/shared/schemas/settingsSchema.ts');
+    const settingsMod = await import('../server/admin/settings.ts');
+    const settingsHandler = settingsMod.default;
+    const { createSessionToken, createCsrfToken } = await import('../server/lib/auth.ts');
+
+    const companyPath = path.join(process.cwd(), 'content/settings/company.json');
+    const origCompany = fs.readFileSync(companyPath, 'utf8');
+
+    try {
+      const parsedOrig = JSON.parse(origCompany);
+
+      // Invalid email rejected
+      const badEmail = validateCompanySettings({ ...parsedOrig, email: 'not-an-email' });
+      assert.strictEqual(badEmail.valid, false, 'Must reject malformed public email');
+
+      // Invalid sales_email rejected
+      const badSales = validateCompanySettings({ ...parsedOrig, sales_email: 'bad@@domain' });
+      assert.strictEqual(badSales.valid, false, 'Must reject malformed sales_email');
+
+      // Forbidden secret keys rejected
+      const secretInjection = validateCompanySettings({ ...parsedOrig, smtp_pass: 'leaked-secret' });
+      assert.strictEqual(secretInjection.valid, false, 'Must reject sensitive secret keys in public JSON');
+
+      // Duplicated English legal name sanitized
+      const dupLegal = validateCompanySettings({
+        ...parsedOrig,
+        company_name_en: 'Vinaxo Co., Ltd. (VINAXO COMPANY LIMITED (Vinaxo Co., Ltd.))',
+        sales_email: 'export@vinaxo.net',
+        intro_vi: 'Giới thiệu thử nghiệm',
+        intro_en: 'Test intro EN',
+        intro_ko: '테스트 소개',
+        intro_zh: '测试简介',
+      });
+      assert.strictEqual(dupLegal.valid, true);
+      assert.strictEqual(dupLegal.data.company_name_en, 'VINAXO COMPANY LIMITED');
+      assert.strictEqual(dupLegal.data.sales_email, 'export@vinaxo.net');
+      assert.strictEqual(dupLegal.data.intro_ko, '테스트 소개');
+
+      // API POST & GET roundtrip
+      const validToken = createSessionToken('admin', 1);
+      const csrfToken = createCsrfToken(validToken);
+
+      const rBad = createMockRes();
+      await settingsHandler({
+        method: 'POST',
+        headers: {
+          cookie: `vinaxo_admin_session=${validToken}`,
+          origin: 'http://localhost:4174',
+          'x-requested-with': 'XMLHttpRequest',
+          'x-csrf-token': csrfToken,
+          'content-type': 'application/json',
+        },
+        query: { section: 'company' },
+        body: { ...parsedOrig, email: 'invalid-email' },
+      }, rBad);
+      assert.strictEqual(rBad.statusCode, 400);
+
+      const rOk = createMockRes();
+      await settingsHandler({
+        method: 'POST',
+        headers: {
+          cookie: `vinaxo_admin_session=${validToken}`,
+          origin: 'http://localhost:4174',
+          'x-requested-with': 'XMLHttpRequest',
+          'x-csrf-token': csrfToken,
+          'content-type': 'application/json',
+        },
+        query: { section: 'company' },
+        body: { ...parsedOrig, sales_email: 'b2b-test@example.com' },
+      }, rOk);
+      assert.strictEqual(rOk.statusCode, 200);
+      assert.strictEqual(rOk.body?.data?.sales_email, 'b2b-test@example.com');
+    } finally {
+      fs.writeFileSync(companyPath, origCompany, 'utf8');
+    }
+  });
+
   console.log(`\n========================================`);
   console.log(`SECURITY & UNIT SUITE RESULTS: ${passed}/${total} PASSED`);
   console.log(`========================================\n`);

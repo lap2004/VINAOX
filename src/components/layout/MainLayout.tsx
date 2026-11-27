@@ -7,6 +7,7 @@ import { Footer } from './Footer';
 import { QuoteModal } from '../ui/QuoteModal';
 import { type QuotationProduct } from '../contact/contactSchema';
 import { ScrollToTop } from '../ui/ScrollToTop';
+import { COMPANY_INFO } from '../../data/company';
 
 export interface MainLayoutContext {
   onOpenQuote: (product?: string | QuotationProduct) => void;
@@ -104,17 +105,17 @@ export const MainLayout: React.FC = () => {
             </button>
 
             <a
-              href="https://wa.me/84984815016"
+              href={COMPANY_INFO.contacts.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
               className="floating-menu-item"
             >
               <MessageCircle size={16} aria-hidden="true" />
-              <span>WhatsApp (+84 984 815 016)</span>
+              <span>WhatsApp ({COMPANY_INFO.contacts.phoneDisplay})</span>
             </a>
 
             <a
-              href="https://zalo.me/0984815016"
+              href={COMPANY_INFO.contacts.zalo}
               target="_blank"
               rel="noopener noreferrer"
               className="floating-menu-item"
@@ -122,10 +123,10 @@ export const MainLayout: React.FC = () => {
               <span className="floating-zalo-mark" aria-hidden="true">
                 Zalo
               </span>
-              <span>Zalo Official (0984 815 016)</span>
+              <span>Zalo Official ({COMPANY_INFO.contacts.phoneDisplay})</span>
             </a>
 
-            <a href="tel:+84984815016" className="floating-menu-item">
+            <a href={`tel:${COMPANY_INFO.contacts.hotline}`} className="floating-menu-item">
               <Phone size={16} aria-hidden="true" />
               <span>
                 {pickLocale(language, {
@@ -133,7 +134,7 @@ export const MainLayout: React.FC = () => {
                   en: 'Call: ',
                   ko: '전화: ',
                   'zh-CN': '热线: ',
-                }) + '(+84) 984 815 016'}
+                }) + COMPANY_INFO.contacts.phoneDisplay}
               </span>
             </a>
           </div>

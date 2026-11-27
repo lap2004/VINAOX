@@ -34,6 +34,11 @@ interface CompanySettings {
   google_place_id?: string;
   hotline: string;
   email: string;
+  sales_email?: string;
+  intro_vi?: string;
+  intro_en?: string;
+  intro_ko?: string;
+  intro_zh?: string;
   website: string;
   whatsapp?: string;
   zalo?: string;
@@ -77,6 +82,11 @@ export const AdminSettings: React.FC = () => {
     google_place_id: '',
     hotline: '(+84) 984 815 016',
     email: 'cuonghoang0710@gmail.com',
+    sales_email: '',
+    intro_vi: '',
+    intro_en: '',
+    intro_ko: '',
+    intro_zh: '',
     website: 'https://www.vinaxo.net/',
     whatsapp: 'https://wa.me/84984815016',
     zalo: 'https://zalo.me/0984815016'
@@ -445,6 +455,19 @@ export const AdminSettings: React.FC = () => {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                Email Kinh doanh / B2B Sales (tùy chọn)
+              </label>
+              <input
+                type="email"
+                value={companyData.sales_email || ''}
+                onChange={(e) => setCompanyData({ ...companyData, sales_email: e.target.value })}
+                placeholder="Để trống nếu dùng chung email chính"
+                style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
                 Địa chỉ Website (chuẩn https://)
               </label>
               <input
@@ -479,6 +502,74 @@ export const AdminSettings: React.FC = () => {
                 onChange={(e) => setCompanyData({ ...companyData, zalo: e.target.value })}
                 placeholder="https://zalo.me/0984815016"
                 style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.88rem', boxSizing: 'border-box' }}
+              />
+            </div>
+          </div>
+
+          <div
+            style={{
+              marginBottom: '16px',
+              padding: '12px 14px',
+              borderRadius: '8px',
+              backgroundColor: '#FFFDF9',
+              border: '1px solid #EADCCE',
+              fontSize: '0.8rem',
+              color: '#5A4A42',
+              lineHeight: 1.55
+            }}
+          >
+            <strong style={{ color: '#3A251B' }}>Phân tách Email hiển thị công khai & Email nhận đơn hàng hệ thống:</strong>{' '}
+            Email cấu hình tại đây sẽ tự động cập nhật đồng bộ trên <strong>Footer, trang Liên hệ, liên kết mailto:</strong> và dữ liệu có cấu trúc <strong>JSON-LD</strong> (Single Source of Truth).{' '}
+            Hộp thư nhận thông báo form liên hệ/báo giá (<code>CONTACT_TO_EMAIL</code>, <code>CONTACT_FROM_EMAIL</code>) và khóa API dịch vụ mail (Resend / Brevo) được cấu hình an toàn qua biến môi trường <strong>Vercel Environment Variables</strong>, không lưu khóa bí mật trong file JSON công khai.
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                Mô tả ngắn Footer (VI)
+              </label>
+              <textarea
+                rows={2}
+                value={companyData.intro_vi || ''}
+                onChange={(e) => setCompanyData({ ...companyData, intro_vi: e.target.value })}
+                placeholder="Để trống để dùng mô tả chuẩn mặc định"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.84rem', boxSizing: 'border-box', resize: 'vertical' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                Footer Brand Intro (EN)
+              </label>
+              <textarea
+                rows={2}
+                value={companyData.intro_en || ''}
+                onChange={(e) => setCompanyData({ ...companyData, intro_en: e.target.value })}
+                placeholder="Leave blank to use default English intro"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.84rem', boxSizing: 'border-box', resize: 'vertical' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                Footer Brand Intro (KO)
+              </label>
+              <textarea
+                rows={2}
+                value={companyData.intro_ko || ''}
+                onChange={(e) => setCompanyData({ ...companyData, intro_ko: e.target.value })}
+                placeholder="Leave blank to use default Korean intro"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.84rem', boxSizing: 'border-box', resize: 'vertical' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#3A251B', marginBottom: '6px' }}>
+                Footer Brand Intro (ZH-CN)
+              </label>
+              <textarea
+                rows={2}
+                value={companyData.intro_zh || ''}
+                onChange={(e) => setCompanyData({ ...companyData, intro_zh: e.target.value })}
+                placeholder="Leave blank to use default Simplified Chinese intro"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.84rem', boxSizing: 'border-box', resize: 'vertical' }}
               />
             </div>
           </div>

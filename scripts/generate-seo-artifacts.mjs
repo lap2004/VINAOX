@@ -221,14 +221,51 @@ function writeRouteHtml(relOutPath, htmlContent) {
   fs.writeFileSync(fullOut, htmlContent, 'utf8');
 }
 
+function syncBaseHtmlCompanyJsonLd(rawHtml, company) {
+  const match = rawHtml.match(/<script\s+id=["']vinaxo-seo-jsonld["'][^>]*>([\s\S]*?)<\/script>/i);
+  if (!match) return rawHtml;
+  try {
+    const parsed = JSON.parse(match[1]);
+    const list = Array.isArray(parsed) ? parsed : [parsed];
+    for (const node of list) {
+      if (node && node['@type'] === 'Organization') {
+        node.name = company.company_name_vi || node.name;
+        node.alternateName = company.company_name_en || node.alternateName;
+        if (company.tax_id) node.taxID = company.tax_id;
+        if (node.address && company.address_vi) {
+          node.address.streetAddress = company.address_vi;
+        }
+        if (node.contactPoint) {
+          if (company.hotline) {
+            node.contactPoint.telephone = String(company.hotline).replace(/[\s()]/g, '');
+          }
+          if (company.email) {
+            node.contactPoint.email = company.email;
+          }
+          node.contactPoint.availableLanguage = ['Vietnamese', 'English', 'Korean', 'Chinese'];
+        }
+      }
+    }
+    const updatedJson = JSON.stringify(Array.isArray(parsed) ? list : list[0]).replace(/<\/script>/gi, '<\\/script>');
+    return rawHtml.replace(
+      match[0],
+      `<script id="vinaxo-seo-jsonld" type="application/ld+json">${updatedJson}</script>`
+    );
+  } catch {
+    return rawHtml;
+  }
+}
+
 function main() {
   if (!fs.existsSync(path.join(DIST_DIR, 'index.html'))) {
     throw new Error('Missing dist/index.html. Run vite build first.');
   }
 
-  const templateHtml = fs.readFileSync(path.join(DIST_DIR, 'index.html'), 'utf8');
+  const rawTemplateHtml = fs.readFileSync(path.join(DIST_DIR, 'index.html'), 'utf8');
   const today = new Date().toISOString().split('T')[0];
   const company = loadCompanyInfo();
+  const templateHtml = syncBaseHtmlCompanyJsonLd(rawTemplateHtml, company);
+  fs.writeFileSync(path.join(DIST_DIR, 'index.html'), templateHtml, 'utf8');
 
   const newsFiles = readJsonFiles(CONTENT_NEWS_DIR);
   const publishedArticles = newsFiles

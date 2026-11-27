@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Download, Expand, MapPin } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { COMPANY_INFO, getLegalCompanyName } from '../data/company';
+import { COMPANY_INFO } from '../data/company';
 import { BROCHURE_DOCUMENT, resolveBrochureDocumentForLang } from '../data/brochureData';
 import {
   ABOUT_CONTENT,
@@ -19,7 +19,6 @@ import { AboutGalleryLightbox } from '../components/about/AboutGalleryLightbox';
 export const About: React.FC = () => {
   const { language, t, pick } = useLanguage();
   const { onOpenQuote } = useOutletContext<MainLayoutContext>();
-  const legalName = getLegalCompanyName(language);
   const brochureInfo = resolveBrochureDocumentForLang(language);
 
   const [selectedCategory, setSelectedCategory] = useState<'all' | AboutGalleryCategory>('all');
@@ -58,16 +57,15 @@ export const About: React.FC = () => {
     <div className="about-page">
       {/* Page Hero */}
       <PageHero
-        badge={pickLocalized(ABOUT_CONTENT.hero.badge, language) || `VINAXO • ${legalName}`}
-        title={pickLocalized(ABOUT_CONTENT.hero.title, language) || `VINAXO`}
+        title={pickLocalized(ABOUT_CONTENT.hero.title, language) || 'VINAXO'}
         description={pickLocalized(ABOUT_CONTENT.hero.subtitle, language)}
-        breadcrumbCurrent={pick({ vi: 'Giới Thiệu', en: 'About Us', ko: '회사 소개', zh: '关于我们' })}
+        breadcrumbCurrent={pick({ vi: 'Giới thiệu', en: 'About Us', ko: '회사 소개', zh: '关于我们' })}
       />
 
       {/* ========================================================================
           SECTION 1: COMPANY STORY, AUTHENTIC FACILITY HIGHLIGHT & 4 METRICS
           ======================================================================== */}
-      <section className="subpage-section">
+      <section className="subpage-section" style={{ paddingTop: 'clamp(28px, 3vw, 44px)' }}>
         <div className="container">
           <div className="about-grid">
             {/* Column 1: Story */}

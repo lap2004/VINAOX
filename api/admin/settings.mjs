@@ -577,16 +577,40 @@ function sanitizeEnglishCompanyName(raw) {
   }
   return trimmed;
 }
+var EMAIL_FORMAT_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+var FORBIDDEN_SECRET_KEYS = ["password", "smtp_pass", "smtp_password", "api_key", "resend_api_key", "brevo_api_key", "secret"];
 function validateCompanySettings(input) {
   const errors = [];
   const raw = typeof input === "object" && input !== null ? input : {};
+  for (const forbidden of FORBIDDEN_SECRET_KEYS) {
+    if (Object.prototype.hasOwnProperty.call(raw, forbidden)) {
+      errors.push(`Kh\xF4ng \u0111\u01B0\u1EE3c ph\xE9p l\u01B0u tr\u01B0\u1EDDng nh\u1EA1y c\u1EA3m (${forbidden}) trong c\u1EA5u h\xECnh c\xF4ng khai.`);
+    }
+  }
   const company_name_vi = typeof raw.company_name_vi === "string" && raw.company_name_vi.trim() ? raw.company_name_vi.trim() : "C\xD4NG TY TNHH VINAXO";
   const company_name_en = typeof raw.company_name_en === "string" && raw.company_name_en.trim() ? sanitizeEnglishCompanyName(raw.company_name_en) : "VINAXO COMPANY LIMITED";
   const tax_id = typeof raw.tax_id === "string" && raw.tax_id.trim() ? raw.tax_id.trim() : "1201611681";
   const address_vi = typeof raw.address_vi === "string" && raw.address_vi.trim() ? raw.address_vi.trim() : "Khu ph\u1ED1 5, X\xE3 V\u0129nh B\xECnh, T\u1EC9nh \u0110\u1ED3ng Th\xE1p, Vi\u1EC7t Nam";
   const address_en = typeof raw.address_en === "string" && raw.address_en.trim() ? raw.address_en.trim() : "Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam";
   const hotline = typeof raw.hotline === "string" && raw.hotline.trim() ? raw.hotline.trim() : "(+84) 984 815 016";
-  const email = typeof raw.email === "string" && raw.email.trim() ? raw.email.trim() : "cuonghoang0710@gmail.com";
+  let email = "cuonghoang0710@gmail.com";
+  if (raw.email !== void 0 && raw.email !== null) {
+    const trimmedEmail = typeof raw.email === "string" ? raw.email.trim() : "";
+    if (!trimmedEmail || !EMAIL_FORMAT_REGEX.test(trimmedEmail)) {
+      errors.push("Email li\xEAn h\u1EC7 c\xF4ng khai kh\xF4ng \u0111\xFAng \u0111\u1ECBnh d\u1EA1ng (v\xED d\u1EE5: sales@vinaxo.net).");
+    } else {
+      email = trimmedEmail;
+    }
+  }
+  let sales_email = void 0;
+  if (typeof raw.sales_email === "string" && raw.sales_email.trim()) {
+    const trimmedSales = raw.sales_email.trim();
+    if (!EMAIL_FORMAT_REGEX.test(trimmedSales)) {
+      errors.push("Email b\u1ED9 ph\u1EADn kinh doanh (sales_email) kh\xF4ng \u0111\xFAng \u0111\u1ECBnh d\u1EA1ng.");
+    } else {
+      sales_email = trimmedSales;
+    }
+  }
   const website = normalizeExternalWebsiteUrl(
     typeof raw.website === "string" ? raw.website : "https://www.vinaxo.net/"
   );
@@ -636,6 +660,7 @@ function validateCompanySettings(input) {
       ...typeof raw.intro_zh === "string" && raw.intro_zh.trim() ? { intro_zh: raw.intro_zh.trim() } : {},
       hotline,
       email,
+      ...sales_email ? { sales_email } : {},
       website,
       whatsapp,
       zalo

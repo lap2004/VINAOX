@@ -254,7 +254,7 @@ export const ArticleDetail: React.FC = () => {
             {article.verified && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.78rem', color: 'var(--primary-green)' }}>
                 <CheckCircle2 size={13} />
-                {pick({ vi: 'Nguồn xác thực', en: 'Verified Coverage', ko: '검증된 언론 보도', zh: '权威核验来源' })}
+                {pick({ vi: 'Nguồn bài viết', en: 'Article Source', ko: '기사 출처', zh: '文章来源' })}
               </span>
             )}
           </div>

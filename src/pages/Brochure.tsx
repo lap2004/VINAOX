@@ -142,8 +142,7 @@ export const Brochure: React.FC = () => {
   return (
     <div className="brochure-page">
       <PageHero
-        badge={t('brochure.eyebrow', 'VINAXO COMPANY PROFILE')}
-        title={t('brochure.pageTitle', 'VINAXO BROCHURE 2026')}
+        title={t('brochure.pageTitle', 'Brochure Công Ty VINAXO 2026')}
         description={t(
           'brochure.pageDesc',
           'Explore our company, product collections, manufacturing capabilities and international quality standards.'
@@ -151,7 +150,7 @@ export const Brochure: React.FC = () => {
         breadcrumbCurrent={t('nav.brochure', 'Company Brochure')}
       />
 
-      <section className="subpage-section brochure-reader-section">
+      <section className="subpage-section brochure-reader-section" style={{ paddingTop: 'clamp(24px, 2.5vw, 36px)' }}>
         <div className="container brochure-reader-container">
           {/* Document Meta + Primary Actions */}
           <div className="brochure-meta-action-bar">

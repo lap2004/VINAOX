@@ -132,8 +132,8 @@ export const Footer: React.FC<FooterProps> = () => {
                 <span className="brand-name footer-brand-name">VINAXO</span>
                 <span className="brand-tagline footer-brand-tagline">
                   {pickLocale(language, {
-                    vi: 'NHÀ SẢN XUẤT TRÁI CÂY SẤY NHIỆT ĐỚI',
-                    en: 'TROPICAL DRIED FRUIT MANUFACTURER',
+                    vi: 'Nhà sản xuất trái cây sấy nhiệt đới',
+                    en: 'Tropical Dried Fruit Manufacturer',
                     ko: '열대 건조 과일 제조·수출 전문 기업',
                     'zh-CN': '热带果干生产与出口制造商',
                   })}
@@ -209,8 +209,8 @@ export const Footer: React.FC<FooterProps> = () => {
           >
             <h2 className="footer-section-heading">
               {pickLocale(language, {
-                vi: 'KHÁM PHÁ',
-                en: 'EXPLORE',
+                vi: 'Khám phá',
+                en: 'Explore',
                 ko: '바로가기',
                 'zh-CN': '快速导航',
               })}
@@ -251,8 +251,8 @@ export const Footer: React.FC<FooterProps> = () => {
           <div className="footer-col footer-col-contact">
             <h2 className="footer-section-heading">
               {pickLocale(language, {
-                vi: 'LIÊN HỆ',
-                en: 'GET IN TOUCH',
+                vi: 'Liên hệ',
+                en: 'Contact',
                 ko: '연락처 정보',
                 'zh-CN': '联系信息',
               })}

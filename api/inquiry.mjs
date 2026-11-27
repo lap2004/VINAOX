@@ -259,9 +259,9 @@ var BASE_PRODUCTS_DATA = [
     descriptionVi: "\u0110\u01B0\u1EE3c ch\u1EBF bi\u1EBFn t\u1EEB chu\u1ED1i ch\xEDn t\u1EF1 nhi\xEAn c\u1EE7a v\xF9ng \u0111\u1ED3ng b\u1EB1ng s\xF4ng C\u1EEDu Long. C\xF4ng ngh\u1EC7 s\u1EA5y gi\xF2n hi\u1EC7n \u0111\u1EA1i gi\xFAp t\u1EEBng l\xE1t chu\u1ED1i gi\u1EEF \u0111\u1ED9 gi\xF2n x\u1ED1p t\u1EF1 nhi\xEAn, m\xF9i th\u01A1m ng\u1ECDt ng\xE0o \u0111\u1EB7c tr\u01B0ng v\xE0 gi\xE0u kali.",
     origin: "Mekong Delta Orchards",
     originVi: "V\xF9ng chu\u1ED1i \u0110BSCL",
-    certifications: ["BRCGS Facility", "Clean Label", "Export Standard"],
+    certifications: ["BRCGS Facility", "Clean Label"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural banana sweetness",
@@ -275,8 +275,8 @@ var BASE_PRODUCTS_DATA = [
       processVi: "Chi\xEAn s\u1EA5y ch\xE2n kh\xF4ng nhi\u1EC7t th\u1EA5p k\u1EBFt h\u1EE3p ly t\xE2m t\xE1ch d\u1EA7u tri\u1EC7t \u0111\u1EC3",
       packagingEn: "Zip pouch 100g, 250g, 500g / Bulk carton 10kg",
       packagingVi: "T\xFAi zip 100g, 250g, 500g / Th\xF9ng x\xE1 10kg",
-      certificationsEn: "BRCGS Grade B Facility, Clean Label, Export Quality",
-      certificationsVi: "Nh\xE0 m\xE1y chu\u1EA9n BRCGS Grade B, Clean Label, \u0110\u1EA1t chu\u1EA9n xu\u1EA5t kh\u1EA9u"
+      certificationsEn: "BRCGS Grade B Facility, Clean Label",
+      certificationsVi: "Nh\xE0 m\xE1y chu\u1EA9n BRCGS Grade B, Clean Label"
     },
     en: {
       name: "Banana Chips",
@@ -309,9 +309,9 @@ var BASE_PRODUCTS_DATA = [
     descriptionVi: "H\u1EA1t \u0111i\u1EC1u chu\u1EA9n xu\u1EA5t kh\u1EA9u t\u1EEB th\u1EE7 ph\u1EE7 B\xECnh Ph\u01B0\u1EDBc. T\u1EEBng m\u1EBB h\u1EA1t \u0111\u01B0\u1EE3c ph\xE2n lo\u1EA1i k\xEDch th\u01B0\u1EDBc \u0111\u1EC1u \u0111\u1EB7n, rang ch\xEDn t\u1EDBi gi\u1EEF tr\u1ECDn \u0111\u1ED9 gi\xF2n, b\xE9o b\xF9i t\u1EF1 nhi\xEAn, d\u1ED3i d\xE0o ch\u1EA5t b\xE9o kh\xF4ng b\xE3o h\xF2a v\xE0 kho\xE1ng ch\u1EA5t.",
     origin: "Binh Phuoc, Vietnam",
     originVi: "B\xECnh Ph\u01B0\u1EDBc, Vi\u1EC7t Nam",
-    certifications: ["BRCGS Facility", "ISO 22000", "Export Standard"],
+    certifications: ["BRCGS Facility", "ISO 22000"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural nutty flavor",
@@ -410,9 +410,9 @@ var BASE_PRODUCTS_DATA = [
     descriptionVi: "\u0110\u01B0\u1EE3c s\u1EA3n xu\u1EA5t t\u1EEB xo\xE0i t\u01B0\u01A1i \u0111\u1ED3ng b\u1EB1ng s\xF4ng C\u1EEDu Long. Quy tr\xECnh chi\xEAn s\u1EA5y ch\xE2n kh\xF4ng hi\u1EC7n \u0111\u1EA1i t\u1EA1o n\xEAn l\xE1t xo\xE0i gi\xF2n x\u1ED1p h\u1EA5p d\u1EABn, v\u1ECB chua ng\u1ECDt t\u1EF1 nhi\xEAn h\xE0i h\xF2a v\xE0 m\xE0u v\xE0ng t\u01B0\u01A1i \u0111\u1EB9p m\u1EAFt.",
     origin: "Mekong Delta Orchards",
     originVi: "V\xF9ng xo\xE0i \u0110BSCL",
-    certifications: ["BRCGS Facility", "Clean Label", "Export Standard"],
+    certifications: ["BRCGS Facility", "Clean Label"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural mango sweet-tart profile",
@@ -426,8 +426,8 @@ var BASE_PRODUCTS_DATA = [
       processVi: "S\u1EA5y ch\xE2n kh\xF4ng nhi\u1EC7t th\u1EA5p k\u1EBFt h\u1EE3p c\xF4ng ngh\u1EC7 ly t\xE2m t\xE1ch d\u1EA7u",
       packagingEn: "Aluminium foil zip pouch 50g, 100g, 200g / Master carton 10kg",
       packagingVi: "T\xFAi nh\xF4m zipper 50g, 100g, 200g / Th\xF9ng carton xu\u1EA5t kh\u1EA9u 10kg",
-      certificationsEn: "BRCGS Facility, Clean Label, Export Standard",
-      certificationsVi: "Nh\xE0 m\xE1y chu\u1EA9n BRCGS, Clean Label, Ti\xEAu chu\u1EA9n xu\u1EA5t kh\u1EA9u"
+      certificationsEn: "BRCGS Facility, Clean Label",
+      certificationsVi: "Nh\xE0 m\xE1y chu\u1EA9n BRCGS, Clean Label"
     },
     en: {
       name: "Crispy Mango Chips",
@@ -460,9 +460,9 @@ var BASE_PRODUCTS_DATA = [
     descriptionVi: "H\u1EA1t m\u1EAFc ca th\u01B0\u1EE3ng h\u1EA1ng sinh tr\u01B0\u1EDFng tr\xEAn \u0111\u1EA5t \u0111\u1ECF bazan m\xE0u m\u1EE1 v\xF9ng T\xE2y Nguy\xEAn. H\u1EA1t \u0111\u01B0\u1EE3c s\u1EA5y n\u1EE9t v\u1ECF t\u1EF1 nhi\xEAn, nh\xE2n tr\u1EAFng ng\xE0 tr\xF2n tr\u1ECBa, b\xE9o b\xF9i thanh tho\xE1t v\xE0 d\u1ED3i d\xE0o axit b\xE9o Omega-7 qu\xFD gi\xE1.",
     origin: "Central Highlands, Vietnam",
     originVi: "T\xE2y Nguy\xEAn, Vi\u1EC7t Nam",
-    certifications: ["Premium Grade", "ISO 22000", "Clean Label"],
+    certifications: ["ISO 22000", "Clean Label"],
     verified: true,
-    ocop: "Premium Grade",
+    ocop: "",
     specs: {
       moisture: "< 3%",
       brix: "Rich buttery profile",
@@ -561,9 +561,9 @@ var BASE_PRODUCTS_DATA = [
     descriptionVi: "\u0110\u01B0\u1EE3c s\u1EA3n xu\u1EA5t t\u1EEB m\xFAi m\xEDt Th\xE1i t\u01B0\u01A1i ch\xEDn c\xE2y t\u1EA1i Ti\u1EC1n Giang. C\xF4ng ngh\u1EC7 chi\xEAn s\u1EA5y ch\xE2n kh\xF4ng k\u1EBFt h\u1EE3p ly t\xE2m t\xE1ch d\u1EA7u tri\u1EC7t \u0111\u1EC3 gi\xFAp t\u1EEBng m\xFAi m\xEDt gi\xF2n r\u1EE5m, ng\u1ECDt \u0111\u1EADm \u0111\xE0 t\u1EF1 nhi\xEAn m\xE0 kh\xF4ng h\u1EC1 ng\u1EA5y.",
     origin: "Tien Giang, Vietnam",
     originVi: "Ti\u1EC1n Giang, Vi\u1EC7t Nam",
-    certifications: ["BRCGS Facility", "Clean Label", "Export Standard"],
+    certifications: ["BRCGS Facility", "Clean Label"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural jackfruit sweetness",
@@ -577,8 +577,8 @@ var BASE_PRODUCTS_DATA = [
       processVi: "Chi\xEAn s\u1EA5y ch\xE2n kh\xF4ng nhi\u1EC7t th\u1EA5p v\xE0 ly t\xE2m t\xE1ch d\u1EA7u c\xF4ng ngh\u1EC7 cao",
       packagingEn: "Zip pouch 100g, 250g, 500g / Bulk master carton 10kg",
       packagingVi: "T\xFAi zip 100g, 250g, 500g / Th\xF9ng carton xu\u1EA5t kh\u1EA9u 10kg",
-      certificationsEn: "BRCGS Grade B Facility, Clean Label, Export Standard",
-      certificationsVi: "Nh\xE0 m\xE1y chu\u1EA9n BRCGS Grade B, Clean Label, Ti\xEAu chu\u1EA9n xu\u1EA5t kh\u1EA9u"
+      certificationsEn: "BRCGS Grade B Facility, Clean Label",
+      certificationsVi: "Nh\xE0 m\xE1y chu\u1EA9n BRCGS Grade B, Clean Label"
     },
     en: {
       name: "Crispy Jackfruit Chips",
@@ -609,11 +609,11 @@ var BASE_PRODUCTS_DATA = [
     shortDescriptionVi: "Nh\xE2n qu\u1EA3 \xF3c ch\xF3 tuy\u1EC3n ch\u1ECDn h\u1EA1t to \u0111\u1EC1u, gi\xF2n b\xF9i v\xE0 gi\xE0u d\u01B0\u1EE1ng ch\u1EA5t v\xE0ng cho tr\xED n\xE3o.",
     description: "Carefully sorted and lightly roasted walnut halves providing clean, nutty richness. Abundant in plant-based Omega-3 ALA, polyphenols, and essential minerals for daily wellness.",
     descriptionVi: "Nh\xE2n \xF3c ch\xF3 tuy\u1EC3n ch\u1ECDn \u0111\u1ED3ng \u0111\u1EC1u k\xEDch th\u01B0\u1EDBc, \u0111\u01B0\u1EE3c x\u1EED l\xFD nhi\u1EC7t nh\u1EB9 \u0111\u1EC3 gi\u1EEF \u0111\u1ED9 gi\xF2n th\u01A1m t\u1EF1 nhi\xEAn m\xE0 kh\xF4ng l\xE0m bi\u1EBFn t\xEDnh c\xE1c axit b\xE9o qu\xFD. D\u1ED3i d\xE0o Omega-3 th\u1EF1c v\u1EADt, ch\u1EA5t ch\u1ED1ng oxy h\xF3a v\xE0 kho\xE1ng ch\u1EA5t.",
-    origin: "Selected Premium Grade",
-    originVi: "Ngu\u1ED3n nguy\xEAn li\u1EC7u ch\u1ECDn l\u1ECDc cao c\u1EA5p",
-    certifications: ["Premium Grade", "ISO 22000", "Clean Label"],
+    origin: "Selected Sourcing Regions",
+    originVi: "V\xF9ng nguy\xEAn li\u1EC7u ch\u1ECDn l\u1ECDc",
+    certifications: ["ISO 22000", "Clean Label"],
     verified: true,
-    ocop: "Premium Grade",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural nutty profile",
@@ -633,7 +633,7 @@ var BASE_PRODUCTS_DATA = [
     en: {
       name: "Premium Walnut Kernels",
       desc: "Nutritious whole walnut halves, gently roasted with a subtle nutty crunch.",
-      origin: "Selected Premium Grade",
+      origin: "Selected Sourcing Regions",
       features: "Selected whole halves packed with plant-derived Omega-3 (ALA), vitamin E, and polyphenols. Perfectly roasted for snacking and premium culinary use."
     },
     vi: {
@@ -661,9 +661,9 @@ var BASE_PRODUCTS_DATA = [
     descriptionVi: "Tuy\u1EC3n ch\u1ECDn t\u1EEB nh\u1EEFng tr\xE1i \u0111u \u0111\u1EE7 ch\xEDn c\xE2y tr\xEAn v\xF9ng \u0111\u1EA5t ph\xF9 sa tr\xF9 ph\xFA \u0110BSCL. C\xF4ng ngh\u1EC7 s\u1EA5y d\u1EBBo nhi\u1EC7t th\u1EA5p gi\xFAp l\xE1t \u0111u \u0111\u1EE7 gi\u1EEF tr\u1ECDn s\u1EAFc cam \u0111\u1ECF r\u1EF1c r\u1EE1, \u0111\u1ED9 d\u1EBBo m\u1EC1m m\u1ECDng v\u1ECB, gi\xE0u beta-carotene v\xE0 enzym papain t\u1EF1 nhi\xEAn.",
     origin: "Mekong Delta Orchards",
     originVi: "V\xF9ng tr\u1ED3ng \u0110BSCL",
-    certifications: ["BRCGS Facility", "Clean Label", "Export Standard"],
+    certifications: ["BRCGS Facility", "Clean Label"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 16%",
       brix: "55\xB0 - 60\xB0 Brix",
@@ -677,8 +677,8 @@ var BASE_PRODUCTS_DATA = [
       processVi: "S\u1EA5y b\u01A1m nhi\u1EC7t tu\u1EA7n ho\xE0n nhi\u1EC7t \u0111\u1ED9 th\u1EA5p b\u1EA3o to\xE0n s\u1EAFc t\u1ED1 carotenoid v\xE0 c\u1EA5u tr\xFAc d\u1EBBo",
       packagingEn: "Zip pouch 100g, 250g, 500g / Master export carton 5kg, 10kg",
       packagingVi: "T\xFAi zip 100g, 250g, 500g / Th\xF9ng carton xu\u1EA5t kh\u1EA9u 5kg, 10kg",
-      certificationsEn: "BRCGS Facility, Clean Label, Export Standard",
-      certificationsVi: "Nh\xE0 m\xE1y chu\u1EA9n BRCGS, Clean Label, Ti\xEAu chu\u1EA9n xu\u1EA5t kh\u1EA9u"
+      certificationsEn: "BRCGS Facility, Clean Label",
+      certificationsVi: "Nh\xE0 m\xE1y chu\u1EA9n BRCGS, Clean Label"
     },
     en: {
       name: "Naturally Soft-Dried Papaya",
@@ -712,9 +712,9 @@ var BASE_PRODUCTS_DATA = [
     descriptionVi: "S\u1EF1 k\u1EBFt h\u1EE3p ho\xE0n h\u1EA3o gi\u1EEFa c\xE1c lo\u1EA1i tr\xE1i c\xE2y nhi\u1EC7t \u0111\u1EDBi tr\u1EE9 danh v\xE0 c\u1EE7 qu\u1EA3 t\u01B0\u01A1i n\xF4ng s\u1EA3n Vi\u1EC7t Nam. C\xF4ng ngh\u1EC7 s\u1EA5y ch\xE2n kh\xF4ng hi\u1EC7n \u0111\u1EA1i t\u1EA1o n\xEAn m\xF3n \u0103n v\u1EB7t gi\xF2n tan \u0111a d\u1EA1ng h\u01B0\u01A1ng v\u1ECB, gi\xE0u ch\u1EA5t x\u01A1 v\xE0 ho\xE0n to\xE0n t\u1EF1 nhi\xEAn.",
     origin: "Mekong Delta & Da Lat Highlands",
     originVi: "\u0110BSCL & N\xF4ng s\u1EA3n \u0110\xE0 L\u1EA1t",
-    certifications: ["BRCGS Facility", "Clean Label", "Export Standard"],
+    certifications: ["BRCGS Facility", "Clean Label"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural mixed produce sweetness",
@@ -728,7 +728,7 @@ var BASE_PRODUCTS_DATA = [
       processVi: "Chi\xEAn s\u1EA5y ch\xE2n kh\xF4ng nhi\u1EC7t th\u1EA5p k\u1EBFt h\u1EE3p c\xF4ng ngh\u1EC7 ly t\xE2m t\xE1ch d\u1EA7u",
       packagingEn: "Zip pouch 150g, 250g, 500g / Master carton 10kg",
       packagingVi: "T\xFAi zip 150g, 250g, 500g / Th\xF9ng carton 10kg",
-      certificationsEn: "BRCGS Facility, Clean Label, Export Standard",
+      certificationsEn: "BRCGS Facility, Clean Label",
       certificationsVi: "Nh\xE0 m\xE1y chu\u1EA9n BRCGS, Clean Label, \u0110\u1EA1t chu\u1EA9n xu\u1EA5t kh\u1EA9u"
     },
     en: {

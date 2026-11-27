@@ -202,7 +202,7 @@ export const en = {
     "hqTitle": "Headquarters & Facility",
     "hqSub": "25,000 m² complex • Vinh Binh Commune, Dong Thap Province • 300 t/month output",
     "contactTitle": "Direct Export Contacts",
-    "contactSub": "Email: cuonghoang0710@gmail.com • Tel: (+84) 984 815 016 • www.vinaxo.net"
+    "contactSub": "Direct B2B Export Support • www.vinaxo.net"
   },
   "modal": {
     "eyebrow": "VINAXO EXPORT INQUIRY",
@@ -776,8 +776,8 @@ export const en = {
     "taxCodeLabel": "Tax Code",
     "taxCode": "1201611681",
     "address": "Quarter 5, Vinh Binh Commune, Dong Thap Province, Vietnam",
-    "phone": "(+84) 984 815 016",
-    "email": "cuonghoang0710@gmail.com",
+    "phone": "Corporate Hotline",
+    "email": "Corporate Email",
     "website": "https://www.vinaxo.net",
     "privacy": "Privacy Policy",
     "terms": "Terms of Use",

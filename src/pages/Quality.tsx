@@ -56,29 +56,23 @@ export const Quality: React.FC = () => {
     <div className="quality-page">
       {/* Page Hero */}
       <PageHero
-        badge={pick({
-          vi: 'TIÊU CHUẨN CHẤT LƯỢNG • BRCGS • ISO 22000 • HACCP',
-          en: 'QUALITY ASSURANCE • BRCGS • ISO 22000 • FDA',
-          ko: '품질 보증 표준 • BRCGS • ISO 22000 • US FDA',
-          zh: '国际品质保障 • BRCGS • ISO 22000 • 美国 FDA'
-        })}
         title={t('pageBanners.quality.title') || pick({
-          vi: 'Tiêu Chuẩn Chất Lượng & Quy Trình Chế Biến',
-          en: 'Quality Assurance & Processing Standards',
-          ko: '품질 보증 및 위생 가공 공정',
-          zh: '国际质量标准与现代化加工流程'
+          vi: 'Chất lượng và chứng nhận',
+          en: 'Quality & Certifications',
+          ko: '품질 및 인증',
+          zh: '品质与认证',
         })}
         description={
           t('pageBanners.quality.subtitle') ||
           pick({
-            vi: 'Kiểm soát an toàn thực phẩm nghiêm ngặt từ vùng trồng đến đóng gói vệ sinh khép kín theo chuẩn BRCGS, ISO 22000, HACCP, SMETA, Kosher và Halal.',
-            en: 'Strict food safety controls from orchard sourcing to hygienic cleanroom packaging under BRCGS, ISO 22000, HACCP, US FDA registration, SMETA, Kosher, and Halal.',
-            ko: '원료 산지 수확부터 클린룸 위생 포장까지 BRCGS, ISO 22000, HACCP, 미국 FDA 등록, SMETA, 코셔(Kosher) 및 할랄 기준을 철저히 준수합니다.',
-            zh: '严格执行从果园原产地采购到洁净车间包装的全链路管控，全面符合 BRCGS、ISO 22000、HACCP、美国 FDA 注册、SMETA、Kosher 及 Halal 标准。'
+            vi: 'Kiểm soát an toàn thực phẩm khép kín từ vùng trồng đến đóng gói theo chuẩn BRCGS, ISO 22000, HACCP, US FDA và SMETA.',
+            en: 'End-to-end food safety controls from orchard sourcing to cleanroom packaging under BRCGS, ISO 22000, HACCP, US FDA, and SMETA.',
+            ko: '산지 수확부터 위생 포장까지 BRCGS, ISO 22000, HACCP, 미국 FDA 및 SMETA 기준을 준수합니다.',
+            zh: '严格执行从果园采购到洁净包装的全链路品控，符合 BRCGS、ISO 22000、HACCP、美国 FDA 与 SMETA 标准。'
           })
         }
         breadcrumbCurrent={pick({
-          vi: 'Chất Lượng & Sản Xuất',
+          vi: 'Chất lượng & Sản xuất',
           en: 'Quality & Production',
           ko: '품질 및 생산 공정',
           zh: '品质控制与生产'
@@ -88,9 +82,9 @@ export const Quality: React.FC = () => {
       {/* ========================================================================
           SECTION 1: 6-STEP PRODUCTION WORKFLOW
           ======================================================================== */}
-      <section className="subpage-section section-white">
+      <section className="subpage-section section-white" style={{ paddingTop: 'clamp(28px, 3vw, 44px)' }}>
         <div className="container">
-          <div className="text-center" style={{ maxWidth: '820px', margin: '0 auto 48px auto' }}>
+          <div className="text-center" style={{ maxWidth: '780px', margin: '0 auto 28px auto' }}>
             <span className="section-label">{t('qualityPage.section1.label')}</span>
             <h2 className="section-title">
               {t('qualityPage.section1.title')}

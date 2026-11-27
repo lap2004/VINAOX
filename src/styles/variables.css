@@ -41,6 +41,9 @@
   --color-gold-light: var(--brand-orange-soft);
   --color-blue-badge: var(--vinaxo-red);
   --color-blue-bg: var(--vinaxo-red-soft);
+  --color-success: #15803D;
+  --color-warning: #B45309;
+  --color-error: #B91C1C;
 
   /* Typography & Text Colors */
   --color-heading: var(--dark-chocolate);
@@ -54,21 +57,30 @@
   --accent-gold: var(--vinaxo-red);
   --sage-green: var(--tropical-green);
 
-  /* Typography System (Brochure Bold Condensed Display + Clean Readable Sans) */
+  /* Typography System (Brand Mark Display + Clean International Sans) */
   --font-display: 'Oswald', 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
-  --font-serif: 'Oswald', 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, sans-serif;
   --font-sans: 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, sans-serif;
   --font-script: 'Caveat', cursive;
 
-  /* Layout & Spacing */
+  /* Spacing Scale & Layout Containers */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 48px;
+  --space-12: 64px;
+  --space-14: 80px;
   --container-max: 1400px;
-  --page-gutter: clamp(20px, 3.5vw, 48px);
-  --section-space: clamp(88px, 7.5vw, 124px);
-  --hero-space-y: clamp(72px, 6.5vw, 112px);
-  --content-gap: clamp(48px, 4.6vw, 80px);
-  --card-gap: 28px;
-  --header-height: 82px;
-  --header-logo-w: 250px;
+  --page-gutter: clamp(18px, 3.2vw, 44px);
+  --section-space: clamp(44px, 4.5vw, 68px);
+  --hero-space-y: clamp(36px, 4vw, 60px);
+  --content-gap: clamp(32px, 3.8vw, 60px);
+  --card-gap: 24px;
+  --header-height: 72px;
+  --header-logo-w: 224px;
 
   /* Border Radii */
   --radius-xs: 4px;
@@ -113,13 +125,19 @@
 :root[lang="ko"] .brand-tagline,
 :root[lang="ko"] .section-label,
 :root[lang="ko"] .section-eyebrow,
+:root[lang="ko"] .section-title,
+:root[lang="ko"] .page-banner-title,
 :root[lang="ko"] .footer-section-heading,
 :root[lang="ko"] .hero-headline-condensed,
+:root[lang="ko"] .btn,
 :root[lang="zh-CN"] .brand-tagline,
 :root[lang="zh-CN"] .section-label,
 :root[lang="zh-CN"] .section-eyebrow,
+:root[lang="zh-CN"] .section-title,
+:root[lang="zh-CN"] .page-banner-title,
 :root[lang="zh-CN"] .footer-section-heading,
-:root[lang="zh-CN"] .hero-headline-condensed {
+:root[lang="zh-CN"] .hero-headline-condensed,
+:root[lang="zh-CN"] .btn {
   text-transform: none;
   letter-spacing: 0.01em;
 }

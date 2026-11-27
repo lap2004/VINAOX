@@ -170,64 +170,34 @@ export const Products: React.FC = () => {
 
   return (
     <div className="products-page">
-      {/* Page Hero Banner */}
+      {/* Compact Page Hero Banner */}
       <PageHero
-        badge={pick({
-          vi: 'DANH MỤC XUẤT KHẨU • B2B PRODUCT CATALOG',
-          en: 'EXPORT CATALOG • B2B PRODUCT PORTFOLIO',
-          ko: '수출 제품 카탈로그 • B2B PRODUCT PORTFOLIO',
-          zh: '出口产品目录 • B2B 全品类产品矩阵',
-        })}
         title={
           t('pageBanners.products.title') ||
           pick({
-            vi: 'Danh Mục Sản Phẩm VINAXO',
-            en: 'VINAXO Product Catalog',
-            ko: 'VINAXO 제품 카탈로그',
-            zh: 'VINAXO 出口产品目录',
+            vi: 'Sản phẩm',
+            en: 'Products',
+            ko: '제품 소개',
+            zh: '产品中心',
           })
         }
         description={
           t('pageBanners.products.subtitle') ||
           pick({
-            vi: 'Khám phá danh mục sản phẩm VINAXO, bao gồm trái cây sấy dẻo, trái cây sấy giòn, hạt dinh dưỡng và các sản phẩm thập cẩm, phục vụ nhu cầu đa dạng của khách hàng và đối tác B2B. Thông tin về thành phần, công nghệ chế biến, quy cách đóng gói và thông số kỹ thuật được cung cấp riêng cho từng sản phẩm.',
-            en: "Explore VINAXO's product portfolio, including soft-dried fruits, crispy dried fruits, nuts and mixed products, serving the diverse needs of customers and B2B partners. Product ingredients, processing methods, packaging options and technical specifications are provided individually for each product.",
-            ko: '소프트 건조 과일, 크리스피 과일 칩, 견과류 및 모듬 제품으로 구성된 VINAXO 제품 라인업을 확인하세요. 원재료, 가공 공법, 포장 규격 및 기술 사양은 품목별로 개별 제공됩니다.',
-            zh: '探索涵盖软烘干果、香脆果干片、坚果仁及综合果蔬的 VINAXO 出口产品系列，每款产品的配料成分、加工工艺、包装规格及技术参数均单独列明。',
+            vi: 'Danh mục trái cây sấy dẻo, trái cây sấy giòn, hạt dinh dưỡng và các sản phẩm thập cẩm phục vụ khách hàng và đối tác B2B, kèm thông số kỹ thuật riêng theo từng sản phẩm.',
+            en: "VINAXO's product portfolio of soft-dried fruits, crispy dried fruits, nuts and mixed products, with specifications provided individually per SKU.",
+            ko: '소프트 건조 과일, 크리스피 과일 칩, 견과류 및 모듬 제품 라인업과 품목별 기술 사양을 확인하세요.',
+            zh: 'VINAXO 出口产品系列，涵盖软烘干果、香脆果干片、坚果及综合产品，各项技术参数均按单品列明。',
           })
         }
         breadcrumbCurrent={pick({ vi: 'Sản Phẩm', en: 'Products', ko: '제품 소개', zh: '产品中心' })}
       />
 
       {/* ========================================================================
-          SECTION 1: PRODUCT CATALOG & SHARED CATEGORY FILTER
+          SECTION 1: PRODUCT CATALOG & SHARED CATEGORY FILTER (VISIBLE ABOVE FOLD)
           ======================================================================== */}
-      <section className="subpage-section">
+      <section className="subpage-section" style={{ paddingTop: 'clamp(20px, 2.2vw, 32px)' }}>
         <div className="container">
-          <div className="text-center" style={{ maxWidth: '860px', margin: '0 auto 36px auto' }}>
-            <span className="section-label">
-              {t('productsPage.section1.label') ||
-                pick({
-                  vi: 'DANH MỤC SẢN PHẨM B2B',
-                  en: 'B2B PRODUCT PORTFOLIO',
-                  ko: 'B2B 제품 포트폴리오',
-                  zh: 'B2B 出口产品矩阵',
-                })}
-            </span>
-            <h2 className="section-title">
-              {t('productsPage.section1.title') ||
-                pick({
-                  vi: 'Danh Mục Trái Cây Sấy, Hạt Dinh Dưỡng & Sản Phẩm Thập Cẩm',
-                  en: 'Soft-Dried Fruits, Fruit Chips, Nuts & Mixed Products',
-                  ko: '소프트 건조 과일 · 과일 칩 · 견과류 · 모듬 제품',
-                  zh: '软烘干果 · 香脆果干片 · 坚果仁 · 综合果蔬系列',
-                })}
-            </h2>
-            <p className="section-desc" style={{ margin: '0 auto' }}>
-              {t('productsPage.section1.desc')}
-            </p>
-          </div>
-
           {/* Product Category Filter Pills (Synchronized with Grid + Specs Table) */}
           <div className="product-category-pills" role="tablist" aria-label="Product categories">
             {categories.map((cat) => (
@@ -343,7 +313,7 @@ export const Products: React.FC = () => {
             data-testid="products-grid"
             style={{
               display: 'grid',
-              marginTop: '36px',
+              marginTop: '24px',
             }}
           >
             {filteredProducts.map((p) => (

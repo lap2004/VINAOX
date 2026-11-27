@@ -213,9 +213,9 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
     descriptionVi: "Được chế biến từ chuối chín tự nhiên của vùng đồng bằng sông Cửu Long. Công nghệ sấy giòn hiện đại giúp từng lát chuối giữ độ giòn xốp tự nhiên, mùi thơm ngọt ngào đặc trưng và giàu kali.",
     origin: "Mekong Delta Orchards",
     originVi: "Vùng chuối ĐBSCL",
-    certifications: ["BRCGS Facility", "Clean Label", "Export Standard"],
+    certifications: ["BRCGS Facility", "Clean Label"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural banana sweetness",
@@ -229,8 +229,8 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
       processVi: "Chiên sấy chân không nhiệt thấp kết hợp ly tâm tách dầu triệt để",
       packagingEn: "Zip pouch 100g, 250g, 500g / Bulk carton 10kg",
       packagingVi: "Túi zip 100g, 250g, 500g / Thùng xá 10kg",
-      certificationsEn: "BRCGS Grade B Facility, Clean Label, Export Quality",
-      certificationsVi: "Nhà máy chuẩn BRCGS Grade B, Clean Label, Đạt chuẩn xuất khẩu"
+      certificationsEn: "BRCGS Grade B Facility, Clean Label",
+      certificationsVi: "Nhà máy chuẩn BRCGS Grade B, Clean Label"
     },
     en: {
       name: "Banana Chips",
@@ -264,9 +264,9 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
     descriptionVi: "Hạt điều chuẩn xuất khẩu từ thủ phủ Bình Phước. Từng mẻ hạt được phân loại kích thước đều đặn, rang chín tới giữ trọn độ giòn, béo bùi tự nhiên, dồi dào chất béo không bão hòa và khoáng chất.",
     origin: "Binh Phuoc, Vietnam",
     originVi: "Bình Phước, Việt Nam",
-    certifications: ["BRCGS Facility", "ISO 22000", "Export Standard"],
+    certifications: ["BRCGS Facility", "ISO 22000"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural nutty flavor",
@@ -367,9 +367,9 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
     descriptionVi: "Được sản xuất từ xoài tươi đồng bằng sông Cửu Long. Quy trình chiên sấy chân không hiện đại tạo nên lát xoài giòn xốp hấp dẫn, vị chua ngọt tự nhiên hài hòa và màu vàng tươi đẹp mắt.",
     origin: "Mekong Delta Orchards",
     originVi: "Vùng xoài ĐBSCL",
-    certifications: ["BRCGS Facility", "Clean Label", "Export Standard"],
+    certifications: ["BRCGS Facility", "Clean Label"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural mango sweet-tart profile",
@@ -383,8 +383,8 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
       processVi: "Sấy chân không nhiệt thấp kết hợp công nghệ ly tâm tách dầu",
       packagingEn: "Aluminium foil zip pouch 50g, 100g, 200g / Master carton 10kg",
       packagingVi: "Túi nhôm zipper 50g, 100g, 200g / Thùng carton xuất khẩu 10kg",
-      certificationsEn: "BRCGS Facility, Clean Label, Export Standard",
-      certificationsVi: "Nhà máy chuẩn BRCGS, Clean Label, Tiêu chuẩn xuất khẩu"
+      certificationsEn: "BRCGS Facility, Clean Label",
+      certificationsVi: "Nhà máy chuẩn BRCGS, Clean Label"
     },
     en: {
       name: "Crispy Mango Chips",
@@ -418,9 +418,9 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
     descriptionVi: "Hạt mắc ca thượng hạng sinh trưởng trên đất đỏ bazan màu mỡ vùng Tây Nguyên. Hạt được sấy nứt vỏ tự nhiên, nhân trắng ngà tròn trịa, béo bùi thanh thoát và dồi dào axit béo Omega-7 quý giá.",
     origin: "Central Highlands, Vietnam",
     originVi: "Tây Nguyên, Việt Nam",
-    certifications: ["Premium Grade", "ISO 22000", "Clean Label"],
+    certifications: ["ISO 22000", "Clean Label"],
     verified: true,
-    ocop: "Premium Grade",
+    ocop: "",
     specs: {
       moisture: "< 3%",
       brix: "Rich buttery profile",
@@ -521,9 +521,9 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
     descriptionVi: "Được sản xuất từ múi mít Thái tươi chín cây tại Tiền Giang. Công nghệ chiên sấy chân không kết hợp ly tâm tách dầu triệt để giúp từng múi mít giòn rụm, ngọt đậm đà tự nhiên mà không hề ngấy.",
     origin: "Tien Giang, Vietnam",
     originVi: "Tiền Giang, Việt Nam",
-    certifications: ["BRCGS Facility", "Clean Label", "Export Standard"],
+    certifications: ["BRCGS Facility", "Clean Label"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural jackfruit sweetness",
@@ -537,8 +537,8 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
       processVi: "Chiên sấy chân không nhiệt thấp và ly tâm tách dầu công nghệ cao",
       packagingEn: "Zip pouch 100g, 250g, 500g / Bulk master carton 10kg",
       packagingVi: "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 10kg",
-      certificationsEn: "BRCGS Grade B Facility, Clean Label, Export Standard",
-      certificationsVi: "Nhà máy chuẩn BRCGS Grade B, Clean Label, Tiêu chuẩn xuất khẩu"
+      certificationsEn: "BRCGS Grade B Facility, Clean Label",
+      certificationsVi: "Nhà máy chuẩn BRCGS Grade B, Clean Label"
     },
     en: {
       name: "Crispy Jackfruit Chips",
@@ -570,11 +570,11 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
     shortDescriptionVi: "Nhân quả óc chó tuyển chọn hạt to đều, giòn bùi và giàu dưỡng chất vàng cho trí não.",
     description: "Carefully sorted and lightly roasted walnut halves providing clean, nutty richness. Abundant in plant-based Omega-3 ALA, polyphenols, and essential minerals for daily wellness.",
     descriptionVi: "Nhân óc chó tuyển chọn đồng đều kích thước, được xử lý nhiệt nhẹ để giữ độ giòn thơm tự nhiên mà không làm biến tính các axit béo quý. Dồi dào Omega-3 thực vật, chất chống oxy hóa và khoáng chất.",
-    origin: "Selected Premium Grade",
-    originVi: "Nguồn nguyên liệu chọn lọc cao cấp",
-    certifications: ["Premium Grade", "ISO 22000", "Clean Label"],
+    origin: "Selected Sourcing Regions",
+    originVi: "Vùng nguyên liệu chọn lọc",
+    certifications: ["ISO 22000", "Clean Label"],
     verified: true,
-    ocop: "Premium Grade",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural nutty profile",
@@ -594,7 +594,7 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
     en: {
       name: "Premium Walnut Kernels",
       desc: "Nutritious whole walnut halves, gently roasted with a subtle nutty crunch.",
-      origin: "Selected Premium Grade",
+      origin: "Selected Sourcing Regions",
       features: "Selected whole halves packed with plant-derived Omega-3 (ALA), vitamin E, and polyphenols. Perfectly roasted for snacking and premium culinary use."
     },
     vi: {
@@ -623,9 +623,9 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
     descriptionVi: "Tuyển chọn từ những trái đu đủ chín cây trên vùng đất phù sa trù phú ĐBSCL. Công nghệ sấy dẻo nhiệt thấp giúp lát đu đủ giữ trọn sắc cam đỏ rực rỡ, độ dẻo mềm mọng vị, giàu beta-carotene và enzym papain tự nhiên.",
     origin: "Mekong Delta Orchards",
     originVi: "Vùng trồng ĐBSCL",
-    certifications: ["BRCGS Facility", "Clean Label", "Export Standard"],
+    certifications: ["BRCGS Facility", "Clean Label"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 16%",
       brix: "55° - 60° Brix",
@@ -639,8 +639,8 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
       processVi: "Sấy bơm nhiệt tuần hoàn nhiệt độ thấp bảo toàn sắc tố carotenoid và cấu trúc dẻo",
       packagingEn: "Zip pouch 100g, 250g, 500g / Master export carton 5kg, 10kg",
       packagingVi: "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg",
-      certificationsEn: "BRCGS Facility, Clean Label, Export Standard",
-      certificationsVi: "Nhà máy chuẩn BRCGS, Clean Label, Tiêu chuẩn xuất khẩu"
+      certificationsEn: "BRCGS Facility, Clean Label",
+      certificationsVi: "Nhà máy chuẩn BRCGS, Clean Label"
     },
     en: {
       name: "Naturally Soft-Dried Papaya",
@@ -675,9 +675,9 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
     descriptionVi: "Sự kết hợp hoàn hảo giữa các loại trái cây nhiệt đới trứ danh và củ quả tươi nông sản Việt Nam. Công nghệ sấy chân không hiện đại tạo nên món ăn vặt giòn tan đa dạng hương vị, giàu chất xơ và hoàn toàn tự nhiên.",
     origin: "Mekong Delta & Da Lat Highlands",
     originVi: "ĐBSCL & Nông sản Đà Lạt",
-    certifications: ["BRCGS Facility", "Clean Label", "Export Standard"],
+    certifications: ["BRCGS Facility", "Clean Label"],
     verified: true,
-    ocop: "Export Standard",
+    ocop: "",
     specs: {
       moisture: "< 5%",
       brix: "Natural mixed produce sweetness",
@@ -691,7 +691,7 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
       processVi: "Chiên sấy chân không nhiệt thấp kết hợp công nghệ ly tâm tách dầu",
       packagingEn: "Zip pouch 150g, 250g, 500g / Master carton 10kg",
       packagingVi: "Túi zip 150g, 250g, 500g / Thùng carton 10kg",
-      certificationsEn: "BRCGS Facility, Clean Label, Export Standard",
+      certificationsEn: "BRCGS Facility, Clean Label",
       certificationsVi: "Nhà máy chuẩn BRCGS, Clean Label, Đạt chuẩn xuất khẩu"
     },
     en: {

@@ -35,21 +35,16 @@ export const PageHero: React.FC<PageHeroProps> = ({
           <span>{breadcrumbCurrent}</span>
         </div>
 
-        {/* Optional Section Eyebrow Badge */}
+        {/* Optional Subtle Eyebrow Text */}
         {badge && (
-          <div style={{ marginBottom: '14px' }}>
+          <div style={{ marginBottom: '6px' }}>
             <span
               style={{
                 display: 'inline-block',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
+                fontSize: '0.76rem',
+                fontWeight: 600,
+                letterSpacing: '0.03em',
                 color: '#F4A83A',
-                backgroundColor: 'rgba(244, 168, 58, 0.14)',
-                padding: '4px 14px',
-                borderRadius: '9999px',
-                border: '1px solid rgba(244, 168, 58, 0.35)',
               }}
             >
               {badge}
@@ -83,7 +78,7 @@ export const PageHero: React.FC<PageHeroProps> = ({
           </p>
         )}
 
-        {children && <div style={{ marginTop: '24px' }}>{children}</div>}
+        {children && <div style={{ marginTop: '14px' }}>{children}</div>}
       </div>
     </section>
   );

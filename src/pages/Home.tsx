@@ -147,12 +147,8 @@ export const Home: React.FC = () => {
                   <h1
                     className="hero-headline-condensed"
                     style={{
-                      fontSize: 'clamp(2.15rem, 4.1vw, 3.35rem)',
-                      lineHeight: 1.08,
-                      fontWeight: 800,
                       color: 'var(--dark-chocolate)',
-                      margin: '0 0 18px 0',
-                      letterSpacing: '-0.02em',
+                      margin: '0 0 16px 0',
                     }}
                   >
                     <span style={{ display: 'block' }}>
@@ -992,7 +988,7 @@ export const Home: React.FC = () => {
                           textAlign: 'center',
                         }}
                       >
-                        <div style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--brand-orange)' }}>{stat.pct}</div>
+                        <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--brand-orange)' }}>{stat.pct}</div>
                         <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--dark-chocolate)' }}>{stat.region}</div>
                       </div>
                     ))}
