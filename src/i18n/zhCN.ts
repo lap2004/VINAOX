@@ -59,9 +59,9 @@ export const zhCN: Translations = {
     "description": "VINAXO 位于越南同塔省永平社第5区，运营 25,000 平方米现代化果蔬加工与烘干基地，成品月产能达 300 吨。依托产区直采、低温热泵烘干工艺及全流程质控，面向美国、欧盟及全球客户提供稳定供货与 OEM 贴牌代工服务。",
     "cta": "企业历程与管理团队",
     "imageOverlay": {
-      "tag": "湄公河三角洲鲜果",
-      "line1": "纯净越南鲜果，",
-      "line2": "全球贸易价值"
+      "tag": "VINAXO 同塔加工厂",
+      "line1": "规范洁净加工，",
+      "line2": "提升越南农产品价值"
     },
     "stats": [
       {
@@ -649,18 +649,24 @@ export const zhCN: Translations = {
       "row4Val": "果肉厚实芳香的优质菠萝蜜"
     },
     "gallery": {
-      "label": "厂区与产线实景",
-      "title": "VINAXO 加工工厂、生产线与原料果园",
-      "desc": "实景拍摄于越南同塔省永平社第5区加工基地及湄公河三角洲直采果园。",
-      "card1Tag": "25,000 M² 综合厂区",
-      "card1Title": "洁净车间与低温烘干室",
-      "card1Desc": "配备约 60°C 低温烘干设备、自动分选线及产季保鲜冷库。",
-      "card2Tag": "检测与出口包装",
-      "card2Title": "金属探测与充氮防潮包装",
-      "card2Desc": "每批 100% 金属探测、充氮铝箔拉链袋及标准 B2B 出口外箱。",
-      "card3Tag": "湄公河产区直采",
-      "card3Title": "产季芒果与热带水果规模化收储",
-      "card3Desc": "月采鲜果超 1,000 吨，助力当地农户稳产增收。"
+      "label": "VINAXO 工厂实景图库",
+      "title": "VINAXO 实际生产、分选与包装现场",
+      "desc": "实景拍摄于越南同塔省永平社 VINAXO 工厂车间。",
+      "card1Tag": "现代化加工车间",
+      "card1Title": "大型热带水果分拣与加工车间",
+      "card1Desc": "VINAXO 加工车间全景，身着防护服的员工在标准作业台前协同开展芒果等果干的分拣与加工。",
+      "card2Tag": "烘干前原料准备",
+      "card2Title": "鲜果切片平铺上盘准备烘干",
+      "card2Desc": "穿戴防护装备的 VINAXO 员工将均匀切片平铺至多层通风干燥网盘，准备送入后续烘干工段。",
+      "card3Tag": "烘干设备基础设施",
+      "card3Title": "多层食品级烘干推车系统",
+      "card3Desc": "VINAXO 车间内整齐排列的多层干燥托盘推车区，确保各批次热风循环均匀且持续流转。",
+      "allCategories": "全部实景",
+      "viewLarge": "查看大图",
+      "closeLightbox": "关闭图片预览",
+      "prevImage": "上一张",
+      "nextImage": "下一张",
+      "emptyCategory": "该分类暂无公开图片。"
     },
     "process": {
       "label": "生产工艺",

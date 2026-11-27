@@ -1,0 +1,730 @@
+{
+  "hero": {
+    "badge": {
+      "vi": "HỒ SƠ DOANH NGHIỆP • CÔNG TY TNHH VINAXO",
+      "en": "CORPORATE PROFILE • VINAXO COMPANY LIMITED",
+      "ko": "기업 프로필 • VINAXO COMPANY LIMITED",
+      "zh": "企业简介 • VINAXO COMPANY LIMITED"
+    },
+    "title": {
+      "vi": "Về Công Ty TNHH VINAXO",
+      "en": "About VINAXO COMPANY LIMITED",
+      "ko": "VINAXO 기업 소개",
+      "zh": "关于 VINAXO"
+    },
+    "subtitle": {
+      "vi": "Doanh nghiệp chế biến và xuất khẩu trái cây sấy tự nhiên từ đồng bằng sông Cửu Long, nâng tầm nông sản Việt với tiêu chuẩn an toàn thực phẩm quốc tế.",
+      "en": "Pioneering premium Vietnamese dried fruits from the fertile Mekong Delta to world tables, built upon direct farmer partnerships and BRCGS food safety excellence.",
+      "ko": "비옥한 메콩 델타산 열대 과일을 원료로 국제 BRCGS 식품안전 기준과 직영 농가 파트너십 기반의 프리미엄 건조 과일을 생산·수출하는 기업입니다.",
+      "zh": "扎根物产丰饶的湄公河三角洲，携手果农直采优质鲜果并遵循 BRCGS 国际食品安全标准，致力将越南天然热带果干推向全球餐桌。"
+    }
+  },
+  "story": {
+    "label": {
+      "vi": "VỀ CÔNG TY TNHH VINAXO",
+      "en": "ABOUT VINAXO",
+      "ko": "VINAXO 회사 소개",
+      "zh": "关于 VINAXO"
+    },
+    "titleLine1": {
+      "vi": "Bắt nguồn từ phù sa miền Tây",
+      "en": "Rooted in the Mekong Delta",
+      "ko": "메콩 델타의 비옥한 토양에서 시작해",
+      "zh": "植根湄公河三角洲沃土"
+    },
+    "titleLine2": {
+      "vi": "Nâng tầm giá trị nông sản Việt",
+      "en": "Elevating Vietnamese Agricultural Value",
+      "ko": "베트남 농산물의 가치를 세계로",
+      "zh": "全面提升越南农产品价值"
+    },
+    "description": {
+      "vi": "Tọa lạc tại Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp, VINAXO vận hành tổ hợp chế biến nông sản và trái cây sấy hiện đại quy mô 25.000 m² với công suất 300 tấn thành phẩm/tháng. Kết nối trực tiếp vùng trồng ĐBSCL cùng công nghệ sấy nhiệt thấp và kiểm soát chất lượng chặt chẽ, VINAXO phục vụ đối tác xuất khẩu Mỹ, Châu Âu và gia công OEM chuyên nghiệp.",
+      "en": "Based in Quarter 5, Vinh Binh Commune, Dong Thap Province, VINAXO operates an integrated 25,000 m² tropical dried fruit processing facility with 300 t monthly output capacity. Sourcing directly from Mekong Delta orchards, we deploy low-temperature dehydration and precision inspection to preserve natural color, aroma, and nutrition for US, EU, and global retail partners.",
+      "ko": "베트남 동탑성 빈빈면 5구역에 위치한 VINAXO는 25,000 m² 규모의 현대식 농산물·건조 과일 가공 단지를 운영하며 월 300톤의 완제품을 생산합니다. 메콩 델타 산지 직조달과 저온 건조 기술, 엄격한 품질 관리를 바탕으로 미국·유럽 수출 및 OEM 위탁 생산을 지원합니다.",
+      "zh": "VINAXO 位于越南同塔省永平社第5区，运营 25,000 平方米现代化果蔬加工与烘干基地，成品月产能达 300 吨。依托产区直采、低温热泵烘干工艺及全流程质控，面向美国、欧盟及全球客户提供稳定供货与 OEM 贴牌代工服务。"
+    }
+  },
+  "visionMission": {
+    "enabled": false,
+    "label": {
+      "vi": "TẦM NHÌN, SỨ MỆNH & GIÁ TRỊ CỐT LÕI",
+      "en": "VISION, MISSION & CORE VALUES",
+      "ko": "비전, 미션 및 핵심 가치",
+      "zh": "愿景、使命与核心价值"
+    },
+    "visionTitle": {
+      "vi": "Tầm nhìn",
+      "en": "Vision",
+      "ko": "비전",
+      "zh": "企业愿景"
+    },
+    "visionDesc": {
+      "vi": "",
+      "en": "",
+      "ko": "",
+      "zh": ""
+    },
+    "missionTitle": {
+      "vi": "Sứ mệnh",
+      "en": "Mission",
+      "ko": "미션",
+      "zh": "企业使命"
+    },
+    "missionDesc": {
+      "vi": "",
+      "en": "",
+      "ko": "",
+      "zh": ""
+    },
+    "coreValuesTitle": {
+      "vi": "Giá trị cốt lõi",
+      "en": "Core Values",
+      "ko": "핵심 가치",
+      "zh": "核心价值"
+    },
+    "coreValuesDesc": {
+      "vi": "",
+      "en": "",
+      "ko": "",
+      "zh": ""
+    }
+  },
+  "highlightVisual": {
+    "image": "/assets/images/factory/factory-quality-sorting.webp",
+    "imageFallback": "/assets/images/factory/factory-quality-sorting.jpg",
+    "overlayTag": {
+      "vi": "Nhà máy VINAXO • Đồng Tháp",
+      "en": "VINAXO Facility • Dong Thap",
+      "ko": "VINAXO 동탑 가공 공장",
+      "zh": "VINAXO 同塔加工厂"
+    },
+    "overlayLine1": {
+      "vi": "Chế biến chuẩn sạch,",
+      "en": "Verified Processing,",
+      "ko": "체계적 위생 가공,",
+      "zh": "规范洁净加工，"
+    },
+    "overlayLine2": {
+      "vi": "Nâng tầm nông sản Việt",
+      "en": "Vietnamese Agricultural Value",
+      "ko": "베트남 농산물의 가치",
+      "zh": "提升越南农产品价值"
+    },
+    "alt": {
+      "vi": "Đội ngũ công nhân VINAXO mặc đồng phục bảo hộ kiểm tra cảm quan và cân định lượng xoài sấy trên bàn inox tại nhà máy Đồng Tháp",
+      "en": "VINAXO production workers in protective cleanroom uniforms inspecting and weighing dried mango slices on stainless steel tables at the Dong Thap factory",
+      "ko": "동탑성 VINAXO 공장에서 위생복을 착용한 생산 인력이 스테인리스 작업대 위 건망고를 선별·계량하는 현장",
+      "zh": "同塔省 VINAXO 工厂内身穿洁净防护服的员工在不锈钢台面上分拣并称量芒果干"
+    }
+  },
+  "metrics": [
+    {
+      "id": "area",
+      "num": {
+        "vi": "25.000 m²",
+        "en": "25,000 m²",
+        "ko": "25,000 m²",
+        "zh": "25,000 m²"
+      },
+      "label": {
+        "vi": "Tổng diện tích nhà máy",
+        "en": "Total Factory Area",
+        "ko": "총 공장 면적",
+        "zh": "工厂总面积"
+      },
+      "note": {
+        "vi": "Tổ hợp sấy, phân loại và đóng gói xuất khẩu tại Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp",
+        "en": "Integrated drying, sorting, and export packing facility in Quarter 5, Vinh Binh Commune, Dong Thap Province",
+        "ko": "동탑성 빈빈면 5구역 소재 건조·선별·수출 포장 일관 공장",
+        "zh": "位于越南同塔省永平社第5区的烘干、分选与出口包装一体化基地"
+      },
+      "source": {
+        "vi": "Hồ sơ năng lực VINAXO Brochure 2026",
+        "en": "VINAXO Brochure 2026 Specification",
+        "ko": "VINAXO 2026 브로슈어 사양",
+        "zh": "VINAXO 2026 画册官方参数"
+      }
+    },
+    {
+      "id": "output",
+      "num": {
+        "vi": "300 tấn",
+        "en": "300 t",
+        "ko": "300 t",
+        "zh": "300 t"
+      },
+      "label": {
+        "vi": "Sản lượng hàng tháng",
+        "en": "Monthly Finished Output",
+        "ko": "월간 완제품 생산량",
+        "zh": "月均成品产能"
+      },
+      "note": {
+        "vi": "Đáp ứng đơn hàng container xuất khẩu và nhãn hàng riêng với nguồn nguyên liệu ĐBSCL ổn định",
+        "en": "Consistent bulk and retail export supply backed by dedicated Mekong Delta orchards",
+        "ko": "메콩 델타 계약 산지를 기반으로 한 안정적 벌크·소매 수출 공급",
+        "zh": "依托湄公河三角洲专属果园，持续稳定供应大宗散货与零售小包装"
+      },
+      "source": {
+        "vi": "Hồ sơ năng lực VINAXO Brochure 2026",
+        "en": "VINAXO Brochure 2026 Specification",
+        "ko": "VINAXO 2026 브로슈어 사양",
+        "zh": "VINAXO 2026 画册官方参数"
+      }
+    },
+    {
+      "id": "moq",
+      "num": {
+        "vi": "200 kg",
+        "en": "200 kg",
+        "ko": "200 kg",
+        "zh": "200 kg"
+      },
+      "label": {
+        "vi": "Đơn hàng tối thiểu (MOQ)",
+        "en": "Minimum Order (MOQ)",
+        "ko": "최소 주문 수량 (MOQ)",
+        "zh": "最小起订量 (MOQ)"
+      },
+      "note": {
+        "vi": "Linh hoạt hỗ trợ công thức riêng, đơn hàng thử nghiệm và gia công OEM thương hiệu riêng",
+        "en": "Flexible MOQ supporting custom recipes, trial export orders, and OEM private label lines",
+        "ko": "시험 수출 및 맞춤형 OEM 브랜드 프로젝트를 지원하는 유연한 MOQ",
+        "zh": "支持定制配方试单与 OEM 自有品牌项目的灵活起订门槛"
+      },
+      "source": {
+        "vi": "Chính sách thương mại VINAXO",
+        "en": "VINAXO Commercial Terms",
+        "ko": "VINAXO 거래 조건",
+        "zh": "VINAXO 商务合作条款"
+      }
+    },
+    {
+      "id": "lead-time",
+      "num": {
+        "vi": "2–4 tuần",
+        "en": "2–4 weeks",
+        "ko": "2–4주",
+        "zh": "2–4 周"
+      },
+      "label": {
+        "vi": "Thời gian giao hàng tiêu chuẩn",
+        "en": "Typical Production Lead Time",
+        "ko": "표준 생산 리드타임",
+        "zh": "标准生产周期"
+      },
+      "note": {
+        "vi": "Triển khai sản xuất nhanh sau khi duyệt mẫu (~70% sản lượng xuất sang Mỹ & ~20% sang Châu Âu)",
+        "en": "Rapid order turnaround from approved specification (~70% US & ~20% EU export reach)",
+        "ko": "사양 승인 후 신속 출고 (미국 ~70%, EU ~20% 수출 실적)",
+        "zh": "确认规格后快速排产交付（美国约 70%、欧盟约 20% 出口占比）"
+      },
+      "source": {
+        "vi": "VINAXO Brochure 2026 & Số liệu xuất khẩu",
+        "en": "VINAXO Brochure 2026 & Trade Records",
+        "ko": "VINAXO 2026 브로슈어 & 수출 실적",
+        "zh": "VINAXO 2026 画册及贸易记录"
+      }
+    }
+  ],
+  "milestones": [
+    {
+      "id": "y2018",
+      "badge": {
+        "vi": "Năm 2018",
+        "en": "Year 2018",
+        "ko": "2018년",
+        "zh": "2018 年"
+      },
+      "title": {
+        "vi": "Khởi Nghiệp Sấy Nông Sản",
+        "en": "Agricultural Dehydration Inception",
+        "ko": "열대 과일 건조 사업 착수",
+        "zh": "开启热带水果低温烘干研发"
+      },
+      "desc": {
+        "vi": "Ý tưởng khởi nghiệp của chị Hoàng Thị Thu Thảo và anh Nguyễn Anh Khoa bắt đầu từ trăn trở giải quyết đầu ra cho trái cây miền Tây mùa thu hoạch rộ, thử nghiệm công nghệ sấy nhiệt thấp giữ nguyên hương vị quả tươi.",
+        "en": "Co-founders Hoang Thi Thu Thao and Nguyen Anh Khoa began addressing post-harvest oversupply in the Mekong Delta, pioneering low-temperature drying to preserve genuine fruit flavors.",
+        "ko": "공동 창업자 황 티 투 타오와 응우이엔 아인 코아가 수확기 홍수 출하 문제를 해결하고자 과일 본연의 맛을 살리는 저온 건조 연구를 시작했습니다.",
+        "zh": "联合创始人 Hoang Thi Thu Thao 与 Nguyen Anh Khoa 着手解决产季鲜果滞销难题，率先探索保留天然风味的低温烘干工艺。"
+      }
+    },
+    {
+      "id": "y2019",
+      "badge": {
+        "vi": "Năm 2019",
+        "en": "Year 2019",
+        "ko": "2019년",
+        "zh": "2019 年"
+      },
+      "title": {
+        "vi": "Thành Lập Pháp Nhân VINAXO",
+        "en": "Corporate Incorporation of VINAXO",
+        "ko": "VINAXO 법인 정식 설립",
+        "zh": "VINAXO 法人公司正式注册成立"
+      },
+      "desc": {
+        "vi": "Chính thức đăng ký CÔNG TY TNHH VINAXO (Mã số thuế: 1201611681), xây dựng cơ sở chế biến ban đầu tại Thị trấn Vĩnh Bình, Huyện Gò Công Tây, Tỉnh Tiền Giang.",
+        "en": "Officially incorporated as VINAXO COMPANY LIMITED (Tax Code: 1201611681), building the foundation in Vinh Binh Town, Go Cong Tay District, Tien Giang.",
+        "ko": "VINAXO COMPANY LIMITED(사업자번호 1201611681)를 공식 설립하고 메콩 델타 가공 거점을 구축했습니다.",
+        "zh": "正式成立 VINAXO COMPANY LIMITED（税号：1201611681），在湄公河三角洲建立标准化生产基地。"
+      }
+    },
+    {
+      "id": "y2021",
+      "badge": {
+        "vi": "Năm 2021",
+        "en": "Year 2021",
+        "ko": "2021년",
+        "zh": "2021 年"
+      },
+      "title": {
+        "vi": "Đầu Tư Nhà Máy 15 Tỷ Đồng",
+        "en": "15 Billion VND Processing Facility Investment",
+        "ko": "150억 VND 규모 가공 공장 투자",
+        "zh": "投资 150 亿越南盾扩建现代化厂区"
+      },
+      "desc": {
+        "vi": "Mở rộng khuôn viên sản xuất 4.000 m², trang bị 6 buồng sấy công nghiệp hiện đại cùng hệ thống kho lạnh trữ quả tươi, nâng năng lực chế biến hàng chục tấn trái cây tươi mỗi ngày.",
+        "en": "Expanded into a 4,000 m² facility with 6 modern industrial dehydrators and cold storage, processing tens of tons of fresh fruits daily.",
+        "ko": "4,000 m² 공장 증설과 현대식 산업용 건조기 6기 및 대형 저온 저장고를 도입했습니다.",
+        "zh": "扩建 4,000 平方米厂房并投产 6 台工业级低温烘干机与大型冷库。"
+      }
+    },
+    {
+      "id": "y2023",
+      "badge": {
+        "vi": "Năm 2023",
+        "en": "Year 2023",
+        "ko": "2023년",
+        "zh": "2023 年"
+      },
+      "title": {
+        "vi": "Chuẩn Quốc Tế BRCGS & Xuất Khẩu Mỹ",
+        "en": "BRCGS Certification & US Market Expansion",
+        "ko": "BRCGS 인증 획득 및 미국·EU 수출 확대",
+        "zh": "通过 BRCGS 认证并拓展美欧主流市场"
+      },
+      "desc": {
+        "vi": "Đạt chứng nhận an toàn thực phẩm toàn cầu BRCGS Food Safety Hạng B; mở rộng xuất khẩu mạnh sang thị trường Hoa Kỳ (chiếm ~70% cơ cấu) và Liên minh Châu Âu (~20%).",
+        "en": "Achieved BRCGS Food Safety Grade B international certification; scaled exports to the United States (~70% share) and European Union (~20%).",
+        "ko": "BRCGS Food Safety Grade B 국제 인증을 획득하고 미국(약 70%)과 유럽연합(약 20%) 시장으로 수출을 확대했습니다.",
+        "zh": "斩获 BRCGS Food Safety Grade B 国际认证，对美（约 70%）及对欧（约 20%）出口规模迅速提升。"
+      }
+    },
+    {
+      "id": "y2024",
+      "badge": {
+        "vi": "Năm 2024",
+        "en": "Year 2024",
+        "ko": "2024년",
+        "zh": "2024 年"
+      },
+      "title": {
+        "vi": "Vinh Danh Nông Dân - Doanh Nhân & OCOP",
+        "en": "Exemplary Entrepreneur Honors & OCOP Awards",
+        "ko": "우수 경영자 표창 및 OCOP 3성급 수상",
+        "zh": "荣获省级表彰与 OCOP 三星认证"
+      },
+      "desc": {
+        "vi": "Giám đốc Nguyễn Anh Khoa nhận Bằng khen Doanh nhân - Nông dân tiêu biểu của UBND tỉnh Tiền Giang; Chị Hoàng Thị Thu Thảo đạt Giải Nhì Cuộc thi Khởi nghiệp đổi mới sáng tạo; sản phẩm sấy đạt chuẩn OCOP 3 sao.",
+        "en": "Managing Director Nguyen Anh Khoa honored as Provincial Exemplary Farmer-Entrepreneur; Ms. Hoang Thi Thu Thao won 2nd Prize in Provincial Startup Contest; products earned 3-Star OCOP recognition.",
+        "ko": "응우이엔 아인 코아 대표의 성(省) 우수 농어업 경영인 선정, 황 티 투 타오 부대표의 창업 경진대회 수상 및 3대 품목 OCOP 3성급 인증을 달성했습니다.",
+        "zh": "总经理 Nguyen Anh Khoa 获评省级优秀企业家，副总经理 Hoang Thi Thu Thao 荣获创业创新大赛奖项，主力产品获授 OCOP 三星认证。"
+      }
+    },
+    {
+      "id": "present",
+      "badge": {
+        "vi": "Hiện Nay",
+        "en": "Present",
+        "ko": "현재",
+        "zh": "至今"
+      },
+      "title": {
+        "vi": "Mở Rộng Chuỗi Cung Ứng B2B Toàn Cầu",
+        "en": "Global B2B Supply Chain Expansion",
+        "ko": "글로벌 B2B 공급망 및 25,000 m² 단지 확장",
+        "zh": "25,000 m² 基地扩能与全球 B2B 供应链升级"
+      },
+      "desc": {
+        "vi": "Chủ động liên kết bao tiêu hơn 1.000 tấn xoài Đồng Tháp, khóm Tân Phước, thanh long Chợ Gạo, đẩy mạnh gia công OEM cho các chuỗi siêu thị lớn và sàn thương mại nông sản số.",
+        "en": "Actively sourcing over 1,000 tons of fruit monthly, expanding private-label OEM manufacturing for retail chains and digital agricultural platforms worldwide.",
+        "ko": "월 1,000톤 이상 생과를 수매하며 글로벌 유통 체인용 OEM·PB 제조 역량을 지속 확장하고 있습니다.",
+        "zh": "月均鲜果采购超 1,000 吨，全面服务全球商超零售与 OEM 贴牌制造客户。"
+      }
+    }
+  ],
+  "infrastructure": {
+    "label": {
+      "vi": "CƠ SỞ HẠ TẦNG VÀ CÔNG NGHỆ",
+      "en": "INFRASTRUCTURE & TECHNOLOGY",
+      "ko": "설비 및 기술",
+      "zh": "基础设施与技术"
+    },
+    "title": {
+      "vi": "Tổ hợp nhà máy 25.000 m² tại Đồng Tháp",
+      "en": "25,000 m² Processing Complex in Dong Thap",
+      "ko": "동탑성 25,000 m² 종합 가공 단지",
+      "zh": "同塔省 25,000 m² 现代化加工综合体"
+    },
+    "desc": {
+      "vi": "Tọa lạc tại Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp, tổ hợp sản xuất của VINAXO được quy hoạch đồng bộ theo tiêu chuẩn an toàn thực phẩm quốc tế.",
+      "en": "Located at Quarter 5, Vinh Binh Commune, Dong Thap Province, VINAXO's production complex is engineered under international food hygiene standards.",
+      "ko": "국제 식품위생 표준에 맞춰 설계된 VINAXO 생산 단지의 핵심 설비입니다.",
+      "zh": "按照国际食品卫生规范规划建设的核心产线与冷链储存设施。"
+    },
+    "image": "/assets/images/factory/factory-fresh-prep.webp",
+    "imageFallback": "/assets/images/factory/factory-fresh-prep.jpg",
+    "imageAlt": {
+      "vi": "Công nhân VINAXO mặc đồng phục bảo hộ sơ chế và tách múi trái cây tươi trên bàn inox trong phân xưởng sạch",
+      "en": "VINAXO factory staff in hygienic uniforms trimming and preparing fresh tropical jackfruit on stainless steel tables",
+      "ko": "위생복을 착용한 VINAXO 직원이 스테인리스 작업대에서 신선한 잭프루트를 전처리하는 현장",
+      "zh": "身着卫生工装的 VINAXO 员工在不锈钢操作台上对新鲜菠萝蜜进行削皮分拣预处理"
+    },
+    "features": [
+      {
+        "id": "dryers",
+        "title": {
+          "vi": "Hệ thống 6 buồng sấy nhiệt thấp (~60°C)",
+          "en": "6 Low-Temperature Dehydration Units (~60°C)",
+          "ko": "저온 순환 건조 설비 (~60°C)",
+          "zh": "低温热泵循环烘干机组 (~60°C)"
+        },
+        "desc": {
+          "vi": "Kiểm soát độ ẩm nghiêm ngặt, giữ trọn sắc vàng óng tự nhiên của quả tươi, không cần phẩm màu hay đường nhân tạo.",
+          "en": "Strict moisture control preserving natural vibrant golden hues without chemical coloring or refined sugars.",
+          "ko": "정밀 수분 제어로 합성 색소와 정제당 없이 천연 황금빛 색감을 보존합니다.",
+          "zh": "精准调控水分活度，无需化学色素或精制糖即可保持诱人金黄色泽。"
+        }
+      },
+      {
+        "id": "cold-storage",
+        "title": {
+          "vi": "Kho lạnh dự trữ nguyên liệu mùa vụ",
+          "en": "Cold Storage for Seasonal Crop Stocking",
+          "ko": "대규모 원물 저온 저장고",
+          "zh": "产季鲜果大型冷库储备"
+        },
+        "desc": {
+          "vi": "Năng lực trữ nguyên liệu quả tươi mùa thu hoạch rộ để duy trì hoạt động chế biến liên tục đến tận tháng 10 hàng năm, ổn định đơn hàng xuất khẩu.",
+          "en": "Capacity to store fresh fruits during peak harvest, sustaining continuous manufacturing through October each year for dependable exports.",
+          "ko": "성수기 수확 과일을 신선 보관하여 매년 10월까지 연중 끊김 없는 수출 생산을 보장합니다.",
+          "zh": "于丰收季集中收储鲜果，保障每年持续稳定加工至 10 月，满足全年出口订单。"
+        }
+      },
+      {
+        "id": "vacuum-frying",
+        "title": {
+          "vi": "Dây chuyền chiên chân không tách dầu ly tâm",
+          "en": "Vacuum Frying & Centrifugal De-Oiling Line",
+          "ko": "진공 튀김 및 원심 탈유 라인",
+          "zh": "真空脆化与高速离心脱油线"
+        },
+        "desc": {
+          "vi": "Phục vụ các dòng mít sấy giòn xốp tự nhiên, giảm thiểu hàm lượng dầu tối đa, bảo vệ sức khỏe người dùng.",
+          "en": "Dedicated to naturally crisp jackfruit, drastically lowering oil content to protect consumer health.",
+          "ko": "바삭한 과일 칩의 기름기를 최소화하여 건강한 스낵 기준을 충족합니다.",
+          "zh": "专用于香脆果干片加工，显著降低含油率，契合健康轻食消费趋势。"
+        }
+      }
+    ]
+  },
+  "sourcing": {
+    "label": {
+      "vi": "VÙNG NGUYÊN LIỆU ĐBSCL",
+      "en": "MEKONG DELTA SOURCING HUBS",
+      "ko": "메콩 델타 계약 산지",
+      "zh": "湄公河三角洲产区"
+    },
+    "title": {
+      "vi": "Liên kết nông dân & Chuỗi cung ứng vùng chuyên canh",
+      "en": "Direct Farmer Partnerships & Verified Growing Regions",
+      "ko": "농가 직거래 파트너십 및 청정 원료 산지",
+      "zh": "果农直采合作与可追溯洁净原料"
+    },
+    "desc": {
+      "vi": "VINAXO gắn bó chặt chẽ với các vùng chuyên canh trái cây trọng điểm tại Đồng Tháp, Tiền Giang, Vĩnh Long và Hậu Giang, chủ động thu mua trực tiếp từ hợp tác xã và nhà vườn địa phương. (Ảnh thực tế vườn trồng đang được cập nhật bổ sung từ doanh nghiệp).",
+      "en": "VINAXO partners closely with key fruit-growing hubs across Dong Thap, Tien Giang, Vinh Long, and Hau Giang through direct cooperative and farm procurement.",
+      "ko": "VINAXO는 동탑·띠엔장·빈롱·하우장 주요 과일 산지와 직접 계약하여 수백 가구 농가와 지속 가능한 공급망을 구축하고 있습니다.",
+      "zh": "VINAXO 与同塔、前江、永隆及后江等湄公河三角洲核心产区建立长期直采合作，助力数百户种植家庭稳产增收。"
+    },
+    "rows": [
+      {
+        "id": "mango-hub",
+        "label": {
+          "vi": "Vựa xoài Đồng Tháp (Cát Chu & Hòa Lộc)",
+          "en": "Dong Thap Mango Hub (Cat Chu & Hoa Loc)",
+          "ko": "동탑 망고 산지 (깟쭈 & 화록 품종)",
+          "zh": "同塔芒果产区（Cat Chu 与 Hoa Loc 品种）"
+        },
+        "value": {
+          "vi": "Thu mua mùa vụ hơn 1.000 tấn",
+          "en": "Procuring over 1,000 tons seasonally",
+          "ko": "수확기 1,000톤 이상 수매",
+          "zh": "旺季采购逾 1,000 吨鲜果"
+        }
+      },
+      {
+        "id": "pineapple-hub",
+        "label": {
+          "vi": "Thủ phủ khóm Tân Phước, Tiền Giang",
+          "en": "Tan Phuoc Pineapple Hub, Tien Giang",
+          "ko": "띠엔장 떤프억 파인애플 산지",
+          "zh": "前江新福菠萝产区"
+        },
+        "value": {
+          "vi": "Cung ứng khóm Queen vị ngọt thanh",
+          "en": "Supplying naturally sweet Queen pineapples",
+          "ko": "천연 당도가 높은 퀸 품종 공급",
+          "zh": "稳定供应天然高甜度皇后菠萝"
+        }
+      },
+      {
+        "id": "dragonfruit-hub",
+        "label": {
+          "vi": "Vùng thanh long Chợ Gạo, Tiền Giang",
+          "en": "Cho Gao Dragon Fruit Region, Tien Giang",
+          "ko": "띠엔장 쩌가오 적색 용과 산지",
+          "zh": "前江鹅贡市红心火龙果产区"
+        },
+        "value": {
+          "vi": "Thanh long ruột đỏ giàu betalain tự nhiên",
+          "en": "Betalain-rich red dragon fruit",
+          "ko": "베타시아닌·베탈레인 성분이 풍부한 적육 용과",
+          "zh": "富含天然甜菜色素的红肉火龙果"
+        }
+      },
+      {
+        "id": "jackfruit-hub",
+        "label": {
+          "vi": "Vựa mít Tiền Giang & Hậu Giang",
+          "en": "Tien Giang & Hau Giang Jackfruit Orchards",
+          "ko": "띠엔장 & 하우장 잭프루트 산지",
+          "zh": "前江与后江菠萝蜜产区"
+        },
+        "value": {
+          "vi": "Mít Thái chín cây múi dày thơm ngọt",
+          "en": "Thick-fleshed aromatic Thai jackfruit",
+          "ko": "과육이 두껍고 향이 진한 태국 품종 잭프루트",
+          "zh": "果肉厚实芳香的优质菠萝蜜"
+        }
+      }
+    ]
+  },
+  "gallerySection": {
+    "label": {
+      "vi": "HÌNH ẢNH THỰC TẾ TẠI NHÀ MÁY VINAXO",
+      "en": "AUTHENTIC VINAXO FACTORY GALLERY",
+      "ko": "VINAXO 실제 가동 공장 현장 갤러리",
+      "zh": "VINAXO 工厂实景图库"
+    },
+    "title": {
+      "vi": "Hình Ảnh Hoạt Động Sản Xuất Thực Tế",
+      "en": "Inside VINAXO Processing & Packaging Floors",
+      "ko": "VINAXO 실제 생산·가공·포장 현장",
+      "zh": "VINAXO 实际生产、分选与包装现场"
+    },
+    "desc": {
+      "vi": "Bộ ảnh ghi nhận trực tiếp các công đoạn sản xuất thực tế tại nhà máy Công ty TNHH VINAXO (Xã Vĩnh Bình, Tỉnh Đồng Tháp). Nhãn, tiêu đề và mô tả được đồng bộ chính xác theo nội dung từng ảnh.",
+      "en": "Verified photography directly from VINAXO COMPANY LIMITED's processing floor in Vinh Binh Commune, Dong Thap Province. Every label, title, and caption strictly matches what is shown.",
+      "ko": "동탑성 빈빈면 소재 VINAXO 공장의 실제 작업 공정을 촬영한 사진입니다. 모든 라벨, 제목 및 설명은 사진 속 실제 공정과 100% 일치하도록 관리됩니다.",
+      "zh": "实景拍摄于越南同塔省永平社 VINAXO 工厂车间。每张图片均配有与实际画面严格一致的标签、标题与说明。"
+    }
+  },
+  "gallery": [
+    {
+      "id": "factory-sorting-hall",
+      "image": "/assets/images/factory-2026/factory-featured.webp",
+      "imageFallback": "/assets/images/factory-2026/factory-featured.jpg",
+      "category": "factory",
+      "label": {
+        "vi": "Nhà máy chế biến",
+        "en": "Processing Facility",
+        "ko": "가공 공장 현장",
+        "zh": "现代化加工车间"
+      },
+      "title": {
+        "vi": "Khu phân loại và chế biến quy mô lớn",
+        "en": "Large-Scale Tropical Fruit Sorting & Processing Hall",
+        "ko": "대규모 과일 선별 및 전처리 작업장",
+        "zh": "大型热带水果分拣与加工车间"
+      },
+      "description": {
+        "vi": "Toàn cảnh phân xưởng sản xuất tại nhà máy VINAXO với đội ngũ công nhân mặc đồng phục bảo hộ phân loại xoài và nguyên liệu theo bàn chuyền.",
+        "en": "Wide view inside VINAXO's processing hall where uniformed production teams sort and prepare golden mango batches along organized stainless workstations.",
+        "ko": "위생 작업복을 착용한 VINAXO 생산 인력이 정돈된 작업 라인에서 과일 원물을 선별·가공하는 공장 전경입니다.",
+        "zh": "VINAXO 加工车间全景，身着防护服的员工在标准作业台前协同开展芒果等果干的分拣与加工。"
+      },
+      "alt": {
+        "vi": "Toàn cảnh khu phân loại và chế biến bên trong nhà máy VINAXO tại Đồng Tháp",
+        "en": "Interior wide view of the VINAXO fruit sorting and processing hall in Dong Thap",
+        "ko": "동탑성 VINAXO 공장 내부의 과일 선별 및 가공 홀 전경",
+        "zh": "同塔省 VINAXO 工厂内部水果分拣与加工大厅实景"
+      },
+      "sortOrder": 1,
+      "visible": true
+    },
+    {
+      "id": "tray-racking-line",
+      "image": "/assets/images/factory/factory-featured-drying.webp",
+      "imageFallback": "/assets/images/factory/factory-featured-drying.jpg",
+      "category": "preparation",
+      "label": {
+        "vi": "Chuẩn bị nguyên liệu",
+        "en": "Material Preparation",
+        "ko": "건조 전 원료 준비",
+        "zh": "烘干前原料准备"
+      },
+      "title": {
+        "vi": "Xếp lát trái cây lên khay chuẩn bị sấy",
+        "en": "Arranging Sliced Fruit onto Drying Trays",
+        "ko": "건조 트레이 과일 슬라이스 배열 작업",
+        "zh": "鲜果切片平铺上盘准备烘干"
+      },
+      "description": {
+        "vi": "Công nhân VINAXO mặc trang phục bảo hộ tiến hành dàn đều lát trái cây lên các khay lưới thoáng khí trên kệ xe đẩy nhiều tầng trước khi đưa vào công đoạn sấy.",
+        "en": "VINAXO operators in protective attire carefully spread sliced tropical fruit across ventilated food-grade plastic trays stacked on wheeled racks prior to dehydration.",
+        "ko": "위생 보호구를 착용한 VINAXO 작업자가 건조 공정 투입 전 통풍형 다단 건조 트레이에 과일 슬라이스를 고르게 배열하는 모습입니다.",
+        "zh": "穿戴防护装备的 VINAXO 员工将均匀切片平铺至多层通风干燥网盘，准备送入后续烘干工段。"
+      },
+      "alt": {
+        "vi": "Công nhân VINAXO xếp lát xoài vàng lên các khay nhựa nhiều tầng chuẩn bị sấy",
+        "en": "VINAXO workers arranging sliced yellow mango onto multi-tier ventilated plastic drying trays",
+        "ko": "건조를 위해 다단 플라스틱 트레이에 망고 슬라이스를 올리는 VINAXO 직원들",
+        "zh": "VINAXO 工人将切片芒果整齐铺入多层塑料通风烘干盘"
+      },
+      "sortOrder": 2,
+      "visible": true
+    },
+    {
+      "id": "drying-tray-racks",
+      "image": "/assets/images/factory-2026/factory-sub-2.webp",
+      "imageFallback": "/assets/images/factory-2026/factory-sub-2.jpg",
+      "category": "processing",
+      "label": {
+        "vi": "Hạ tầng khay sấy",
+        "en": "Drying Infrastructure",
+        "ko": "건조 설비 인프라",
+        "zh": "烘干设备基础设施"
+      },
+      "title": {
+        "vi": "Hệ thống xe đẩy khay sấy công nghiệp đa tầng",
+        "en": "Multi-Tier Food-Grade Drying Rack Trolleys",
+        "ko": "다단 식품 등급 건조 대차 시스템",
+        "zh": "多层食品级烘干推车系统"
+      },
+      "description": {
+        "vi": "Khu vực tập kết các dãy xe đẩy khay sấy đa tầng sạch sẽ bên trong phân xưởng nhà máy VINAXO, phục vụ luân chuyển mẻ sấy liên tục.",
+        "en": "Dedicated factory zone holding rows of clean multi-tier drying tray trolleys engineered for uniform airflow and continuous batch rotation.",
+        "ko": "균일한 열풍 순환과 연속 배치 운용을 위해 정비된 VINAXO 공장 내 다단 건조 트레이 대차 구역입니다.",
+        "zh": "VINAXO 车间内整齐排列的多层干燥托盘推车区，确保各批次热风循环均匀且持续流转。"
+      },
+      "alt": {
+        "vi": "Hệ thống xe đẩy khay sấy công nghiệp đa tầng trong khu vực sạch nhà máy VINAXO",
+        "en": "Rows of multi-tier food-grade drying tray trolleys inside the clean VINAXO factory floor",
+        "ko": "VINAXO 공장 내 청결 구역에 배치된 다단 건조 트레이 대차 열",
+        "zh": "VINAXO 洁净车间内排列整齐的多层食品级烘干网盘推车"
+      },
+      "sortOrder": 3,
+      "visible": true
+    },
+    {
+      "id": "fresh-fruit-prep",
+      "image": "/assets/images/factory/factory-fresh-prep.webp",
+      "imageFallback": "/assets/images/factory/factory-fresh-prep.jpg",
+      "category": "preparation",
+      "label": {
+        "vi": "Sơ chế nguyên liệu",
+        "en": "Fresh Fruit Preparation",
+        "ko": "원물 전처리",
+        "zh": "鲜果原料预处理"
+      },
+      "title": {
+        "vi": "Sơ chế và tách múi trái cây tươi trên bàn inox",
+        "en": "Manual Trimming & Preparation on Stainless Steel Tables",
+        "ko": "스테인리스 작업대 생과 전처리 및 손질",
+        "zh": "不锈钢操作台鲜果去壳与分选预处理"
+      },
+      "description": {
+        "vi": "Đội ngũ công nhân trang bị mũ trùm tóc, khẩu trang và găng tay bảo hộ thực hiện sơ chế, tách múi mít tươi trực tiếp trên bàn inox sạch trong xưởng.",
+        "en": "Production staff wearing hairnets, masks, and gloves manually trim, deseed, and separate fresh jackfruit segments on stainless steel preparation tables.",
+        "ko": "위생모·마스크·장갑을 착용한 작업자들이 스테인리스 테이블 위에서 신선한 잭프루트 과육을 정성껏 손질·분리하는 전처리 공정입니다.",
+        "zh": "佩戴发网、口罩与手套的产线人员在不锈钢台面上完成新鲜菠萝蜜的去壳、去核与分瓣初加工。"
+      },
+      "alt": {
+        "vi": "Công nhân VINAXO sơ chế tách múi mít tươi trên bàn inox tại xưởng chế biến",
+        "en": "VINAXO workers preparing and separating fresh jackfruit segments on stainless steel tables",
+        "ko": "스테인리스 작업대에서 신선한 잭프루트를 손질하는 VINAXO 작업자들",
+        "zh": "VINAXO 员工在不锈钢台面上处理并分离新鲜菠萝蜜果肉"
+      },
+      "sortOrder": 4,
+      "visible": true
+    },
+    {
+      "id": "quality-sorting-weighing",
+      "image": "/assets/images/factory/factory-quality-sorting.webp",
+      "imageFallback": "/assets/images/factory/factory-quality-sorting.jpg",
+      "category": "quality",
+      "label": {
+        "vi": "Kiểm tra & định lượng",
+        "en": "Sorting & Portioning",
+        "ko": "선별 및 계량 관리",
+        "zh": "品控分拣与定量称重"
+      },
+      "title": {
+        "vi": "Kiểm tra cảm quan và cân định lượng thành phẩm sau sấy",
+        "en": "Visual Grading and Precision Weighing of Dried Fruit",
+        "ko": "건조 과일 육안 선별 및 정밀 계량",
+        "zh": "果干感官分级筛选与精密定量称重"
+      },
+      "description": {
+        "vi": "Nhân sự kiểm soát tại bàn inox thực hiện chọn lọc màu sắc, độ đồng đều lát xoài sấy và cân định lượng bằng cân điện tử trước khi chuyển sang đóng gói.",
+        "en": "Station operators inspect color and slice uniformity while weighing portions of soft-dried mango on digital bench scales ahead of pouch sealing.",
+        "ko": "작업자가 건망고의 색상과 슬라이스 균일도를 확인한 뒤 디지털 전자저울로 정밀 계량하여 포장 공정으로 이송합니다.",
+        "zh": "操作员对芒果干的色泽与切片均匀度进行人工复检，并通过台式电子秤精密定量后送往包装工段。"
+      },
+      "alt": {
+        "vi": "Công nhân VINAXO kiểm tra và cân định lượng xoài sấy bằng cân điện tử trên bàn inox",
+        "en": "VINAXO worker weighing and inspecting dried mango slices with a digital scale on stainless bench",
+        "ko": "스테인리스 작업대의 디지털 저울로 건망고를 검수 및 계량하는 VINAXO 직원",
+        "zh": "VINAXO 员工使用不锈钢台面电子秤对芒果干进行复检与定量称重"
+      },
+      "sortOrder": 5,
+      "visible": true
+    },
+    {
+      "id": "retail-pouch-packing",
+      "image": "/assets/images/factory/factory-retail-packing.webp",
+      "imageFallback": "/assets/images/factory/factory-retail-packing.jpg",
+      "category": "packaging",
+      "label": {
+        "vi": "Đóng gói thành phẩm",
+        "en": "Finished Goods Packaging",
+        "ko": "완제품 소매 포장",
+        "zh": "成品袋装包装工段"
+      },
+      "title": {
+        "vi": "Đóng gói túi zipper thành phẩm Mít sấy dẻo VINAXO",
+        "en": "Packing Soft-Dried Jackfruit into Stand-Up Zipper Pouches",
+        "ko": "VINAXO 소프트 건잭프루트 스탠드형 지퍼 파우치 포장",
+        "zh": "VINAXO 软烘菠萝蜜干立式拉链袋包装"
+      },
+      "description": {
+        "vi": "Công nhân VINAXO đóng gói thành phẩm mít sấy dẻo vào túi zipper đứng mang nhận diện thương hiệu VINAXO trên bàn đóng gói sạch sẽ.",
+        "en": "VINAXO packaging operator fills finished soft-dried jackfruit slices into branded stand-up zipper pouches on the clean packing bench.",
+        "ko": "위생적인 포장 작업대에서 완성된 소프트 건잭프루트를 VINAXO 브랜드 스탠드형 지퍼 파우치에 정량 포장하는 모습입니다.",
+        "zh": "包装工段员工在洁净台面上将软烘菠萝蜜干成品装入 VINAXO 品牌立式拉链袋中。"
+      },
+      "alt": {
+        "vi": "Công nhân VINAXO đóng gói túi zipper thành phẩm Mít sấy dẻo trên bàn đóng gói",
+        "en": "VINAXO worker filling soft-dried jackfruit into stand-up zipper pouches on the packing bench",
+        "ko": "포장 작업대에서 소프트 건잭프루트를 지퍼 파우치에 담는 VINAXO 직원",
+        "zh": "VINAXO 包装工人将软烘菠萝蜜干装入品牌立式拉链袋"
+      },
+      "sortOrder": 6,
+      "visible": true
+    }
+  ]
+}

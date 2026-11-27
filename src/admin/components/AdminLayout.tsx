@@ -13,7 +13,8 @@ import {
   User,
   Shield,
   ShieldCheck,
-  Building
+  Building,
+  Info
 } from 'lucide-react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
@@ -23,6 +24,7 @@ export const AdminLayout: React.FC = () => {
 
   const navItems = [
     { to: '/admin/dashboard', label: 'Tổng quan', icon: LayoutDashboard },
+    { to: '/admin/about', label: 'Về chúng tôi', icon: Info },
     { to: '/admin/news', label: 'Quản lý tin tức', icon: Newspaper },
     { to: '/admin/products', label: 'Quản lý sản phẩm', icon: Package },
     { to: '/admin/media', label: 'Thư viện hình ảnh', icon: Image },

@@ -507,10 +507,11 @@ async function getCommitDeployStatus(commitSha) {
 // server/admin/publish.ts
 import fs from "fs";
 import path from "path";
-var ALLOWED_MODULES = ["news", "products", "certificates", "media", "brochure", "company", "all"];
+var ALLOWED_MODULES = ["news", "products", "about", "certificates", "media", "brochure", "company", "all"];
 var MODULE_LABELS = {
   news: "Tin t\u1EE9c & B\xE1o ch\xED",
   products: "S\u1EA3n ph\u1EA9m nhi\u1EC7t \u0111\u1EDBi",
+  about: "Trang V\u1EC1 ch\xFAng t\xF4i",
   certificates: "Ch\u1EE9ng nh\u1EADn & Ti\xEAu chu\u1EA9n",
   media: "Th\u01B0 vi\u1EC7n h\xECnh \u1EA3nh",
   brochure: "H\u1ED3 s\u01A1 n\u0103ng l\u1EF1c (Brochure)",
@@ -548,6 +549,19 @@ var publish_default = wrapHandler(async (req, res) => {
     let productsCount = 0;
     let certsCount = 0;
     let mediaCount = 0;
+    let aboutGalleryTotal = 0;
+    let aboutGalleryVisible = 0;
+    try {
+      const aboutFile = path.join(process.cwd(), "content/settings/about.json");
+      if (fs.existsSync(aboutFile)) {
+        const rawAbout = JSON.parse(fs.readFileSync(aboutFile, "utf-8").replace(/^\uFEFF/, ""));
+        if (Array.isArray(rawAbout?.gallery)) {
+          aboutGalleryTotal = rawAbout.gallery.length;
+          aboutGalleryVisible = rawAbout.gallery.filter((g) => g && g.visible !== false).length;
+        }
+      }
+    } catch {
+    }
     try {
       const newsDir = path.join(process.cwd(), "content/news");
       if (fs.existsSync(newsDir)) {
@@ -605,6 +619,7 @@ var publish_default = wrapHandler(async (req, res) => {
       stats: {
         news: { total: newsCount, published: newsCount - newsDrafts, drafts: newsDrafts },
         products: { total: productsCount },
+        aboutGallery: { total: aboutGalleryTotal, visible: aboutGalleryVisible },
         certificates: { total: certsCount },
         media: { total: mediaCount }
       },

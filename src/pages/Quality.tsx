@@ -71,9 +71,9 @@ export const Quality: React.FC = () => {
         description={
           t('pageBanners.quality.subtitle') ||
           pick({
-            vi: 'Kiểm soát an toàn thực phẩm nghiêm ngặt từ vùng trồng đến đóng gói vô trùng theo chuẩn BRCGS, ISO 22000, HACCP, SMETA, Kosher và Halal.',
-            en: 'Strict food safety controls from orchard sourcing to sterile cleanroom packaging under BRCGS, ISO 22000, HACCP, US FDA registration, SMETA, Kosher, and Halal.',
-            ko: '원료 산지 수확부터 클린룸 무균 포장까지 BRCGS, ISO 22000, HACCP, 미국 FDA 등록, SMETA, 코셔(Kosher) 및 할랄 기준을 철저히 준수합니다.',
+            vi: 'Kiểm soát an toàn thực phẩm nghiêm ngặt từ vùng trồng đến đóng gói vệ sinh khép kín theo chuẩn BRCGS, ISO 22000, HACCP, SMETA, Kosher và Halal.',
+            en: 'Strict food safety controls from orchard sourcing to hygienic cleanroom packaging under BRCGS, ISO 22000, HACCP, US FDA registration, SMETA, Kosher, and Halal.',
+            ko: '원료 산지 수확부터 클린룸 위생 포장까지 BRCGS, ISO 22000, HACCP, 미국 FDA 등록, SMETA, 코셔(Kosher) 및 할랄 기준을 철저히 준수합니다.',
             zh: '严格执行从果园原产地采购到洁净车间包装的全链路管控，全面符合 BRCGS、ISO 22000、HACCP、美国 FDA 注册、SMETA、Kosher 及 Halal 标准。'
           })
         }

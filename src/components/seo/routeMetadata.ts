@@ -225,7 +225,7 @@ export function resolveRouteSeo(pathname: string, language: Language): ResolvedS
       ogUrl: canonical,
       ogTitle: title,
       ogDescription: description,
-      ogImage: toAbsoluteOgImage('/assets/images/about_vietnam.jpg'),
+      ogImage: toAbsoluteOgImage('/assets/images/factory-2026/factory-featured.jpg'),
       ogLocale,
       ogLocaleAlternate,
       twitterCard: SITE_CONFIG.twitterCard,

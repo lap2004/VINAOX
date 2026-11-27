@@ -9,7 +9,14 @@ import {
 } from '../lib/security.js';
 import { checkApiMutationRateLimit } from '../lib/rateLimit.js';
 import { commitFile, getRepoFile, hasGitHubToken } from '../lib/github.js';
-import { validateCompanySettings, validateBrochureSettings } from '../../src/shared/schemas/settingsSchema.js';
+import {
+  validateCompanySettings,
+  validateBrochureSettings
+} from '../../src/shared/schemas/settingsSchema.js';
+import {
+  AboutPageContent,
+  validateAboutContent
+} from '../../src/shared/schemas/aboutSchema.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -19,7 +26,13 @@ export default wrapHandler(async (req: any, res: any) => {
     return res.status(401).json({ error: 'Yêu cầu đăng nhập quản trị.' });
   }
 
-  const section = req.query?.section === 'brochure' ? 'brochure' : 'company';
+  const rawSection = req.query?.section;
+  const section =
+    rawSection === 'brochure'
+      ? 'brochure'
+      : rawSection === 'about'
+        ? 'about'
+        : 'company';
   const filePath = `content/settings/${section}.json`;
   const useGitHub = hasGitHubToken();
 
@@ -60,12 +73,38 @@ export default wrapHandler(async (req: any, res: any) => {
     const incomingData = stripUnsafeKeys(rawBody);
 
     let validatedData: any = incomingData;
+    let commitMessage = `cms(settings): update ${section} settings`;
+
     if (section === 'brochure') {
       const v = validateBrochureSettings(incomingData);
       if (!v.valid) {
         return res.status(400).json({ error: `Dữ liệu cấu hình Brochure không hợp lệ: ${v.errors.join('; ')}` });
       }
       validatedData = v.data;
+    } else if (section === 'about') {
+      let existingAbout: AboutPageContent | undefined = undefined;
+      try {
+        if (useGitHub) {
+          const existingFile = await getRepoFile(filePath);
+          if (existingFile) {
+            existingAbout = JSON.parse(existingFile.content);
+          }
+        } else {
+          const localPath = path.join(process.cwd(), filePath);
+          if (fs.existsSync(localPath)) {
+            existingAbout = JSON.parse(fs.readFileSync(localPath, 'utf-8').replace(/^\uFEFF/, ''));
+          }
+        }
+      } catch {
+        existingAbout = undefined;
+      }
+
+      const v = validateAboutContent(incomingData, existingAbout);
+      if (!v.valid) {
+        return res.status(400).json({ error: `Dữ liệu trang Về chúng tôi không hợp lệ: ${v.errors.join('; ')}` });
+      }
+      validatedData = v.data;
+      commitMessage = 'cms(about): update about page content & gallery';
     } else {
       const v = validateCompanySettings(incomingData);
       if (!v.valid) {
@@ -75,7 +114,6 @@ export default wrapHandler(async (req: any, res: any) => {
     }
 
     const contentStr = JSON.stringify(validatedData, null, 2);
-    const commitMessage = `cms(settings): update ${section} settings`;
 
     let result = null;
     if (useGitHub) {

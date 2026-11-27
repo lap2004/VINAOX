@@ -59,9 +59,9 @@ export const vi: Translations = {
     "description": "Tọa lạc tại Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp, VINAXO vận hành tổ hợp chế biến nông sản và trái cây sấy hiện đại quy mô 25.000 m² với công suất 300 tấn thành phẩm/tháng. Kết nối trực tiếp vùng trồng ĐBSCL cùng công nghệ sấy nhiệt thấp và kiểm soát chất lượng chặt chẽ, VINAXO phục vụ đối tác xuất khẩu Mỹ, Châu Âu và gia công OEM chuyên nghiệp.",
     "cta": "Hành trình & Lãnh đạo",
     "imageOverlay": {
-      "tag": "Nông sản ĐBSCL",
-      "line1": "Nông sản Việt,",
-      "line2": "Giá trị toàn cầu"
+      "tag": "Nhà máy VINAXO • Đồng Tháp",
+      "line1": "Chế biến chuẩn sạch,",
+      "line2": "Nâng tầm nông sản Việt"
     },
     "stats": [
       {
@@ -691,18 +691,24 @@ export const vi: Translations = {
       "row4Val": "Mít Thái chín cây múi dày thơm ngọt"
     },
     "gallery": {
-      "label": "HÌNH ẢNH THỰC TẾ DOANH NGHIỆP",
-      "title": "Cơ Sở Chế Biến, Dây Chuyền & Vùng Trồng VINAXO",
-      "desc": "Hình ảnh ghi nhận thực tế từ nhà máy tại Khu phố 5, Xã Vĩnh Bình, Tỉnh Đồng Tháp và các vùng chuyên canh nông sản ĐBSCL.",
-      "card1Tag": "NHÀ MÁY 25.000 M²",
-      "card1Title": "Khuôn viên phòng sạch & Buồng sấy nhiệt thấp",
-      "card1Desc": "Hệ thống buồng sấy nhiệt thấp (~60°C), dây chuyền phân loại và kho lạnh dự trữ công suất lớn tại Xã Vĩnh Bình, Tỉnh Đồng Tháp.",
-      "card2Tag": "KIỂM ĐỊNH & ĐÓNG GÓI",
-      "card2Title": "Dây chuyền dò kim loại & Đóng gói màng ngăn ẩm",
-      "card2Desc": "Quy trình rà soát kim loại tự động 100% mẻ thành phẩm, đóng túi tráng nhôm nạp khí Nitơ hoặc thùng master carton cho container B2B.",
-      "card3Tag": "VÙNG NGUYÊN LIỆU ĐBSCL",
-      "card3Title": "Thu mua bao tiêu xoài & Trái cây mùa vụ",
-      "card3Desc": "Chủ động thu mua hơn 1.000 tấn xoài Đồng Tháp, khóm Tân Phước, thanh long Chợ Gạo, tạo sinh kế bền vững cho hàng trăm nông hộ."
+      "label": "HÌNH ẢNH THỰC TẾ TẠI NHÀ MÁY VINAXO",
+      "title": "Hình Ảnh Hoạt Động Sản Xuất Thực Tế",
+      "desc": "Bộ ảnh ghi nhận trực tiếp các công đoạn sản xuất thực tế tại nhà máy Công ty TNHH VINAXO (Xã Vĩnh Bình, Tỉnh Đồng Tháp).",
+      "card1Tag": "NHÀ MÁY CHẾ BIẾN",
+      "card1Title": "Khu phân loại và chế biến quy mô lớn",
+      "card1Desc": "Toàn cảnh phân xưởng sản xuất tại nhà máy VINAXO với đội ngũ công nhân mặc đồng phục bảo hộ phân loại xoài và nguyên liệu theo bàn chuyền.",
+      "card2Tag": "CHUẨN BỊ NGUYÊN LIỆU",
+      "card2Title": "Xếp lát trái cây lên khay chuẩn bị sấy",
+      "card2Desc": "Công nhân VINAXO dàn đều lát trái cây lên khay lưới thoáng khí trên kệ xe đẩy nhiều tầng trước khi đưa vào công đoạn sấy.",
+      "card3Tag": "HẠ TẦNG KHAY SẤY",
+      "card3Title": "Hệ thống xe đẩy khay sấy công nghiệp đa tầng",
+      "card3Desc": "Khu vực tập kết các dãy xe đẩy khay sấy đa tầng sạch sẽ bên trong phân xưởng nhà máy VINAXO.",
+      "allCategories": "Tất cả hình ảnh",
+      "viewLarge": "Xem ảnh lớn",
+      "closeLightbox": "Đóng cửa sổ xem ảnh",
+      "prevImage": "Ảnh trước",
+      "nextImage": "Ảnh tiếp theo",
+      "emptyCategory": "Chưa có hình ảnh công khai trong nhóm này."
     },
     "process": {
       "label": "QUY TRÌNH SẢN XUẤT",

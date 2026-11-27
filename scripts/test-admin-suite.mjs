@@ -40,6 +40,7 @@ import publishHandler from '../api/admin/publish.mjs';
 import { validateNewsArticle, mergeNewsArticle } from '../src/shared/schemas/newsSchema.ts';
 import { validateProduct, mergeProduct } from '../src/shared/schemas/productSchema.ts';
 import { validateCompanySettings, validateBrochureSettings } from '../src/shared/schemas/settingsSchema.ts';
+import { validateAboutContent, mergeAboutContent } from '../src/shared/schemas/aboutSchema.ts';
 import { validateMediaUpload } from '../src/shared/schemas/mediaSchema.ts';
 import { getAllArticles, toNewsItem } from '../src/services/contentService.ts';
 
@@ -822,6 +823,105 @@ async function runTests() {
       [...ocopSlugs].sort(),
       ['soft-dried-jackfruit', 'soft-dried-mango', 'soft-dried-red-dragonfruit']
     );
+  });
+
+  // 21. About Page Schema, CMS Settings (?section=about), Translation Preservation & Scoped Publish
+  await runCase('About CMS: validates gallery safety, preserves translations on partial update, and scopes publish(about)', async () => {
+    const aboutPath = path.join(process.cwd(), 'content/settings/about.json');
+    const historyPath = path.join(process.cwd(), 'content/settings/publish_history.json');
+    const origAbout = fs.readFileSync(aboutPath, 'utf8');
+    const origHistory = fs.existsSync(historyPath) ? fs.readFileSync(historyPath, 'utf8') : null;
+
+    try {
+      const parsedAbout = JSON.parse(origAbout);
+      assert.strictEqual(parsedAbout.gallery.length, 6, 'Seeded about.json must have 6 authentic gallery items');
+      assert(!origAbout.includes('about_vietnam'), 'about.json must never reference about_vietnam');
+      assert(!origAbout.toLowerCase().includes('sấy vô trùng'), 'about.json must not contain unverified sấy vô trùng');
+
+      // Reject javascript: URL
+      const badRes = validateAboutContent({
+        highlightVisual: { image: 'javascript:alert(1)' },
+        gallery: parsedAbout.gallery
+      }, parsedAbout);
+      assert.strictEqual(badRes.valid, false, 'Must reject unsafe javascript: highlightVisual image');
+
+      // Partial VI edit preserves EN/KO/ZH translations & reorder preserves item metadata
+      const partialMerged = mergeAboutContent(parsedAbout, {
+        story: {
+          titleLine1: { vi: 'Tiêu đề mới thử nghiệm' }
+        },
+        gallery: [
+          { ...parsedAbout.gallery[1], sortOrder: 1 },
+          { ...parsedAbout.gallery[0], sortOrder: 2 },
+          ...parsedAbout.gallery.slice(2).map((g, i) => ({ ...g, sortOrder: i + 3 }))
+        ]
+      });
+      assert.strictEqual(partialMerged.story.titleLine1.vi, 'Tiêu đề mới thử nghiệm');
+      assert.strictEqual(partialMerged.story.titleLine1.en, parsedAbout.story.titleLine1.en, 'Untouched EN must stay intact');
+      assert.strictEqual(partialMerged.story.titleLine1.ko, parsedAbout.story.titleLine1.ko, 'Untouched KO must stay intact');
+      assert.strictEqual(partialMerged.gallery[0].id, 'tray-racking-line', 'Reordered first item keeps its ID & metadata');
+      assert.strictEqual(partialMerged.gallery[0].title.en, parsedAbout.gallery[1].title.en);
+
+      // 401 when unauthenticated
+      const rUnauth = createMockRes();
+      await settingsHandler({
+        method: 'GET',
+        headers: {},
+        query: { section: 'about' }
+      }, rUnauth);
+      assert.strictEqual(rUnauth.statusCode, 401);
+
+      const validToken = createSessionToken('admin', 1);
+      const csrfToken = createCsrfToken(validToken);
+
+      // Authenticated GET ?section=about
+      const rGet = createMockRes();
+      await settingsHandler({
+        method: 'GET',
+        headers: { cookie: `vinaxo_admin_session=${validToken}` },
+        query: { section: 'about' }
+      }, rGet);
+      assert.strictEqual(rGet.statusCode, 200);
+      assert.strictEqual(rGet.body?.data?.gallery?.length, 6);
+
+      // Authenticated POST ?section=about
+      const rPost = createMockRes();
+      await settingsHandler({
+        method: 'POST',
+        headers: {
+          cookie: `vinaxo_admin_session=${validToken}`,
+          origin: 'http://localhost:4174',
+          'x-requested-with': 'XMLHttpRequest',
+          'x-csrf-token': csrfToken,
+          'content-type': 'application/json'
+        },
+        query: { section: 'about' },
+        body: parsedAbout
+      }, rPost);
+      assert.strictEqual(rPost.statusCode, 200);
+      assert.strictEqual(rPost.body?.ok, true);
+
+      // Scoped publish for module='about'
+      const rPub = createMockRes();
+      await publishHandler({
+        method: 'POST',
+        headers: {
+          cookie: `vinaxo_admin_session=${validToken}`,
+          origin: 'http://localhost:4174',
+          'x-requested-with': 'XMLHttpRequest',
+          'x-csrf-token': csrfToken,
+          'content-type': 'application/json'
+        },
+        body: { module: 'about' }
+      }, rPub);
+      assert.strictEqual(rPub.statusCode, 200);
+      assert.strictEqual(rPub.body?.module, 'about');
+    } finally {
+      fs.writeFileSync(aboutPath, origAbout, 'utf8');
+      if (origHistory !== null) {
+        fs.writeFileSync(historyPath, origHistory, 'utf8');
+      }
+    }
   });
 
   console.log(`\n========================================`);

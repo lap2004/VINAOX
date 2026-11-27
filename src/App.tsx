@@ -22,6 +22,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 // Admin pages - Lazy loaded
 const AdminLogin = lazy(() => import('./admin/pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./admin/pages/AdminDashboard'));
+const AdminAbout = lazy(() => import('./admin/pages/AdminAbout'));
 const AdminNewsList = lazy(() => import('./admin/pages/AdminNewsList'));
 const AdminNewsEditor = lazy(() => import('./admin/pages/AdminNewsEditor'));
 const AdminMedia = lazy(() => import('./admin/pages/AdminMedia'));
@@ -94,6 +95,16 @@ export const App: React.FC = () => {
                 <RouteErrorBoundary level="route" title="Bảng điều khiển">
                   <Suspense fallback={<PageLoader />}>
                     <AdminDashboard />
+                  </Suspense>
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="about"
+              element={
+                <RouteErrorBoundary level="route" title="Quản lý trang Về chúng tôi">
+                  <Suspense fallback={<PageLoader />}>
+                    <AdminAbout />
                   </Suspense>
                 </RouteErrorBoundary>
               }

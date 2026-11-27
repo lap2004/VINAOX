@@ -19,7 +19,7 @@ import {
 import fs from 'fs';
 import path from 'path';
 
-const ALLOWED_CATEGORIES = ['news', 'products', 'certificates', 'banners'];
+const ALLOWED_CATEGORIES = ['about', 'news', 'products', 'certificates', 'banners'];
 const MAX_BINARY_BYTES = 3 * 1024 * 1024; // 3 MB raw binary (~4 MB base64, safely under Vercel 4.5 MB body cap)
 
 function detectImageFormat(base64Data: string): { ext: string; cleanBase64: string } | null {
@@ -148,8 +148,28 @@ export default wrapHandler(async (req: any, res: any) => {
         return res.status(404).json({ error: 'Không tìm thấy ảnh.' });
       }
 
-      // 3. List all media items
+      // 3. List all media items + verified factory images for About gallery picking
       const mediaList: Array<{ name: string; url: string; fallbackUrl?: string; size?: number; category: string; usageCount?: number }> = [];
+
+      const factoryAssetDirs = [
+        { repoDir: 'public/assets/images/factory', urlPrefix: '/assets/images/factory' },
+        { repoDir: 'public/assets/images/factory-2026', urlPrefix: '/assets/images/factory-2026' }
+      ];
+      for (const dirInfo of factoryAssetDirs) {
+        const absDir = path.join(process.cwd(), dirInfo.repoDir);
+        if (fs.existsSync(absDir)) {
+          const files = fs.readdirSync(absDir).filter(f => f.toLowerCase().endsWith('.webp'));
+          for (const f of files) {
+            const stat = fs.statSync(path.join(absDir, f));
+            mediaList.push({
+              name: f,
+              url: `${dirInfo.urlPrefix}/${f}`,
+              size: stat.size,
+              category: 'about'
+            });
+          }
+        }
+      }
 
       if (useGitHub) {
         const catResults = await Promise.all(

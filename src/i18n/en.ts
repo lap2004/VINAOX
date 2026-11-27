@@ -57,9 +57,9 @@ export const en = {
     "description": "Based in Quarter 5, Vinh Binh Commune, Dong Thap Province, VINAXO operates an integrated 25,000 m² tropical dried fruit processing facility with 300 t monthly output capacity. Sourcing directly from Mekong Delta orchards, we deploy low-temperature dehydration and precision inspection to preserve natural color, aroma, and nutrition for US, EU, and global retail partners.",
     "cta": "Our Leadership & Story",
     "imageOverlay": {
-      "tag": "Mekong Delta Produce",
-      "line1": "Pure Fruits,",
-      "line2": "Global Value"
+      "tag": "VINAXO Facility • Dong Thap",
+      "line1": "Verified Processing,",
+      "line2": "Vietnamese Agricultural Value"
     },
     "stats": [
       {
@@ -523,7 +523,7 @@ export const en = {
     "section3": {
       "label": "TECHNICAL SPECIFICATIONS",
       "title": "Export-Grade Technical Specifications Summary",
-      "desc": "All products undergo controlled processing from orchard-fresh fruit selection to sterile moisture-barrier packaging.",
+      "desc": "All products undergo controlled processing from orchard-fresh fruit selection to protective moisture-barrier packaging.",
       "colName": "Product Name",
       "colOrigin": "Sourcing Region",
       "colMoisture": "Moisture",
@@ -689,18 +689,24 @@ export const en = {
       "row4Val": "Thick-fleshed aromatic Thai jackfruit"
     },
     "gallery": {
-      "label": "FACILITY & PRODUCTION GALLERY",
-      "title": "VINAXO Processing Plant, Production Lines & Orchards",
-      "desc": "Photographs from our processing complex in Quarter 5, Vinh Binh Commune, Dong Thap Province and Mekong Delta agricultural hubs.",
-      "card1Tag": "25,000 M² COMPLEX",
-      "card1Title": "Cleanrooms & Low-Heat Dehydration Chambers",
-      "card1Desc": "High-capacity low-heat dehydrators (~60°C), automated sorting, and cold storage in Vinh Binh Commune, Dong Thap Province.",
-      "card2Tag": "TESTING & PACKAGING",
-      "card2Title": "Metal Detection & Moisture-Barrier Packaging",
-      "card2Desc": "100% automated metal detection per batch, nitrogen-flushed foil pouches and master cartons for B2B container shipments.",
-      "card3Tag": "MEKONG SOURCING HUBS",
-      "card3Title": "Seasonal Mango & Tropical Fruit Procurement",
-      "card3Desc": "Sourcing over 1,000 tons of fresh produce monthly, fostering sustainable livelihoods for hundreds of farming households."
+      "label": "AUTHENTIC VINAXO FACTORY GALLERY",
+      "title": "Inside VINAXO Processing & Packaging Floors",
+      "desc": "Verified photography directly from VINAXO COMPANY LIMITED's processing floor in Vinh Binh Commune, Dong Thap Province.",
+      "card1Tag": "PROCESSING FACILITY",
+      "card1Title": "Large-Scale Tropical Fruit Sorting & Processing Hall",
+      "card1Desc": "Wide view inside VINAXO's processing hall where uniformed production teams sort and prepare golden mango batches along stainless workstations.",
+      "card2Tag": "MATERIAL PREPARATION",
+      "card2Title": "Arranging Sliced Fruit onto Drying Trays",
+      "card2Desc": "VINAXO operators carefully spread sliced tropical fruit across ventilated food-grade plastic trays stacked on wheeled racks prior to dehydration.",
+      "card3Tag": "DRYING INFRASTRUCTURE",
+      "card3Title": "Multi-Tier Food-Grade Drying Rack Trolleys",
+      "card3Desc": "Dedicated factory zone holding rows of clean multi-tier drying tray trolleys engineered for uniform airflow.",
+      "allCategories": "All Photos",
+      "viewLarge": "View Large",
+      "closeLightbox": "Close image preview",
+      "prevImage": "Previous image",
+      "nextImage": "Next image",
+      "emptyCategory": "No visible photographs in this category yet."
     },
     "process": {
       "label": "PRODUCTION PROCESS",
