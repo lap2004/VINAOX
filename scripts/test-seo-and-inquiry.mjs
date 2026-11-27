@@ -655,6 +655,70 @@ async function main() {
     }
   });
 
+  // 12. Dedicated OEM Custom Line Inquiries (Granola, Fruit & Nut Balls) & Homepage Meta Accuracy
+  await testCase('Homepage inquiry & meta audit: resolves granola/fruit-and-nut-balls OEM IDs cleanly without nuts-seeds misdirection', async () => {
+    const prevFetch = globalThis.fetch;
+    const prevKey = process.env.RESEND_API_KEY;
+    const prevHook = process.env.INQUIRY_WEBHOOK_URL;
+    process.env.RESEND_API_KEY = 're_test_ephemeral_oem_line_key';
+    delete process.env.INQUIRY_WEBHOOK_URL;
+    const sentEmails = [];
+    globalThis.fetch = async (_url, init) => {
+      sentEmails.push(JSON.parse(init.body));
+      return { ok: true, status: 200, text: async () => '{"id":"msg_oem_line_1"}' };
+    };
+    try {
+      const resGranola = createMockRes();
+      await contactHandler(
+        createReq({
+          ip: '198.51.100.88',
+          body: {
+            requestType: 'quotation',
+            locale: 'vi',
+            fullName: 'Le Minh',
+            email: 'minh@buyer.example',
+            productId: 'granola',
+            message: 'Tư vấn công thức & báo giá gia công OEM Granola trái cây sấy 500 túi/tháng.',
+          },
+        }),
+        resGranola
+      );
+      assert.strictEqual(resGranola.statusCode, 200);
+      assert.strictEqual(resGranola.body.verifiedProductSlug, 'granola');
+      assert(!resGranola.body.verifiedCategoryId, 'Granola OEM line must NOT have any catalog categoryId');
+      assert(sentEmails[0].text.includes('Granola'), 'Email body must identify Granola OEM inquiry');
+
+      const resBalls = createMockRes();
+      await contactHandler(
+        createReq({
+          ip: '198.51.100.89',
+          body: {
+            requestType: 'quotation',
+            locale: 'en',
+            fullName: 'Sarah Kim',
+            email: 'sarah@buyer.example',
+            productId: 'fruit-and-nut-balls',
+            message: 'Need private-label MOQ and shelf life details for fruit and nut energy balls.',
+          },
+        }),
+        resBalls
+      );
+      assert.strictEqual(resBalls.statusCode, 200);
+      assert.strictEqual(resBalls.body.verifiedProductSlug, 'fruit-and-nut-balls');
+      assert(!resBalls.body.verifiedCategoryId, 'Fruit & Nut Balls OEM line must NOT have any catalog categoryId');
+    } finally {
+      globalThis.fetch = prevFetch;
+      if (prevKey !== undefined) process.env.RESEND_API_KEY = prevKey;
+      else delete process.env.RESEND_API_KEY;
+      if (prevHook !== undefined) process.env.INQUIRY_WEBHOOK_URL = prevHook;
+    }
+
+    const indexHtml = fs.readFileSync(path.join(process.cwd(), 'index.html'), 'utf8');
+    assert(!/trái cây sấy dẻo tự nhiên/i.test(indexHtml), 'index.html must not claim blanket trái cây sấy dẻo tự nhiên');
+    const routeMeta = fs.readFileSync(path.join(process.cwd(), 'src/components/seo/routeMetadata.ts'), 'utf8');
+    assert(!/100% natural soft-dried tropical fruits/i.test(routeMeta), 'routeMetadata.ts must not carry blanket 100% natural soft-dried home claim');
+  });
+
   console.log(`\nSummary: ${passed}/${total} SEO & Inquiry test cases passed.`);
 }
 

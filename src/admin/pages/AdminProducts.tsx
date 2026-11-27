@@ -137,6 +137,8 @@ export interface ProductItemData {
   imageAltVi?: string;
   imageAltEn?: string;
   order?: number;
+  featured?: boolean;
+  featuredOrder?: number;
   published?: boolean;
   status?: 'published' | 'draft';
 }
@@ -190,6 +192,8 @@ export function normalizeProductItem(raw: any, idx = 0): ProductItemData {
       productFeatures: [],
       certifications: [],
       order: idx + 1,
+      featured: false,
+      featuredOrder: undefined,
       published: true,
       status: 'published',
     };
@@ -273,6 +277,11 @@ export function normalizeProductItem(raw: any, idx = 0): ProductItemData {
     imageAltVi: raw.imageAltVi || '',
     imageAltEn: raw.imageAltEn || '',
     order,
+    featured: Boolean(raw.featured),
+    featuredOrder:
+      Number.isFinite(Number(raw.featuredOrder)) && Number(raw.featuredOrder) > 0
+        ? Math.floor(Number(raw.featuredOrder))
+        : undefined,
     published,
     status,
   };
@@ -731,6 +740,43 @@ export const AdminProducts: React.FC = () => {
         </div>
       )}
 
+      {/* Featured Products Summary Banner */}
+      {(() => {
+        const featuredList = products
+          .filter((p) => p.featured && p.published !== false)
+          .sort((a, b) => (a.featuredOrder || 999) - (b.featuredOrder || 999));
+        return (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '10px',
+              marginBottom: '16px',
+              padding: '12px 16px',
+              borderRadius: '10px',
+              backgroundColor: featuredList.length > 4 ? '#FEF2F2' : '#FFFDF9',
+              border: `1px solid ${featuredList.length > 4 ? '#FECACA' : '#EADCCE'}`,
+              fontSize: '0.84rem',
+              color: '#3A251B',
+            }}
+          >
+            <div>
+              <strong>★ Nổi bật trên Trang chủ ({featuredList.length}/4):</strong>{' '}
+              {featuredList.length > 0
+                ? featuredList.map((p) => `${p.name_vi}${p.featuredOrder ? ` (#${p.featuredOrder})` : ''}`).join(' · ')
+                : 'Chưa đánh dấu sản phẩm nào.'}
+              {featuredList.length > 4 && (
+                <span style={{ color: '#DC2626', fontWeight: 700, marginLeft: '8px' }}>
+                  (Trang chủ chỉ hiển thị tối đa 4 sản phẩm đầu tiên)
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Filter and Search Bar */}
       <div
         style={{
@@ -925,6 +971,11 @@ export const AdminProducts: React.FC = () => {
                       {p.published !== false ? <Eye size={12} /> : <EyeOff size={12} />}
                       {p.published !== false ? 'Công khai' : 'Bản nháp'}
                     </span>
+                    {p.featured && (
+                      <div style={{ marginTop: '4px', fontSize: '0.7rem', fontWeight: 700, color: '#B5650D' }}>
+                        ★ Trang chủ {p.featuredOrder ? `#${p.featuredOrder}` : ''}
+                      </div>
+                    )}
                   </td>
 
                   <td style={{ padding: '12px 14px', textAlign: 'right' }}>
@@ -1183,6 +1234,56 @@ export const AdminProducts: React.FC = () => {
                         <option value="draft">Ẩn / Nháp (Draft)</option>
                       </select>
                     </div>
+                  </div>
+
+                  {/* Featured on Homepage Controls */}
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                      gap: '14px',
+                      marginBottom: '14px',
+                      padding: '12px 14px',
+                      borderRadius: '8px',
+                      backgroundColor: '#FFFDF9',
+                      border: '1px solid #EADCCE',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.84rem', fontWeight: 700, color: '#3A251B', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={Boolean(editingProduct.featured)}
+                        onChange={(e) =>
+                          setEditingProduct({
+                            ...editingProduct,
+                            featured: e.target.checked,
+                            featuredOrder: e.target.checked ? editingProduct.featuredOrder || 1 : undefined,
+                          })
+                        }
+                      />
+                      <span>★ Hiển thị nổi bật trên Trang chủ (Tối đa 4 sản phẩm)</span>
+                    </label>
+                    {editingProduct.featured && (
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#6E6259', marginBottom: '4px' }}>
+                          Thứ tự ưu tiên trên Trang chủ (1–4)
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={4}
+                          value={editingProduct.featuredOrder ?? 1}
+                          onChange={(e) =>
+                            setEditingProduct({
+                              ...editingProduct,
+                              featuredOrder: Math.max(1, Math.min(4, Number(e.target.value) || 1)),
+                            })
+                          }
+                          style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #EADCCE', fontSize: '0.86rem', boxSizing: 'border-box' }}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px' }}>

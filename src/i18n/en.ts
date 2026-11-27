@@ -1,7 +1,7 @@
 export const en = {
   "meta": {
-    "title": "VINAXO - Naturally Pure Dried Fruits | Vietnam's Agricultural Exporter",
-    "description": "VINAXO (Tien Giang & Dong Thap) specializes in natural soft-dried mango, jackfruit, pineapple, dragon fruit. BRCGS Grade B certified, exported to the US, EU, and Russia."
+    "title": "VINAXO - Dried Fruits & Nuts Export Manufacturer from Vietnam",
+    "description": "VINAXO COMPANY LIMITED (Dong Thap, Vietnam) processes and exports soft-dried fruits, crispy fruit chips, nuts & seeds, mixed snacks, and custom OEM private-label lines. BRCGS Grade B, US FDA & ISO 22000:2018 certified."
   },
   "nav": {
     "home": "Home",

@@ -48,6 +48,49 @@ export interface ContactValidationResult {
 export const VALUE_ADDED_PRODUCT_ID = 'value-added-lines';
 export const OEM_PRODUCT_ID = 'oem-private-label';
 
+export const OEM_INQUIRY_LINE_IDS = [
+  'granola',
+  'fruit-and-nut-balls',
+  'honey-infused-dried-fruit',
+  'chocolate-dipped-dried-fruit',
+] as const;
+
+export type OemInquiryLineId = (typeof OEM_INQUIRY_LINE_IDS)[number];
+
+export const OEM_INQUIRY_LINE_LABELS: Record<
+  OemInquiryLineId,
+  { vi: string; en: string; ko: string; 'zh-CN': string }
+> = {
+  granola: {
+    vi: 'Gia công OEM: Granola Trái Cây & Hạt (Theo yêu cầu)',
+    en: 'OEM Custom Line: Fruit & Nut Granola',
+    ko: 'OEM 맞춤 라인: 과일 & 견과류 그래놀라',
+    'zh-CN': 'OEM 定制线：水果坚果格兰诺拉麦片',
+  },
+  'fruit-and-nut-balls': {
+    vi: 'Gia công OEM: Viên Năng Lượng Trái Cây & Hạt (Theo yêu cầu)',
+    en: 'OEM Custom Line: Fruit & Nut Energy Balls',
+    ko: 'OEM 맞춤 라인: 과일 & 견과류 에너지 볼',
+    'zh-CN': 'OEM 定制线：水果坚果能量球',
+  },
+  'honey-infused-dried-fruit': {
+    vi: 'Gia công OEM: Trái Cây Sấy Tẩm Mật Ong (Theo yêu cầu)',
+    en: 'OEM Custom Line: Honey-Infused Dried Fruit',
+    ko: 'OEM 맞춤 라인: 천연 벌꿀 인퓨즈드 건조 과일',
+    'zh-CN': 'OEM 定制线：天然蜂蜜浸渍果干',
+  },
+  'chocolate-dipped-dried-fruit': {
+    vi: 'Gia công OEM: Trái Cây Sấy Nhúng Sô-cô-la (Theo yêu cầu)',
+    en: 'OEM Custom Line: Chocolate-Dipped Dried Fruit',
+    ko: 'OEM 맞춤 라인: 다크 초콜릿 디핑 건조 과일',
+    'zh-CN': 'OEM 定制线：黑巧克力蘸酱果干',
+  },
+};
+
+export function isOemInquiryLineId(id?: string | null): id is OemInquiryLineId {
+  return Boolean(id && (OEM_INQUIRY_LINE_IDS as readonly string[]).includes(id));
+}
+
 export const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const FIELD_LIMITS = {
@@ -112,16 +155,48 @@ export function resolveCanonicalProduct(raw?: string | QuotationProduct | null):
     };
   }
 
+  if (needle === 'granola' || needle.includes('granola') || needle.includes('그래놀라') || needle.includes('格兰诺拉')) {
+    return { productId: 'granola', productSlug: '', categoryId: '', customLabel: '' };
+  }
+
+  if (
+    needle === 'fruit-and-nut-balls' ||
+    needle === 'fruit-nut-balls' ||
+    needle.includes('viên năng lượng') ||
+    needle.includes('energy ball') ||
+    needle.includes('fruit & nut ball') ||
+    needle.includes('fruit and nut ball') ||
+    needle.includes('에너지 볼') ||
+    needle.includes('能量球')
+  ) {
+    return { productId: 'fruit-and-nut-balls', productSlug: '', categoryId: '', customLabel: '' };
+  }
+
+  if (
+    needle === 'honey-infused-dried-fruit' ||
+    needle.includes('honey-infused') ||
+    needle.includes('mật ong') ||
+    needle.includes('벌꿀') ||
+    needle.includes('蜂蜜')
+  ) {
+    return { productId: 'honey-infused-dried-fruit', productSlug: '', categoryId: '', customLabel: '' };
+  }
+
+  if (
+    needle === 'chocolate-dipped-dried-fruit' ||
+    needle.includes('chocolate') ||
+    needle.includes('sô-cô-la') ||
+    needle.includes('초콜릿') ||
+    needle.includes('巧克力')
+  ) {
+    return { productId: 'chocolate-dipped-dried-fruit', productSlug: '', categoryId: '', customLabel: '' };
+  }
+
   if (needle === OEM_PRODUCT_ID || needle.includes('oem') || needle.includes('private label')) {
     return { productId: OEM_PRODUCT_ID, productSlug: '', categoryId: '', customLabel: '' };
   }
 
-  if (
-    needle === VALUE_ADDED_PRODUCT_ID ||
-    needle.includes('honey') ||
-    needle.includes('granola') ||
-    needle.includes('chocolate')
-  ) {
+  if (needle === VALUE_ADDED_PRODUCT_ID) {
     return { productId: VALUE_ADDED_PRODUCT_ID, productSlug: '', categoryId: '', customLabel: '' };
   }
 
@@ -129,12 +204,15 @@ export function resolveCanonicalProduct(raw?: string | QuotationProduct | null):
 }
 
 export function getLocalizedProductLabel(productId: string, customLabel: string, locale: Language): string {
+  if (isOemInquiryLineId(productId)) {
+    return pickLocale(locale, OEM_INQUIRY_LINE_LABELS[productId]);
+  }
   if (productId === VALUE_ADDED_PRODUCT_ID) {
     return pickLocale(locale, {
-      vi: 'Trái cây sấy tẩm mật ong / Phủ Sô-cô-la / Granola',
-      en: 'Honey-Infused & Chocolate-Dipped / Granola',
-      ko: '천연 벌꿀 인퓨즈드 / 초콜릿 디핑 / 그래놀라',
-      'zh-CN': '蜂蜜浸渍果干 / 巧克力蘸酱果干 / 格兰诺拉麦片',
+      vi: 'Trái cây sấy tẩm mật ong / Phủ Sô-cô-la / Granola (OEM)',
+      en: 'Honey-Infused & Chocolate-Dipped / Granola (OEM)',
+      ko: '천연 벌꿀 인퓨즈드 / 초콜릿 디핑 / 그래놀라 (OEM)',
+      'zh-CN': '蜂蜜浸渍果干 / 巧克力蘸酱果干 / 格兰诺拉麦片 (OEM)',
     });
   }
   if (productId === OEM_PRODUCT_ID) {

@@ -551,7 +551,7 @@ async function commitMediaFile(filePath, base64Data, commitMessage) {
 // server/admin/media.ts
 import fs from "fs";
 import path from "path";
-var ALLOWED_CATEGORIES = ["about", "news", "products", "certificates", "banners"];
+var ALLOWED_CATEGORIES = ["homepage", "about", "news", "products", "certificates", "banners"];
 var MAX_BINARY_BYTES = 3 * 1024 * 1024;
 function detectImageFormat(base64Data) {
   const headerMatch = base64Data.match(/^data:image\/(png|jpeg|jpg|webp);base64,(.+)$/i);
@@ -658,20 +658,23 @@ var media_default = wrapHandler(async (req, res) => {
       }
       const mediaList = [];
       const factoryAssetDirs = [
-        { repoDir: "public/assets/images/factory", urlPrefix: "/assets/images/factory" },
-        { repoDir: "public/assets/images/factory-2026", urlPrefix: "/assets/images/factory-2026" }
+        { repoDir: "public/assets/images", urlPrefix: "/assets/images", cat: "homepage", filterFn: (f) => /^(hero|brochure-2026)/i.test(f) && f.toLowerCase().endsWith(".webp") },
+        { repoDir: "public/images/categories", urlPrefix: "/images/categories", cat: "homepage", filterFn: (f) => f.toLowerCase().endsWith(".webp") },
+        { repoDir: "public/images/products", urlPrefix: "/images/products", cat: "products", filterFn: (f) => f.toLowerCase().endsWith(".webp") },
+        { repoDir: "public/assets/images/factory", urlPrefix: "/assets/images/factory", cat: "about", filterFn: (f) => f.toLowerCase().endsWith(".webp") },
+        { repoDir: "public/assets/images/factory-2026", urlPrefix: "/assets/images/factory-2026", cat: "about", filterFn: (f) => f.toLowerCase().endsWith(".webp") }
       ];
       for (const dirInfo of factoryAssetDirs) {
         const absDir = path.join(process.cwd(), dirInfo.repoDir);
         if (fs.existsSync(absDir)) {
-          const files = fs.readdirSync(absDir).filter((f) => f.toLowerCase().endsWith(".webp"));
+          const files = fs.readdirSync(absDir).filter(dirInfo.filterFn);
           for (const f of files) {
             const stat = fs.statSync(path.join(absDir, f));
             mediaList.push({
               name: f,
               url: `${dirInfo.urlPrefix}/${f}`,
               size: stat.size,
-              category: "about"
+              category: dirInfo.cat
             });
           }
         }

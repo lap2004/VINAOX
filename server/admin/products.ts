@@ -68,7 +68,11 @@ export default wrapHandler(async (req: any, res: any) => {
           certifications: Array.isArray(raw.certifications) ? raw.certifications : [],
           published,
           status: published ? 'published' : 'draft',
-          order: Number(raw.order) || idx + 1
+          order: Number(raw.order) || idx + 1,
+          featured: Boolean(raw.featured),
+          ...(Number.isFinite(Number(raw.featuredOrder)) && Number(raw.featuredOrder) > 0
+            ? { featuredOrder: Math.floor(Number(raw.featuredOrder)) }
+            : {}),
         };
       };
 

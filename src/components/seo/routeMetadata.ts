@@ -179,10 +179,10 @@ export function resolveRouteSeo(pathname: string, language: Language): ResolvedS
       zh: 'VINAXO – 越南高端热带果干源头制造商与出口商',
     });
     const description = pickLocale(language, {
-      vi: 'CÔNG TY TNHH VINAXO — Chế biến và xuất khẩu trái cây sấy dẻo tự nhiên (xoài, mít, thanh long, dứa, chuối) từ Đồng bằng Sông Cửu Long. Đạt chuẩn BRCGS Grade B, OCOP 3 Sao, xuất khẩu Hoa Kỳ và Châu Âu.',
-      en: 'VINAXO COMPANY LIMITED — Processing and exporting 100% natural soft-dried tropical fruits from Vietnam’s Mekong Delta. BRCGS Grade B food safety certified, trusted across the US, EU, and global B2B markets.',
-      ko: 'VINAXO COMPANY LIMITED — 베트남 메콩 델타산 100% 천연 소프트 건조 과일(망고, 잭프루트, 적색 용과, 바나나) 제조·수출 전문 기업. BRCGS Grade B 및 OCOP 3성급 인증 획득.',
-      zh: 'VINAXO COMPANY LIMITED — 扎根越南湄公河三角洲，专业生产与出口 100% 天然软烘干果（芒果干、菠萝蜜干、红心火龙果干、香蕉片），通过 BRCGS B 级食品安全认证。',
+      vi: 'CÔNG TY TNHH VINAXO (Đồng Tháp) — Nhà sản xuất & xuất khẩu Trái cây sấy dẻo, Trái cây sấy giòn, Hạt dinh dưỡng, Sản phẩm thập cẩm và gia công OEM. Đạt chuẩn BRCGS Grade B, US FDA, ISO 22000:2018 & OCOP 3 Sao.',
+      en: 'VINAXO COMPANY LIMITED (Dong Thap, Vietnam) — Export manufacturer of soft-dried fruits, crispy dried fruit chips, nuts & seeds, mixed snacks, and private-label OEM solutions. BRCGS Grade B, US FDA, and ISO 22000:2018 certified.',
+      ko: 'VINAXO COMPANY LIMITED (베트남 동탑) — 소프트 건조 과일, 크리스피 과일 칩, 견과류, 모듬 과일·채소 및 OEM 자체 브랜드 수출 제조사. BRCGS Grade B 및 ISO 22000:2018 인증.',
+      zh: 'VINAXO COMPANY LIMITED（越南同塔省）— 软烘干果、香脆果干片、坚果、综合果蔬脆片及 OEM 贴牌出口源头制造商。通过 BRCGS Grade B、US FDA 与 ISO 22000:2018 认证。',
     });
     const canonical = normalizeCanonicalUrl('/');
     return {

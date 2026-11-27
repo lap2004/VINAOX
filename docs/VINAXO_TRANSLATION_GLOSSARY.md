@@ -114,3 +114,14 @@
 | **Kiểm tra & định lượng** | Kiểm tra cảm quan và cân định lượng thành phẩm sau sấy | Visual Grading and Precision Weighing of Dried Fruit | 건조 과일 육안 선별 및 정밀 계량 | 果干感官分级筛选与精密定量称重 |
 | **Đóng gói thành phẩm** | Đóng gói túi zipper thành phẩm | Packing Finished Goods into Stand-Up Zipper Pouches | 완제품 스탠드형 지퍼 파우치 포장 | 成品立式拉链袋包装 |
 | **Xem ảnh lớn** | Xem ảnh lớn | View Large | 크게 보기 | 查看大图 |
+
+
+## 8. Chuẩn Hóa Danh Mục Trang Chủ & Dòng Gia Công OEM Theo Yêu Cầu (Pre-Handover Homepage Audit)
+
+| Thuật ngữ gốc / Phân loại | Tiếng Việt (VI) | Tiếng Anh (EN) | Tiếng Hàn (KO) | Tiếng Trung (ZH-CN) | Ghi chú |
+| --- | --- | --- | --- | --- | --- |
+| **Danh mục `chips`** | Trái cây sấy giòn | Crispy Dried Fruits | 크리스피 과일 칩 | 香脆果干片 | Dùng thống nhất cho nhóm `chips` (chuối sấy giòn, mít sấy giòn, khoai môn, khoai lang, thơm sấy giòn). Không dùng *"Trái cây sấy tự nhiên"* cho nhóm này. |
+| **Dòng OEM `granola`** | Granola Trái Cây & Hạt (Gia công OEM) | Fruit & Nut Granola (OEM Made-to-Order) | 과일 & 견과류 그래놀라 (OEM) | 水果坚果格兰诺拉麦片 (OEM) | Tách riêng khỏi danh mục Hạt dinh dưỡng; CTA mở form báo giá OEM với `productId: "granola"`. |
+| **Dòng OEM `fruit-and-nut-balls`** | Viên Năng Lượng Trái Cây & Hạt (Gia công OEM) | Fruit & Nut Energy Balls (OEM Made-to-Order) | 과일 & 견과류 에너지 볼 (OEM) | 水果坚果能量球 (OEM) | Tách riêng khỏi danh mục Hạt dinh dưỡng; CTA mở form báo giá OEM với `productId: "fruit-and-nut-balls"`. |
+| **Dòng OEM `honey-infused-dried-fruit`** | Trái Cây Sấy Tẩm Mật Ong (Gia công OEM) | Honey-Infused Dried Fruit (OEM) | 벌꿀 인퓨즈드 건조 과일 (OEM) | 蜂蜜浸渍果干 (OEM) | Gắn đúng ID `honey-infused-dried-fruit`. |
+| **Dòng OEM `chocolate-dipped-dried-fruit`** | Trái Cây Sấy Nhúng Sô-cô-la (Gia công OEM) | Chocolate-Dipped Dried Fruit (OEM) | 초콜릿 디핑 건조 과일 (OEM) | 巧克力蘸酱果干 (OEM) | Gắn đúng ID `chocolate-dipped-dried-fruit`. |

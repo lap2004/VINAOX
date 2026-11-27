@@ -41,6 +41,7 @@ import { validateNewsArticle, mergeNewsArticle } from '../src/shared/schemas/new
 import { validateProduct, mergeProduct } from '../src/shared/schemas/productSchema.ts';
 import { validateCompanySettings, validateBrochureSettings } from '../src/shared/schemas/settingsSchema.ts';
 import { validateAboutContent, mergeAboutContent } from '../src/shared/schemas/aboutSchema.ts';
+import { validateHomepageContent, mergeHomepageContent } from '../src/shared/schemas/homepageSchema.ts';
 import { validateMediaUpload } from '../src/shared/schemas/mediaSchema.ts';
 import { getAllArticles, toNewsItem } from '../src/services/contentService.ts';
 
@@ -918,6 +919,148 @@ async function runTests() {
       assert.strictEqual(rPub.body?.module, 'about');
     } finally {
       fs.writeFileSync(aboutPath, origAbout, 'utf8');
+      if (origHistory !== null) {
+        fs.writeFileSync(historyPath, origHistory, 'utf8');
+      }
+    }
+  });
+
+  // 22. Homepage Content Schema, Featured Limit, Categories, & Settings/Publish Flow
+  await runCase('Homepage CMS: Validates categories, max 4 featured products, safe URLs, partial locale preservation & scoped publish', async () => {
+    const homepagePath = path.join(process.cwd(), 'content/settings/homepage.json');
+    const historyPath = path.join(process.cwd(), 'content/settings/publish_history.json');
+    const origHomepage = fs.readFileSync(homepagePath, 'utf8');
+    const origHistory = fs.existsSync(historyPath) ? fs.readFileSync(historyPath, 'utf8') : null;
+
+    try {
+      const parsedHomepage = JSON.parse(origHomepage);
+      const prodFiles = fs.readdirSync(path.join(process.cwd(), 'content/products')).filter((f) => f.endsWith('.json'));
+      const validSlugs = prodFiles.map((f) => {
+        const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'content/products', f), 'utf8'));
+        return String(raw.slug || raw.id);
+      });
+
+      const validCheck = validateHomepageContent(parsedHomepage, parsedHomepage, validSlugs);
+      assert.strictEqual(validCheck.valid, true, `Baseline homepage.json invalid: ${validCheck.errors.join('; ')}`);
+      assert.strictEqual(validCheck.data.catalogCategoryCards.length, 4, 'Must have 4 official catalog category cards');
+      const chipsCard = validCheck.data.catalogCategoryCards.find((c) => c.id === 'chips');
+      assert(chipsCard && chipsCard.name.vi === 'Trái cây sấy giòn', 'chips category VI name must be Trái cây sấy giòn');
+      assert(chipsCard && chipsCard.name.en === 'Crispy Dried Fruits', 'chips category EN name must be Crispy Dried Fruits');
+
+      assert(validCheck.data.oemProductLines.length >= 2, 'Must have dedicated OEM custom lines');
+      for (const oemCard of validCheck.data.oemProductLines) {
+        assert.strictEqual(oemCard.linkType, 'quote', `OEM line ${oemCard.id} must open quote flow`);
+        assert.notStrictEqual(oemCard.targetValue, 'nuts-seeds', `OEM line ${oemCard.id} must NEVER point to nuts-seeds`);
+      }
+      assert(validCheck.data.featuredProductSlugs.length <= 4, 'Homepage featured products cannot exceed 4');
+
+      // Reject > 4 featured products
+      const tooManyRes = validateHomepageContent(
+        {
+          featuredProductSlugs: [
+            'soft-dried-mango',
+            'soft-dried-red-dragonfruit',
+            'banana-chips',
+            'cashew',
+            'macadamia-nuts',
+          ],
+        },
+        parsedHomepage,
+        validSlugs
+      );
+      assert.strictEqual(tooManyRes.valid, false, 'Must reject > 4 featured product slugs');
+
+      // Reject category card pointing to unknown category like granola
+      const badCatRes = validateHomepageContent(
+        {
+          catalogCategoryCards: [
+            ...parsedHomepage.catalogCategoryCards.slice(0, 3),
+            {
+              ...parsedHomepage.catalogCategoryCards[3],
+              linkType: 'category',
+              targetValue: 'granola',
+            },
+          ],
+        },
+        parsedHomepage,
+        validSlugs
+      );
+      assert.strictEqual(badCatRes.valid, false, 'Must reject unknown catalog category target granola');
+
+      // Reject unsafe image URL
+      const badImgRes = validateHomepageContent(
+        {
+          hero: { primaryImage: 'javascript:alert(1)' },
+        },
+        parsedHomepage,
+        validSlugs
+      );
+      assert.strictEqual(badImgRes.valid, false, 'Must reject unsafe javascript: hero image');
+
+      // Partial VI edit preserves untouched EN/KO/ZH translations
+      const partialMerged = mergeHomepageContent(parsedHomepage, {
+        hero: {
+          headlineLine1: { vi: 'TRÁI CÂY CẬP NHẬT' },
+        },
+      });
+      assert.strictEqual(partialMerged.hero.headlineLine1.vi, 'TRÁI CÂY CẬP NHẬT');
+      assert.strictEqual(partialMerged.hero.headlineLine1.en, parsedHomepage.hero.headlineLine1.en);
+      assert.strictEqual(partialMerged.hero.headlineLine1.ko, parsedHomepage.hero.headlineLine1.ko);
+      assert.strictEqual(partialMerged.hero.headlineLine1.zh, parsedHomepage.hero.headlineLine1.zh);
+
+      // 401 when unauthenticated
+      const rUnauth = createMockRes();
+      await settingsHandler({
+        method: 'GET',
+        headers: {},
+        query: { section: 'homepage' },
+      }, rUnauth);
+      assert.strictEqual(rUnauth.statusCode, 401);
+
+      const validToken = createSessionToken('admin', 1);
+      const csrfToken = createCsrfToken(validToken);
+
+      const rGet = createMockRes();
+      await settingsHandler({
+        method: 'GET',
+        headers: { cookie: `vinaxo_admin_session=${validToken}` },
+        query: { section: 'homepage' },
+      }, rGet);
+      assert.strictEqual(rGet.statusCode, 200);
+      assert.strictEqual(rGet.body?.data?.catalogCategoryCards?.length, 4);
+
+      const rPost = createMockRes();
+      await settingsHandler({
+        method: 'POST',
+        headers: {
+          cookie: `vinaxo_admin_session=${validToken}`,
+          origin: 'http://localhost:4174',
+          'x-requested-with': 'XMLHttpRequest',
+          'x-csrf-token': csrfToken,
+          'content-type': 'application/json',
+        },
+        query: { section: 'homepage' },
+        body: parsedHomepage,
+      }, rPost);
+      assert.strictEqual(rPost.statusCode, 200);
+      assert.strictEqual(rPost.body?.ok, true);
+
+      const rPub = createMockRes();
+      await publishHandler({
+        method: 'POST',
+        headers: {
+          cookie: `vinaxo_admin_session=${validToken}`,
+          origin: 'http://localhost:4174',
+          'x-requested-with': 'XMLHttpRequest',
+          'x-csrf-token': csrfToken,
+          'content-type': 'application/json',
+        },
+        body: { module: 'homepage' },
+      }, rPub);
+      assert.strictEqual(rPub.statusCode, 200);
+      assert.strictEqual(rPub.body?.module, 'homepage');
+    } finally {
+      fs.writeFileSync(homepagePath, origHomepage, 'utf8');
       if (origHistory !== null) {
         fs.writeFileSync(historyPath, origHistory, 'utf8');
       }

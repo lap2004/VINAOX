@@ -120,6 +120,42 @@ function verifyCanonicalProduct(
         isCatalogVerified: true,
       };
     }
+    if (needle === 'granola') {
+      return {
+        verifiedId: 'granola',
+        verifiedSlug: 'granola',
+        verifiedCategory: '',
+        verifiedLabel: 'OEM Custom Inquiry: Fruit & Nut Granola (Made to Order)',
+        isCatalogVerified: true,
+      };
+    }
+    if (needle === 'fruit-and-nut-balls') {
+      return {
+        verifiedId: 'fruit-and-nut-balls',
+        verifiedSlug: 'fruit-and-nut-balls',
+        verifiedCategory: '',
+        verifiedLabel: 'OEM Custom Inquiry: Fruit & Nut Energy Balls (Made to Order)',
+        isCatalogVerified: true,
+      };
+    }
+    if (needle === 'honey-infused-dried-fruit') {
+      return {
+        verifiedId: 'honey-infused-dried-fruit',
+        verifiedSlug: 'honey-infused-dried-fruit',
+        verifiedCategory: '',
+        verifiedLabel: 'OEM Custom Inquiry: Honey-Infused Dried Fruit (Made to Order)',
+        isCatalogVerified: true,
+      };
+    }
+    if (needle === 'chocolate-dipped-dried-fruit') {
+      return {
+        verifiedId: 'chocolate-dipped-dried-fruit',
+        verifiedSlug: 'chocolate-dipped-dried-fruit',
+        verifiedCategory: '',
+        verifiedLabel: 'OEM Custom Inquiry: Chocolate-Dipped Dried Fruit (Made to Order)',
+        isCatalogVerified: true,
+      };
+    }
     if (needle === 'value-added-lines') {
       return {
         verifiedId: 'value-added-lines',

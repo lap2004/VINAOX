@@ -11,13 +11,14 @@ import { commitFile, getRepoFile, hasGitHubToken, getCommitDeployStatus } from '
 import fs from 'fs';
 import path from 'path';
 
-const ALLOWED_MODULES = ['news', 'products', 'about', 'certificates', 'media', 'brochure', 'company', 'all'] as const;
+const ALLOWED_MODULES = ['news', 'products', 'about', 'homepage', 'certificates', 'media', 'brochure', 'company', 'all'] as const;
 type PublishModule = typeof ALLOWED_MODULES[number];
 
 const MODULE_LABELS: Record<PublishModule, string> = {
   news: 'Tin tức & Báo chí',
   products: 'Sản phẩm nhiệt đới',
   about: 'Trang Về chúng tôi',
+  homepage: 'Trang chủ & Danh mục',
   certificates: 'Chứng nhận & Tiêu chuẩn',
   media: 'Thư viện hình ảnh',
   brochure: 'Hồ sơ năng lực (Brochure)',

@@ -409,6 +409,57 @@ async function getRepoFile(filePath) {
   const content = Buffer.from(data.content || "", "base64").toString("utf-8").replace(/^\uFEFF/, "");
   return { content, sha: data.sha };
 }
+async function listRepoDirectory(dirPath) {
+  if (!validatePath(dirPath)) {
+    throw new Error(`Th\u01B0 m\u1EE5c kh\xF4ng h\u1EE3p l\u1EC7: ${dirPath}`);
+  }
+  const { owner, repo, branch, token } = getRepoConfig();
+  if (!token) {
+    throw new Error("GITHUB_TOKEN ch\u01B0a \u0111\u01B0\u1EE3c c\u1EA5u h\xECnh trong Vercel Environment Variables.");
+  }
+  const cleanDir = dirPath.replace(/\/+$/, "");
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${cleanDir}?ref=${encodeURIComponent(branch)}`;
+  const response = await fetch(url, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Accept": "application/vnd.github.v3+json",
+      "User-Agent": "VINAXO-CMS-Serverless"
+    }
+  });
+  if (response.status === 404) return [];
+  if (!response.ok) {
+    throw new Error(mapGitHubError(response.status, "li\u1EC7t k\xEA th\u01B0 m\u1EE5c"));
+  }
+  const data = await response.json();
+  if (!Array.isArray(data)) return [];
+  return data.map((item) => ({
+    name: item.name,
+    path: item.path,
+    sha: item.sha,
+    size: item.size || 0,
+    type: item.type === "dir" ? "dir" : "file"
+  }));
+}
+async function listRepoJsonFiles(dirPath) {
+  const entries = await listRepoDirectory(dirPath);
+  const jsonFiles = entries.filter((e) => e.type === "file" && e.name.endsWith(".json"));
+  const results = await Promise.all(
+    jsonFiles.map(async (entry) => {
+      const file = await getRepoFile(entry.path);
+      if (!file) return null;
+      try {
+        return {
+          data: JSON.parse(file.content),
+          sha: file.sha,
+          name: entry.name
+        };
+      } catch {
+        return null;
+      }
+    })
+  );
+  return results.filter((r) => r !== null);
+}
 async function commitFile(filePath, contentStr, commitMessage, sha) {
   if (!validatePath(filePath)) {
     throw new Error(`\u0110\u01B0\u1EDDng d\u1EABn kh\xF4ng h\u1EE3p l\u1EC7 ho\u1EB7c n\u1EB1m ngo\xE0i danh m\u1EE5c \u0111\u01B0\u1EE3c ph\xE9p: ${filePath}`);
@@ -942,6 +993,529 @@ function validateAboutContent(input, existing) {
   };
 }
 
+// src/shared/catalogCategories.ts
+var CATALOG_CATEGORIES = [
+  {
+    id: "soft-dried",
+    slug: "soft-dried",
+    name: {
+      vi: "Tr\xE1i c\xE2y s\u1EA5y d\u1EBBo",
+      en: "Soft-Dried Fruits",
+      ko: "\uC18C\uD504\uD2B8 \uAC74\uC870 \uACFC\uC77C",
+      zh: "\u8F6F\u70D8\u5E72\u679C"
+    },
+    description: {
+      vi: "Ch\u1EBF bi\u1EBFn b\u1EB1ng c\xF4ng ngh\u1EC7 s\u1EA5y b\u01A1m nhi\u1EC7t nhi\u1EC7t \u0111\u1ED9 th\u1EA5p gi\xFAp gi\u1EEF k\u1EBFt c\u1EA5u d\u1EBBo m\u1EC1m v\xE0 h\u01B0\u01A1ng v\u1ECB \u0111\u1EB7c tr\u01B0ng c\u1EE7a t\u1EEBng lo\u1EA1i tr\xE1i c\xE2y.",
+      en: "Processed via low-temperature heat-pump dehydration to preserve soft, chewy fruit texture and tropical aroma by SKU.",
+      ko: "\uC800\uC628 \uD788\uD2B8\uD38C\uD504 \uAC74\uC870\uB85C \uD488\uBAA9\uBCC4 \uBD80\uB4DC\uB7FD\uACE0 \uCAC4\uAE43\uD55C \uC2DD\uAC10\uACFC \uC5F4\uB300 \uACFC\uC77C \uD48D\uBBF8\uB97C \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+      zh: "\u91C7\u7528\u4F4E\u6E29\u70ED\u6CF5\u5FAA\u73AF\u70D8\u5E72\u5DE5\u827A\uFF0C\u4F9D\u636E\u5404\u679C\u54C1\u7279\u70B9\u4FDD\u7559\u67D4\u97E7\u53E3\u611F\u4E0E\u6D53\u90C1\u679C\u9999\u3002"
+    },
+    image: "/assets/images/hero_fruits.webp",
+    imageFallback: "/assets/images/hero_fruits.jpg",
+    visible: true,
+    sortOrder: 1
+  },
+  {
+    id: "chips",
+    slug: "chips",
+    name: {
+      vi: "Tr\xE1i c\xE2y s\u1EA5y gi\xF2n",
+      en: "Crispy Dried Fruits",
+      ko: "\uD06C\uB9AC\uC2A4\uD53C \uACFC\uC77C \uCE69",
+      zh: "\u9999\u8106\u679C\u5E72\u7247"
+    },
+    description: {
+      vi: "C\xE1c d\xF2ng l\xE1t tr\xE1i c\xE2y s\u1EA5y gi\xF2n v\xE0 chi\xEAn s\u1EA5y ch\xE2n kh\xF4ng nhi\u1EC7t \u0111\u1ED9 th\u1EA5p k\u1EBFt h\u1EE3p ly t\xE2m t\xE1ch d\u1EA7u, \u0111\u1ED9 \u1EA9m th\u1EA5p d\u01B0\u1EDBi 5%.",
+      en: "Crispy fruit chips processed via low-temperature vacuum crisping and centrifugal de-oiling with moisture below 5%.",
+      ko: "\uC800\uC628 \uC9C4\uACF5 \uAC74\uC870 \uBC0F \uC6D0\uC2EC \uD0C8\uC720 \uACF5\uC815\uC744 \uC801\uC6A9\uD574 \uC218\uBD84 5% \uBBF8\uB9CC\uC758 \uBC14\uC0AD\uD55C \uC2DD\uAC10\uC744 \uAD6C\uD604\uD55C \uACFC\uC77C \uCE69 \uC81C\uD488\uAD70\uC785\uB2C8\uB2E4.",
+      zh: "\u91C7\u7528\u4F4E\u6E29\u771F\u7A7A\u8106\u5316\u4E0E\u79BB\u5FC3\u8131\u6CB9\u5DE5\u827A\u5236\u6210\u7684\u6C34\u679C\u8106\u7247\u7CFB\u5217\uFF0C\u6210\u54C1\u6C34\u5206\u542B\u91CF\u4F4E\u4E8E 5%\u3002"
+    },
+    image: "/images/products/banana-chips.webp",
+    imageFallback: "/images/products/banana-chips.jpg",
+    visible: true,
+    sortOrder: 2
+  },
+  {
+    id: "nuts-seeds",
+    slug: "nuts-seeds",
+    name: {
+      vi: "H\u1EA1t dinh d\u01B0\u1EE1ng",
+      en: "Nuts & Seeds",
+      ko: "\uACAC\uACFC\uB958 \uBC0F \uC5F0\uC790\uC721",
+      zh: "\u575A\u679C\u4E0E\u83B2\u5B50"
+    },
+    description: {
+      vi: "H\u1EA1t \u0111i\u1EC1u, m\u1EAFc ca, \xF3c ch\xF3 v\xE0 h\u1EA1t sen \u0111\u01B0\u1EE3c tuy\u1EC3n ch\u1ECDn theo v\xF9ng nguy\xEAn li\u1EC7u v\xE0 rang/s\u1EA5y ph\xF9 h\u1EE3p t\u1EEBng lo\u1EA1i h\u1EA1t.",
+      en: "Cashew, macadamia, walnuts, and lotus seeds sourced by regional origin with roasting or drying tailored to each kernel.",
+      ko: "\uC0B0\uC9C0\uBCC4\uB85C \uC5C4\uC120\uD55C \uCE90\uC288\uB11B\xB7\uB9C8\uCE74\uB2E4\uBBF8\uC544\xB7\uD638\uB450\xB7\uC5F0\uC790\uC721\uC744 \uC6D0\uBB3C \uD2B9\uC131\uC5D0 \uB9DE\uAC8C \uB85C\uC2A4\uD305\xB7\uAC74\uC870\uD558\uC5EC \uACF5\uAE09\uD569\uB2C8\uB2E4.",
+      zh: "\u4E25\u9009\u4F18\u8D28\u4EA7\u533A\u8170\u679C\u3001\u590F\u5A01\u5937\u679C\u3001\u6838\u6843\u4E0E\u83B2\u5B50\uFF0C\u6309\u4E0D\u540C\u575A\u679C\u7279\u6027\u5339\u914D\u70D8\u7119\u6216\u5E72\u71E5\u5DE5\u827A\u3002"
+    },
+    image: "/images/products/cashew.webp",
+    imageFallback: "/images/products/cashew.jpg",
+    visible: true,
+    sortOrder: 3
+  },
+  {
+    id: "mixed",
+    slug: "mixed",
+    name: {
+      vi: "S\u1EA3n ph\u1EA9m th\u1EADp c\u1EA9m",
+      en: "Mixed Products",
+      ko: "\uBAA8\uB4EC \uC81C\uD488",
+      zh: "\u7EFC\u5408\u4EA7\u54C1"
+    },
+    description: {
+      vi: "Ph\u1ED1i tr\u1ED9n \u0111a d\u1EA1ng tr\xE1i c\xE2y v\xE0 rau c\u1EE7 Vi\u1EC7t Nam s\u1EA5y gi\xF2n ch\xE2n kh\xF4ng ph\u1EE5c v\u1EE5 k\xEAnh b\xE1n l\u1EBB, food-service v\xE0 OEM.",
+      en: "Vacuum-dried blends of Vietnamese tropical fruits and vegetables tailored for retail, food-service, and OEM.",
+      ko: "\uB2E4\uC591\uD55C \uBCA0\uD2B8\uB0A8 \uC5F4\uB300 \uACFC\uC77C\uACFC \uBFCC\uB9AC\uCC44\uC18C\uB97C \uC800\uC628 \uC9C4\uACF5 \uAC74\uC870\uB85C \uBE14\uB80C\uB529\uD55C \uBAA8\uB4EC \uC81C\uD488\uAD70\uC785\uB2C8\uB2E4.",
+      zh: "\u7CBE\u9009\u591A\u79CD\u8D8A\u5357\u70ED\u5E26\u6C34\u679C\u4E0E\u6839\u830E\u852C\u83DC\u7ECF\u771F\u7A7A\u8106\u5316\u62FC\u914D\uFF0C\u5E7F\u6CDB\u9002\u914D\u5546\u8D85\u53CA OEM \u6E20\u9053\u3002"
+    },
+    image: "/images/products/mix-fruits-and-vegetables.webp",
+    imageFallback: "/images/products/mix-fruits-and-vegetables.jpg",
+    visible: true,
+    sortOrder: 4
+  }
+];
+var VALID_CATALOG_CATEGORY_IDS = CATALOG_CATEGORIES.map((c) => c.id);
+
+// src/shared/schemas/homepageSchema.ts
+var ALLOWED_HOMEPAGE_LINK_TYPES = [
+  "category",
+  "product",
+  "page",
+  "contact",
+  "quote"
+];
+var DEFAULT_SECTION_ORDER = [
+  "hero",
+  "about",
+  "categories",
+  "featuredProducts",
+  "productionOem",
+  "qualityCerts",
+  "exportMarkets",
+  "news",
+  "closingCta"
+];
+function mergeLoc(base, incoming) {
+  const prev = base || EMPTY_LOCALIZED_TEXT;
+  if (typeof incoming === "string") {
+    return { ...prev, vi: incoming.trim() };
+  }
+  if (!incoming || typeof incoming !== "object") {
+    return { ...prev };
+  }
+  const src = incoming;
+  return {
+    vi: typeof src.vi === "string" ? src.vi.trim() : prev.vi,
+    en: typeof src.en === "string" ? src.en.trim() : prev.en,
+    ko: typeof src.ko === "string" ? src.ko.trim() : prev.ko,
+    zh: typeof src.zh === "string" ? src.zh.trim() : prev.zh
+  };
+}
+function sanitizeInternalPath(raw, fallback) {
+  if (typeof raw !== "string") return fallback;
+  const trimmed = raw.trim();
+  if (!trimmed.startsWith("/") || trimmed.startsWith("//") || trimmed.includes("..")) {
+    return fallback;
+  }
+  return trimmed;
+}
+function sanitizeCardId(raw, fallback) {
+  if (typeof raw !== "string") return fallback;
+  const cleaned = raw.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
+  return cleaned || fallback;
+}
+function inferAssetsFallback(img, explicit) {
+  if (typeof explicit === "string" && isSafeAboutImageUrl(explicit)) {
+    return explicit.trim();
+  }
+  if ((img.startsWith("/assets/") || img.startsWith("/images/")) && img.toLowerCase().endsWith(".webp")) {
+    return img.slice(0, -5) + ".jpg";
+  }
+  return void 0;
+}
+function sanitizeCategoryCardList(rawList, fallbackList, defaultLinkType) {
+  if (!Array.isArray(rawList)) {
+    return fallbackList.map((c, idx) => ({ ...c, sortOrder: idx + 1 }));
+  }
+  const usedIds = /* @__PURE__ */ new Set();
+  return rawList.map((item, idx) => {
+    const prev = fallbackList.find((f) => f.id === item?.id) || fallbackList[idx];
+    let id = sanitizeCardId(item?.id, prev?.id || `cat-${idx + 1}`);
+    while (usedIds.has(id)) {
+      id = `${id}-${idx + 1}`;
+    }
+    usedIds.add(id);
+    const rawImg = typeof item?.image === "string" ? item.image.trim() : "";
+    const image = isSafeAboutImageUrl(rawImg) ? rawImg : prev?.image || "";
+    const imageFallback = image ? inferAssetsFallback(image, item?.imageFallback ?? (rawImg === prev?.image ? prev?.imageFallback : void 0)) : void 0;
+    const rawLinkType = typeof item?.linkType === "string" ? item.linkType.trim() : "";
+    const linkType = ALLOWED_HOMEPAGE_LINK_TYPES.includes(rawLinkType) ? rawLinkType : prev?.linkType || defaultLinkType;
+    const targetValue = typeof item?.targetValue === "string" ? item.targetValue.trim() : prev?.targetValue || id;
+    const sortOrder = Number.isFinite(Number(item?.sortOrder)) ? Number(item.sortOrder) : idx + 1;
+    return {
+      id,
+      linkType,
+      targetValue,
+      name: mergeLoc(prev?.name, item?.name),
+      description: mergeLoc(prev?.description, item?.description),
+      ...prev?.badge || item?.badge ? { badge: mergeLoc(prev?.badge, item?.badge) } : {},
+      ...prev?.ctaLabel || item?.ctaLabel ? { ctaLabel: mergeLoc(prev?.ctaLabel, item?.ctaLabel) } : {},
+      image,
+      ...imageFallback ? { imageFallback } : {},
+      visible: item?.visible !== void 0 ? Boolean(item.visible) : prev?.visible ?? true,
+      sortOrder
+    };
+  }).sort((a, b) => a.sortOrder - b.sortOrder).map((c, idx) => ({ ...c, sortOrder: idx + 1 }));
+}
+var EMPTY_HOMEPAGE_BASE = {
+  sections: {
+    hero: true,
+    about: true,
+    categories: true,
+    featuredProducts: true,
+    productionOem: true,
+    qualityCerts: true,
+    exportMarkets: true,
+    news: true,
+    closingCta: true
+  },
+  sectionOrder: [...DEFAULT_SECTION_ORDER],
+  hero: {
+    eyebrow: { ...EMPTY_LOCALIZED_TEXT },
+    headlineLine1: { ...EMPTY_LOCALIZED_TEXT },
+    headlineLine2: { ...EMPTY_LOCALIZED_TEXT },
+    headlineHighlight: { ...EMPTY_LOCALIZED_TEXT },
+    description: { ...EMPTY_LOCALIZED_TEXT },
+    primaryCtaLabel: { ...EMPTY_LOCALIZED_TEXT },
+    primaryCtaLink: "/products",
+    secondaryCtaLabel: { ...EMPTY_LOCALIZED_TEXT },
+    primaryImage: "/assets/images/hero-brochure-mango.webp",
+    primaryImageFallback: "/assets/images/hero-brochure-mango.jpg",
+    primaryImageAlt: { ...EMPTY_LOCALIZED_TEXT },
+    secondaryImage: "/assets/images/hero-brochure-dragonfruit.webp",
+    secondaryImageFallback: "/assets/images/hero-brochure-dragonfruit.jpg",
+    secondaryImageAlt: { ...EMPTY_LOCALIZED_TEXT }
+  },
+  about: {
+    label: { ...EMPTY_LOCALIZED_TEXT },
+    titleLine1: { ...EMPTY_LOCALIZED_TEXT },
+    titleLine2: { ...EMPTY_LOCALIZED_TEXT },
+    description: { ...EMPTY_LOCALIZED_TEXT },
+    ctaLabel: { ...EMPTY_LOCALIZED_TEXT },
+    ctaLink: "/about",
+    image: "/assets/images/factory/factory-quality-sorting.webp",
+    imageFallback: "/assets/images/factory/factory-quality-sorting.jpg",
+    imageAlt: { ...EMPTY_LOCALIZED_TEXT }
+  },
+  categoriesSection: {
+    label: { ...EMPTY_LOCALIZED_TEXT },
+    title: { ...EMPTY_LOCALIZED_TEXT },
+    description: { ...EMPTY_LOCALIZED_TEXT },
+    oemLinesHeading: { ...EMPTY_LOCALIZED_TEXT },
+    oemLinesDesc: { ...EMPTY_LOCALIZED_TEXT }
+  },
+  catalogCategoryCards: [],
+  oemProductLines: [],
+  featuredProductsSection: {
+    label: { ...EMPTY_LOCALIZED_TEXT },
+    title: { ...EMPTY_LOCALIZED_TEXT },
+    description: { ...EMPTY_LOCALIZED_TEXT },
+    viewAllLabel: { ...EMPTY_LOCALIZED_TEXT },
+    maxItems: 4
+  },
+  featuredProductSlugs: [],
+  productionOem: {
+    label: { ...EMPTY_LOCALIZED_TEXT },
+    title: { ...EMPTY_LOCALIZED_TEXT },
+    description: { ...EMPTY_LOCALIZED_TEXT },
+    bullets: [],
+    image: "/assets/images/factory-2026/factory-featured.webp",
+    imageFallback: "/assets/images/factory-2026/factory-featured.jpg",
+    imageAlt: { ...EMPTY_LOCALIZED_TEXT },
+    primaryCtaLabel: { ...EMPTY_LOCALIZED_TEXT },
+    secondaryCtaLabel: { ...EMPTY_LOCALIZED_TEXT },
+    secondaryCtaLink: "/about#factory-gallery"
+  },
+  qualityCerts: {
+    label: { ...EMPTY_LOCALIZED_TEXT },
+    title: { ...EMPTY_LOCALIZED_TEXT },
+    description: { ...EMPTY_LOCALIZED_TEXT },
+    scopeNote: { ...EMPTY_LOCALIZED_TEXT },
+    ctaLabel: { ...EMPTY_LOCALIZED_TEXT },
+    ctaLink: "/quality#certificates"
+  },
+  exportMarkets: {
+    label: { ...EMPTY_LOCALIZED_TEXT },
+    titleLine1: { ...EMPTY_LOCALIZED_TEXT },
+    titleLine2: { ...EMPTY_LOCALIZED_TEXT },
+    description: { ...EMPTY_LOCALIZED_TEXT },
+    ctaLabel: { ...EMPTY_LOCALIZED_TEXT },
+    ctaLink: "/markets"
+  },
+  newsSection: {
+    label: { ...EMPTY_LOCALIZED_TEXT },
+    titleLine1: { ...EMPTY_LOCALIZED_TEXT },
+    titleLine2: { ...EMPTY_LOCALIZED_TEXT },
+    description: { ...EMPTY_LOCALIZED_TEXT },
+    viewAllLabel: { ...EMPTY_LOCALIZED_TEXT },
+    maxItems: 3
+  },
+  closingCta: {
+    eyebrow: { ...EMPTY_LOCALIZED_TEXT },
+    title: { ...EMPTY_LOCALIZED_TEXT },
+    description: { ...EMPTY_LOCALIZED_TEXT },
+    primaryLabel: { ...EMPTY_LOCALIZED_TEXT },
+    secondaryLabel: { ...EMPTY_LOCALIZED_TEXT },
+    secondaryLink: "/contact",
+    brochureLabel: { ...EMPTY_LOCALIZED_TEXT },
+    brochureLink: "/brochure"
+  }
+};
+function mergeHomepageContent(baseInput, incoming) {
+  const base = baseInput || EMPTY_HOMEPAGE_BASE;
+  const raw = incoming && typeof incoming === "object" ? incoming : {};
+  const rawSec = raw.sections && typeof raw.sections === "object" ? raw.sections : {};
+  const sections = {
+    hero: typeof rawSec.hero === "boolean" ? rawSec.hero : base.sections.hero,
+    about: typeof rawSec.about === "boolean" ? rawSec.about : base.sections.about,
+    categories: typeof rawSec.categories === "boolean" ? rawSec.categories : base.sections.categories,
+    featuredProducts: typeof rawSec.featuredProducts === "boolean" ? rawSec.featuredProducts : base.sections.featuredProducts,
+    productionOem: typeof rawSec.productionOem === "boolean" ? rawSec.productionOem : base.sections.productionOem,
+    qualityCerts: typeof rawSec.qualityCerts === "boolean" ? rawSec.qualityCerts : base.sections.qualityCerts,
+    exportMarkets: typeof rawSec.exportMarkets === "boolean" ? rawSec.exportMarkets : base.sections.exportMarkets,
+    news: typeof rawSec.news === "boolean" ? rawSec.news : base.sections.news,
+    closingCta: typeof rawSec.closingCta === "boolean" ? rawSec.closingCta : base.sections.closingCta
+  };
+  let sectionOrder = [...base.sectionOrder];
+  if (Array.isArray(raw.sectionOrder) && raw.sectionOrder.length > 0) {
+    const validSet = /* @__PURE__ */ new Set();
+    for (const k of raw.sectionOrder) {
+      if (typeof k === "string" && DEFAULT_SECTION_ORDER.includes(k)) {
+        validSet.add(k);
+      }
+    }
+    for (const defKey of DEFAULT_SECTION_ORDER) {
+      validSet.add(defKey);
+    }
+    sectionOrder = Array.from(validSet);
+  }
+  const hRaw = raw.hero && typeof raw.hero === "object" ? raw.hero : {};
+  const hPrimImg = typeof hRaw.primaryImage === "string" && isSafeAboutImageUrl(hRaw.primaryImage) ? hRaw.primaryImage.trim() : base.hero.primaryImage;
+  const hSecImg = typeof hRaw.secondaryImage === "string" && isSafeAboutImageUrl(hRaw.secondaryImage) ? hRaw.secondaryImage.trim() : base.hero.secondaryImage;
+  const hero = {
+    eyebrow: mergeLoc(base.hero.eyebrow, hRaw.eyebrow),
+    headlineLine1: mergeLoc(base.hero.headlineLine1, hRaw.headlineLine1),
+    headlineLine2: mergeLoc(base.hero.headlineLine2, hRaw.headlineLine2),
+    headlineHighlight: mergeLoc(base.hero.headlineHighlight, hRaw.headlineHighlight),
+    description: mergeLoc(base.hero.description, hRaw.description),
+    primaryCtaLabel: mergeLoc(base.hero.primaryCtaLabel, hRaw.primaryCtaLabel),
+    primaryCtaLink: sanitizeInternalPath(hRaw.primaryCtaLink, base.hero.primaryCtaLink),
+    secondaryCtaLabel: mergeLoc(base.hero.secondaryCtaLabel, hRaw.secondaryCtaLabel),
+    primaryImage: hPrimImg,
+    primaryImageFallback: inferAssetsFallback(hPrimImg, hRaw.primaryImageFallback ?? base.hero.primaryImageFallback),
+    primaryImageAlt: mergeLoc(base.hero.primaryImageAlt, hRaw.primaryImageAlt),
+    secondaryImage: hSecImg,
+    secondaryImageFallback: inferAssetsFallback(hSecImg, hRaw.secondaryImageFallback ?? base.hero.secondaryImageFallback),
+    secondaryImageAlt: mergeLoc(base.hero.secondaryImageAlt, hRaw.secondaryImageAlt)
+  };
+  const aRaw = raw.about && typeof raw.about === "object" ? raw.about : {};
+  const aImg = typeof aRaw.image === "string" && isSafeAboutImageUrl(aRaw.image) ? aRaw.image.trim() : base.about.image;
+  const about = {
+    label: mergeLoc(base.about.label, aRaw.label),
+    titleLine1: mergeLoc(base.about.titleLine1, aRaw.titleLine1),
+    titleLine2: mergeLoc(base.about.titleLine2, aRaw.titleLine2),
+    description: mergeLoc(base.about.description, aRaw.description),
+    ctaLabel: mergeLoc(base.about.ctaLabel, aRaw.ctaLabel),
+    ctaLink: sanitizeInternalPath(aRaw.ctaLink, base.about.ctaLink),
+    image: aImg,
+    imageFallback: inferAssetsFallback(aImg, aRaw.imageFallback ?? base.about.imageFallback),
+    imageAlt: mergeLoc(base.about.imageAlt, aRaw.imageAlt)
+  };
+  const csRaw = raw.categoriesSection && typeof raw.categoriesSection === "object" ? raw.categoriesSection : {};
+  const categoriesSection = {
+    label: mergeLoc(base.categoriesSection.label, csRaw.label),
+    title: mergeLoc(base.categoriesSection.title, csRaw.title),
+    description: mergeLoc(base.categoriesSection.description, csRaw.description),
+    oemLinesHeading: mergeLoc(base.categoriesSection.oemLinesHeading, csRaw.oemLinesHeading),
+    oemLinesDesc: mergeLoc(base.categoriesSection.oemLinesDesc, csRaw.oemLinesDesc)
+  };
+  const catalogCategoryCards = sanitizeCategoryCardList(
+    raw.catalogCategoryCards,
+    base.catalogCategoryCards,
+    "category"
+  );
+  const oemProductLines = sanitizeCategoryCardList(
+    raw.oemProductLines,
+    base.oemProductLines,
+    "quote"
+  );
+  const fpRaw = raw.featuredProductsSection && typeof raw.featuredProductsSection === "object" ? raw.featuredProductsSection : {};
+  const rawMaxFeat = Number(fpRaw.maxItems);
+  const featuredMaxItems = Number.isFinite(rawMaxFeat) ? Math.max(1, Math.min(4, Math.floor(rawMaxFeat))) : base.featuredProductsSection.maxItems;
+  const featuredProductsSection = {
+    label: mergeLoc(base.featuredProductsSection.label, fpRaw.label),
+    title: mergeLoc(base.featuredProductsSection.title, fpRaw.title),
+    description: mergeLoc(base.featuredProductsSection.description, fpRaw.description),
+    viewAllLabel: mergeLoc(base.featuredProductsSection.viewAllLabel, fpRaw.viewAllLabel),
+    maxItems: featuredMaxItems
+  };
+  let featuredProductSlugs = [...base.featuredProductSlugs].slice(0, 4);
+  if (Array.isArray(raw.featuredProductSlugs)) {
+    const deduped = [];
+    for (const s of raw.featuredProductSlugs) {
+      if (typeof s === "string" && s.trim() && !deduped.includes(s.trim())) {
+        deduped.push(s.trim());
+      }
+      if (deduped.length >= 4) break;
+    }
+    featuredProductSlugs = deduped;
+  }
+  const pRaw = raw.productionOem && typeof raw.productionOem === "object" ? raw.productionOem : {};
+  const pImg = typeof pRaw.image === "string" && isSafeAboutImageUrl(pRaw.image) ? pRaw.image.trim() : base.productionOem.image;
+  const bullets = Array.isArray(pRaw.bullets) && pRaw.bullets.length > 0 ? pRaw.bullets.map((b, idx) => mergeLoc(base.productionOem.bullets[idx], b)) : base.productionOem.bullets.map((b) => ({ ...b }));
+  const productionOem = {
+    label: mergeLoc(base.productionOem.label, pRaw.label),
+    title: mergeLoc(base.productionOem.title, pRaw.title),
+    description: mergeLoc(base.productionOem.description, pRaw.description),
+    bullets,
+    image: pImg,
+    imageFallback: inferAssetsFallback(pImg, pRaw.imageFallback ?? base.productionOem.imageFallback),
+    imageAlt: mergeLoc(base.productionOem.imageAlt, pRaw.imageAlt),
+    primaryCtaLabel: mergeLoc(base.productionOem.primaryCtaLabel, pRaw.primaryCtaLabel),
+    secondaryCtaLabel: mergeLoc(base.productionOem.secondaryCtaLabel, pRaw.secondaryCtaLabel),
+    secondaryCtaLink: sanitizeInternalPath(pRaw.secondaryCtaLink, base.productionOem.secondaryCtaLink)
+  };
+  const qRaw = raw.qualityCerts && typeof raw.qualityCerts === "object" ? raw.qualityCerts : {};
+  const qualityCerts = {
+    label: mergeLoc(base.qualityCerts.label, qRaw.label),
+    title: mergeLoc(base.qualityCerts.title, qRaw.title),
+    description: mergeLoc(base.qualityCerts.description, qRaw.description),
+    scopeNote: mergeLoc(base.qualityCerts.scopeNote, qRaw.scopeNote),
+    ctaLabel: mergeLoc(base.qualityCerts.ctaLabel, qRaw.ctaLabel),
+    ctaLink: sanitizeInternalPath(qRaw.ctaLink, base.qualityCerts.ctaLink)
+  };
+  const eRaw = raw.exportMarkets && typeof raw.exportMarkets === "object" ? raw.exportMarkets : {};
+  const exportMarkets = {
+    label: mergeLoc(base.exportMarkets.label, eRaw.label),
+    titleLine1: mergeLoc(base.exportMarkets.titleLine1, eRaw.titleLine1),
+    titleLine2: mergeLoc(base.exportMarkets.titleLine2, eRaw.titleLine2),
+    description: mergeLoc(base.exportMarkets.description, eRaw.description),
+    ctaLabel: mergeLoc(base.exportMarkets.ctaLabel, eRaw.ctaLabel),
+    ctaLink: sanitizeInternalPath(eRaw.ctaLink, base.exportMarkets.ctaLink)
+  };
+  const nRaw = raw.newsSection && typeof raw.newsSection === "object" ? raw.newsSection : {};
+  const rawNewsMax = Number(nRaw.maxItems);
+  const newsSection = {
+    label: mergeLoc(base.newsSection.label, nRaw.label),
+    titleLine1: mergeLoc(base.newsSection.titleLine1, nRaw.titleLine1),
+    titleLine2: mergeLoc(base.newsSection.titleLine2, nRaw.titleLine2),
+    description: mergeLoc(base.newsSection.description, nRaw.description),
+    viewAllLabel: mergeLoc(base.newsSection.viewAllLabel, nRaw.viewAllLabel),
+    maxItems: Number.isFinite(rawNewsMax) ? Math.max(1, Math.min(6, Math.floor(rawNewsMax))) : base.newsSection.maxItems
+  };
+  const cRaw = raw.closingCta && typeof raw.closingCta === "object" ? raw.closingCta : {};
+  const closingCta = {
+    eyebrow: mergeLoc(base.closingCta.eyebrow, cRaw.eyebrow),
+    title: mergeLoc(base.closingCta.title, cRaw.title),
+    description: mergeLoc(base.closingCta.description, cRaw.description),
+    primaryLabel: mergeLoc(base.closingCta.primaryLabel, cRaw.primaryLabel),
+    secondaryLabel: mergeLoc(base.closingCta.secondaryLabel, cRaw.secondaryLabel),
+    secondaryLink: sanitizeInternalPath(cRaw.secondaryLink, base.closingCta.secondaryLink),
+    brochureLabel: mergeLoc(base.closingCta.brochureLabel, cRaw.brochureLabel),
+    brochureLink: sanitizeInternalPath(cRaw.brochureLink, base.closingCta.brochureLink)
+  };
+  return {
+    sections,
+    sectionOrder,
+    hero,
+    about,
+    categoriesSection,
+    catalogCategoryCards,
+    oemProductLines,
+    featuredProductsSection,
+    featuredProductSlugs,
+    productionOem,
+    qualityCerts,
+    exportMarkets,
+    newsSection,
+    closingCta
+  };
+}
+function validateHomepageContent(input, existing, validProductSlugs) {
+  const base = existing || EMPTY_HOMEPAGE_BASE;
+  const errors = [];
+  const raw = input && typeof input === "object" ? input : {};
+  const imgFields = [
+    ["hero.primaryImage", raw.hero?.primaryImage],
+    ["hero.secondaryImage", raw.hero?.secondaryImage],
+    ["about.image", raw.about?.image],
+    ["productionOem.image", raw.productionOem?.image]
+  ];
+  for (const [label, val] of imgFields) {
+    if (val !== void 0 && !isSafeAboutImageUrl(val)) {
+      errors.push(`\u0110\u01B0\u1EDDng d\u1EABn \u1EA3nh "${label}" kh\xF4ng h\u1EE3p l\u1EC7 ho\u1EB7c kh\xF4ng an to\xE0n.`);
+    }
+  }
+  const checkCardGroup = (groupLabel, list) => {
+    if (!Array.isArray(list)) return;
+    const seenIds = /* @__PURE__ */ new Set();
+    list.forEach((item, idx) => {
+      const prefix = `${groupLabel} #${idx + 1}`;
+      if (!item || typeof item !== "object") {
+        errors.push(`${prefix}: \u0110\u1ECBnh d\u1EA1ng kh\xF4ng h\u1EE3p l\u1EC7.`);
+        return;
+      }
+      if (item.image !== void 0 && !isSafeAboutImageUrl(item.image)) {
+        errors.push(`${prefix}: \u0110\u01B0\u1EDDng d\u1EABn \u1EA3nh kh\xF4ng h\u1EE3p l\u1EC7.`);
+      }
+      const id = sanitizeCardId(item.id, "");
+      if (!id) {
+        errors.push(`${prefix}: Thi\u1EBFu ID.`);
+      } else if (seenIds.has(id)) {
+        errors.push(`${prefix}: Tr\xF9ng ID "${id}".`);
+      } else {
+        seenIds.add(id);
+      }
+      const lt = item.linkType;
+      const tv = typeof item.targetValue === "string" ? item.targetValue.trim() : "";
+      if (lt !== void 0 && !ALLOWED_HOMEPAGE_LINK_TYPES.includes(lt)) {
+        errors.push(`${prefix}: Lo\u1EA1i li\xEAn k\u1EBFt "${lt}" kh\xF4ng h\u1EE3p l\u1EC7.`);
+      }
+      if (lt === "category" && !VALID_CATALOG_CATEGORY_IDS.includes(tv)) {
+        errors.push(`${prefix}: Danh m\u1EE5c \u0111\xEDch "${tv}" kh\xF4ng t\u1ED3n t\u1EA1i trong 4 danh m\u1EE5c chu\u1EA9n (${VALID_CATALOG_CATEGORY_IDS.join(", ")}).`);
+      }
+      if (lt === "product" && validProductSlugs && validProductSlugs.length > 0 && !validProductSlugs.includes(tv)) {
+        errors.push(`${prefix}: S\u1EA3n ph\u1EA9m \u0111\xEDch "${tv}" kh\xF4ng t\u1ED3n t\u1EA1i ho\u1EB7c ch\u01B0a xu\u1EA5t b\u1EA3n.`);
+      }
+      if (lt === "page" && (!tv.startsWith("/") || tv.startsWith("//") || tv.includes(".."))) {
+        errors.push(`${prefix}: \u0110\u01B0\u1EDDng d\u1EABn trang \u0111\xEDch "${tv}" ph\u1EA3i b\u1EAFt \u0111\u1EA7u b\u1EB1ng "/".`);
+      }
+    });
+  };
+  checkCardGroup("Danh m\u1EE5c s\u1EA3n ph\u1EA9m", raw.catalogCategoryCards);
+  checkCardGroup("D\xF2ng OEM / T\u01B0 v\u1EA5n", raw.oemProductLines);
+  if (Array.isArray(raw.featuredProductSlugs)) {
+    if (raw.featuredProductSlugs.length > 4) {
+      errors.push("Trang ch\u1EE7 ch\u1EC9 cho ph\xE9p ch\u1ECDn t\u1ED1i \u0111a 4 s\u1EA3n ph\u1EA9m ti\xEAu bi\u1EC3u.");
+    }
+    if (validProductSlugs && validProductSlugs.length > 0) {
+      for (const s of raw.featuredProductSlugs) {
+        if (typeof s === "string" && s.trim() && !validProductSlugs.includes(s.trim())) {
+          errors.push(`S\u1EA3n ph\u1EA9m ti\xEAu bi\u1EC3u "${s}" kh\xF4ng t\u1ED3n t\u1EA1i trong danh m\u1EE5c s\u1EA3n ph\u1EA9m c\xF4ng khai.`);
+        }
+      }
+    }
+  }
+  const merged = mergeHomepageContent(base, raw);
+  return {
+    valid: errors.length === 0,
+    errors,
+    data: merged
+  };
+}
+
 // server/admin/settings.ts
 import fs from "fs";
 import path from "path";
@@ -951,7 +1525,7 @@ var settings_default = wrapHandler(async (req, res) => {
     return res.status(401).json({ error: "Y\xEAu c\u1EA7u \u0111\u0103ng nh\u1EADp qu\u1EA3n tr\u1ECB." });
   }
   const rawSection = req.query?.section;
-  const section = rawSection === "brochure" ? "brochure" : rawSection === "about" ? "about" : "company";
+  const section = rawSection === "brochure" ? "brochure" : rawSection === "about" ? "about" : rawSection === "homepage" ? "homepage" : "company";
   const filePath = `content/settings/${section}.json`;
   const useGitHub = hasGitHubToken();
   if (req.method === "GET") {
@@ -1016,6 +1590,52 @@ var settings_default = wrapHandler(async (req, res) => {
       }
       validatedData = v.data;
       commitMessage = "cms(about): update about page content & gallery";
+    } else if (section === "homepage") {
+      let existingHomepage = void 0;
+      try {
+        if (useGitHub) {
+          const existingFile = await getRepoFile(filePath);
+          if (existingFile) {
+            existingHomepage = JSON.parse(existingFile.content);
+          }
+        } else {
+          const localPath = path.join(process.cwd(), filePath);
+          if (fs.existsSync(localPath)) {
+            existingHomepage = JSON.parse(fs.readFileSync(localPath, "utf-8").replace(/^\uFEFF/, ""));
+          }
+        }
+      } catch {
+        existingHomepage = void 0;
+      }
+      const validSlugs = [];
+      try {
+        if (useGitHub) {
+          const entries = await listRepoJsonFiles("content/products");
+          for (const e of entries) {
+            const slug = String(e.data?.slug || e.data?.id || "").trim();
+            if (slug) validSlugs.push(slug);
+          }
+        } else {
+          const prodDir = path.join(process.cwd(), "content/products");
+          if (fs.existsSync(prodDir)) {
+            for (const f of fs.readdirSync(prodDir).filter((n) => n.endsWith(".json"))) {
+              try {
+                const raw = JSON.parse(fs.readFileSync(path.join(prodDir, f), "utf-8").replace(/^\uFEFF/, ""));
+                const slug = String(raw?.slug || raw?.id || "").trim();
+                if (slug) validSlugs.push(slug);
+              } catch {
+              }
+            }
+          }
+        }
+      } catch {
+      }
+      const v = validateHomepageContent(incomingData, existingHomepage, validSlugs.length > 0 ? validSlugs : void 0);
+      if (!v.valid) {
+        return res.status(400).json({ error: `D\u1EEF li\u1EC7u c\u1EA5u h\xECnh Trang ch\u1EE7 kh\xF4ng h\u1EE3p l\u1EC7: ${v.errors.join("; ")}` });
+      }
+      validatedData = v.data;
+      commitMessage = "cms(homepage): update homepage content & featured configuration";
     } else {
       const v = validateCompanySettings(incomingData);
       if (!v.valid) {

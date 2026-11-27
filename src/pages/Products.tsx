@@ -16,22 +16,34 @@ import { ProductCard } from '../components/products/ProductCard';
 import { ProductDetailModal } from '../components/products/ProductDetailModal';
 import { CorporateCTA } from '../components/ui/CorporateCTA';
 import { MainLayoutContext } from '../components/layout/MainLayout';
+import { isValidCatalogCategory } from '../shared/catalogCategories';
+import { OEM_PRODUCT_ID, resolveCanonicalProduct } from '../components/contact/contactSchema';
 
 export const Products: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { onOpenQuote } = useOutletContext<MainLayoutContext>();
   const { language, t, pick } = useLanguage();
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [invalidCategoryParam, setInvalidCategoryParam] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
 
   // Check URL slug or ?product= or ?category= query param
   useEffect(() => {
-    const targetCategory = searchParams.get('category') || searchParams.get('cat');
-    if (targetCategory && ['all', 'soft-dried', 'chips', 'nuts-seeds', 'mixed'].includes(targetCategory)) {
+    const targetCategory = (searchParams.get('category') || searchParams.get('cat') || '').trim();
+    if (!targetCategory || targetCategory === 'all') {
+      setActiveCategory('all');
+      setInvalidCategoryParam('');
+    } else if (isValidCatalogCategory(targetCategory)) {
       setActiveCategory(targetCategory);
+      setInvalidCategoryParam('');
+    } else {
+      // Unknown or OEM-only inquiry parameter (e.g. ?category=granola): never map silently to another category
+      setActiveCategory('all');
+      setInvalidCategoryParam(targetCategory);
     }
+
     const targetSlug = slug || searchParams.get('product');
     if (targetSlug) {
       const match = productsData.find(
@@ -42,6 +54,19 @@ export const Products: React.FC = () => {
       }
     }
   }, [slug, searchParams]);
+
+  const handleCategoryChange = (key: string) => {
+    setActiveCategory(key);
+    setInvalidCategoryParam('');
+    const next = new URLSearchParams(searchParams);
+    next.delete('cat');
+    if (key === 'all') {
+      next.delete('category');
+    } else {
+      next.set('category', key);
+    }
+    setSearchParams(next, { replace: false });
+  };
 
   const categories = [
     {
@@ -211,7 +236,7 @@ export const Products: React.FC = () => {
                 type="button"
                 className={`product-cat-pill ${activeCategory === cat.key ? 'active' : ''}`}
                 data-category-key={cat.key}
-                onClick={() => setActiveCategory(cat.key)}
+                onClick={() => handleCategoryChange(cat.key)}
                 role="tab"
                 aria-selected={activeCategory === cat.key}
               >
@@ -219,6 +244,78 @@ export const Products: React.FC = () => {
               </button>
             ))}
           </div>
+
+          {/* Notice when URL requests an unlisted or OEM-only category (e.g. ?category=granola) */}
+          {invalidCategoryParam && (
+            <div
+              data-testid="invalid-category-notice"
+              role="status"
+              style={{
+                maxWidth: '860px',
+                margin: '20px auto 0 auto',
+                padding: '14px 18px',
+                borderRadius: 'var(--radius-md)',
+                backgroundColor: '#FFF8EC',
+                border: '1px solid #F4A83A',
+                color: 'var(--dark-chocolate)',
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px',
+              }}
+            >
+              <div style={{ flex: '1 1 320px', fontSize: '0.88rem', lineHeight: 1.55 }}>
+                <strong style={{ display: 'block', marginBottom: '2px' }}>
+                  {pick({
+                    vi: `Tham số danh mục "${invalidCategoryParam}" không thuộc 4 nhóm hàng tiêu chuẩn trên website.`,
+                    en: `Category filter "${invalidCategoryParam}" is not one of the 4 standard catalog categories.`,
+                    ko: `카테고리 필터 "${invalidCategoryParam}"는 4개 정규 카탈로그 분류에 해당하지 않습니다.`,
+                    zh: `分类参数 "${invalidCategoryParam}" 不属于官网 4 大标准现货分类。`,
+                  })}
+                </strong>
+                <span>
+                  {pick({
+                    vi: 'Hiện VINAXO không tự động gán nhóm này sang Hạt dinh dưỡng hoặc Trái cây sấy. Nếu bạn đang tìm dòng gia công OEM theo yêu cầu (như Granola, Viên năng lượng, Tẩm mật ong, Nhúng sô-cô-la), vui lòng gửi yêu cầu tư vấn riêng hoặc xem toàn bộ 12 sản phẩm bên dưới.',
+                    en: 'We never auto-remap custom or unlisted terms to Nuts & Seeds or other groups. For made-to-order OEM lines (such as Granola, Fruit & Nut Balls, Honey-Infused, or Chocolate-Dipped), request a dedicated consultation or browse our 12 catalog products below.',
+                    ko: 'VINAXO는 별도 OEM 품목(그래놀라, 에너지 볼 등)을 견과류 카테고리로 임의 매핑하지 않습니다. 맞춤 OEM 상담을 요청하거나 아래 12개 정규 제품을 확인해 주세요.',
+                    zh: '系统不会将未列出或 OEM 定制品类自动映射至坚果或其他现货分组。如需咨询 OEM 定制线，请直接提交询盘或浏览下方 12 款标准产品。',
+                  })}
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ fontSize: '0.8rem', padding: '8px 14px' }}
+                  onClick={() => {
+                    const resolved = resolveCanonicalProduct(invalidCategoryParam);
+                    onOpenQuote(resolved.productId || OEM_PRODUCT_ID);
+                  }}
+                >
+                  {pick({
+                    vi: 'Liên hệ tìm hiểu / Gia công OEM',
+                    en: 'Contact for OEM Details',
+                    ko: 'OEM 맞춤 상담 요청',
+                    zh: '咨询 OEM 定制方案',
+                  })}
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ fontSize: '0.8rem', padding: '8px 14px' }}
+                  onClick={() => handleCategoryChange('all')}
+                >
+                  {pick({
+                    vi: 'Xem tất cả danh mục',
+                    en: 'View All Categories',
+                    ko: '전체 목록 보기',
+                    zh: '查看全部分类',
+                  })}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Group-specific note when a single category tab is active */}
           {activeCategory !== 'all' && categoryNotes[activeCategory as ProductCategory] && (

@@ -1454,3 +1454,54 @@
   .about-lightbox-prev { left: 6px; }
   .about-lightbox-next { right: 6px; }
 }
+
+
+/* ==========================================================================
+   HOMEPAGE STREAMLINED GRIDS & RESPONSIVE RULES (PRE-HANDOVER 2026)
+   ========================================================================== */
+.home-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.home-oem-lines-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.home-certs-compact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.home-category-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.home-category-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--brand-orange);
+}
+
+@media (max-width: 1120px) {
+  .home-categories-grid,
+  .home-oem-lines-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-certs-compact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .home-categories-grid,
+  .home-oem-lines-grid,
+  .home-certs-compact-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

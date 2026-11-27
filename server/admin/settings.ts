@@ -8,7 +8,7 @@ import {
   wrapHandler
 } from '../lib/security.js';
 import { checkApiMutationRateLimit } from '../lib/rateLimit.js';
-import { commitFile, getRepoFile, hasGitHubToken } from '../lib/github.js';
+import { commitFile, getRepoFile, hasGitHubToken, listRepoJsonFiles } from '../lib/github.js';
 import {
   validateCompanySettings,
   validateBrochureSettings
@@ -17,6 +17,10 @@ import {
   AboutPageContent,
   validateAboutContent
 } from '../../src/shared/schemas/aboutSchema.js';
+import {
+  HomepageContent,
+  validateHomepageContent
+} from '../../src/shared/schemas/homepageSchema.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -32,7 +36,9 @@ export default wrapHandler(async (req: any, res: any) => {
       ? 'brochure'
       : rawSection === 'about'
         ? 'about'
-        : 'company';
+        : rawSection === 'homepage'
+          ? 'homepage'
+          : 'company';
   const filePath = `content/settings/${section}.json`;
   const useGitHub = hasGitHubToken();
 
@@ -105,6 +111,52 @@ export default wrapHandler(async (req: any, res: any) => {
       }
       validatedData = v.data;
       commitMessage = 'cms(about): update about page content & gallery';
+    } else if (section === 'homepage') {
+      let existingHomepage: HomepageContent | undefined = undefined;
+      try {
+        if (useGitHub) {
+          const existingFile = await getRepoFile(filePath);
+          if (existingFile) {
+            existingHomepage = JSON.parse(existingFile.content);
+          }
+        } else {
+          const localPath = path.join(process.cwd(), filePath);
+          if (fs.existsSync(localPath)) {
+            existingHomepage = JSON.parse(fs.readFileSync(localPath, 'utf-8').replace(/^\uFEFF/, ''));
+          }
+        }
+      } catch {
+        existingHomepage = undefined;
+      }
+
+      const validSlugs: string[] = [];
+      try {
+        if (useGitHub) {
+          const entries = await listRepoJsonFiles('content/products');
+          for (const e of entries) {
+            const slug = String(e.data?.slug || e.data?.id || '').trim();
+            if (slug) validSlugs.push(slug);
+          }
+        } else {
+          const prodDir = path.join(process.cwd(), 'content/products');
+          if (fs.existsSync(prodDir)) {
+            for (const f of fs.readdirSync(prodDir).filter((n) => n.endsWith('.json'))) {
+              try {
+                const raw = JSON.parse(fs.readFileSync(path.join(prodDir, f), 'utf-8').replace(/^\uFEFF/, ''));
+                const slug = String(raw?.slug || raw?.id || '').trim();
+                if (slug) validSlugs.push(slug);
+              } catch {}
+            }
+          }
+        }
+      } catch {}
+
+      const v = validateHomepageContent(incomingData, existingHomepage, validSlugs.length > 0 ? validSlugs : undefined);
+      if (!v.valid) {
+        return res.status(400).json({ error: `Dữ liệu cấu hình Trang chủ không hợp lệ: ${v.errors.join('; ')}` });
+      }
+      validatedData = v.data;
+      commitMessage = 'cms(homepage): update homepage content & featured configuration';
     } else {
       const v = validateCompanySettings(incomingData);
       if (!v.valid) {

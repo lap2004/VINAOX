@@ -2,8 +2,8 @@ import type { Translations } from './en';
 
 export const ko: Translations = {
   "meta": {
-    "title": "VINAXO – 베트남 열대 건조 과일 제조·수출 전문 기업",
-    "description": "VINAXO COMPANY LIMITED (동탑·띠엔장)는 천연 소프트 건망고, 건잭프루트, 건파인애플, 건용과를 제조·수출하는 기업입니다. BRCGS Grade B 및 OCOP 3성급 인증을 바탕으로 미국·EU·러시아·동아시아로 수출합니다."
+    "title": "VINAXO – 베트남 열대 건조 과일·견과류 제조·수출 전문 기업",
+    "description": "VINAXO COMPANY LIMITED(베트남 동탑)는 소프트 건조 과일, 크리스피 과일 칩, 견과류, 모듬 과일·채소 및 맞춤형 OEM 자체 브랜드 제품을 제조·수출합니다. BRCGS Grade B, US FDA, ISO 22000:2018 인증."
   },
   "nav": {
     "home": "홈",

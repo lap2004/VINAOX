@@ -280,6 +280,10 @@ export function validateProduct(input: unknown): ProductValidationResult {
     ...(cleanStr(raw.imageAltEn) ? { imageAltEn: cleanStr(raw.imageAltEn) } : {}),
     published,
     status,
+    featured: raw.featured !== undefined ? Boolean(raw.featured) : false,
+    ...(Number.isFinite(Number(raw.featuredOrder)) && Number(raw.featuredOrder) > 0
+      ? { featuredOrder: Math.floor(Number(raw.featuredOrder)) }
+      : {}),
     // Compatibility aliases
     name_vi: nameVi,
     name_en: name,
