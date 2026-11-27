@@ -204,11 +204,34 @@ export default wrapHandler(async (req: any, res: any) => {
   const rawProductId = cleanText(rawBody.productId, 120);
   const rawProductName = cleanText(rawBody.productName || rawBody.product, 200);
   const quantity = cleanText(rawBody.quantity || rawBody.volume, 200);
+  const rawTradeTerm = cleanText(rawBody.tradeTerm, 20).toUpperCase();
+  const rawShippingMode = cleanText(rawBody.shippingMode, 20).toUpperCase();
   const message = cleanText(rawBody.message, 3000);
   const sourcePage = cleanText(rawBody.source || rawBody.sourcePage, 200) || (requestType === 'quotation' ? 'QuoteModal' : '/contact');
 
+  const ALLOWED_TRADE_TERMS = new Set(['FOB', 'CIF', 'CONSULT']);
+  const ALLOWED_SHIPPING_MODES = new Set(['FCL', 'LCL', 'CONSULT']);
+
   // Unified required validation across ALL forms: fullName (>=2), email (RFC & no CRLF), message (>=5)
   const errors: string[] = [];
+  if (rawTradeTerm && !ALLOWED_TRADE_TERMS.has(rawTradeTerm)) {
+    errors.push(pickMsg({
+      vi: 'Điều kiện thương mại không hợp lệ (chỉ chấp nhận FOB, CIF hoặc CONSULT).',
+      en: 'Invalid trade term (only FOB, CIF, or CONSULT allowed).',
+      ko: '유효하지 않은 무역 조건입니다 (FOB, CIF 또는 CONSULT만 허용).',
+      'zh-CN': '无效的贸易条款（仅支持 FOB、CIF 或 CONSULT）。'
+    }));
+  }
+  if (rawShippingMode && !ALLOWED_SHIPPING_MODES.has(rawShippingMode)) {
+    errors.push(pickMsg({
+      vi: 'Hình thức vận chuyển không hợp lệ (chỉ chấp nhận FCL, LCL hoặc CONSULT).',
+      en: 'Invalid shipping mode (only FCL, LCL, or CONSULT allowed).',
+      ko: '유효하지 않은 운송 방식입니다 (FCL, LCL 또는 CONSULT만 허용).',
+      'zh-CN': '无效的运输方式（仅支持 FCL、LCL 或 CONSULT）。'
+    }));
+  }
+  const tradeTerm = rawTradeTerm || '';
+  const shippingMode = rawShippingMode || '';
   if (fullName.length < 2) {
     errors.push(pickMsg({
       vi: 'Vui lòng nhập họ tên đầy đủ (tối thiểu 2 ký tự).',
@@ -316,6 +339,8 @@ export default wrapHandler(async (req: any, res: any) => {
     `Product (Verified): ${productDisplayForEmail}`,
     `Catalog Verified: ${verifiedProduct.isCatalogVerified ? 'YES' : 'NO / Custom'}`,
     `Estimated Quantity: ${quantity || 'N/A'}`,
+    `Trade Term (Incoterms): ${tradeTerm || 'N/A'}`,
+    `Shipping Mode (Container): ${shippingMode || 'N/A'}`,
     `Customer Locale: ${language}`,
     `Source Page: ${sourcePage}`,
     `----------------------------------------`,
@@ -340,6 +365,8 @@ export default wrapHandler(async (req: any, res: any) => {
           <tr><td style="padding:6px 0;font-weight:bold">Quốc gia / Thị trường:</td><td>${escapeHtml(country || 'N/A')}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Sản phẩm quan tâm:</td><td><strong>${escapeHtml(productDisplayForEmail)}</strong></td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Số lượng dự kiến:</td><td>${escapeHtml(quantity || 'N/A')}</td></tr>
+          <tr><td style="padding:6px 0;font-weight:bold">Điều kiện thương mại (Incoterms):</td><td>${escapeHtml(tradeTerm || 'N/A')}</td></tr>
+          <tr><td style="padding:6px 0;font-weight:bold">Hình thức vận chuyển:</td><td>${escapeHtml(shippingMode || 'N/A')}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Mục đích liên hệ:</td><td>${escapeHtml(inquiryType || 'N/A')}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Ngôn ngữ / Nguồn:</td><td>${escapeHtml(language)} (${escapeHtml(sourcePage)})</td></tr>
         </table>
@@ -459,6 +486,8 @@ export default wrapHandler(async (req: any, res: any) => {
         verifiedProductId: verifiedProduct.verifiedId,
         verifiedProductLabel: productDisplayForEmail,
         quantity,
+        tradeTerm: tradeTerm || undefined,
+        shippingMode: shippingMode || undefined,
         inquiryType,
         company,
         country,

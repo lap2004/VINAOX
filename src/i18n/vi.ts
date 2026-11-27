@@ -492,7 +492,7 @@ export const vi: Translations = {
       "step1Desc": "Thảo luận nhu cầu chủng loại, gửi mẫu thử sản phẩm (sample courier qua DHL/FedEx) và chào giá FOB/CIF chi tiết theo số lượng dự kiến.",
       "step2Num": "Bước 2",
       "step2Title": "Ký Hợp Đồng & Thiết Kế OEM",
-      "step2Desc": "Thống nhất quy cách bao bì, market nhãn mác (nếu làm Private Label), thời hạn giao hàng và điều khoản thanh toán quốc tế (L/C, T/T).",
+      "step2Desc": "Thống nhất quy cách bao bì, mẫu thiết kế nhãn mác (nếu gia công OEM / Private Label), thời hạn giao hàng và điều khoản thanh toán quốc tế (L/C, T/T).",
       "step3Num": "Bước 3",
       "step3Title": "Sản Xuất, Kiểm Nghiệm & Xuất Cảng",
       "step3Desc": "Chế biến theo lô, cấp COA kiểm nghiệm vi sinh - hóa lý, hoàn tất thủ tục hải quan xuất khẩu và gửi bộ chứng từ B/L đầy đủ cho người mua."
@@ -500,8 +500,8 @@ export const vi: Translations = {
     "section4": {
       "label": "KẾT NỐI XUẤT NHẬP KHẨU",
       "title": "Kết Nối Với Phòng Kinh Doanh Quốc Tế VINAXO",
-      "desc": "Chúng tôi luôn sẵn sàng hỗ trợ quý nhà nhập khẩu, nhà phân phối sỉ toàn cầu về các điều kiện giao hàng, bảng giá FCL ưu đãi và kế hoạch đóng gói xuất khẩu theo mùa vụ.",
-      "btnPrimary": "Nhận Báo Giá Container",
+      "desc": "VINAXO cung cấp giải pháp sản xuất và xuất khẩu trái cây sấy nhiệt đới theo nhu cầu của khách hàng B2B. Điều kiện thương mại (FOB/CIF), quy cách đóng gói và hình thức vận chuyển (FCL/LCL) được thống nhất phù hợp với từng đơn hàng.",
+      "btnPrimary": "Nhận Báo Giá FOB/CIF",
       "btnSecondary": "Liên Hệ Phòng Xuất Khẩu"
     }
   },

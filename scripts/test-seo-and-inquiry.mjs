@@ -512,6 +512,96 @@ async function main() {
     }
   });
 
+  // 10. Separated TradeTerm & ShippingMode validation + Export Logistics terminology audit
+  await testCase('Market logistics terminology: separates tradeTerm (FOB/CIF) from shippingMode (FCL/LCL) and removes market nhãn mác', async () => {
+    const prevFetch = globalThis.fetch;
+    const prevKey = process.env.RESEND_API_KEY;
+    const prevHook = process.env.INQUIRY_WEBHOOK_URL;
+    process.env.RESEND_API_KEY = 're_test_ephemeral_terms_key';
+    delete process.env.INQUIRY_WEBHOOK_URL;
+    const sentEmails = [];
+    globalThis.fetch = async (_url, init) => {
+      sentEmails.push(JSON.parse(init.body));
+      return { ok: true, status: 200, text: async () => '{"id":"msg_terms_1"}' };
+    };
+    try {
+      const resValid = createMockRes();
+      await contactHandler(
+        createReq({
+          ip: '198.51.100.51',
+          body: {
+            requestType: 'quotation',
+            locale: 'vi',
+            fullName: 'Le Minh',
+            email: 'minh@importer.example',
+            tradeTerm: 'FOB',
+            shippingMode: 'FCL',
+            message: 'Quote for 1x20ft Soft-Dried Mango FOB Cat Lai.',
+          },
+        }),
+        resValid
+      );
+      assert.strictEqual(resValid.statusCode, 200);
+      assert(sentEmails[0].text.includes('Trade Term (Incoterms): FOB'));
+      assert(sentEmails[0].text.includes('Shipping Mode (Container): FCL'));
+
+      const resSwap1 = createMockRes();
+      await contactHandler(
+        createReq({
+          ip: '198.51.100.52',
+          body: {
+            requestType: 'quotation',
+            locale: 'vi',
+            fullName: 'Bad Input',
+            email: 'bad@importer.example',
+            tradeTerm: 'FCL',
+            message: 'Should reject container mode inside tradeTerm.',
+          },
+        }),
+        resSwap1
+      );
+      assert.strictEqual(resSwap1.statusCode, 400);
+      assert.strictEqual(resSwap1.body.code, 'VALIDATION_ERROR');
+
+      const resSwap2 = createMockRes();
+      await contactHandler(
+        createReq({
+          ip: '198.51.100.53',
+          body: {
+            requestType: 'quotation',
+            locale: 'en',
+            fullName: 'Bad Input 2',
+            email: 'bad2@importer.example',
+            shippingMode: 'CIF',
+            message: 'Should reject Incoterm inside shippingMode.',
+          },
+        }),
+        resSwap2
+      );
+      assert.strictEqual(resSwap2.statusCode, 400);
+      assert.strictEqual(resSwap2.body.code, 'VALIDATION_ERROR');
+    } finally {
+      globalThis.fetch = prevFetch;
+      if (prevKey !== undefined) process.env.RESEND_API_KEY = prevKey;
+      else delete process.env.RESEND_API_KEY;
+      if (prevHook !== undefined) process.env.INQUIRY_WEBHOOK_URL = prevHook;
+    }
+
+    const auditedFiles = [
+      'src/pages/GlobalMarket.tsx',
+      'src/pages/Contact.tsx',
+      'src/i18n/vi.ts',
+      'src/i18n/en.ts',
+      'src/i18n/ko.ts',
+      'src/i18n/zhCN.ts',
+    ];
+    for (const rel of auditedFiles) {
+      const content = fs.readFileSync(path.join(process.cwd(), rel), 'utf8');
+      assert(!/FCL\s*\/\s*CIF|CIF\s*\/\s*FCL/i.test(content), `${rel} must not contain FCL/CIF`);
+      assert(!/mark?et\s+nhãn\s+mác/i.test(content), `${rel} must not contain market nhãn mác`);
+    }
+  });
+
   console.log(`\nSummary: ${passed}/${total} SEO & Inquiry test cases passed.`);
 }
 

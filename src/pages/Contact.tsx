@@ -28,6 +28,8 @@ import { BROCHURE_FAQS } from '../data/brochureData';
 import { submitInquiry } from '../services/inquiryService';
 import {
   type ContactRequest,
+  type TradeTerm,
+  type ShippingMode,
   FIELD_LIMITS,
   OEM_PRODUCT_ID,
   VALUE_ADDED_PRODUCT_ID,
@@ -66,6 +68,8 @@ export const Contact: React.FC = () => {
     productId: initialResolved.productId,
     customProductLabel: initialResolved.customLabel,
     quantity: '',
+    tradeTerm: '' as TradeTerm | '',
+    shippingMode: '' as ShippingMode | '',
     message: '',
   });
 
@@ -159,6 +163,8 @@ export const Contact: React.FC = () => {
       productId: formData.productId || undefined,
       productName: resolvedName || 'General Catalog',
       quantity: formData.quantity.trim() || undefined,
+      tradeTerm: formData.tradeTerm || undefined,
+      shippingMode: formData.shippingMode || undefined,
       message: formData.message.trim(),
       source: '/contact',
       hp_website: honeypot,
@@ -697,6 +703,97 @@ export const Contact: React.FC = () => {
                       onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                       maxLength={FIELD_LIMITS.quantityMax}
                     />
+                  </div>
+
+                  {/* Row 4b: Separated Optional Trade Term (Incoterms) & Container Shipping Mode */}
+                  <div className="contact-form-grid-2" style={{ marginTop: '16px' }}>
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="contactTradeTerm">
+                        {pick({
+                          vi: 'Điều Kiện Thương Mại (Incoterms – tùy chọn)',
+                          en: 'Trade Terms (Incoterms – optional)',
+                          ko: '무역 조건 (Incoterms – 선택)',
+                          zh: '贸易条款（Incoterms – 选填）',
+                        })}
+                      </label>
+                      <select
+                        id="contactTradeTerm"
+                        name="tradeTerm"
+                        className="form-select"
+                        value={formData.tradeTerm}
+                        onChange={(e) => setFormData({ ...formData, tradeTerm: e.target.value as TradeTerm | '' })}
+                      >
+                        <option value="">
+                          {pick({
+                            vi: 'Chọn điều kiện thương mại...',
+                            en: 'Select trade term...',
+                            ko: '무역 조건 선택...',
+                            zh: '请选择贸易条款...',
+                          })}
+                        </option>
+                        <option value="FOB">FOB – Free On Board</option>
+                        <option value="CIF">CIF – Cost, Insurance and Freight</option>
+                        <option value="CONSULT">
+                          {pick({
+                            vi: 'Cần VINAXO tư vấn điều kiện phù hợp',
+                            en: 'Need VINAXO trade-term consultation',
+                            ko: 'VINAXO 무역 조건 상담 요청',
+                            zh: '需要 VINAXO 协助评估贸易条款',
+                          })}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="contactShippingMode">
+                        {pick({
+                          vi: 'Hình Thức Vận Chuyển (tùy chọn)',
+                          en: 'Shipping Options (optional)',
+                          ko: '운송 방식 (선택)',
+                          zh: '运输方式（选填）',
+                        })}
+                      </label>
+                      <select
+                        id="contactShippingMode"
+                        name="shippingMode"
+                        className="form-select"
+                        value={formData.shippingMode}
+                        onChange={(e) => setFormData({ ...formData, shippingMode: e.target.value as ShippingMode | '' })}
+                      >
+                        <option value="">
+                          {pick({
+                            vi: 'Chọn hình thức vận chuyển...',
+                            en: 'Select shipping option...',
+                            ko: '운송 방식 선택...',
+                            zh: '请选择运输方式...',
+                          })}
+                        </option>
+                        <option value="FCL">
+                          {pick({
+                            vi: 'FCL – Hàng nguyên container (Full Container Load)',
+                            en: 'FCL – Full Container Load',
+                            ko: 'FCL – 컨테이너 단위 화물 (Full Container Load)',
+                            zh: 'FCL – 整箱运输 (Full Container Load)',
+                          })}
+                        </option>
+                        <option value="LCL">
+                          {pick({
+                            vi: 'LCL – Hàng lẻ ghép container (Less than Container Load)',
+                            en: 'LCL – Less than Container Load',
+                            ko: 'LCL – 컨테이너 혼재 화물 (Less than Container Load)',
+                            zh: 'LCL – 拼箱运输 (Less than Container Load)',
+                          })}
+                        </option>
+                        <option value="CONSULT">
+                          {pick({
+                            vi: 'Cần VINAXO tư vấn phương thức vận chuyển',
+                            en: 'Need VINAXO shipping consultation',
+                            ko: 'VINAXO 운송 방식 상담 요청',
+                            zh: '需要 VINAXO 建议运输方式',
+                          })}
+                        </option>
+                      </select>
+                    </div>
                   </div>
 
                   {/* Row 5: Required Detailed Message */}
