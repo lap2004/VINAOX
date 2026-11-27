@@ -1,30 +1,120 @@
 {
   "id": "lotus-seeds",
   "slug": "lotus-seeds",
+  "category": "nuts-seeds",
   "name_vi": "Hạt sen",
   "name_en": "Lotus Seeds",
-  "name_ko": "크리스피 연자육",
-  "name_zh": "香脆莲子",
-  "category": "nuts-seeds",
+  "name_ko": "크리스피 동탑 연자육",
+  "name_zh": "同塔香脆莲子",
+  "nameVi": "Hạt sen",
+  "name": "Lotus Seeds",
+  "nameKo": "크리스피 동탑 연자육",
+  "nameZh": "同塔香脆莲子",
   "image": "/images/products/lotus-seeds.webp",
+  "imageWebp": "/images/products/lotus-seeds.webp",
+  "imageJpg": "/images/products/lotus-seeds.jpg",
+  "shortDescriptionVi": "Đặc sản hạt sen Đồng Tháp, sấy giòn bùi xốp, vị ngọt thanh tự nhiên thanh lọc cơ thể.",
+  "shortDescription": "Renowned Dong Thap lotus seeds, gently dried to a crisp bite with subtle nutty sweetness.",
+  "shortDescriptionKo": "동탑성산 엄선 연자육을 부드럽고 바삭하게 건조해 담백하고 은은한 단맛을 살렸습니다.",
+  "shortDescriptionZh": "严选同塔省莲子去壳去芯，低温烘焙成清甜酥松口感。",
   "description_vi": "Được thu hoạch từ thủ phủ sen Đồng Tháp danh tiếng. Từng hạt sen tròn mẩy được bóc vỏ, tách tâm và sấy giòn xốp nhẹ tênh, vị ngọt bùi thanh tao tự nhiên, giàu protein thực vật và khoáng chất an thần bổ dưỡng.",
   "description_en": "Harvested from the pristine lotus heartland of Dong Thap, Vietnam. Delicately dried to produce a light, powdery crispness and soothing sweet-nutty flavor, packed with plant protein and calming traditional nutritional qualities.",
-  "description_ko": "베트남 동탑성의 청정 연꽃 재배지에서 수확한 연자육을 껍질과 심을 제거한 뒤 정교하게 진공 건조했습니다. 가볍고 포슬포슬한 바삭함과 은은한 고소함, 풍부한 식물성 단백질을 자랑합니다.",
-  "description_zh": "采自越南同塔省天然莲乡，精选饱满莲子去壳去芯并经低温真空膨化干燥，入口酥松香脆、甘甜淡雅，富含优质植物蛋白与天然舒缓营养成分。",
+  "description_ko": "베트남 최대 연꽃 산지 동탑성에서 수확한 연자육의 껍질과 심을 제거한 뒤 저온 진공 건조해 가볍고 포슬포슬한 바삭함과 고소한 풍미를 구현했습니다.",
+  "description_zh": "产自越南莲乡同塔省的饱满莲子，经精细去皮去芯与低温真空干燥，口感轻盈酥松、清香回甘，天然富含植物蛋白。",
+  "descriptionVi": "Được thu hoạch từ thủ phủ sen Đồng Tháp danh tiếng. Từng hạt sen tròn mẩy được bóc vỏ, tách tâm và sấy giòn xốp nhẹ tênh, vị ngọt bùi thanh tao tự nhiên, giàu protein thực vật và khoáng chất an thần bổ dưỡng.",
+  "description": "Harvested from the pristine lotus heartland of Dong Thap, Vietnam. Delicately dried to produce a light, powdery crispness and soothing sweet-nutty flavor, packed with plant protein and calming traditional nutritional qualities.",
+  "descriptionKo": "베트남 최대 연꽃 산지 동탑성에서 수확한 연자육의 껍질과 심을 제거한 뒤 저온 진공 건조해 가볍고 포슬포슬한 바삭함과 고소한 풍미를 구현했습니다.",
+  "descriptionZh": "产自越南莲乡同塔省的饱满莲子，经精细去皮去芯与低温真空干燥，口感轻盈酥松、清香回甘，天然富含植物蛋白。",
   "origin_vi": "Đồng Tháp, Việt Nam",
   "origin_en": "Dong Thap, Vietnam",
   "origin_ko": "베트남 동탑성",
   "origin_zh": "越南同塔省",
-  "shelf_life": "12 Tháng",
-  "shelf_life_ko": "12개월",
-  "shelf_life_zh": "12个月",
-  "packaging": "Túi zip / Lon nắp nhôm 150g, 250g, 500g / Thùng carton 10kg",
-  "packaging_ko": "지퍼 파우치 / 알루미늄 캔 150g, 250g, 500g / 마스터 카톤 10kg",
-  "packaging_zh": "自封袋 / 铝盖罐 150g、250g、500g / 出口纸箱 10kg",
-  "certifications": [
-    "Dong Thap Specialty",
-    "BRCGS Facility",
-    "Clean Label"
+  "originVi": "Đồng Tháp, Việt Nam",
+  "origin": "Dong Thap, Vietnam",
+  "originKo": "베트남 동탑성",
+  "originZh": "越南同塔省",
+  "ocop": "",
+  "productCertifications": [],
+  "productFeatures": [
+    {
+      "id": "dong-thap-specialty",
+      "label": {
+        "vi": "Đặc sản vùng sen Đồng Tháp",
+        "en": "Dong Thap geographic specialty",
+        "ko": "동탑성 지역 특산 원물",
+        "zh": "同塔省莲乡特色产区原料"
+      }
+    },
+    {
+      "id": "porous-crisp-lotus",
+      "label": {
+        "vi": "Sấy chân không giòn xốp (< 6% ẩm)",
+        "en": "Vacuum-dried crisp porous texture (< 6% moisture)",
+        "ko": "진공 건조 다공성 바삭한 식감 (< 6% 수분)",
+        "zh": "真空干燥酥松多孔口感（水分 < 6%）"
+      }
+    },
+    {
+      "id": "no-preservatives-lotus",
+      "label": {
+        "vi": "Không chất bảo quản",
+        "en": "Preservative-free",
+        "ko": "보존료 무첨가",
+        "zh": "无防腐剂添加"
+      }
+    }
   ],
-  "order": 12
+  "specs": {
+    "moisture": "< 6%",
+    "brix": "",
+    "shelfLifeVi": "12 Tháng",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeKo": "12개월",
+    "shelfLifeZh": "12个月",
+    "storageVi": "Bảo quản nơi khô ráo, thoáng mát, tránh ẩm ướt và ánh sáng trực tiếp",
+    "storageEn": "Store in a cool, dry place away from moisture and direct light",
+    "storageKo": "습기와 직사광선을 피해 서늘하고 건조한 곳에 보관",
+    "storageZh": "防潮避光，置于阴凉干燥处储存",
+    "ingredientsVi": "100% Hạt sen Đồng Tháp tươi tuyển chọn, không chất bảo quản",
+    "ingredientsEn": "100% Selected Dong Thap Lotus Seeds, zero artificial preservatives",
+    "ingredientsKo": "100% 엄선된 동탑성 연자육, 인공 방부제 무첨가",
+    "ingredientsZh": "100% 精选同塔省莲子，无人工防腐剂",
+    "processVi": "Sấy chân không nhiệt thấp giữ nguyên độ xốp giòn và dưỡng chất quý",
+    "processEn": "Low-temperature vacuum drying preserving porous texture and delicate amino acids",
+    "processKo": "다공성 바삭한 식감과 아미노산을 유지하는 저온 진공 건조",
+    "processZh": "低温真空干燥，保留酥松多孔口感与天然氨基酸",
+    "packagingVi": "Túi zip / Lon nắp nhôm 150g, 250g, 500g / Thùng carton 10kg",
+    "packagingEn": "Zip pouch / Can 150g, 250g, 500g / Master carton 10kg",
+    "packagingKo": "지퍼 파우치 / 캔 150g, 250g, 500g / 마스터 카톤 10kg",
+    "packagingZh": "自封袋 / 罐装 150g、250g、500g / 出口纸箱 10kg"
+  },
+  "vi": {
+    "name": "Hạt sen",
+    "desc": "Đặc sản hạt sen Đồng Tháp, sấy giòn bùi xốp, vị ngọt thanh tự nhiên thanh lọc cơ thể.",
+    "origin": "Đồng Tháp, Việt Nam",
+    "features": ""
+  },
+  "en": {
+    "name": "Lotus Seeds",
+    "desc": "Renowned Dong Thap lotus seeds, gently dried to a crisp bite with subtle nutty sweetness.",
+    "origin": "Dong Thap, Vietnam",
+    "features": ""
+  },
+  "ko": {
+    "name": "크리스피 동탑 연자육",
+    "desc": "동탑성산 엄선 연자육을 부드럽고 바삭하게 건조해 담백하고 은은한 단맛을 살렸습니다.",
+    "origin": "베트남 동탑성",
+    "features": ""
+  },
+  "zh": {
+    "name": "同塔香脆莲子",
+    "desc": "严选同塔省莲子去壳去芯，低温烘焙成清甜酥松口感。",
+    "origin": "越南同塔省",
+    "features": ""
+  },
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi zip / Lon nắp nhôm 150g, 250g, 500g / Thùng carton 10kg",
+  "order": 12,
+  "published": true,
+  "status": "published"
 }

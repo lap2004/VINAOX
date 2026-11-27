@@ -1,107 +1,136 @@
 {
   "id": "soft-dried-red-dragonfruit",
   "slug": "soft-dried-red-dragonfruit",
-  "aliases": [],
-  "name": "Soft Dried Red Dragonfruit",
-  "nameVi": "Thanh long ruột đỏ sấy dẻo",
-  "nameKo": "소프트 건적색 용과",
-  "nameZh": "软烘红心火龙果干",
-  "category": "soft-dried",
-  "categoryLabelEn": "Tropical Dried Fruits",
-  "categoryLabelVi": "Trái cây sấy nhiệt đới",
-  "categoryLabelKo": "소프트 건조 과일",
-  "categoryLabelZh": "软烘干果",
-  "image": "https://www.vinaxo.net/images/products/soft-dried-red-dragonfruit.webp",
-  "imageWebp": "https://www.vinaxo.net/images/products/soft-dried-red-dragonfruit.webp",
-  "imageJpg": "https://www.vinaxo.net/images/products/soft-dried-red-dragonfruit.jpg",
-  "shortDescription": "Sourced from Cho Gao, Tien Giang, our red dragonfruit is gently low-temperature dehydrated to retain its natural vibrant color, rich betacyanin antioxidants, dietary fiber, and authentic tropical taste without artificial coloring or added sugar.",
-  "shortDescriptionVi": "Được tuyển chọn từ vùng chuyên canh thanh long ruột đỏ Chợ Gạo (Tiền Giang). Quy trình sấy dẻo nhiệt thấp tuần hoàn giúp giữ trọn sắc đỏ tím tự nhiên, hàm lượng betacyanin chống oxy hóa và vị ngọt thanh nhẹ tự nhiên không qua phẩm màu.",
-  "shortDescriptionKo": "띠엔장성 쩌가오(Cho Gao) 전문 산지의 적색 용과를 엄선해 저온 순환 건조 공법으로 가공했습니다. 인공 색소나 설탕 첨가 없이 천연 자줏빛 색감과 베타시아닌 항산화 성분을 온전히 보존했습니다.",
-  "shortDescriptionZh": "严选前江省鹅贡（Cho Gao）核心产区红心火龙果，采用低温热风循环软烘工艺，不添加人工色素与精制糖，完整保留天然紫红色泽、甜菜红素抗氧化物及膳食纤维。",
-  "description": "Sourced from Cho Gao, Tien Giang, our red dragonfruit is gently low-temperature dehydrated to retain its natural vibrant color, rich betacyanin antioxidants, dietary fiber, and authentic tropical taste without artificial coloring or added sugar.",
-  "descriptionVi": "Được tuyển chọn từ vùng chuyên canh thanh long ruột đỏ Chợ Gạo (Tiền Giang). Quy trình sấy dẻo nhiệt thấp tuần hoàn giúp giữ trọn sắc đỏ tím tự nhiên, hàm lượng betacyanin chống oxy hóa và vị ngọt thanh nhẹ tự nhiên không qua phẩm màu.",
-  "descriptionKo": "띠엔장성 쩌가오(Cho Gao) 전문 산지의 적색 용과를 엄선해 저온 순환 건조 공법으로 가공했습니다. 인공 색소나 설탕 첨가 없이 천연 자줏빛 색감과 베타시아닌 항산화 성분을 온전히 보존했습니다.",
-  "descriptionZh": "严选前江省鹅贡（Cho Gao）核心产区红心火龙果，采用低温热风循环软烘工艺，不添加人工色素与精制糖，完整保留天然紫红色泽、甜菜红素抗氧化物及膳食纤维。",
-  "origin": "Mekong Delta, Vietnam",
-  "originVi": "Đồng bằng Sông Cửu Long, Việt Nam",
-  "originKo": "베트남 메콩 델타 (띠엔장성 쩌가오)",
-  "originZh": "越南湄公河三角洲（前江省鹅贡产区）",
-  "certifications": [
-    "OCOP 3-Star Tien Giang",
-    "BRCGS Facility",
-    "Clean Label"
+  "aliases": [
+    "dried-dragon-fruit"
   ],
-  "verified": true,
-  "ocop": "3-Star OCOP",
-  "specs": {
-    "moisture": "< 16%",
-    "brix": "50° - 55° Brix",
-    "shelfLifeEn": "12 Months",
-    "shelfLifeVi": "12 Tháng",
-    "shelfLifeKo": "12개월",
-    "shelfLifeZh": "12个月",
-    "storageEn": "Cool, dry place (20 - 25°C)",
-    "storageVi": "Nơi khô ráo, thoáng mát (20 - 25°C)",
-    "storageKo": "서늘하고 건조한 곳 보관 (20 - 25°C)",
-    "storageZh": "阴凉干燥处储存（20 - 25°C）",
-    "ingredientsEn": "100% Natural Vietnamese Fruits",
-    "ingredientsVi": "100% Trái cây Việt Nam tự nhiên",
-    "ingredientsKo": "100% 베트남 자연산 적색 용과",
-    "ingredientsZh": "100% 越南天然红心火龙果",
-    "processEn": "Low-temperature convective heat-pump drying",
-    "processVi": "Sấy bơm nhiệt nhiệt độ thấp tuần hoàn",
-    "processKo": "저온 순환 히트펌프 건조 (~50 - 55°C)",
-    "processZh": "低温热泵循环干燥工艺（约 50 - 55°C）",
-    "packagingEn": "Zip pouch / Export carton",
-    "packagingVi": "Túi zip / Thùng carton xuất khẩu",
-    "packagingKo": "지퍼 파우치 / 수출용 마스터 카톤",
-    "packagingZh": "自封拉链袋 / 出口纸箱",
-    "certificationsEn": "BRCGS Facility, Clean Label",
-    "certificationsVi": "Nhà máy chuẩn BRCGS, Clean Label",
-    "certificationsKo": "베트남 OCOP 3성급, BRCGS 인증 시설, 클린 라벨",
-    "certificationsZh": "越南 OCOP 三星级、BRCGS 认证工厂、清洁标签"
-  },
-  "en": {
-    "name": "Soft Dried Red Dragonfruit",
-    "desc": "Sourced from Cho Gao, Tien Giang, our red dragonfruit is gently low-temperature dehydrated to retain its natural vibrant color, rich betacyanin antioxidants, dietary fiber, and authentic tropical taste without artificial coloring or added sugar.",
-    "origin": "Mekong Delta, Vietnam",
-    "features": "Sourced from Cho Gao, Tien Giang, our red dragonfruit is gently low-temperature dehydrated to retain its natural vibrant color, rich betacyanin antioxidants, dietary fiber, and authentic tropical taste without artificial coloring or added sugar."
-  },
-  "vi": {
-    "name": "Thanh long ruột đỏ sấy dẻo",
-    "desc": "Được tuyển chọn từ vùng chuyên canh thanh long ruột đỏ Chợ Gạo (Tiền Giang). Quy trình sấy dẻo nhiệt thấp tuần hoàn giúp giữ trọn sắc đỏ tím tự nhiên, hàm lượng betacyanin chống oxy hóa và vị ngọt thanh nhẹ tự nhiên không qua phẩm màu.",
-    "origin": "Đồng bằng Sông Cửu Long, Việt Nam",
-    "features": "Được tuyển chọn từ vùng chuyên canh thanh long ruột đỏ Chợ Gạo (Tiền Giang). Quy trình sấy dẻo nhiệt thấp tuần hoàn giúp giữ trọn sắc đỏ tím tự nhiên, hàm lượng betacyanin chống oxy hóa và vị ngọt thanh nhẹ tự nhiên không qua phẩm màu."
-  },
-  "ko": {
-    "name": "소프트 건적색 용과",
-    "desc": "띠엔장성 쩌가오(Cho Gao) 전문 산지의 적색 용과를 엄선해 저온 순환 건조 공법으로 가공했습니다. 인공 색소나 설탕 첨가 없이 천연 자줏빛 색감과 베타시아닌 항산화 성분을 온전히 보존했습니다.",
-    "origin": "베트남 메콩 델타 (띠엔장성 쩌가오)",
-    "features": "띠엔장성 쩌가오(Cho Gao) 전문 산지의 적색 용과를 엄선해 저온 순환 건조 공법으로 가공했습니다. 인공 색소나 설탕 첨가 없이 천연 자줏빛 색감과 베타시아닌 항산화 성분을 온전히 보존했습니다."
-  },
-  "zh": {
-    "name": "软烘红心火龙果干",
-    "desc": "严选前江省鹅贡（Cho Gao）核心产区红心火龙果，采用低温热风循环软烘工艺，不添加人工色素与精制糖，完整保留天然紫红色泽、甜菜红素抗氧化物及膳食纤维。",
-    "origin": "越南湄公河三角洲（前江省鹅贡产区）",
-    "features": "严选前江省鹅贡（Cho Gao）核心产区红心火龙果，采用低温热风循环软烘工艺，不添加人工色素与精制糖，完整保留天然紫红色泽、甜菜红素抗氧化物及膳食纤维。"
-  },
+  "category": "soft-dried",
   "name_vi": "Thanh long ruột đỏ sấy dẻo",
   "name_en": "Soft Dried Red Dragonfruit",
   "name_ko": "소프트 건적색 용과",
   "name_zh": "软烘红心火龙果干",
+  "nameVi": "Thanh long ruột đỏ sấy dẻo",
+  "name": "Soft Dried Red Dragonfruit",
+  "nameKo": "소프트 건적색 용과",
+  "nameZh": "软烘红心火龙果干",
+  "image": "/images/products/soft-dried-red-dragonfruit.webp",
+  "imageWebp": "/images/products/soft-dried-red-dragonfruit.webp",
+  "imageJpg": "/images/products/soft-dried-red-dragonfruit.jpg",
+  "shortDescriptionVi": "Sắc đỏ tím tự nhiên, vị ngọt thanh dịu nhẹ hòa quyện cùng hạt giòn li ti đặc trưng.",
+  "shortDescription": "Vibrant ruby-red slices with gentle natural sweetness and characteristic crunchy seeds.",
+  "shortDescriptionKo": "선명한 천연 자줏빛과 은은한 단맛, 톡톡 씹히는 씨앗의 식감이 특징입니다.",
+  "shortDescriptionZh": "天然宝石红紫切片，清甜柔和，保留火龙果籽独特脆爽口感。",
   "description_vi": "Được tuyển chọn từ vùng chuyên canh thanh long ruột đỏ Chợ Gạo (Tiền Giang). Quy trình sấy dẻo nhiệt thấp tuần hoàn giúp giữ trọn sắc đỏ tím tự nhiên, hàm lượng betacyanin chống oxy hóa và vị ngọt thanh nhẹ tự nhiên không qua phẩm màu.",
   "description_en": "Sourced from Cho Gao, Tien Giang, our red dragonfruit is gently low-temperature dehydrated to retain its natural vibrant color, rich betacyanin antioxidants, dietary fiber, and authentic tropical taste without artificial coloring or added sugar.",
-  "description_ko": "띠엔장성 쩌가오(Cho Gao) 전문 산지의 적색 용과를 엄선해 저온 순환 건조 공법으로 가공했습니다. 인공 색소나 설탕 첨가 없이 천연 자줏빛 색감과 베타시아닌 항산화 성분을 온전히 보존했습니다.",
-  "description_zh": "严选前江省鹅贡（Cho Gao）核心产区红心火龙果，采用低温热风循环软烘工艺，不添加人工色素与精制糖，完整保留天然紫红色泽、甜菜红素抗氧化物及膳食纤维。",
-  "origin_vi": "Đồng bằng Sông Cửu Long, Việt Nam",
-  "origin_en": "Mekong Delta, Vietnam",
-  "origin_ko": "베트남 메콩 델타 (띠엔장성 쩌가오)",
-  "origin_zh": "越南湄公河三角洲（前江省鹅贡产区）",
+  "description_ko": "띠엔장성 쩌가오(Cho Gao) 전문 산지의 적색 용과를 엄선해 저온 순환 건조 공법으로 가공했습니다. 인공 색소 없이 천연 자줏빛 색감과 베타시아닌 항산화 성분을 온전히 보존했습니다.",
+  "description_zh": "严选前江省鹅贡（Cho Gao）核心产区红心火龙果，采用低温热风循环软烘工艺，不添加人工色素，保留天然紫红色泽、甜菜红素与膳食纤维。",
+  "descriptionVi": "Được tuyển chọn từ vùng chuyên canh thanh long ruột đỏ Chợ Gạo (Tiền Giang). Quy trình sấy dẻo nhiệt thấp tuần hoàn giúp giữ trọn sắc đỏ tím tự nhiên, hàm lượng betacyanin chống oxy hóa và vị ngọt thanh nhẹ tự nhiên không qua phẩm màu.",
+  "description": "Sourced from Cho Gao, Tien Giang, our red dragonfruit is gently low-temperature dehydrated to retain its natural vibrant color, rich betacyanin antioxidants, dietary fiber, and authentic tropical taste without artificial coloring or added sugar.",
+  "descriptionKo": "띠엔장성 쩌가오(Cho Gao) 전문 산지의 적색 용과를 엄선해 저온 순환 건조 공법으로 가공했습니다. 인공 색소 없이 천연 자줏빛 색감과 베타시아닌 항산화 성분을 온전히 보존했습니다.",
+  "descriptionZh": "严选前江省鹅贡（Cho Gao）核心产区红心火龙果，采用低温热风循环软烘工艺，不添加人工色素，保留天然紫红色泽、甜菜红素与膳食纤维。",
+  "origin_vi": "Vùng trồng Chợ Gạo, Tiền Giang",
+  "origin_en": "Cho Gao, Tien Giang Orchards",
+  "origin_ko": "띠엔장성 쩌가오 농장",
+  "origin_zh": "前江省鹅贡种植基地",
+  "originVi": "Vùng trồng Chợ Gạo, Tiền Giang",
+  "origin": "Cho Gao, Tien Giang Orchards",
+  "originKo": "띠엔장성 쩌가오 농장",
+  "originZh": "前江省鹅贡种植基地",
+  "ocop": "3-Star OCOP",
+  "productCertifications": [
+    {
+      "certificateId": "ocop-3-star",
+      "nameVi": "OCOP 3 Sao Tiền Giang",
+      "nameEn": "3-Star OCOP Tien Giang",
+      "nameKo": "베트남 OCOP 3성급 (띠엔장)",
+      "nameZh": "前江省 OCOP 三星认证",
+      "scopeType": "product",
+      "scopeVi": "Chứng nhận sản phẩm OCOP cấp tỉnh",
+      "scopeEn": "Provincial Product Certification",
+      "scopeKo": "성(省) 정부 공식 제품 인증",
+      "scopeZh": "省级一乡一品产品认证"
+    }
+  ],
+  "productFeatures": [
+    {
+      "id": "soft-drying",
+      "label": {
+        "vi": "Sấy dẻo nhiệt thấp (~50–55°C)",
+        "en": "Low-heat drying (~50–55°C)",
+        "ko": "저온 순환 건조 (~50–55°C)",
+        "zh": "低温循环软烘 (~50–55°C)"
+      }
+    },
+    {
+      "id": "cho-gao-origin",
+      "label": {
+        "vi": "Vùng trồng Chợ Gạo (Tiền Giang)",
+        "en": "Cho Gao, Tien Giang origin",
+        "ko": "띠엔장성 쩌가오 특화 산지",
+        "zh": "前江省鹅贡核心产区"
+      }
+    },
+    {
+      "id": "no-colorant",
+      "label": {
+        "vi": "Không phẩm màu & chất bảo quản",
+        "en": "No artificial color or preservatives",
+        "ko": "인공 색소·방부제 무첨가",
+        "zh": "无人工色素与防腐剂"
+      }
+    }
+  ],
+  "specs": {
+    "moisture": "< 16%",
+    "brix": "50° - 55° Brix",
+    "shelfLifeVi": "12 Tháng",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeKo": "12개월",
+    "shelfLifeZh": "12个月",
+    "storageVi": "Nơi khô ráo, thoáng mát (20 - 25°C), tránh ánh nắng trực tiếp",
+    "storageEn": "Cool, dry place (20 - 25°C), away from direct sunlight",
+    "storageKo": "서늘하고 건조한 곳 보관 (20 - 25°C), 직사광선 회피",
+    "storageZh": "阴凉干燥处储存（20 - 25°C），避免阳光直射",
+    "ingredientsVi": "100% Thanh long ruột đỏ Chợ Gạo tươi chín cây, không phẩm màu, không chất bảo quản",
+    "ingredientsEn": "100% Fresh Cho Gao Red Flesh Dragon Fruit, zero added sugar, no artificial color",
+    "ingredientsKo": "100% 띠엔장성 쩌가오산 신선 적색 용과, 설탕 무첨가, 인공 색소 무첨가",
+    "ingredientsZh": "100% 鹅贡产区新鲜红心火龙果，不添加精制糖，无人工色素",
+    "processVi": "Sấy bơm nhiệt nhiệt độ thấp tuần hoàn (~50 - 55°C) bảo toàn sắc tố tự nhiên và vi chất",
+    "processEn": "Low-temperature convective heat-pump drying (~50 - 55°C) preserving natural ruby anthocyanin pigments",
+    "processKo": "저온 순환 히트펌프 건조 (~50 - 55°C)로 천연 베타시아닌 색소와 영양소 보존",
+    "processZh": "低温热泵循环干燥（约 50 - 55°C），完整保留天然甜菜红素与营养成分",
+    "packagingVi": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg nạp khí Nitơ / OEM",
+    "packagingEn": "Zip pouch 100g, 250g, 500g / Master export carton 5kg, 10kg with N2 flushing / OEM",
+    "packagingKo": "지퍼 파우치 100g, 250g, 500g / 질소 충전 수출 마스터 카톤 5kg, 10kg / OEM",
+    "packagingZh": "自封袋 100g、250g、500g / 充氮出口纸箱 5kg、10kg / OEM 贴牌"
+  },
+  "vi": {
+    "name": "Thanh long ruột đỏ sấy dẻo",
+    "desc": "Sắc đỏ tím tự nhiên, vị ngọt thanh dịu nhẹ hòa quyện cùng hạt giòn li ti đặc trưng.",
+    "origin": "Vùng trồng Chợ Gạo, Tiền Giang",
+    "features": ""
+  },
+  "en": {
+    "name": "Soft Dried Red Dragonfruit",
+    "desc": "Vibrant ruby-red slices with gentle natural sweetness and characteristic crunchy seeds.",
+    "origin": "Cho Gao, Tien Giang Orchards",
+    "features": ""
+  },
+  "ko": {
+    "name": "소프트 건적색 용과",
+    "desc": "선명한 천연 자줏빛과 은은한 단맛, 톡톡 씹히는 씨앗의 식감이 특징입니다.",
+    "origin": "띠엔장성 쩌가오 농장",
+    "features": ""
+  },
+  "zh": {
+    "name": "软烘红心火龙果干",
+    "desc": "天然宝石红紫切片，清甜柔和，保留火龙果籽独特脆爽口感。",
+    "origin": "前江省鹅贡种植基地",
+    "features": ""
+  },
   "shelf_life": "12 Tháng",
-  "shelf_life_ko": "12개월",
-  "shelf_life_zh": "12个月",
-  "packaging": "Túi zip / Thùng carton xuất khẩu",
-  "packaging_ko": "지퍼 파우치 / 수출용 마스터 카톤",
-  "packaging_zh": "自封拉链袋 / 出口纸箱",
-  "order": 11
+  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg nạp khí Nitơ / OEM",
+  "order": 1,
+  "published": true,
+  "status": "published"
 }

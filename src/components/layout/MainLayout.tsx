@@ -5,10 +5,11 @@ import { useLanguage, pickLocale } from '../../i18n/LanguageContext';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { QuoteModal } from '../ui/QuoteModal';
+import { type QuotationProduct } from '../contact/contactSchema';
 import { ScrollToTop } from '../ui/ScrollToTop';
 
 export interface MainLayoutContext {
-  onOpenQuote: (product?: string) => void;
+  onOpenQuote: (product?: string | QuotationProduct) => void;
 }
 
 export const MainLayout: React.FC = () => {
@@ -16,11 +17,11 @@ export const MainLayout: React.FC = () => {
   const { pathname } = useLocation();
   const isContactPage = pathname === '/contact' || pathname === '/contact.html';
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<string | undefined>(undefined);
+  const [selectedProduct, setSelectedProduct] = useState<string | QuotationProduct | undefined>(undefined);
   const [isQuickContactOpen, setIsQuickContactOpen] = useState(false);
   const [isFooterInView, setIsFooterInView] = useState(false);
 
-  const handleOpenQuote = (product?: string) => {
+  const handleOpenQuote = (product?: string | QuotationProduct) => {
     setSelectedProduct(product);
     setIsQuickContactOpen(false);
     setIsQuoteOpen(true);

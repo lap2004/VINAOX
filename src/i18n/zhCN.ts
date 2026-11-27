@@ -252,8 +252,8 @@ export const zhCN: Translations = {
       "current": "关于我们"
     },
     "products": {
-      "title": "VINAXO 热带果干出口产品目录",
-      "subtitle": "100% 天然果肉，低温温和烘干，无添加蔗糖与人工防腐剂——为全球消费者呈献纯正热带风味。",
+      "title": "VINAXO 出口产品目录",
+      "subtitle": "探索 VINAXO 全系列产品组合，涵盖软烘干果、香脆果干片、营养坚果与综合果蔬系列，满足各类消费者及 B2B 合作伙伴的多样化需求。具体原料成分、加工工艺、包装规格及技术参数均按单品独立列明。",
       "home": "首页",
       "current": "产品中心"
     },
@@ -465,9 +465,9 @@ export const zhCN: Translations = {
   },
   "productsPage": {
     "section1": {
-      "label": "越南出口级精品果干",
-      "title": "严选湄公河三角洲认证果园热带鲜果",
-      "desc": "每一批次 VINAXO 果干均源自同塔、前江、永隆等知名果园，执行严格的入厂原料筛选。约 10:1 的鲜果浓缩烘干比确保软糯口感、天然果香与营养价值。"
+      "label": "B2B 核心产品矩阵",
+      "title": "软烘干果 · 香脆果片 · 营养坚果 · 综合产品系列",
+      "desc": "VINAXO 产品目录涵盖软烘干果、香脆果干片、坚果与莲子以及综合果蔬四大品类。每款产品的配料构成、加工技术、出口包装规格与技术参数均依据单品独立建档披露。"
     },
     "section2": {
       "label": "B2B 合作与自有品牌 (OEM)",
@@ -488,8 +488,10 @@ export const zhCN: Translations = {
       "colOrigin": "原料产区",
       "colMoisture": "水分含量",
       "colShelfLife": "保质期",
-      "colCert": "资质标准",
-      "colQuote": "询价",
+      "colCert": "认证资质",
+      "colFeatures": "产品特点",
+      "colQuote": "操作与询价",
+      "viewDetailBtn": "详情",
       "row1Name": "软烘芒果干",
       "row1Origin": "同塔省与前江省",
       "row2Name": "菠萝蜜干",

@@ -1,12 +1,17 @@
 import React from 'react';
-import { ArrowRight, Sparkles, FileText, CheckCircle2 } from 'lucide-react';
-import { getProductLocalized, ProductItem } from '../../data/products';
+import { ArrowRight, Award, FileText } from 'lucide-react';
+import {
+  getProductLocalized,
+  hasApplicableBrix,
+  ProductItem,
+} from '../../data/products';
+import { type QuotationProduct } from '../contact/contactSchema';
 import { useLanguage } from '../../i18n/LanguageContext';
 
 export interface ProductCardProps {
   product: ProductItem;
   onViewDetails: (product: ProductItem) => void;
-  onRequestQuote: (productName: string) => void;
+  onRequestQuote: (target: QuotationProduct | string) => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -16,10 +21,36 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const { language, pick } = useLanguage();
   const loc = getProductLocalized(product, language);
+  const primaryCert = loc.productCertifications[0];
+  const primaryCertName = primaryCert
+    ? language === 'vi'
+      ? primaryCert.nameVi
+      : language === 'ko'
+      ? primaryCert.nameKo || primaryCert.nameEn
+      : language === 'zh-CN'
+      ? primaryCert.nameZh || primaryCert.nameEn
+      : primaryCert.nameEn
+    : '';
+
+  const topRightSpec = hasApplicableBrix(product.specs.brix)
+    ? product.specs.brix
+    : product.specs.moisture
+    ? `${pick({ vi: 'Ẩm ', en: 'Moisture ', ko: '수분 ', zh: '水分 ' })}${product.specs.moisture}`
+    : '';
+
+  const handleQuote = () => {
+    onRequestQuote({
+      productId: product.id,
+      productSlug: product.slug,
+      categoryId: product.category,
+    });
+  };
 
   return (
     <div
       className="card product-card"
+      data-product-slug={product.slug}
+      data-product-category={product.category}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -46,7 +77,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <source srcSet={product.imageWebp} type="image/webp" />
           <img
             src={product.imageJpg}
-            alt={loc.name}
+            alt={loc.imageAlt || loc.name}
             loading="lazy"
             style={{
               position: 'absolute',
@@ -60,7 +91,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           />
         </picture>
 
-        {/* Top Overlay Badges Bar (Flex prevents overlap at any card width) */}
+        {/* Top Overlay Badges Bar: Certification badge ONLY for verified product certs; category badge otherwise */}
         <div
           style={{
             position: 'absolute',
@@ -76,9 +107,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             pointerEvents: 'none',
           }}
         >
-          {product.ocop.includes('OCOP') ? (
+          {primaryCert ? (
             <span
               className="badge badge-gold"
+              data-badge-kind="certification"
               style={{
                 boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
                 fontWeight: 700,
@@ -87,42 +119,49 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 gap: '5px',
               }}
             >
-              <Sparkles size={11} />
-              {product.ocop}
+              <Award size={11} aria-hidden="true" />
+              {primaryCertName}
             </span>
           ) : (
             <span
-              className="badge badge-green"
+              className="badge"
+              data-badge-kind="category"
               style={{
-                boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                backgroundColor: 'rgba(255, 255, 255, 0.94)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                color: 'var(--dark-chocolate)',
+                border: '1px solid rgba(58, 36, 23, 0.14)',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
                 fontWeight: 700,
                 fontSize: '0.72rem',
                 padding: '4px 9px',
-                gap: '5px',
               }}
             >
-              <CheckCircle2 size={11} />
-              {product.ocop}
+              {loc.categoryLabel}
             </span>
           )}
 
-          <span
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.94)',
-              backdropFilter: 'blur(6px)',
-              WebkitBackdropFilter: 'blur(6px)',
-              padding: '3px 8px',
-              borderRadius: 'var(--radius-pill)',
-              fontSize: '0.70rem',
-              fontWeight: 700,
-              color: 'var(--forest-green)',
-              border: '1px solid rgba(0,0,0,0.08)',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {product.specs.brix.includes('Brix') ? product.specs.brix : loc.categoryLabel}
-          </span>
+          {topRightSpec && (
+            <span
+              data-badge-kind="spec"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.94)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                padding: '3px 8px',
+                borderRadius: 'var(--radius-pill)',
+                fontSize: '0.70rem',
+                fontWeight: 700,
+                color: 'var(--forest-green)',
+                border: '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {topRightSpec}
+            </span>
+          )}
         </div>
       </div>
 
@@ -136,18 +175,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         }}
       >
         {/* Origin Label */}
-        <div
-          style={{
-            fontSize: '0.72rem',
-            fontWeight: 700,
-            letterSpacing: '0.04em',
-            textTransform: 'uppercase',
-            color: 'var(--primary-green)',
-            marginBottom: '6px',
-          }}
-        >
-          {loc.origin}
-        </div>
+        {loc.origin && (
+          <div
+            style={{
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              color: 'var(--primary-green)',
+              marginBottom: '6px',
+            }}
+          >
+            {loc.origin}
+          </div>
+        )}
 
         {/* Product Name */}
         <h3
@@ -163,7 +204,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {loc.name}
         </h3>
 
-        {/* Short Description */}
+        {/* Concise Short Description */}
         <p
           style={{
             fontSize: '0.86rem',
@@ -173,10 +214,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             flex: 1,
           }}
         >
-          {loc.desc}
+          {loc.shortDesc || loc.desc}
         </p>
 
-        {/* Action Buttons: Stacked Vertically with 100% Width to Prevent Text Squishing */}
+        {/* Action Buttons */}
         <div
           style={{
             display: 'flex',
@@ -185,10 +226,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             marginTop: 'auto',
           }}
         >
-          {/* Primary Action: Request a Quote */}
           <button
             type="button"
-            onClick={() => onRequestQuote(product.slug)}
+            onClick={handleQuote}
+            data-quote-product-slug={product.slug}
             className="btn btn-primary"
             style={{
               width: '100%',
@@ -212,16 +253,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 vi: 'Nhận báo giá xuất khẩu',
                 en: 'Request B2B Quote',
                 ko: '수출 견적 요청',
-                zh: '获取出口报价'
+                zh: '获取出口报价',
               })}
             </span>
             <ArrowRight size={14} />
           </button>
 
-          {/* Secondary Action: View Specs Modal */}
           <button
             type="button"
             onClick={() => onViewDetails(product)}
+            data-detail-product-slug={product.slug}
             style={{
               width: '100%',
               height: '38px',
@@ -255,7 +296,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 vi: 'Xem thông số kỹ thuật',
                 en: 'View Specifications',
                 ko: '제품 규격 보기',
-                zh: '查看技术规格'
+                zh: '查看技术规格',
               })}
             </span>
           </button>

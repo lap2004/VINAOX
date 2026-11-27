@@ -1,4 +1,11 @@
-import { ProductCategory, ProductItem, ProductSpecs } from '../../data/products.js';
+import type {
+  CertificationScopeType,
+  ProductCategory,
+  ProductCertificationRef,
+  ProductFeatureItem,
+  ProductItem,
+  ProductSpecs,
+} from '../../data/products.js';
 import { isValidUrl, validateSlug } from './newsSchema.js';
 
 export interface ProductValidationResult {
@@ -8,6 +15,83 @@ export interface ProductValidationResult {
 }
 
 const ALLOWED_CATEGORIES: ProductCategory[] = ['soft-dried', 'chips', 'nuts-seeds', 'mixed'];
+const ALLOWED_SCOPE_TYPES: CertificationScopeType[] = [
+  'product',
+  'facility',
+  'management-system',
+  'registration',
+  'audit',
+];
+
+function cleanStr(val: unknown): string {
+  return typeof val === 'string' ? val.trim() : '';
+}
+
+function normalizeProductCertifications(input: unknown): ProductCertificationRef[] {
+  if (!Array.isArray(input)) return [];
+  const result: ProductCertificationRef[] = [];
+  for (const item of input) {
+    if (!item || typeof item !== 'object') continue;
+    const raw = item as Record<string, any>;
+    const certificateId = cleanStr(raw.certificateId || raw.id);
+    const nameVi = cleanStr(raw.nameVi || raw.name_vi || raw.name);
+    const nameEn = cleanStr(raw.nameEn || raw.name_en || raw.name) || nameVi;
+    if (!certificateId && !nameVi && !nameEn) continue;
+    const rawScopeType = cleanStr(raw.scopeType) as CertificationScopeType;
+    const scopeType: CertificationScopeType = ALLOWED_SCOPE_TYPES.includes(rawScopeType)
+      ? rawScopeType
+      : 'product';
+    result.push({
+      certificateId: certificateId || nameEn.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+      nameVi: nameVi || nameEn,
+      nameEn: nameEn || nameVi,
+      ...(cleanStr(raw.nameKo) ? { nameKo: cleanStr(raw.nameKo) } : {}),
+      ...(cleanStr(raw.nameZh) ? { nameZh: cleanStr(raw.nameZh) } : {}),
+      scopeType,
+      scopeVi: cleanStr(raw.scopeVi) || 'Chứng nhận đã xác minh',
+      scopeEn: cleanStr(raw.scopeEn) || 'Verified Certification',
+      ...(cleanStr(raw.scopeKo) ? { scopeKo: cleanStr(raw.scopeKo) } : {}),
+      ...(cleanStr(raw.scopeZh) ? { scopeZh: cleanStr(raw.scopeZh) } : {}),
+      ...(cleanStr(raw.documentUrl) && isValidUrl(cleanStr(raw.documentUrl), true)
+        ? { documentUrl: cleanStr(raw.documentUrl) }
+        : {}),
+    });
+  }
+  return result;
+}
+
+function normalizeProductFeatures(input: unknown): ProductFeatureItem[] {
+  if (!Array.isArray(input)) return [];
+  const result: ProductFeatureItem[] = [];
+  for (let i = 0; i < input.length; i++) {
+    const item = input[i];
+    if (typeof item === 'string' && item.trim()) {
+      result.push({
+        id: `feature-${i + 1}`,
+        label: { vi: item.trim(), en: item.trim() },
+      });
+      continue;
+    }
+    if (!item || typeof item !== 'object') continue;
+    const raw = item as Record<string, any>;
+    const lbl = raw.label && typeof raw.label === 'object' ? raw.label : raw;
+    const vi = cleanStr(lbl.vi || raw.labelVi || raw.vi);
+    const en = cleanStr(lbl.en || raw.labelEn || raw.en) || vi;
+    const ko = cleanStr(lbl.ko || raw.labelKo || raw.ko);
+    const zh = cleanStr(lbl.zh || raw.labelZh || raw.zh);
+    if (!vi && !en) continue;
+    result.push({
+      id: cleanStr(raw.id) || `feature-${i + 1}`,
+      label: {
+        vi: vi || en,
+        en: en || vi,
+        ...(ko ? { ko } : {}),
+        ...(zh ? { zh } : {}),
+      },
+    });
+  }
+  return result;
+}
 
 export function validateProduct(input: unknown): ProductValidationResult {
   const errors: string[] = [];
@@ -18,81 +102,111 @@ export function validateProduct(input: unknown): ProductValidationResult {
     errors.push('Slug sản phẩm không hợp lệ (yêu cầu từ 3-120 ký tự chữ thường, số và gạch nối).');
   }
   const slug = slugCheck.slug || 'san-pham-moi';
-  const id = typeof raw.id === 'string' && raw.id.trim() ? raw.id.trim() : slug;
+  const id = cleanStr(raw.id) || slug;
 
-  const nameVi = typeof raw.nameVi === 'string' && raw.nameVi.trim() ? raw.nameVi.trim() : (typeof raw.name_vi === 'string' ? raw.name_vi.trim() : '');
+  const nameVi = cleanStr(raw.nameVi) || cleanStr(raw.name_vi) || cleanStr(raw.vi?.name);
   if (!nameVi) {
     errors.push('Tên sản phẩm tiếng Việt là trường bắt buộc.');
   }
 
-  const name = typeof raw.name === 'string' && raw.name.trim() ? raw.name.trim() : (typeof raw.name_en === 'string' ? raw.name_en.trim() : nameVi);
-  const nameKo = typeof raw.name_ko === 'string' && raw.name_ko.trim()
-    ? raw.name_ko.trim()
-    : (typeof raw.nameKo === 'string' ? raw.nameKo.trim() : (typeof raw.ko?.name === 'string' ? raw.ko.name.trim() : ''));
-  const nameZh = typeof raw.name_zh === 'string' && raw.name_zh.trim()
-    ? raw.name_zh.trim()
-    : (typeof raw.nameZh === 'string' ? raw.nameZh.trim() : (typeof raw.zh?.name === 'string' ? raw.zh.name.trim() : ''));
+  const name = cleanStr(raw.name) || cleanStr(raw.name_en) || cleanStr(raw.en?.name) || nameVi;
+  const nameKo = cleanStr(raw.name_ko) || cleanStr(raw.nameKo) || cleanStr(raw.ko?.name);
+  const nameZh = cleanStr(raw.name_zh) || cleanStr(raw.nameZh) || cleanStr(raw.zh?.name);
 
   const category: ProductCategory = ALLOWED_CATEGORIES.includes(raw.category) ? raw.category : 'soft-dried';
 
-  let image = typeof raw.image === 'string' ? raw.image.trim() : (typeof raw.imageWebp === 'string' ? raw.imageWebp.trim() : '');
+  let image = cleanStr(raw.image) || cleanStr(raw.imageWebp);
   if (!image || !isValidUrl(image, true)) {
     image = '/images/products/placeholder.webp';
   }
 
   // Derive WebP and JPG URLs consistently
-  let imageWebp = typeof raw.imageWebp === 'string' && raw.imageWebp.trim() ? raw.imageWebp.trim() : image;
-  let imageJpg = typeof raw.imageJpg === 'string' && raw.imageJpg.trim() ? raw.imageJpg.trim() : image;
+  let imageWebp = cleanStr(raw.imageWebp) || image;
+  let imageJpg = cleanStr(raw.imageJpg) || image;
 
   // If image was changed to a different WebP file, sync imageWebp and imageJpg
   if (image.endsWith('.webp')) {
     imageWebp = image;
-    if (!raw.imageJpg || raw.imageJpg.includes('img_5608') || !raw.imageJpg.endsWith('.jpg')) {
+    if (!raw.imageJpg || String(raw.imageJpg).includes('img_5608') || !String(raw.imageJpg).endsWith('.jpg')) {
       imageJpg = image.replace(/\.webp$/, '.jpg');
     }
   } else if (image.endsWith('.jpg') || image.endsWith('.jpeg')) {
     imageJpg = image;
-    if (!raw.imageWebp || raw.imageWebp.includes('img_5608') || !raw.imageWebp.endsWith('.webp')) {
+    if (!raw.imageWebp || String(raw.imageWebp).includes('img_5608') || !String(raw.imageWebp).endsWith('.webp')) {
       imageWebp = image.replace(/\.jpe?g$/, '.webp');
     }
   }
 
-  const shortDescriptionVi = typeof raw.shortDescriptionVi === 'string' ? raw.shortDescriptionVi.trim() : (typeof raw.description_vi === 'string' ? raw.description_vi.trim() : '');
-  const shortDescription = typeof raw.shortDescription === 'string' ? raw.shortDescription.trim() : (typeof raw.description_en === 'string' ? raw.description_en.trim() : shortDescriptionVi);
-  const descriptionVi = typeof raw.descriptionVi === 'string' ? raw.descriptionVi.trim() : (typeof raw.description_vi === 'string' ? raw.description_vi.trim() : shortDescriptionVi);
-  const description = typeof raw.description === 'string' ? raw.description.trim() : (typeof raw.description_en === 'string' ? raw.description_en.trim() : shortDescription);
-  const descriptionKo = typeof raw.description_ko === 'string' && raw.description_ko.trim()
-    ? raw.description_ko.trim()
-    : (typeof raw.descriptionKo === 'string' ? raw.descriptionKo.trim() : (typeof raw.ko?.desc === 'string' ? raw.ko.desc.trim() : ''));
-  const descriptionZh = typeof raw.description_zh === 'string' && raw.description_zh.trim()
-    ? raw.description_zh.trim()
-    : (typeof raw.descriptionZh === 'string' ? raw.descriptionZh.trim() : (typeof raw.zh?.desc === 'string' ? raw.zh.desc.trim() : ''));
-  const originKo = typeof raw.origin_ko === 'string' && raw.origin_ko.trim()
-    ? raw.origin_ko.trim()
-    : (typeof raw.originKo === 'string' ? raw.originKo.trim() : (typeof raw.ko?.origin === 'string' ? raw.ko.origin.trim() : ''));
-  const originZh = typeof raw.origin_zh === 'string' && raw.origin_zh.trim()
-    ? raw.origin_zh.trim()
-    : (typeof raw.originZh === 'string' ? raw.originZh.trim() : (typeof raw.zh?.origin === 'string' ? raw.zh.origin.trim() : ''));
+  // Keep short descriptions and full descriptions distinct (never synthesize duplicate fallback copy)
+  const descriptionVi = cleanStr(raw.descriptionVi) || cleanStr(raw.description_vi) || cleanStr(raw.vi?.desc);
+  const shortDescriptionVi = cleanStr(raw.shortDescriptionVi) || cleanStr(raw.short_description_vi) || descriptionVi;
+  const description = cleanStr(raw.description) || cleanStr(raw.description_en) || cleanStr(raw.en?.desc);
+  const shortDescription = cleanStr(raw.shortDescription) || cleanStr(raw.short_description_en) || description;
+  const descriptionKo = cleanStr(raw.description_ko) || cleanStr(raw.descriptionKo) || cleanStr(raw.ko?.desc);
+  const shortDescriptionKo = cleanStr(raw.shortDescriptionKo) || descriptionKo;
+  const descriptionZh = cleanStr(raw.description_zh) || cleanStr(raw.descriptionZh) || cleanStr(raw.zh?.desc);
+  const shortDescriptionZh = cleanStr(raw.shortDescriptionZh) || descriptionZh;
 
-  const defaultSpecs: ProductSpecs = {
-    moisture: '< 16%',
-    brix: '50° - 55° Brix',
-    shelfLifeEn: '12 Months',
-    shelfLifeVi: '12 Tháng',
-    storageEn: 'Cool, dry place (20 - 25°C)',
-    storageVi: 'Nơi khô ráo, thoáng mát (20 - 25°C)',
-    ingredientsEn: '100% Natural Vietnamese Fruits',
-    ingredientsVi: '100% Trái cây Việt Nam tự nhiên',
-    processEn: 'Low-temperature convective heat-pump drying',
-    processVi: 'Sấy bơm nhiệt nhiệt độ thấp tuần hoàn',
-    packagingEn: 'Zip pouch / Export carton',
-    packagingVi: 'Túi zip / Thùng carton xuất khẩu',
-    certificationsEn: 'BRCGS Facility, Clean Label',
-    certificationsVi: 'Nhà máy chuẩn BRCGS, Clean Label'
+  const originVi = cleanStr(raw.originVi) || cleanStr(raw.origin_vi) || cleanStr(raw.vi?.origin);
+  const origin = cleanStr(raw.origin) || cleanStr(raw.origin_en) || cleanStr(raw.en?.origin) || originVi;
+  const originKo = cleanStr(raw.origin_ko) || cleanStr(raw.originKo) || cleanStr(raw.ko?.origin);
+  const originZh = cleanStr(raw.origin_zh) || cleanStr(raw.originZh) || cleanStr(raw.zh?.origin);
+
+  // Neutral empty spec defaults — never fabricate soft-dried defaults (e.g. Brix / heat-pump drying) on nuts or chips
+  const emptySpecs: ProductSpecs = {
+    moisture: '',
+    brix: '',
+    shelfLifeEn: '',
+    shelfLifeVi: '',
+    storageEn: '',
+    storageVi: '',
+    ingredientsEn: '',
+    ingredientsVi: '',
+    processEn: '',
+    processVi: '',
+    packagingEn: '',
+    packagingVi: '',
+    certificationsEn: '',
+    certificationsVi: '',
   };
 
   const rawSpecs = typeof raw.specs === 'object' && raw.specs !== null ? raw.specs : {};
-  const specs: ProductSpecs = { ...defaultSpecs, ...rawSpecs };
+  const specs: ProductSpecs = {
+    ...emptySpecs,
+    ...rawSpecs,
+    moisture: cleanStr(rawSpecs.moisture ?? raw.specs_moisture),
+    brix: cleanStr(rawSpecs.brix ?? raw.specs_brix),
+    ...(cleanStr(rawSpecs.sizeOrWeightVi) ? { sizeOrWeightVi: cleanStr(rawSpecs.sizeOrWeightVi) } : {}),
+    ...(cleanStr(rawSpecs.sizeOrWeightEn) ? { sizeOrWeightEn: cleanStr(rawSpecs.sizeOrWeightEn) } : {}),
+    ...(cleanStr(rawSpecs.sizeOrWeightKo) ? { sizeOrWeightKo: cleanStr(rawSpecs.sizeOrWeightKo) } : {}),
+    ...(cleanStr(rawSpecs.sizeOrWeightZh) ? { sizeOrWeightZh: cleanStr(rawSpecs.sizeOrWeightZh) } : {}),
+    shelfLifeVi: cleanStr(rawSpecs.shelfLifeVi || raw.shelf_life),
+    shelfLifeEn: cleanStr(rawSpecs.shelfLifeEn),
+    packagingVi: cleanStr(rawSpecs.packagingVi || raw.packaging),
+    packagingEn: cleanStr(rawSpecs.packagingEn),
+    ingredientsVi: cleanStr(rawSpecs.ingredientsVi || raw.specs_ingredients_vi),
+    ingredientsEn: cleanStr(rawSpecs.ingredientsEn),
+    processVi: cleanStr(rawSpecs.processVi || raw.specs_process_vi),
+    processEn: cleanStr(rawSpecs.processEn),
+    storageVi: cleanStr(rawSpecs.storageVi),
+    storageEn: cleanStr(rawSpecs.storageEn),
+    certificationsVi: cleanStr(rawSpecs.certificationsVi || raw.specs_cert_vi),
+    certificationsEn: cleanStr(rawSpecs.certificationsEn),
+  };
+
+  const productCertifications = normalizeProductCertifications(raw.productCertifications);
+  const productFeatures = normalizeProductFeatures(raw.productFeatures);
+  const legacyCertStrings = Array.isArray(raw.certifications)
+    ? raw.certifications.map((c: unknown) => cleanStr(c)).filter(Boolean)
+    : [];
+
+  const published = raw.published !== undefined ? Boolean(raw.published) : raw.status !== 'draft';
+  const status: 'published' | 'draft' = published ? 'published' : 'draft';
+
+  const featuresEn = cleanStr(raw.en?.features);
+  const featuresVi = cleanStr(raw.vi?.features);
+  const featuresKo = cleanStr(raw.ko?.features);
+  const featuresZh = cleanStr(raw.zh?.features);
 
   const product: ProductItem = {
     id,
@@ -103,75 +217,91 @@ export function validateProduct(input: unknown): ProductValidationResult {
     ...(nameKo ? { nameKo } : {}),
     ...(nameZh ? { nameZh } : {}),
     category,
-    categoryLabelEn: typeof raw.categoryLabelEn === 'string' ? raw.categoryLabelEn : 'Tropical Dried Fruits',
-    categoryLabelVi: typeof raw.categoryLabelVi === 'string' ? raw.categoryLabelVi : 'Trái cây sấy nhiệt đới',
+    categoryLabelEn: cleanStr(raw.categoryLabelEn) || '',
+    categoryLabelVi: cleanStr(raw.categoryLabelVi) || '',
     image,
     imageWebp,
     imageJpg,
     shortDescription,
     shortDescriptionVi,
-    description: typeof raw.description === 'string' ? raw.description.trim() : shortDescription,
-    descriptionVi: typeof raw.descriptionVi === 'string' ? raw.descriptionVi.trim() : shortDescriptionVi,
-    ...(descriptionKo ? { descriptionKo, shortDescriptionKo: descriptionKo } : {}),
-    ...(descriptionZh ? { descriptionZh, shortDescriptionZh: descriptionZh } : {}),
-    origin: typeof raw.origin === 'string' ? raw.origin : 'Mekong Delta, Vietnam',
-    originVi: typeof raw.originVi === 'string' ? raw.originVi : 'Đồng bằng Sông Cửu Long, Việt Nam',
+    description: description || shortDescription,
+    descriptionVi: descriptionVi || shortDescriptionVi,
+    ...(shortDescriptionKo ? { shortDescriptionKo } : {}),
+    ...(descriptionKo ? { descriptionKo } : {}),
+    ...(shortDescriptionZh ? { shortDescriptionZh } : {}),
+    ...(descriptionZh ? { descriptionZh } : {}),
+    origin,
+    originVi,
     ...(originKo ? { originKo } : {}),
     ...(originZh ? { originZh } : {}),
-    certifications: Array.isArray(raw.certifications) ? raw.certifications : ['BRCGS', 'Clean Label'],
+    certifications: legacyCertStrings,
+    productCertifications,
+    productFeatures,
     verified: raw.verified !== undefined ? Boolean(raw.verified) : true,
-    ocop: typeof raw.ocop === 'string' ? raw.ocop : '3-Star OCOP',
+    ocop: cleanStr(raw.ocop),
     specs,
     en: {
       name,
-      desc: shortDescription,
-      origin: typeof raw.en?.origin === 'string' ? raw.en.origin : 'Mekong Delta, Vietnam',
-      features: typeof raw.en?.features === 'string' ? raw.en.features : shortDescription
+      desc: shortDescription || description,
+      origin,
+      features: featuresEn,
     },
     vi: {
       name: nameVi,
-      desc: shortDescriptionVi,
-      origin: typeof raw.vi?.origin === 'string' ? raw.vi.origin : 'Đồng bằng Sông Cửu Long, Việt Nam',
-      features: typeof raw.vi?.features === 'string' ? raw.vi.features : shortDescriptionVi
+      desc: shortDescriptionVi || descriptionVi,
+      origin: originVi,
+      features: featuresVi,
     },
-    ...(nameKo || descriptionKo ? {
-      ko: {
-        name: nameKo || name,
-        desc: descriptionKo || description,
-        origin: originKo || (typeof raw.origin === 'string' ? raw.origin : 'Vietnam'),
-        features: typeof raw.ko?.features === 'string' ? raw.ko.features : (descriptionKo || description)
-      }
-    } : {}),
-    ...(nameZh || descriptionZh ? {
-      zh: {
-        name: nameZh || name,
-        desc: descriptionZh || description,
-        origin: originZh || (typeof raw.origin === 'string' ? raw.origin : 'Vietnam'),
-        features: typeof raw.zh?.features === 'string' ? raw.zh.features : (descriptionZh || description)
-      }
-    } : {}),
-    // Compatibility fields
+    ...(nameKo || descriptionKo
+      ? {
+          ko: {
+            name: nameKo || name,
+            desc: descriptionKo || description,
+            origin: originKo || origin,
+            features: featuresKo,
+          },
+        }
+      : {}),
+    ...(nameZh || descriptionZh
+      ? {
+          zh: {
+            name: nameZh || name,
+            desc: descriptionZh || description,
+            origin: originZh || origin,
+            features: featuresZh,
+          },
+        }
+      : {}),
+    ...(cleanStr(raw.seoTitleVi) ? { seoTitleVi: cleanStr(raw.seoTitleVi) } : {}),
+    ...(cleanStr(raw.seoTitleEn) ? { seoTitleEn: cleanStr(raw.seoTitleEn) } : {}),
+    ...(cleanStr(raw.seoDescriptionVi) ? { seoDescriptionVi: cleanStr(raw.seoDescriptionVi) } : {}),
+    ...(cleanStr(raw.seoDescriptionEn) ? { seoDescriptionEn: cleanStr(raw.seoDescriptionEn) } : {}),
+    ...(cleanStr(raw.imageAltVi) ? { imageAltVi: cleanStr(raw.imageAltVi) } : {}),
+    ...(cleanStr(raw.imageAltEn) ? { imageAltEn: cleanStr(raw.imageAltEn) } : {}),
+    published,
+    status,
+    // Compatibility aliases
     name_vi: nameVi,
     name_en: name,
     ...(nameKo ? { name_ko: nameKo } : {}),
     ...(nameZh ? { name_zh: nameZh } : {}),
-    description_vi: descriptionVi,
-    description_en: description,
+    description_vi: descriptionVi || shortDescriptionVi,
+    description_en: description || shortDescription,
     ...(descriptionKo ? { description_ko: descriptionKo } : {}),
     ...(descriptionZh ? { description_zh: descriptionZh } : {}),
-    origin_vi: typeof raw.originVi === 'string' ? raw.originVi : 'Đồng bằng Sông Cửu Long, Việt Nam',
-    origin_en: typeof raw.origin === 'string' ? raw.origin : 'Mekong Delta, Vietnam',
+    origin_vi: originVi,
+    origin_en: origin,
     ...(originKo ? { origin_ko: originKo } : {}),
     ...(originZh ? { origin_zh: originZh } : {}),
-    shelf_life: specs.shelfLifeVi,
-    packaging: specs.packagingVi,
-    order: Number(raw.order) || 999
+    shelf_life: specs.shelfLifeVi || cleanStr(raw.shelf_life),
+    packaging: specs.packagingVi || cleanStr(raw.packaging),
+    order: Number(raw.order) || 999,
   };
 
   return {
     valid: errors.length === 0,
     errors,
-    data: product
+    data: product,
   };
 }
 
@@ -192,19 +322,43 @@ export function mergeProduct(
     }
   }
 
+  const mergeLocalized = (baseObj: any, patchObj: any) => {
+    const out: Record<string, any> = { ...(baseObj || {}) };
+    for (const [k, v] of Object.entries(patchObj || {})) {
+      if (typeof v === 'string' && v.trim() === '' && out[k]) continue;
+      if (v !== undefined && v !== null) out[k] = v;
+    }
+    return out;
+  };
+
+  const mergedSpecs: Record<string, any> = { ...(base.specs || {}) };
+  for (const [k, v] of Object.entries(update.specs || {})) {
+    if (v !== undefined && v !== null) {
+      if (typeof v === 'string' && v.trim() === '' && mergedSpecs[k] && k !== 'brix') continue;
+      mergedSpecs[k] = v;
+    }
+  }
+
   const merged: Record<string, any> = {
     ...base,
-    specs: { ...(base.specs || {}), ...(update.specs || {}) },
-    en: { ...(base.en || {}), ...(update.en || {}) },
-    vi: { ...(base.vi || {}), ...(update.vi || {}) },
-    ...(base.ko || update.ko ? { ko: { ...(base.ko || {}), ...(update.ko || {}) } } : {}),
-    ...(base.zh || update.zh ? { zh: { ...(base.zh || {}), ...(update.zh || {}) } } : {}),
+    specs: mergedSpecs,
+    en: mergeLocalized(base.en, update.en),
+    vi: mergeLocalized(base.vi, update.vi),
+    ...(base.ko || update.ko ? { ko: mergeLocalized(base.ko, update.ko) } : {}),
+    ...(base.zh || update.zh ? { zh: mergeLocalized(base.zh, update.zh) } : {}),
   };
+
+  // Explicit array replacements & boolean published/status take priority when provided
+  const explicitArrayFields = new Set(['productCertifications', 'productFeatures', 'certifications', 'aliases']);
 
   for (const [key, value] of Object.entries(update)) {
     if (key === 'specs' || key === 'en' || key === 'vi' || key === 'ko' || key === 'zh') continue;
     if (value !== undefined && value !== null) {
-      if (typeof value === 'string' && value.trim() === '' && base[key]) {
+      if (explicitArrayFields.has(key) && Array.isArray(value)) {
+        merged[key] = value;
+        continue;
+      }
+      if (typeof value === 'string' && value.trim() === '' && base[key] && key !== 'ocop') {
         continue;
       }
       merged[key] = value;

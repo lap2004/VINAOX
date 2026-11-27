@@ -1,9 +1,15 @@
-import { getProductLocalized, productsData, type ProductItem } from '../../data/products';
+import { getProductLocalized, productsData, type ProductCategory, type ProductItem } from '../../data/products';
 import { pickLocale, type Language } from '../../i18n/localize';
 
 export type RequestType = 'contact' | 'quotation';
 export type TradeTerm = 'FOB' | 'CIF' | 'CONSULT';
 export type ShippingMode = 'FCL' | 'LCL' | 'CONSULT';
+
+export interface QuotationProduct {
+  productId: string;
+  productSlug: string;
+  categoryId?: ProductCategory;
+}
 
 export interface ContactRequest {
   requestType: RequestType;
@@ -18,9 +24,12 @@ export interface ContactRequest {
   country?: string;
   inquiryType?: string;
   productId?: string;
+  productSlug?: string;
+  categoryId?: ProductCategory | string;
   productName?: string;
   product?: string;
   quantity?: string;
+  packaging?: string;
   volume?: string;
   tradeTerm?: TradeTerm;
   shippingMode?: ShippingMode;
@@ -49,41 +58,62 @@ export const FIELD_LIMITS = {
   companyMax: 150,
   countryMax: 100,
   quantityMax: 200,
+  packagingMax: 200,
   messageMin: 5,
   messageMax: 3000,
 } as const;
 
-export function resolveCanonicalProduct(raw?: string): {
+export function resolveCanonicalProduct(raw?: string | QuotationProduct | null): {
   productId: string;
+  productSlug: string;
+  categoryId: ProductCategory | '';
   customLabel: string;
   matchedProduct?: ProductItem;
 } {
-  if (!raw || !raw.trim()) {
-    return { productId: '', customLabel: '' };
+  if (!raw) {
+    return { productId: '', productSlug: '', categoryId: '', customLabel: '' };
   }
 
-  const needle = raw.trim().toLowerCase();
-  const matched = productsData.find(
-    (p) =>
-      p.slug.toLowerCase() === needle ||
-      p.id.toLowerCase() === needle ||
-      p.name.toLowerCase() === needle ||
-      p.nameVi.toLowerCase() === needle ||
-      p.nameKo?.toLowerCase() === needle ||
-      p.nameZh?.toLowerCase() === needle ||
-      p.en?.name?.toLowerCase() === needle ||
-      p.vi?.name?.toLowerCase() === needle ||
-      p.ko?.name?.toLowerCase() === needle ||
-      p.zh?.name?.toLowerCase() === needle ||
-      p.aliases?.some((a) => a.toLowerCase() === needle)
-  );
+  const rawString = typeof raw === 'string' ? raw : raw.productSlug || raw.productId || '';
+  if (!rawString || !rawString.trim()) {
+    return { productId: '', productSlug: '', categoryId: '', customLabel: '' };
+  }
+
+  const needle = rawString.trim().toLowerCase();
+  const secondaryNeedle =
+    typeof raw === 'object' && raw.productId ? raw.productId.trim().toLowerCase() : '';
+
+  const matched = productsData.find((p) => {
+    const candidates = [
+      p.slug,
+      p.id,
+      p.name,
+      p.nameVi,
+      p.nameKo,
+      p.nameZh,
+      p.en?.name,
+      p.vi?.name,
+      p.ko?.name,
+      p.zh?.name,
+      ...(p.aliases || []),
+    ]
+      .filter((x): x is string => Boolean(x))
+      .map((x) => x.toLowerCase());
+    return candidates.includes(needle) || (secondaryNeedle ? candidates.includes(secondaryNeedle) : false);
+  });
 
   if (matched) {
-    return { productId: matched.slug, customLabel: '', matchedProduct: matched };
+    return {
+      productId: matched.slug,
+      productSlug: matched.slug,
+      categoryId: matched.category,
+      customLabel: '',
+      matchedProduct: matched,
+    };
   }
 
   if (needle === OEM_PRODUCT_ID || needle.includes('oem') || needle.includes('private label')) {
-    return { productId: OEM_PRODUCT_ID, customLabel: '' };
+    return { productId: OEM_PRODUCT_ID, productSlug: '', categoryId: '', customLabel: '' };
   }
 
   if (
@@ -92,10 +122,10 @@ export function resolveCanonicalProduct(raw?: string): {
     needle.includes('granola') ||
     needle.includes('chocolate')
   ) {
-    return { productId: VALUE_ADDED_PRODUCT_ID, customLabel: '' };
+    return { productId: VALUE_ADDED_PRODUCT_ID, productSlug: '', categoryId: '', customLabel: '' };
   }
 
-  return { productId: '', customLabel: raw.trim() };
+  return { productId: '', productSlug: '', categoryId: '', customLabel: rawString.trim() };
 }
 
 export function getLocalizedProductLabel(productId: string, customLabel: string, locale: Language): string {

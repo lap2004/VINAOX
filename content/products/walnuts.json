@@ -1,30 +1,120 @@
 {
   "id": "walnuts",
   "slug": "walnuts",
+  "category": "nuts-seeds",
   "name_vi": "Hạt óc chó",
   "name_en": "Walnuts",
-  "name_ko": "호두",
-  "name_zh": "核桃",
-  "category": "nuts-seeds",
+  "name_ko": "프리미엄 호두 커널",
+  "name_zh": "精选优质核桃仁",
+  "nameVi": "Hạt óc chó",
+  "name": "Walnuts",
+  "nameKo": "프리미엄 호두 커널",
+  "nameZh": "精选优质核桃仁",
   "image": "/images/products/walnuts.webp",
+  "imageWebp": "/images/products/walnuts.webp",
+  "imageJpg": "/images/products/walnuts.jpg",
+  "shortDescriptionVi": "Nhân quả óc chó tuyển chọn hạt to đều, giòn bùi và giàu dưỡng chất vàng cho trí não.",
+  "shortDescription": "Nutritious whole walnut halves, gently roasted with a subtle nutty crunch.",
+  "shortDescriptionKo": "크기가 균일한 반쪽 원물 호두를 가볍게 로스팅해 담백하고 바삭한 식감을 살렸습니다.",
+  "shortDescriptionZh": "颗粒匀称的完整半仁核桃，轻度低温烘烤，清香酥脆。",
   "description_vi": "Nhân óc chó tuyển chọn đồng đều kích thước, được xử lý nhiệt nhẹ để giữ độ giòn thơm tự nhiên mà không làm biến tính các axit béo quý. Dồi dào Omega-3 thực vật, chất chống oxy hóa và khoáng chất.",
   "description_en": "Carefully sorted and lightly roasted walnut halves providing clean, nutty richness. Abundant in plant-based Omega-3 ALA, polyphenols, and essential minerals for daily wellness.",
-  "description_ko": "균일한 규격으로 선별한 반태 호두 커널을 저온 열풍 가공하여 귀한 오메가-3 지방산을 손상 없이 보존하면서도 담백하고 고소한 바삭함을 살렸습니다.",
-  "description_zh": "精选大小均匀的优质半粒核桃仁，经低温轻烘焙保留天然清香与脆嫩口感，完整守护植物性 Omega-3（ALA）、多酚抗氧化物及矿物质营养。",
+  "description_ko": "균일하게 선별한 라이트 하프 80% 등급 호두를 저온 열풍 순환 건조하여 오메가-3 지방산과 폴리페놀을 안정적으로 보존했습니다.",
+  "description_zh": "严选 80% 半仁完整核桃仁（Light Halves），采用低温热对流工艺干燥，减少油脂氧化，保留天然植物 Omega-3 ALA 与多酚成分。",
+  "descriptionVi": "Nhân óc chó tuyển chọn đồng đều kích thước, được xử lý nhiệt nhẹ để giữ độ giòn thơm tự nhiên mà không làm biến tính các axit béo quý. Dồi dào Omega-3 thực vật, chất chống oxy hóa và khoáng chất.",
+  "description": "Carefully sorted and lightly roasted walnut halves providing clean, nutty richness. Abundant in plant-based Omega-3 ALA, polyphenols, and essential minerals for daily wellness.",
+  "descriptionKo": "균일하게 선별한 라이트 하프 80% 등급 호두를 저온 열풍 순환 건조하여 오메가-3 지방산과 폴리페놀을 안정적으로 보존했습니다.",
+  "descriptionZh": "严选 80% 半仁完整核桃仁（Light Halves），采用低温热对流工艺干燥，减少油脂氧化，保留天然植物 Omega-3 ALA 与多酚成分。",
   "origin_vi": "Nguồn nguyên liệu chọn lọc cao cấp",
   "origin_en": "Selected Premium Grade",
   "origin_ko": "엄선된 프리미엄 원물",
-  "origin_zh": "精选优质原料等级",
-  "shelf_life": "12 Tháng",
-  "shelf_life_ko": "12개월",
-  "shelf_life_zh": "12个月",
-  "packaging": "Túi nhôm nạp khí Nitơ / Lon 200g, 400g / Thùng carton 10kg",
-  "packaging_ko": "질소 충전 알루미늄 파우치 / 캔 200g, 400g / 마스터 카톤 10kg",
-  "packaging_zh": "充氮铝箔袋 / 罐装 200g、400g / 出口纸箱 10kg",
-  "certifications": [
-    "Premium Grade",
-    "ISO 22000",
-    "Clean Label"
+  "origin_zh": "精选优质原料",
+  "originVi": "Nguồn nguyên liệu chọn lọc cao cấp",
+  "origin": "Selected Premium Grade",
+  "originKo": "엄선된 프리미엄 원물",
+  "originZh": "精选优质原料",
+  "ocop": "",
+  "productCertifications": [],
+  "productFeatures": [
+    {
+      "id": "walnut-halves",
+      "label": {
+        "vi": "Nhân nửa hạt (Light Halves 80%)",
+        "en": "Selected walnut halves (80%)",
+        "ko": "엄선 반쪽 원물 호두 커널 (80%)",
+        "zh": "精选完整半仁核桃仁 (Light Halves 80%)"
+      }
+    },
+    {
+      "id": "gentle-convection-walnut",
+      "label": {
+        "vi": "Sấy đối lưu nhiệt thấp giữ axit béo",
+        "en": "Low-heat convection drying",
+        "ko": "저온 열풍 순환 건조",
+        "zh": "低温热对流烘干工艺"
+      }
+    },
+    {
+      "id": "omega-3-ala",
+      "label": {
+        "vi": "Giàu Omega-3 thực vật tự nhiên",
+        "en": "Naturally rich in plant Omega-3 ALA",
+        "ko": "천연 식물성 오메가-3 ALA 함유",
+        "zh": "富含天然植物性 Omega-3 (ALA)"
+      }
+    }
   ],
-  "order": 9
+  "specs": {
+    "moisture": "< 5%",
+    "brix": "",
+    "shelfLifeVi": "12 Tháng",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeKo": "12개월",
+    "shelfLifeZh": "12个月",
+    "storageVi": "Nơi khô mát (15 - 20°C); nên để ngăn mát sau khi mở để giữ độ tươi ngon",
+    "storageEn": "Cool, dry place (15 - 20°C); refrigerate after opening to preserve freshness",
+    "storageKo": "서늘하고 건조한 곳(15 - 20°C) 보관; 개봉 후 냉장 보관 권장",
+    "storageZh": "阴凉干燥处（15 - 20°C）保存；开封后建议冷藏保鲜",
+    "ingredientsVi": "100% Nhân quả óc chó tuyển chọn (Nửa hạt nguyên vẹn)",
+    "ingredientsEn": "100% Selected Premium Walnut Kernels (Light Halves 80%)",
+    "ingredientsKo": "100% 엄선된 프리미엄 호두 커널 (라이트 하프 80%)",
+    "ingredientsZh": "100% 精选优质核桃仁（Light Halves 80%）",
+    "processVi": "Sấy đối lưu nhiệt thấp bảo toàn vi chất và chống ôi dầu",
+    "processEn": "Low-temperature thermal convection drying to stabilize omega fatty acids",
+    "processKo": "오메가 지방산 산패 방지를 위한 저온 열풍 순환 건조",
+    "processZh": "低温热对流干燥以稳定 Omega 脂肪酸活性",
+    "packagingVi": "Túi nhôm nạp khí Nitơ / Lon 200g, 400g / Thùng carton 10kg",
+    "packagingEn": "Nitrogen-flushed foil pouch / Tin 200g, 400g / Master carton 10kg",
+    "packagingKo": "질소 충전 호일 파우치 / 캔 200g, 400g / 마스터 카톤 10kg",
+    "packagingZh": "充氮铝箔袋 / 罐装 200g、400g / 出口纸箱 10kg"
+  },
+  "vi": {
+    "name": "Hạt óc chó",
+    "desc": "Nhân quả óc chó tuyển chọn hạt to đều, giòn bùi và giàu dưỡng chất vàng cho trí não.",
+    "origin": "Nguồn nguyên liệu chọn lọc cao cấp",
+    "features": ""
+  },
+  "en": {
+    "name": "Walnuts",
+    "desc": "Nutritious whole walnut halves, gently roasted with a subtle nutty crunch.",
+    "origin": "Selected Premium Grade",
+    "features": ""
+  },
+  "ko": {
+    "name": "프리미엄 호두 커널",
+    "desc": "크기가 균일한 반쪽 원물 호두를 가볍게 로스팅해 담백하고 바삭한 식감을 살렸습니다.",
+    "origin": "엄선된 프리미엄 원물",
+    "features": ""
+  },
+  "zh": {
+    "name": "精选优质核桃仁",
+    "desc": "颗粒匀称的完整半仁核桃，轻度低温烘烤，清香酥脆。",
+    "origin": "精选优质原料",
+    "features": ""
+  },
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi nhôm nạp khí Nitơ / Lon 200g, 400g / Thùng carton 10kg",
+  "order": 9,
+  "published": true,
+  "status": "published"
 }

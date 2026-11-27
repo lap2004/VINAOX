@@ -1,30 +1,136 @@
 {
   "id": "soft-dried-jackfruit",
   "slug": "soft-dried-jackfruit",
+  "aliases": [
+    "dried-jackfruit"
+  ],
+  "category": "soft-dried",
   "name_vi": "Mít sấy dẻo",
   "name_en": "Soft Dried Jackfruit",
-  "name_ko": "소프트 건잭프루트",
-  "name_zh": "软烘菠萝蜜干",
-  "category": "soft-dried",
+  "name_ko": "천연 소프트 건잭프루트",
+  "name_zh": "天然软烘菠萝蜜干",
+  "nameVi": "Mít sấy dẻo",
+  "name": "Soft Dried Jackfruit",
+  "nameKo": "천연 소프트 건잭프루트",
+  "nameZh": "天然软烘菠萝蜜干",
   "image": "/images/products/soft-dried-jackfruit.webp",
+  "imageWebp": "/images/products/soft-dried-jackfruit.webp",
+  "imageJpg": "/images/products/soft-dried-jackfruit.jpg",
+  "shortDescriptionVi": "Múi mít vàng óng ả, thơm nồng nàn hương mít nhiệt đới, dẻo mềm mọng vị.",
+  "shortDescription": "Thick golden Thai jackfruit segments, naturally fragrant with a soft, chewy texture.",
+  "shortDescriptionKo": "두툼한 황금빛 태국 품종 잭프루트 과육에 진한 열대 향과 쫄깃한 식감을 담았습니다.",
+  "shortDescriptionZh": "果肉厚实的金黄泰种菠萝蜜瓣，香气浓郁、口感柔韧多汁。",
   "description_vi": "Tuyển chọn từ giống mít Thái tươi chín cây tại Tiền Giang và Hậu Giang. Công nghệ sấy dẻo nhiệt thấp tuần hoàn giữ nguyên màu vàng óng, thớ mít dẻo mềm thơm ngát và vị ngọt tự nhiên không qua ướp đường.",
   "description_en": "Prepared from premium Thai jackfruit harvested in Tien Giang and Hau Giang orchards. Low-temperature convective drying preserves the authentic sweet aroma, succulent chewy texture, and natural vitamins.",
-  "description_ko": "띠엔장성 및 허우장성 과수원에서 수확한 프리미엄 태국 품종 잭프루트를 저온 순환 열풍 건조(~55 - 60°C)하여 쫀득하고 부드러운 식감과 고유의 달콤한 향, 천연 비타민을 그대로 살렸습니다.",
-  "description_zh": "严选前江省与后江省果园树熟泰国种菠萝蜜，采用低温热风循环软烘工艺（约 55 - 60°C），不额外加糖，保留金黄色泽、柔韧软糯肉质与天然馥郁果香。",
+  "description_ko": "띠엔장·하우장 과수원에서 수확한 완숙 잭프루트를 ~55–60°C 저온 순환 건조하여 황금빛 색감과 부드럽고 쫄깃한 과육 섬유질을 보존했습니다.",
+  "description_zh": "严选前江与后江省树熟泰种菠萝蜜，采用 ~55–60°C 低温热风循环软烘工艺，保留天然金黄色泽与饱满柔韧纤维。",
+  "descriptionVi": "Tuyển chọn từ giống mít Thái tươi chín cây tại Tiền Giang và Hậu Giang. Công nghệ sấy dẻo nhiệt thấp tuần hoàn giữ nguyên màu vàng óng, thớ mít dẻo mềm thơm ngát và vị ngọt tự nhiên không qua ướp đường.",
+  "description": "Prepared from premium Thai jackfruit harvested in Tien Giang and Hau Giang orchards. Low-temperature convective drying preserves the authentic sweet aroma, succulent chewy texture, and natural vitamins.",
+  "descriptionKo": "띠엔장·하우장 과수원에서 수확한 완숙 잭프루트를 ~55–60°C 저온 순환 건조하여 황금빛 색감과 부드럽고 쫄깃한 과육 섬유질을 보존했습니다.",
+  "descriptionZh": "严选前江与后江省树熟泰种菠萝蜜，采用 ~55–60°C 低温热风循环软烘工艺，保留天然金黄色泽与饱满柔韧纤维。",
   "origin_vi": "Vùng mít Tiền Giang & Hậu Giang",
   "origin_en": "Tien Giang & Hau Giang Orchards",
-  "origin_ko": "띠엔장·허우장 과수원 산지",
-  "origin_zh": "前江省与后江省菠萝蜜产区",
-  "shelf_life": "12 Tháng",
-  "shelf_life_ko": "12개월",
-  "shelf_life_zh": "12个月",
-  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg",
-  "packaging_ko": "지퍼 파우치 100g, 250g, 500g / 수출용 마스터 카톤 5kg, 10kg",
-  "packaging_zh": "自封袋 100g、250g、500g / 出口纸箱 5kg、10kg",
-  "certifications": [
-    "OCOP 3-Star Tien Giang",
-    "BRCGS Facility",
-    "BSCI"
+  "origin_ko": "띠엔장 & 하우장 과수원",
+  "origin_zh": "前江与后江省果园",
+  "originVi": "Vùng mít Tiền Giang & Hậu Giang",
+  "origin": "Tien Giang & Hau Giang Orchards",
+  "originKo": "띠엔장 & 하우장 과수원",
+  "originZh": "前江与后江省果园",
+  "ocop": "3-Star OCOP",
+  "productCertifications": [
+    {
+      "certificateId": "ocop-3-star",
+      "nameVi": "OCOP 3 Sao Tiền Giang",
+      "nameEn": "3-Star OCOP Tien Giang",
+      "nameKo": "베트남 OCOP 3성급 (띠엔장)",
+      "nameZh": "前江省 OCOP 三星认证",
+      "scopeType": "product",
+      "scopeVi": "Chứng nhận sản phẩm OCOP cấp tỉnh",
+      "scopeEn": "Provincial Product Certification",
+      "scopeKo": "성(省) 정부 공식 제품 인증",
+      "scopeZh": "省级一乡一品产品认证"
+    }
   ],
-  "order": 4
+  "productFeatures": [
+    {
+      "id": "soft-drying-jf",
+      "label": {
+        "vi": "Sấy dẻo nhiệt thấp (~55–60°C)",
+        "en": "Low-heat drying (~55–60°C)",
+        "ko": "저온 열풍 건조 (~55–60°C)",
+        "zh": "低温热风软烘 (~55–60°C)"
+      }
+    },
+    {
+      "id": "thai-jackfruit",
+      "label": {
+        "vi": "Mít Thái Tiền Giang & Hậu Giang",
+        "en": "Tien Giang & Hau Giang Thai Jackfruit",
+        "ko": "띠엔장·하우장 완숙 잭프루트",
+        "zh": "前江与后江树熟泰种菠萝蜜"
+      }
+    },
+    {
+      "id": "no-preservatives-jf",
+      "label": {
+        "vi": "Không phẩm màu & chất bảo quản",
+        "en": "No colorants or preservatives",
+        "ko": "인공 색소·방부제 무첨가",
+        "zh": "无色素与防腐剂"
+      }
+    }
+  ],
+  "specs": {
+    "moisture": "< 15%",
+    "brix": "60° - 65° Brix",
+    "shelfLifeVi": "12 Tháng",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeKo": "12개월",
+    "shelfLifeZh": "12个月",
+    "storageVi": "Nơi khô ráo thoáng mát, đóng kín miệng túi sau khi mở",
+    "storageEn": "Cool, dry environment, keep tightly sealed after opening",
+    "storageKo": "서늘하고 건조한 환경, 개봉 후 밀봉 보관",
+    "storageZh": "阴凉干燥处储存，开封后请密封保存",
+    "ingredientsVi": "100% Mít Thái tươi chín cây tuyển chọn, không cholesterol, không phẩm màu",
+    "ingredientsEn": "100% Tree-ripened Thai jackfruit, zero cholesterol, no artificial preservatives",
+    "ingredientsKo": "100% 나무에서 완숙한 태국 품종 잭프루트, 무콜레스테롤, 무방부제",
+    "ingredientsZh": "100% 树熟泰国种菠萝蜜，零胆固醇，无人工防腐剂",
+    "processVi": "Sấy dẻo nhiệt thấp tuần hoàn (~55 - 60°C) bảo toàn thớ múi dẻo thơm tự nhiên",
+    "processEn": "Gentle low-temperature convective drying (~55 - 60°C) preserving juicy fibers",
+    "processKo": "저온 순환 열풍 건조 (~55 - 60°C)로 촉촉한 과육 섬유질 보존",
+    "processZh": "低温热风循环软烘（约 55 - 60°C），保留饱满果肉纤维",
+    "packagingVi": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg",
+    "packagingEn": "Zip pouch 100g, 250g, 500g / Export Master carton 5kg, 10kg",
+    "packagingKo": "지퍼 파우치 100g, 250g, 500g / 수출 마스터 카톤 5kg, 10kg",
+    "packagingZh": "自封袋 100g、250g、500g / 出口纸箱 5kg、10kg"
+  },
+  "vi": {
+    "name": "Mít sấy dẻo",
+    "desc": "Múi mít vàng óng ả, thơm nồng nàn hương mít nhiệt đới, dẻo mềm mọng vị.",
+    "origin": "Vùng mít Tiền Giang & Hậu Giang",
+    "features": ""
+  },
+  "en": {
+    "name": "Soft Dried Jackfruit",
+    "desc": "Thick golden Thai jackfruit segments, naturally fragrant with a soft, chewy texture.",
+    "origin": "Tien Giang & Hau Giang Orchards",
+    "features": ""
+  },
+  "ko": {
+    "name": "천연 소프트 건잭프루트",
+    "desc": "두툼한 황금빛 태국 품종 잭프루트 과육에 진한 열대 향과 쫄깃한 식감을 담았습니다.",
+    "origin": "띠엔장 & 하우장 과수원",
+    "features": ""
+  },
+  "zh": {
+    "name": "天然软烘菠萝蜜干",
+    "desc": "果肉厚实的金黄泰种菠萝蜜瓣，香气浓郁、口感柔韧多汁。",
+    "origin": "前江与后江省果园",
+    "features": ""
+  },
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg",
+  "order": 4,
+  "published": true,
+  "status": "published"
 }

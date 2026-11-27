@@ -1,30 +1,136 @@
 {
   "id": "soft-dried-mango",
   "slug": "soft-dried-mango",
+  "aliases": [
+    "dried-mango"
+  ],
+  "category": "soft-dried",
   "name_vi": "Xoài sấy dẻo",
   "name_en": "Soft Dried Mango",
-  "name_ko": "소프트 건망고",
-  "name_zh": "软烘芒果干",
-  "category": "soft-dried",
+  "name_ko": "천연 소프트 건망고",
+  "name_zh": "天然软烘芒果干",
+  "nameVi": "Xoài sấy dẻo",
+  "name": "Soft Dried Mango",
+  "nameKo": "천연 소프트 건망고",
+  "nameZh": "天然软烘芒果干",
   "image": "/images/products/soft-dried-mango.webp",
+  "imageWebp": "/images/products/soft-dried-mango.webp",
+  "imageJpg": "/images/products/soft-dried-mango.jpg",
+  "shortDescriptionVi": "Tuyển chọn từ xoài Cát Chu & Cát Hòa Lộc, dẻo mềm mọng vị, ngọt thanh tự nhiên.",
+  "shortDescription": "Premium Cat Chu and Hoa Loc mangoes, gently dehydrated with a soft, chewy texture.",
+  "shortDescriptionKo": "깟추(Cat Chu)·호아록(Hoa Loc) 품종 망고 본연의 쫄깃한 식감과 달콤함을 살렸습니다.",
+  "shortDescriptionZh": "精选 Cat Chu 与 Hoa Loc 优质芒果，软糯多汁、果香醇正。",
   "description_vi": "Được tuyển chọn từ giống xoài danh tiếng Cát Chu và Cát Hòa Lộc tại vựa xoài Đồng Tháp và Tiền Giang. Công nghệ sấy dẻo nhiệt thấp tuần hoàn (~60°C) giúp giữ nguyên sắc vàng óng ả, cấu trúc dẻo thơm mọng vị và hàm lượng vitamin A, C tự nhiên.",
   "description_en": "Carefully sourced from Dong Thap and Tien Giang orchards, using premium Cat Chu and Cat Hoa Loc varieties. Low-temperature convective drying (~60°C) locks in the sunny golden color, chewy succulent texture, and rich vitamins A & C without added refined sugar.",
-  "description_ko": "동탑성·띠엔장성의 유명 품종인 깟추(Cat Chu)와 깟호아록(Cat Hoa Loc) 망고를 엄선해 약 60°C 저온 순환 건조 공법으로 가공했습니다. 설탕 무첨가로 촉촉하고 쫀득한 식감과 비타민 A·C를 보존한 수출 주력 품목입니다.",
-  "description_zh": "严选同塔省与前江省优质 Cat Chu 及 Cat Hoa Loc 芒果品种，采用约 60°C 低温热风循环软烘工艺，不添加精制糖，完整锁住金黄色泽、柔韧多汁口感及丰富维生素 A、C。",
+  "description_ko": "동탑·띠엔장 대표 산지의 깟추 및 호아록 망고를 엄선해 약 60°C 저온 순환 건조 공법으로 가공했습니다. 정제당 첨가 없이 황금빛 색감과 비타민 A·C를 유지합니다.",
+  "description_zh": "精选同塔省与前江省名优 Cat Chu 及 Hoa Loc 芒果，采用约 60°C 低温热风循环工艺干燥，不添加精制糖，保留自然金黄色泽及维生素 A、C。",
+  "descriptionVi": "Được tuyển chọn từ giống xoài danh tiếng Cát Chu và Cát Hòa Lộc tại vựa xoài Đồng Tháp và Tiền Giang. Công nghệ sấy dẻo nhiệt thấp tuần hoàn (~60°C) giúp giữ nguyên sắc vàng óng ả, cấu trúc dẻo thơm mọng vị và hàm lượng vitamin A, C tự nhiên.",
+  "description": "Carefully sourced from Dong Thap and Tien Giang orchards, using premium Cat Chu and Cat Hoa Loc varieties. Low-temperature convective drying (~60°C) locks in the sunny golden color, chewy succulent texture, and rich vitamins A & C without added refined sugar.",
+  "descriptionKo": "동탑·띠엔장 대표 산지의 깟추 및 호아록 망고를 엄선해 약 60°C 저온 순환 건조 공법으로 가공했습니다. 정제당 첨가 없이 황금빛 색감과 비타민 A·C를 유지합니다.",
+  "descriptionZh": "精选同塔省与前江省名优 Cat Chu 及 Hoa Loc 芒果，采用约 60°C 低温热风循环工艺干燥，不添加精制糖，保留自然金黄色泽及维生素 A、C。",
   "origin_vi": "Vùng xoài Đồng Tháp & Tiền Giang",
   "origin_en": "Dong Thap & Tien Giang Orchards",
-  "origin_ko": "동탑·띠엔장 망고 산지",
-  "origin_zh": "同塔省与前江省芒果产区",
-  "shelf_life": "12 Tháng",
-  "shelf_life_ko": "12개월",
-  "shelf_life_zh": "12个月",
-  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg nạp khí Nitơ / OEM nhãn riêng",
-  "packaging_ko": "지퍼 파우치 100g, 250g, 500g / 질소 충전 수출 마스터 카톤 5kg, 10kg / OEM 자체 브랜드(PB)",
-  "packaging_zh": "自封袋 100g、250g、500g / 充氮出口纸箱 5kg、10kg / OEM 贴牌",
-  "certifications": [
-    "OCOP 3-Star Tien Giang",
-    "BRCGS Grade B Facility",
-    "BSCI"
+  "origin_ko": "동탑 & 띠엔장 과수원",
+  "origin_zh": "同塔省与前江省果园",
+  "originVi": "Vùng xoài Đồng Tháp & Tiền Giang",
+  "origin": "Dong Thap & Tien Giang Orchards",
+  "originKo": "동탑 & 띠엔장 과수원",
+  "originZh": "同塔省与前江省果园",
+  "ocop": "3-Star OCOP",
+  "productCertifications": [
+    {
+      "certificateId": "ocop-3-star",
+      "nameVi": "OCOP 3 Sao Tiền Giang",
+      "nameEn": "3-Star OCOP Tien Giang",
+      "nameKo": "베트남 OCOP 3성급 (띠엔장)",
+      "nameZh": "前江省 OCOP 三星认证",
+      "scopeType": "product",
+      "scopeVi": "Chứng nhận sản phẩm OCOP cấp tỉnh",
+      "scopeEn": "Provincial Product Certification",
+      "scopeKo": "성(省) 정부 공식 제품 인증",
+      "scopeZh": "省级一乡一品产品认证"
+    }
   ],
-  "order": 7
+  "productFeatures": [
+    {
+      "id": "cat-chu-hoa-loc",
+      "label": {
+        "vi": "Xoài Cát Chu & Cát Hòa Lộc",
+        "en": "Cat Chu & Hoa Loc mangoes",
+        "ko": "깟추 & 호아록 품종 망고",
+        "zh": "Cat Chu 与 Hoa Loc 芒果"
+      }
+    },
+    {
+      "id": "soft-drying-mango",
+      "label": {
+        "vi": "Sấy dẻo nhiệt thấp (~60°C)",
+        "en": "Low-heat drying (~60°C)",
+        "ko": "저온 열풍 건조 (~60°C)",
+        "zh": "低温循环软烘 (~60°C)"
+      }
+    },
+    {
+      "id": "no-sugar-preservative-mango",
+      "label": {
+        "vi": "Không đường tinh luyện & không chất bảo quản",
+        "en": "Zero added refined sugar & preservative-free",
+        "ko": "정제당·방부제 무첨가",
+        "zh": "不添加精制蔗糖、无防腐剂"
+      }
+    }
+  ],
+  "specs": {
+    "moisture": "< 15%",
+    "brix": "65° - 70° Brix",
+    "shelfLifeVi": "12 Tháng",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeKo": "12개월",
+    "shelfLifeZh": "12个月",
+    "storageVi": "Nơi khô ráo, thoáng mát (20 - 25°C), tránh ánh nắng trực tiếp",
+    "storageEn": "Cool, dry place (20 - 25°C), away from direct sunlight",
+    "storageKo": "서늘하고 건조한 곳 보관 (20 - 25°C), 직사광선 회피",
+    "storageZh": "阴凉干燥处储存（20 - 25°C），避免阳光直射",
+    "ingredientsVi": "100% Xoài tươi tuyển chọn (Xoài Cát Chu & Cát Hòa Lộc), không đường tinh luyện, không chất bảo quản",
+    "ingredientsEn": "100% Fresh Mekong Delta mango (Cat Chu & Hoa Loc), zero added sugar, preservative-free",
+    "ingredientsKo": "100% 메콩 델타산 신선 망고 (깟추 & 호아록 품종), 설탕 무첨가, 무방부제",
+    "ingredientsZh": "100% 湄公河三角洲新鲜芒果（Cat Chu & Hoa Loc），不添加蔗糖，无防腐剂",
+    "processVi": "Sấy dẻo nhiệt thấp tuần hoàn (~60°C) bảo toàn màu vàng óng, cấu trúc dẻo thơm và vitamin A, C tự nhiên",
+    "processEn": "Low-temperature convective hot air drying (~60°C) retaining natural golden hue, fiber, and vitamins A & C",
+    "processKo": "저온 순환 열풍 건조 (~60°C)로 황금빛 색감, 식이섬유 및 비타민 A·C 유지",
+    "processZh": "低温热风循环干燥（约 60°C），保留天然金黄色泽、膳食纤维与维生素 A、C",
+    "packagingVi": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg nạp khí Nitơ / OEM nhãn riêng",
+    "packagingEn": "Zip pouch 100g, 250g, 500g / Master carton 5kg, 10kg with N2 flushing / OEM Private Label",
+    "packagingKo": "지퍼 파우치 100g, 250g, 500g / 질소 충전 마스터 카톤 5kg, 10kg / OEM PB",
+    "packagingZh": "自封袋 100g、250g、500g / 充氮出口纸箱 5kg、10kg / OEM 贴牌"
+  },
+  "vi": {
+    "name": "Xoài sấy dẻo",
+    "desc": "Tuyển chọn từ xoài Cát Chu & Cát Hòa Lộc, dẻo mềm mọng vị, ngọt thanh tự nhiên.",
+    "origin": "Vùng xoài Đồng Tháp & Tiền Giang",
+    "features": ""
+  },
+  "en": {
+    "name": "Soft Dried Mango",
+    "desc": "Premium Cat Chu and Hoa Loc mangoes, gently dehydrated with a soft, chewy texture.",
+    "origin": "Dong Thap & Tien Giang Orchards",
+    "features": ""
+  },
+  "ko": {
+    "name": "천연 소프트 건망고",
+    "desc": "깟추(Cat Chu)·호아록(Hoa Loc) 품종 망고 본연의 쫄깃한 식감과 달콤함을 살렸습니다.",
+    "origin": "동탑 & 띠엔장 과수원",
+    "features": ""
+  },
+  "zh": {
+    "name": "天然软烘芒果干",
+    "desc": "精选 Cat Chu 与 Hoa Loc 优质芒果，软糯多汁、果香醇正。",
+    "origin": "同塔省与前江省果园",
+    "features": ""
+  },
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg nạp khí Nitơ / OEM nhãn riêng",
+  "order": 7,
+  "published": true,
+  "status": "published"
 }

@@ -80,3 +80,19 @@
 | **Mẫu thiết kế nhãn mác** | Mẫu thiết kế nhãn mác | Label Design Mockup | 라벨 디자인 시안 | 标签设计样稿 |
 | **Thiết kế bao bì** | Thiết kế bao bì | Packaging Design | 포장 디자인 | 包装设计 |
 | **Gia công OEM** | Gia công OEM | OEM Manufacturing | OEM 생산 | OEM 代工生产 |
+
+---
+
+## 6. Thuật ngữ Danh mục Sản phẩm, Chứng nhận & Đặc tính Sản phẩm (Chuẩn hóa 4 Ngôn ngữ)
+
+| Khái niệm | Tiếng Việt (`vi`) | English (`en`) | 한국어 (`ko`) | 简体中文 (`zh-CN`) |
+|---|---|---|---|---|
+| **Chứng nhận sản phẩm** | Chứng nhận sản phẩm | Product Certification | 제품 인증 | 产品认证 |
+| **Đặc tính sản phẩm** | Đặc tính sản phẩm | Product Features / Attributes | 제품 특성 | 产品特点 / 属性 |
+| **Chứng nhận cơ sở / hệ thống** | Chứng nhận cơ sở / hệ thống | Facility / Management System | 시설 / 경영시스템 인증 | 工厂 / 管理体系认证 |
+| **Trái cây sấy dẻo** | Trái cây sấy dẻo | Soft-Dried Fruits | 소프트 건조 과일 | 软烘干果 |
+| **Trái cây sấy giòn** | Trái cây sấy giòn | Crispy Dried Fruits | 크리스피 과일 칩 | 香脆果干片 |
+| **Hạt dinh dưỡng** | Hạt dinh dưỡng | Nuts & Seeds | 견과류 및 연자육 | 坚果与莲子 |
+| **Sản phẩm thập cẩm** | Sản phẩm thập cẩm | Mixed Products | 모듬 과일·채소 | 综合果蔬 |
+| **Sản phẩm đang yêu cầu báo giá** | Sản phẩm đang yêu cầu báo giá | Quoting Selected Product | 견적 요청 선택 품목 | 当前询价产品 |
+| **Quy cách đóng gói mong muốn** | Quy cách đóng gói mong muốn | Preferred Packaging | 희망 포장 규격 | 期望包装规格 |

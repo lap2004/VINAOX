@@ -1,30 +1,120 @@
 {
   "id": "soft-dried-papaya",
   "slug": "soft-dried-papaya",
+  "category": "soft-dried",
   "name_vi": "Đu đủ sấy dẻo",
   "name_en": "Soft Dried Papaya",
-  "name_ko": "소프트 건파파야",
-  "name_zh": "软烘木瓜干",
-  "category": "soft-dried",
+  "name_ko": "천연 소프트 건파파야",
+  "name_zh": "天然软烘木瓜干",
+  "nameVi": "Đu đủ sấy dẻo",
+  "name": "Soft Dried Papaya",
+  "nameKo": "천연 소프트 건파파야",
+  "nameZh": "天然软烘木瓜干",
   "image": "/images/products/soft-dried-papaya.webp",
+  "imageWebp": "/images/products/soft-dried-papaya.webp",
+  "imageJpg": "/images/products/soft-dried-papaya.jpg",
+  "shortDescriptionVi": "Từng lát đu đủ mềm dẻo mọng nước, sắc cam đỏ tự nhiên cùng vị ngọt dịu thanh mát.",
+  "shortDescription": "Tender, succulent papaya slices glowing with natural orange-red hue and mild sweetness.",
+  "shortDescriptionKo": "선명한 주황빛을 띤 부드럽고 쫄깃한 파파야 슬라이스로 은은한 단맛을 선사합니다.",
+  "shortDescriptionZh": "散发自然橙红光泽的柔韧木瓜片，清甜可口、质地柔润。",
   "description_vi": "Tuyển chọn từ những trái đu đủ chín cây trên vùng đất phù sa trù phú ĐBSCL. Công nghệ sấy dẻo nhiệt thấp giúp lát đu đủ giữ trọn sắc cam đỏ rực rỡ, độ dẻo mềm mọng vị, giàu beta-carotene và enzym papain tự nhiên.",
   "description_en": "Sourced from fertile Mekong Delta alluvial soil, our ripe papayas are gently low-temperature dehydrated to preserve their luscious color, dietary fiber, beta-carotene, and natural digestive papain enzymes.",
-  "description_ko": "비옥한 메콩 델타 충적토에서 자란 완숙 파파야를 저온 열풍 건조하여 선명한 주황빛과 부드럽고 쫀득한 식감, 베타카로틴 및 천연 파파인 소화 효소를 그대로 보존했습니다.",
-  "description_zh": "源自肥沃湄公河三角洲冲积土产区的自然熟木瓜，经低温轻柔干燥保留诱人橙红色泽、柔韧口感、膳食纤维、β-胡萝卜素及天然木瓜蛋白酶。",
+  "description_ko": "메콩 델타 비옥한 토양에서 재배한 완숙 파파야를 저온 히트펌프 건조로 가공하여 천연 베타카로틴 색감과 부드러운 과육 식감을 유지했습니다.",
+  "description_zh": "严选湄公河三角洲冲积土壤产区树熟木瓜，采用低温热泵循环干燥，保留天然 β-胡萝卜素、膳食纤维与柔韧咀嚼感。",
+  "descriptionVi": "Tuyển chọn từ những trái đu đủ chín cây trên vùng đất phù sa trù phú ĐBSCL. Công nghệ sấy dẻo nhiệt thấp giúp lát đu đủ giữ trọn sắc cam đỏ rực rỡ, độ dẻo mềm mọng vị, giàu beta-carotene và enzym papain tự nhiên.",
+  "description": "Sourced from fertile Mekong Delta alluvial soil, our ripe papayas are gently low-temperature dehydrated to preserve their luscious color, dietary fiber, beta-carotene, and natural digestive papain enzymes.",
+  "descriptionKo": "메콩 델타 비옥한 토양에서 재배한 완숙 파파야를 저온 히트펌프 건조로 가공하여 천연 베타카로틴 색감과 부드러운 과육 식감을 유지했습니다.",
+  "descriptionZh": "严选湄公河三角洲冲积土壤产区树熟木瓜，采用低温热泵循环干燥，保留天然 β-胡萝卜素、膳食纤维与柔韧咀嚼感。",
   "origin_vi": "Vùng trồng ĐBSCL",
   "origin_en": "Mekong Delta Orchards",
-  "origin_ko": "메콩 델타 과수원 산지",
-  "origin_zh": "越南湄公河三角洲产区",
-  "shelf_life": "12 Tháng",
-  "shelf_life_ko": "12개월",
-  "shelf_life_zh": "12个月",
-  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg",
-  "packaging_ko": "지퍼 파우치 100g, 250g, 500g / 수출용 마스터 카톤 5kg, 10kg",
-  "packaging_zh": "自封袋 100g、250g、500g / 出口纸箱 5kg、10kg",
-  "certifications": [
-    "BRCGS Facility",
-    "Clean Label",
-    "Export Standard"
+  "origin_ko": "베트남 메콩 델타",
+  "origin_zh": "越南湄公河三角洲",
+  "originVi": "Vùng trồng ĐBSCL",
+  "origin": "Mekong Delta Orchards",
+  "originKo": "베트남 메콩 델타",
+  "originZh": "越南湄公河三角洲",
+  "ocop": "",
+  "productCertifications": [],
+  "productFeatures": [
+    {
+      "id": "papaya-mekong",
+      "label": {
+        "vi": "Đu đủ chín cây vùng phù sa ĐBSCL",
+        "en": "Mekong Delta alluvial-soil ripe papaya",
+        "ko": "메콩 델타 충적토 완숙 파파야",
+        "zh": "湄公河三角洲树熟木瓜"
+      }
+    },
+    {
+      "id": "heat-pump-papaya",
+      "label": {
+        "vi": "Sấy bơm nhiệt nhiệt độ thấp",
+        "en": "Low-heat convective heat-pump drying",
+        "ko": "저온 히트펌프 순환 건조",
+        "zh": "低温热泵循环干燥工艺"
+      }
+    },
+    {
+      "id": "no-color-papaya",
+      "label": {
+        "vi": "Không phẩm màu & chất bảo quản",
+        "en": "No artificial color or preservatives",
+        "ko": "인공 색소·방부제 무첨가",
+        "zh": "无人工色素与防腐剂"
+      }
+    }
   ],
-  "order": 10
+  "specs": {
+    "moisture": "< 16%",
+    "brix": "55° - 60° Brix",
+    "shelfLifeVi": "12 Tháng",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeKo": "12개월",
+    "shelfLifeZh": "12个月",
+    "storageVi": "Nơi khô ráo, thoáng mát (20 - 25°C), tránh ánh nắng trực tiếp",
+    "storageEn": "Cool, dry place (20 - 25°C), away from direct sunlight",
+    "storageKo": "서늘하고 건조한 곳 보관 (20 - 25°C), 직사광선 회피",
+    "storageZh": "阴凉干燥处储存（20 - 25°C），避免阳光直射",
+    "ingredientsVi": "100% Đu đủ chín cây ĐBSCL tươi ngon, không phẩm màu hóa học, không chất bảo quản",
+    "ingredientsEn": "100% Ripe Mekong Delta Papaya, zero artificial colors, preservative-free",
+    "ingredientsKo": "100% 메콩 델타산 완숙 파파야, 인공 색소 무첨가, 무방부제",
+    "ingredientsZh": "100% 湄公河三角洲成熟木瓜，无人工色素，无防腐剂",
+    "processVi": "Sấy bơm nhiệt tuần hoàn nhiệt độ thấp bảo toàn sắc tố carotenoid và cấu trúc dẻo",
+    "processEn": "Low-temperature convective heat-pump drying preserving beta-carotene and texture",
+    "processKo": "베타카로틴과 식감을 보존하는 저온 순환 히트펌프 건조",
+    "processZh": "低温热泵循环干燥，保留 β-胡萝卜素与柔韧口感",
+    "packagingVi": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg",
+    "packagingEn": "Zip pouch 100g, 250g, 500g / Master export carton 5kg, 10kg",
+    "packagingKo": "지퍼 파우치 100g, 250g, 500g / 수출 마스터 카톤 5kg, 10kg",
+    "packagingZh": "自封袋 100g、250g、500g / 出口纸箱 5kg、10kg"
+  },
+  "vi": {
+    "name": "Đu đủ sấy dẻo",
+    "desc": "Từng lát đu đủ mềm dẻo mọng nước, sắc cam đỏ tự nhiên cùng vị ngọt dịu thanh mát.",
+    "origin": "Vùng trồng ĐBSCL",
+    "features": ""
+  },
+  "en": {
+    "name": "Soft Dried Papaya",
+    "desc": "Tender, succulent papaya slices glowing with natural orange-red hue and mild sweetness.",
+    "origin": "Mekong Delta Orchards",
+    "features": ""
+  },
+  "ko": {
+    "name": "천연 소프트 건파파야",
+    "desc": "선명한 주황빛을 띤 부드럽고 쫄깃한 파파야 슬라이스로 은은한 단맛을 선사합니다.",
+    "origin": "베트남 메콩 델타",
+    "features": ""
+  },
+  "zh": {
+    "name": "天然软烘木瓜干",
+    "desc": "散发自然橙红光泽的柔韧木瓜片，清甜可口、质地柔润。",
+    "origin": "越南湄公河三角洲",
+    "features": ""
+  },
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg",
+  "order": 10,
+  "published": true,
+  "status": "published"
 }

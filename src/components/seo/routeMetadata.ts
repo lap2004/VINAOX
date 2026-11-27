@@ -238,16 +238,16 @@ export function resolveRouteSeo(pathname: string, language: Language): ResolvedS
 
   if (effectivePath === '/products') {
     const title = pickLocale(language, {
-      vi: 'Sản phẩm trái cây sấy và hạt dinh dưỡng – VINAXO',
-      en: 'Dried Fruits & Nuts Export Catalog – VINAXO',
-      ko: '건조 과일 및 견과류 수출 제품 카탈로그 – VINAXO',
-      zh: '热带果干与坚果出口产品目录 – VINAXO',
+      vi: 'Danh mục sản phẩm trái cây sấy, hạt dinh dưỡng & thập cẩm – VINAXO',
+      en: 'Soft-Dried Fruits, Chips, Nuts & Mixed Products Catalog – VINAXO',
+      ko: '건조 과일 · 과일 칩 · 견과류 · 모듬 제품 카탈로그 – VINAXO',
+      zh: '软烘干果 · 香脆果片 · 坚果与综合产品目录 – VINAXO',
     });
     const description = pickLocale(language, {
-      vi: 'Danh mục trái cây sấy dẻo, trái cây sấy giòn và hạt dinh dưỡng xuất khẩu B2B của VINAXO: Xoài, Thanh long đỏ, Mít, Đu đủ, Chuối, Hạt điều, Mắc ca, Hạt sen và gia công OEM.',
-      en: 'Explore VINAXO’s B2B export catalog of soft-dried tropical fruits, crispy fruit chips, nuts, and private-label OEM manufacturing with full moisture, Brix, and packaging specs.',
-      ko: 'VINAXO의 B2B 수출용 소프트 건조 과일, 크리스피 칩, 견과류(망고, 적색 용과, 잭프루트, 바나나, 캐슈넛, 마카다미아, 연자육) 및 OEM 생산 규격 카탈로그.',
-      zh: '浏览 VINAXO B2B 出口产品目录：软烘干果、香脆果蔬片、坚果仁（芒果干、红心火龙果、菠萝蜜、香蕉、腰果、夏威夷果、莲子）及 OEM 贴牌规格参数。',
+      vi: 'Khám phá danh mục sản phẩm B2B của VINAXO gồm trái cây sấy dẻo, trái cây sấy giòn, hạt dinh dưỡng và sản phẩm thập cẩm; thông số kỹ thuật, thành phần và quy cách đóng gói theo từng sản phẩm.',
+      en: 'Explore VINAXO’s B2B export catalog of soft-dried fruits, crispy fruit chips, nuts & seeds, and mixed products, with individual ingredients, processing methods, and technical specifications.',
+      ko: '소프트 건조 과일, 크리스피 과일 칩, 견과류·연자육 및 모듬 제품 등 VINAXO B2B 제품 포트폴리오와 품목별 원재료·가공 공법·기술 규격을 확인하세요.',
+      zh: '浏览 VINAXO 面向 B2B 客户的软烘干果、香脆果干片、营养坚果与综合产品目录，查看各单品配料、工艺、包装及技术规格。',
     });
     const canonical = normalizeCanonicalUrl('/products');
     return {

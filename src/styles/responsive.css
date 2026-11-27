@@ -665,7 +665,13 @@
   }
 
   .specs-table-wrapper {
-    max-width: 100%;
+    display: none !important;
+  }
+
+  .specs-mobile-cards {
+    display: flex !important;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .subpage-cta-section {
@@ -950,5 +956,45 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   PRODUCTS SPECS TABLE & DETAIL MODAL RESPONSIVENESS
+   ========================================================================== */
+.specs-mobile-cards {
+  display: none;
+}
+
+.specs-table-wrapper table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: var(--brand-orange-soft);
+}
+
+@media (max-width: 768px) {
+  .specs-table-wrapper {
+    display: none !important;
+  }
+
+  .specs-mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .product-detail-modal {
+    max-width: 100% !important;
+    max-height: 94dvh !important;
+    margin: 0 !important;
+    border-radius: 16px !important;
+  }
+
+  .product-detail-modal-body {
+    max-height: calc(94dvh - 150px) !important;
+    padding: 16px !important;
   }
 }

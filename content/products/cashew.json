@@ -1,30 +1,120 @@
 {
   "id": "cashew",
   "slug": "cashew",
+  "category": "nuts-seeds",
   "name_vi": "Hạt điều",
   "name_en": "Cashew",
-  "name_ko": "캐슈넛",
-  "name_zh": "腰果",
-  "category": "nuts-seeds",
+  "name_ko": "베트남 로스트 캐슈넛",
+  "name_zh": "越南烘焙腰果仁",
+  "nameVi": "Hạt điều",
+  "name": "Cashew",
+  "nameKo": "베트남 로스트 캐슈넛",
+  "nameZh": "越南烘焙腰果仁",
   "image": "/images/products/cashew.webp",
+  "imageWebp": "/images/products/cashew.webp",
+  "imageJpg": "/images/products/cashew.jpg",
+  "shortDescriptionVi": "Hạt điều Bình Phước tuyển chọn, rang thơm bùi béo ngậy tự nhiên.",
+  "shortDescription": "Premium roasted Vietnamese cashews, delightfully crunchy with a buttery nutty finish.",
+  "shortDescriptionKo": "빈프억산 엄선 캐슈넛 커널을 고소하고 바삭하게 로스팅했습니다.",
+  "shortDescriptionZh": "严选平福省优质腰果仁，控温轻柔烘焙，香脆醇厚。",
   "description_vi": "Hạt điều chuẩn xuất khẩu từ thủ phủ Bình Phước. Từng mẻ hạt được phân loại kích thước đều đặn, rang chín tới giữ trọn độ giòn, béo bùi tự nhiên, dồi dào chất béo không bão hòa và khoáng chất.",
   "description_en": "Renowned globally for superior flavor and texture, our Binh Phuoc whole cashews are carefully roasted to golden perfection, packed with heart-healthy monounsaturated fats, protein, and essential minerals.",
-  "description_ko": "베트남 캐슈넛 주산지 빈프억(Binh Phuoc)산 수출 규격 원물 캐슈넛입니다. 균일한 선별과 정밀 로스팅으로 바삭한 식감과 고소한 풍미, 불포화지방산 및 필수 미네랄을 풍부하게 담아냈습니다.",
-  "description_zh": "源自越南腰果核心产区平福省的出口级整粒腰果。颗粒均匀饱满，经精准低温烘焙后保持香脆酥松口感与天然醇香，富含单不饱和脂肪酸、植物蛋白及矿物质。",
+  "description_ko": "베트남 캐슈넛 주산지 빈프억에서 엄선한 W240/W320 규격 커널을 정밀 온도 제어 열풍으로 로스팅하여 고소한 풍미와 바삭한 식감을 구현했습니다.",
+  "description_zh": "来自越南腰果核心产区平福省的 W240 / W320 规格全仁腰果，经控温热风轻柔烘焙，不经油炸即可保持酥脆奶香与丰富植物蛋白。",
+  "descriptionVi": "Hạt điều chuẩn xuất khẩu từ thủ phủ Bình Phước. Từng mẻ hạt được phân loại kích thước đều đặn, rang chín tới giữ trọn độ giòn, béo bùi tự nhiên, dồi dào chất béo không bão hòa và khoáng chất.",
+  "description": "Renowned globally for superior flavor and texture, our Binh Phuoc whole cashews are carefully roasted to golden perfection, packed with heart-healthy monounsaturated fats, protein, and essential minerals.",
+  "descriptionKo": "베트남 캐슈넛 주산지 빈프억에서 엄선한 W240/W320 규격 커널을 정밀 온도 제어 열풍으로 로스팅하여 고소한 풍미와 바삭한 식감을 구현했습니다.",
+  "descriptionZh": "来自越南腰果核心产区平福省的 W240 / W320 规格全仁腰果，经控温热风轻柔烘焙，不经油炸即可保持酥脆奶香与丰富植物蛋白。",
   "origin_vi": "Bình Phước, Việt Nam",
   "origin_en": "Binh Phuoc, Vietnam",
   "origin_ko": "베트남 빈프억성",
   "origin_zh": "越南平福省",
-  "shelf_life": "12 Tháng",
-  "shelf_life_ko": "12개월",
-  "shelf_life_zh": "12个月",
-  "packaging": "Túi hút chân không / Lon nạp khí Nitơ 250g, 500g / Thùng chân không 10kg, 22.68kg",
-  "packaging_ko": "진공 파우치 / 질소 충전 캔 250g, 500g / 벌크 진공 박스 10kg, 22.68kg",
-  "packaging_zh": "真空袋 / 充氮铁罐 250g、500g / 出口真空大箱 10kg、22.68kg",
-  "certifications": [
-    "BRCGS Facility",
-    "ISO 22000",
-    "Export Standard"
+  "originVi": "Bình Phước, Việt Nam",
+  "origin": "Binh Phuoc, Vietnam",
+  "originKo": "베트남 빈프억성",
+  "originZh": "越南平福省",
+  "ocop": "",
+  "productCertifications": [],
+  "productFeatures": [
+    {
+      "id": "binh-phuoc-grade-a",
+      "label": {
+        "vi": "Hạt điều Bình Phước (W240 / W320)",
+        "en": "Binh Phuoc Grade A (W240 / W320)",
+        "ko": "빈프억 A등급 캐슈넛 (W240/W320)",
+        "zh": "平福省 A 级腰果仁 (W240/W320)"
+      }
+    },
+    {
+      "id": "hot-air-roast",
+      "label": {
+        "vi": "Rang nhiệt phong kiểm soát nhiệt độ",
+        "en": "Controlled hot-air roasting",
+        "ko": "정밀 온도 제어 열풍 로스팅",
+        "zh": "精准控温热风烘焙"
+      }
+    },
+    {
+      "id": "vacuum-n2",
+      "label": {
+        "vi": "Hút chân không / Nạp khí Nitơ",
+        "en": "Vacuum / Nitrogen-flushed pack",
+        "ko": "진공 및 질소 충전 포장",
+        "zh": "真空 / 充氮保鲜包装"
+      }
+    }
   ],
-  "order": 3
+  "specs": {
+    "moisture": "< 5%",
+    "brix": "",
+    "shelfLifeVi": "12 Tháng",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeKo": "12개월",
+    "shelfLifeZh": "12个月",
+    "storageVi": "Bảo quản nơi khô ráo, thoáng mát, tránh nhiệt độ cao và ẩm ướt",
+    "storageEn": "Store in a cool, dry place away from heat and moisture",
+    "storageKo": "열기와 습기를 피해 서늘하고 건조한 곳에 보관",
+    "storageZh": "远离高温和潮湿，置于阴凉干燥处储存",
+    "ingredientsVi": "100% Nhân hạt điều Bình Phước chuẩn loại A (W240 / W320)",
+    "ingredientsEn": "100% Grade A Vietnamese Cashew Kernels (W240 / W320)",
+    "ingredientsKo": "100% Grade A 베트남산 캐슈넛 커널 (W240 / W320)",
+    "ingredientsZh": "100% A级越南腰果仁（W240 / W320）",
+    "processVi": "Rang sấy nhiệt phong tuần hoàn kiểm soát nhiệt độ, không chiên ngập dầu",
+    "processEn": "Gentle hot-air roasting under controlled thermal curve without excessive oil",
+    "processKo": "과도한 유분 없이 정밀 열풍 커브 로스팅",
+    "processZh": "控温曲线轻柔热风烘焙，无多余油脂",
+    "packagingVi": "Túi hút chân không / Lon nạp khí Nitơ 250g, 500g / Thùng chân không 10kg, 22.68kg",
+    "packagingEn": "Vacuum pouch / Nitrogen-flushed can 250g, 500g / Bulk vacuum box 10kg, 22.68kg",
+    "packagingKo": "진공 파우치 / 질소 충전 캔 250g, 500g / 벌크 진공 박스 10kg, 22.68kg",
+    "packagingZh": "真空袋 / 充氮罐 250g、500g / 出口真空大箱 10kg、22.68kg"
+  },
+  "vi": {
+    "name": "Hạt điều",
+    "desc": "Hạt điều Bình Phước tuyển chọn, rang thơm bùi béo ngậy tự nhiên.",
+    "origin": "Bình Phước, Việt Nam",
+    "features": ""
+  },
+  "en": {
+    "name": "Cashew",
+    "desc": "Premium roasted Vietnamese cashews, delightfully crunchy with a buttery nutty finish.",
+    "origin": "Binh Phuoc, Vietnam",
+    "features": ""
+  },
+  "ko": {
+    "name": "베트남 로스트 캐슈넛",
+    "desc": "빈프억산 엄선 캐슈넛 커널을 고소하고 바삭하게 로스팅했습니다.",
+    "origin": "베트남 빈프억성",
+    "features": ""
+  },
+  "zh": {
+    "name": "越南烘焙腰果仁",
+    "desc": "严选平福省优质腰果仁，控温轻柔烘焙，香脆醇厚。",
+    "origin": "越南平福省",
+    "features": ""
+  },
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi hút chân không / Lon nạp khí Nitơ 250g, 500g / Thùng chân không 10kg, 22.68kg",
+  "order": 3,
+  "published": true,
+  "status": "published"
 }
