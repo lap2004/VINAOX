@@ -250,8 +250,8 @@ export const en = {
       "current": "About Us"
     },
     "products": {
-      "title": "VINAXO Tropical Dried Fruit Catalog",
-      "subtitle": "100% natural, gently low-temperature dehydrated, zero added sugar or artificial preservatives — bringing authentic tropical tastes to global consumers.",
+      "title": "VINAXO Product Catalog",
+      "subtitle": "Explore VINAXO's product portfolio, including soft-dried fruits, crispy dried fruits, nuts and mixed products, serving the diverse needs of customers and B2B partners. Product ingredients, processing methods, packaging options and technical specifications are provided individually for each product.",
       "home": "Home",
       "current": "Products"
     },
@@ -505,9 +505,9 @@ export const en = {
   },
   "productsPage": {
     "section1": {
-      "label": "PREMIUM VIETNAMESE DRIED FRUITS",
-      "title": "Selected Tropical Fruits from Certified Mekong Orchards",
-      "desc": "Every batch of VINAXO dried fruits undergoes rigorous inspection from the Mekong Delta's most renowned orchards (Dong Thap, Tien Giang, Vinh Long). A precise 10:1 dehydration recovery ratio preserves authentic soft chewy textures, natural aroma, and rich nutrients."
+      "label": "B2B PRODUCT PORTFOLIO",
+      "title": "Soft-Dried Fruits, Fruit Chips, Nuts & Mixed Products",
+      "desc": "VINAXO's catalog is organized across four core groups: soft-dried fruits, crispy fruit chips, nuts and seeds, and mixed products. Ingredients, processing methods, packaging specifications, and technical parameters are documented individually for each product."
     },
     "section2": {
       "label": "B2B COOPERATION & PRIVATE LABEL",
@@ -529,7 +529,9 @@ export const en = {
       "colMoisture": "Moisture",
       "colShelfLife": "Shelf Life",
       "colCert": "Certifications",
-      "colQuote": "Quote",
+      "colFeatures": "Product Features",
+      "colQuote": "Actions",
+      "viewDetailBtn": "Details",
       "row1Name": "Naturally Soft-Dried Mango",
       "row1Origin": "Dong Thap & Tien Giang",
       "row2Name": "Soft-Dried & Vacuum Jackfruit",

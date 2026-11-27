@@ -1,30 +1,120 @@
 {
   "id": "macadamia-nuts",
   "slug": "macadamia-nuts",
+  "category": "nuts-seeds",
   "name_vi": "Hạt mắc ca",
   "name_en": "Macadamia Nuts",
-  "name_ko": "마카다미아 너트",
-  "name_zh": "夏威夷果",
-  "category": "nuts-seeds",
+  "name_ko": "베트남 마카다미아 너트",
+  "name_zh": "越南带壳夏威夷果",
+  "nameVi": "Hạt mắc ca",
+  "name": "Macadamia Nuts",
+  "nameKo": "베트남 마카다미아 너트",
+  "nameZh": "越南带壳夏威夷果",
   "image": "/images/products/macadamia-nuts.webp",
+  "imageWebp": "/images/products/macadamia-nuts.webp",
+  "imageJpg": "/images/products/macadamia-nuts.jpg",
+  "shortDescriptionVi": "Mắc ca Tây Nguyên nứt vỏ tự nhiên, nhân tròn đầy, béo ngậy thanh tao.",
+  "shortDescription": "Central Highlands macadamia nuts, naturally creamy and rich in essential fatty acids.",
+  "shortDescriptionKo": "베트남 중부고원 화산토에서 재배한 크리미하고 고소한 인쉘 마카다미아입니다.",
+  "shortDescriptionZh": "产自西原火山红壤，果仁圆润饱满、奶香醇厚细腻。",
   "description_vi": "Hạt mắc ca thượng hạng sinh trưởng trên đất đỏ bazan màu mỡ vùng Tây Nguyên. Hạt được sấy nứt vỏ tự nhiên, nhân trắng ngà tròn trịa, béo bùi thanh thoát và dồi dào axit béo Omega-7 quý giá.",
   "description_en": "Harvested from volcanic basalt soil in Vietnam's Central Highlands, our premium macadamias feature smooth, creamy kernels packed with heart-healthy monounsaturated fats and essential antioxidants.",
-  "description_ko": "베트남 중부 고원(타이응우옌)의 비옥한 현무암 화산토에서 자란 프리미엄 마카다미아입니다. 자연 크랙 건조 가공으로 크리미한 식감과 불포화지방산(오메가-7)을 온전히 보존했습니다.",
-  "description_zh": "甄选越南西原地区肥沃红玄武岩土壤种植的优质夏威夷果，经低温烘焙开口处理，果仁奶白饱满、口感细腻醇香，富含珍贵单不饱和脂肪酸与天然抗氧化物。",
+  "description_ko": "중부고원 적색 현무암 토양에서 자란 마카다미아를 다단계 저온 열풍 건조로 수분 3% 미만으로 관리해 신선한 견과 오일과 부드러운 크리미 풍미를 유지했습니다.",
+  "description_zh": "生长于越南西原肥沃红壤区的优质夏威夷果，经开口处理及多段低温热风干燥将水分控制在 3% 以下，完整留存天然果仁油脂与酥脆奶香。",
+  "descriptionVi": "Hạt mắc ca thượng hạng sinh trưởng trên đất đỏ bazan màu mỡ vùng Tây Nguyên. Hạt được sấy nứt vỏ tự nhiên, nhân trắng ngà tròn trịa, béo bùi thanh thoát và dồi dào axit béo Omega-7 quý giá.",
+  "description": "Harvested from volcanic basalt soil in Vietnam's Central Highlands, our premium macadamias feature smooth, creamy kernels packed with heart-healthy monounsaturated fats and essential antioxidants.",
+  "descriptionKo": "중부고원 적색 현무암 토양에서 자란 마카다미아를 다단계 저온 열풍 건조로 수분 3% 미만으로 관리해 신선한 견과 오일과 부드러운 크리미 풍미를 유지했습니다.",
+  "descriptionZh": "生长于越南西原肥沃红壤区的优质夏威夷果，经开口处理及多段低温热风干燥将水分控制在 3% 以下，完整留存天然果仁油脂与酥脆奶香。",
   "origin_vi": "Tây Nguyên, Việt Nam",
   "origin_en": "Central Highlands, Vietnam",
-  "origin_ko": "베트남 중부 고원(타이응우옌)",
-  "origin_zh": "越南西原地区",
-  "shelf_life": "12 Tháng",
-  "shelf_life_ko": "12개월",
-  "shelf_life_zh": "12个月",
-  "packaging": "Túi zip / Hộp PET 250g, 500g / Thùng xuất khẩu 10kg",
-  "packaging_ko": "지퍼 파우치 / PET 용기 250g, 500g / 수출용 카톤 10kg",
-  "packaging_zh": "自封袋 / PET 瓶装 250g、500g / 出口箱 10kg",
-  "certifications": [
-    "Premium Grade",
-    "ISO 22000",
-    "Clean Label"
+  "origin_ko": "베트남 중부고원 (떠이응우옌)",
+  "origin_zh": "越南西原产区",
+  "originVi": "Tây Nguyên, Việt Nam",
+  "origin": "Central Highlands, Vietnam",
+  "originKo": "베트남 중부고원 (떠이응우옌)",
+  "originZh": "越南西原产区",
+  "ocop": "",
+  "productCertifications": [],
+  "productFeatures": [
+    {
+      "id": "central-highlands-macca",
+      "label": {
+        "vi": "Mắc ca nứt vỏ Tây Nguyên",
+        "en": "Central Highlands in-shell cracked macadamia",
+        "ko": "중부고원 크랙 인쉘 마카다미아",
+        "zh": "西原带壳开口夏威夷果"
+      }
+    },
+    {
+      "id": "multistage-dry",
+      "label": {
+        "vi": "Sấy nhiệt thấp đa tầng (< 3% ẩm)",
+        "en": "Multi-stage low-heat drying (< 3% moisture)",
+        "ko": "다단계 저온 건조 (수분 < 3%)",
+        "zh": "多段低温烘干（水分 < 3%）"
+      }
+    },
+    {
+      "id": "opener-included",
+      "label": {
+        "vi": "Kèm dụng cụ tách vỏ tiện lợi",
+        "en": "Shell-opening key included",
+        "ko": "전용 껍질 오프너 동봉",
+        "zh": "附赠便捷开果器"
+      }
+    }
   ],
-  "order": 6
+  "specs": {
+    "moisture": "< 3%",
+    "brix": "",
+    "shelfLifeVi": "12 Tháng",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeKo": "12개월",
+    "shelfLifeZh": "12个月",
+    "storageVi": "Nơi thoáng mát, khô ráo, tránh ánh sáng trực tiếp",
+    "storageEn": "Cool, dry place away from heat and light",
+    "storageKo": "열기와 직사광선을 피해 서늘하고 건조한 곳에 보관",
+    "storageZh": "避热避光，置于阴凉干燥处储存",
+    "ingredientsVi": "100% Hạt mắc ca nứt vỏ Tây Nguyên tuyển chọn (kèm dụng cụ tách vỏ)",
+    "ingredientsEn": "100% In-shell cracked Vietnamese Macadamia Nuts (with shell-opening key)",
+    "ingredientsKo": "100% 베트남산 크랙 인쉘 마카다미아 너트 (오프너 포함)",
+    "ingredientsZh": "100% 越南带壳开口夏威夷果（附赠开果器）",
+    "processVi": "Sấy nhiệt thấp đa tầng kiểm soát độ ẩm, bảo toàn trọn vẹn tinh dầu quý",
+    "processEn": "Low-temperature multi-stage hot-air drying to preserve delicate healthy oils",
+    "processKo": "불포화지방산 보존을 위한 저온 다단계 열풍 건조",
+    "processZh": "低温多段热风干燥工艺，锁住珍贵健康油脂",
+    "packagingVi": "Túi zip / Hộp PET 250g, 500g / Thùng xuất khẩu 10kg",
+    "packagingEn": "Zip pouch / PET jar 250g, 500g / Master carton 10kg",
+    "packagingKo": "지퍼 파우치 / PET 용기 250g, 500g / 마스터 카톤 10kg",
+    "packagingZh": "自封袋 / PET 罐 250g、500g / 出口纸箱 10kg"
+  },
+  "vi": {
+    "name": "Hạt mắc ca",
+    "desc": "Mắc ca Tây Nguyên nứt vỏ tự nhiên, nhân tròn đầy, béo ngậy thanh tao.",
+    "origin": "Tây Nguyên, Việt Nam",
+    "features": ""
+  },
+  "en": {
+    "name": "Macadamia Nuts",
+    "desc": "Central Highlands macadamia nuts, naturally creamy and rich in essential fatty acids.",
+    "origin": "Central Highlands, Vietnam",
+    "features": ""
+  },
+  "ko": {
+    "name": "베트남 마카다미아 너트",
+    "desc": "베트남 중부고원 화산토에서 재배한 크리미하고 고소한 인쉘 마카다미아입니다.",
+    "origin": "베트남 중부고원 (떠이응우옌)",
+    "features": ""
+  },
+  "zh": {
+    "name": "越南带壳夏威夷果",
+    "desc": "产自西原火山红壤，果仁圆润饱满、奶香醇厚细腻。",
+    "origin": "越南西原产区",
+    "features": ""
+  },
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi zip / Hộp PET 250g, 500g / Thùng xuất khẩu 10kg",
+  "order": 6,
+  "published": true,
+  "status": "published"
 }

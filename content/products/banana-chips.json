@@ -1,107 +1,123 @@
 {
   "id": "banana-chips",
   "slug": "banana-chips",
-  "aliases": [],
-  "name": "Banana Chips",
-  "nameVi": "Chuối sấy giòn",
-  "nameKo": "바나나 칩",
-  "nameZh": "香脆香蕉片",
-  "category": "chips",
-  "categoryLabelEn": "Tropical Dried Fruits",
-  "categoryLabelVi": "Trái cây sấy nhiệt đới",
-  "categoryLabelKo": "크리스피 과일 칩",
-  "categoryLabelZh": "香脆果干片",
-  "image": "/images/products/banana-chips.webp",
-  "imageWebp": "/images/products/banana-chips.webp",
-  "imageJpg": "/images/products/banana-chips.jpg",
-  "shortDescription": "Prepared from ripe Mekong Delta bananas, modern crisping technology ensures an irresistibly crunchy texture while preserving the fruit's natural sweetness, potassium, and wholesome minerals.",
-  "shortDescriptionVi": "Được chế biến từ chuối chín tự nhiên của vùng đồng bằng sông Cửu Long. Công nghệ sấy giòn hiện đại giúp từng lát chuối giữ độ giòn xốp tự nhiên, mùi thơm ngọt ngào đặc trưng và giàu kali.",
-  "shortDescriptionKo": "메콩 델타산 자연 숙성 바나나를 현대식 저온 진공 칩 공법으로 가공해 바삭한 식감과 천연의 달콤한 향, 풍부한 칼륨을 그대로 보존했습니다.",
-  "shortDescriptionZh": "精选湄公河三角洲自然熟香蕉，采用现代低温真空脆化工艺，赋予香蕉片酥脆口感，同时保留天然果香甜味与丰富钾元素。",
-  "description": "Prepared from ripe Mekong Delta bananas, modern crisping technology ensures an irresistibly crunchy texture while preserving the fruit's natural sweetness, potassium, and wholesome minerals.",
-  "descriptionVi": "Được chế biến từ chuối chín tự nhiên của vùng đồng bằng sông Cửu Long. Công nghệ sấy giòn hiện đại giúp từng lát chuối giữ độ giòn xốp tự nhiên, mùi thơm ngọt ngào đặc trưng và giàu kali.",
-  "descriptionKo": "메콩 델타산 자연 숙성 바나나를 현대식 저온 진공 칩 공법으로 가공해 바삭한 식감과 천연의 달콤한 향, 풍부한 칼륨을 그대로 보존했습니다.",
-  "descriptionZh": "精选湄公河三角洲自然熟香蕉，采用现代低温真空脆化工艺，赋予香蕉片酥脆口感，同时保留天然果香甜味与丰富钾元素。",
-  "origin": "Mekong Delta, Vietnam",
-  "originVi": "Đồng bằng Sông Cửu Long, Việt Nam",
-  "originKo": "베트남 메콩 델타",
-  "originZh": "越南湄公河三角洲",
-  "certifications": [
-    "BRCGS Facility",
-    "Clean Label",
-    "Export Standard"
+  "aliases": [
+    "dried-banana"
   ],
-  "verified": true,
-  "ocop": "3-Star OCOP",
-  "specs": {
-    "moisture": "< 16%",
-    "brix": "50° - 55° Brix",
-    "shelfLifeEn": "12 Months",
-    "shelfLifeVi": "12 Tháng",
-    "shelfLifeKo": "12개월",
-    "shelfLifeZh": "12个月",
-    "storageEn": "Cool, dry place (20 - 25°C)",
-    "storageVi": "Nơi khô ráo, thoáng mát (20 - 25°C)",
-    "storageKo": "서늘하고 건조한 곳 보관 (20 - 25°C)",
-    "storageZh": "阴凉干燥处储存（20 - 25°C）",
-    "ingredientsEn": "100% Natural Vietnamese Fruits",
-    "ingredientsVi": "100% Trái cây Việt Nam tự nhiên",
-    "ingredientsKo": "100% 베트남 자연산 과일",
-    "ingredientsZh": "100% 越南天然水果",
-    "processEn": "Low-temperature convective heat-pump drying",
-    "processVi": "Sấy bơm nhiệt nhiệt độ thấp tuần hoàn",
-    "processKo": "저온 순환 열풍·진공 건조 공법",
-    "processZh": "低温热泵循环真空干燥工艺",
-    "packagingEn": "Zip pouch / Export carton",
-    "packagingVi": "Túi zip / Thùng carton xuất khẩu",
-    "packagingKo": "지퍼 파우치 / 수출용 카톤 박스",
-    "packagingZh": "自封拉链袋 / 出口纸箱",
-    "certificationsEn": "BRCGS Facility, Clean Label",
-    "certificationsVi": "Nhà máy chuẩn BRCGS, Clean Label",
-    "certificationsKo": "BRCGS 인증 시설, 클린 라벨",
-    "certificationsZh": "BRCGS 认证工厂、清洁标签"
-  },
-  "en": {
-    "name": "Banana Chips",
-    "desc": "Prepared from ripe Mekong Delta bananas, modern crisping technology ensures an irresistibly crunchy texture while preserving the fruit's natural sweetness, potassium, and wholesome minerals.",
-    "origin": "Mekong Delta, Vietnam",
-    "features": "Prepared from ripe Mekong Delta bananas, modern crisping technology ensures an irresistibly crunchy texture while preserving the fruit's natural sweetness, potassium, and wholesome minerals."
-  },
-  "vi": {
-    "name": "Chuối sấy giòn",
-    "desc": "Được chế biến từ chuối chín tự nhiên của vùng đồng bằng sông Cửu Long. Công nghệ sấy giòn hiện đại giúp từng lát chuối giữ độ giòn xốp tự nhiên, mùi thơm ngọt ngào đặc trưng và giàu kali.",
-    "origin": "Đồng bằng Sông Cửu Long, Việt Nam",
-    "features": "Được chế biến từ chuối chín tự nhiên của vùng đồng bằng sông Cửu Long. Công nghệ sấy giòn hiện đại giúp từng lát chuối giữ độ giòn xốp tự nhiên, mùi thơm ngọt ngào đặc trưng và giàu kali."
-  },
-  "ko": {
-    "name": "바나나 칩",
-    "desc": "메콩 델타산 자연 숙성 바나나를 현대식 저온 진공 칩 공법으로 가공해 바삭한 식감과 천연의 달콤한 향, 풍부한 칼륨을 그대로 보존했습니다.",
-    "origin": "베트남 메콩 델타",
-    "features": "메콩 델타산 자연 숙성 바나나를 현대식 저온 진공 칩 공법으로 가공해 바삭한 식감과 천연의 달콤한 향, 풍부한 칼륨을 그대로 보존했습니다."
-  },
-  "zh": {
-    "name": "香脆香蕉片",
-    "desc": "精选湄公河三角洲自然熟香蕉，采用现代低温真空脆化工艺，赋予香蕉片酥脆口感，同时保留天然果香甜味与丰富钾元素。",
-    "origin": "越南湄公河三角洲",
-    "features": "精选湄公河三角洲自然熟香蕉，采用现代低温真空脆化工艺，赋予香蕉片酥脆口感，同时保留天然果香甜味与丰富钾元素。"
-  },
+  "category": "chips",
   "name_vi": "Chuối sấy giòn",
   "name_en": "Banana Chips",
   "name_ko": "바나나 칩",
   "name_zh": "香脆香蕉片",
+  "nameVi": "Chuối sấy giòn",
+  "name": "Banana Chips",
+  "nameKo": "바나나 칩",
+  "nameZh": "香脆香蕉片",
+  "image": "/images/products/banana-chips.webp",
+  "imageWebp": "/images/products/banana-chips.webp",
+  "imageJpg": "/images/products/banana-chips.jpg",
+  "shortDescriptionVi": "Lát chuối vàng ươm, giòn rụm thơm lừng hương chuối chín tự nhiên.",
+  "shortDescription": "Golden, crispy banana slices with natural honeyed fragrance and light crunch.",
+  "shortDescriptionKo": "황금빛 바삭한 슬라이스와 은은한 자연 바나나 향을 담았습니다.",
+  "shortDescriptionZh": "金黄酥脆香蕉切片，散发浓郁天然蕉香与轻盈脆感。",
   "description_vi": "Được chế biến từ chuối chín tự nhiên của vùng đồng bằng sông Cửu Long. Công nghệ sấy giòn hiện đại giúp từng lát chuối giữ độ giòn xốp tự nhiên, mùi thơm ngọt ngào đặc trưng và giàu kali.",
   "description_en": "Prepared from ripe Mekong Delta bananas, modern crisping technology ensures an irresistibly crunchy texture while preserving the fruit's natural sweetness, potassium, and wholesome minerals.",
-  "description_ko": "메콩 델타산 자연 숙성 바나나를 현대식 저온 진공 칩 공법으로 가공해 바삭한 식감과 천연의 달콤한 향, 풍부한 칼륨을 그대로 보존했습니다.",
-  "description_zh": "精选湄公河三角洲自然熟香蕉，采用现代低温真空脆化工艺，赋予香蕉片酥脆口感，同时保留天然果香甜味与丰富钾元素。",
-  "origin_vi": "Đồng bằng Sông Cửu Long, Việt Nam",
-  "origin_en": "Mekong Delta, Vietnam",
+  "description_ko": "메콩 델타산 완숙 바나나를 저온 진공 크리스핑 및 원심 탈유 공정으로 가공하여 바삭한 식감과 바나나 고유의 풍미를 살렸습니다.",
+  "description_zh": "选用湄公河三角洲成熟香蕉，采用低温真空脆化结合离心脱油工艺制成，口感酥脆爽口，保留香蕉天然风味与钾元素。",
+  "descriptionVi": "Được chế biến từ chuối chín tự nhiên của vùng đồng bằng sông Cửu Long. Công nghệ sấy giòn hiện đại giúp từng lát chuối giữ độ giòn xốp tự nhiên, mùi thơm ngọt ngào đặc trưng và giàu kali.",
+  "description": "Prepared from ripe Mekong Delta bananas, modern crisping technology ensures an irresistibly crunchy texture while preserving the fruit's natural sweetness, potassium, and wholesome minerals.",
+  "descriptionKo": "메콩 델타산 완숙 바나나를 저온 진공 크리스핑 및 원심 탈유 공정으로 가공하여 바삭한 식감과 바나나 고유의 풍미를 살렸습니다.",
+  "descriptionZh": "选用湄公河三角洲成熟香蕉，采用低温真空脆化结合离心脱油工艺制成，口感酥脆爽口，保留香蕉天然风味与钾元素。",
+  "origin_vi": "Vùng chuối ĐBSCL",
+  "origin_en": "Mekong Delta Orchards",
   "origin_ko": "베트남 메콩 델타",
   "origin_zh": "越南湄公河三角洲",
+  "originVi": "Vùng chuối ĐBSCL",
+  "origin": "Mekong Delta Orchards",
+  "originKo": "베트남 메콩 델타",
+  "originZh": "越南湄公河三角洲",
+  "ocop": "",
+  "productCertifications": [],
+  "productFeatures": [
+    {
+      "id": "vacuum-crisp",
+      "label": {
+        "vi": "Sấy giòn chân không & ly tâm tách dầu",
+        "en": "Vacuum crisping & centrifugal de-oiling",
+        "ko": "저온 진공 크리스핑 & 원심 탈유",
+        "zh": "低温真空脆化与离心脱油"
+      }
+    },
+    {
+      "id": "low-moisture",
+      "label": {
+        "vi": "Độ ẩm < 5%",
+        "en": "Moisture < 5%",
+        "ko": "수분 함량 < 5%",
+        "zh": "水分含量 < 5%"
+      }
+    },
+    {
+      "id": "mekong-banana",
+      "label": {
+        "vi": "Chuối chín ĐBSCL",
+        "en": "Ripe Mekong Delta banana",
+        "ko": "메콩 델타 완숙 바나나",
+        "zh": "湄公河三角洲成熟香蕉"
+      }
+    }
+  ],
+  "specs": {
+    "moisture": "< 5%",
+    "brix": "",
+    "shelfLifeVi": "12 Tháng",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeKo": "12개월",
+    "shelfLifeZh": "12个月",
+    "storageVi": "Nơi khô ráo thoáng mát, giữ kín miệng túi sau khi mở",
+    "storageEn": "Cool, dry place, seal tightly after opening",
+    "storageKo": "서늘하고 건조한 곳 보관, 개봉 후 밀봉",
+    "storageZh": "置于阴凉干燥处保存，开封后请密封",
+    "ingredientsVi": "100% Chuối chín tự nhiên tuyển chọn, dầu thực vật tinh luyện",
+    "ingredientsEn": "100% Selected ripe banana, refined vegetable oil",
+    "ingredientsKo": "100% 엄선된 완숙 바나나, 정제 식물성 유지",
+    "ingredientsZh": "100% 精选成熟香蕉、精炼植物油",
+    "processVi": "Chiên sấy chân không nhiệt thấp kết hợp ly tâm tách dầu triệt để",
+    "processEn": "Low-temperature vacuum crisping with high-efficiency centrifugal de-oiling",
+    "processKo": "저온 진공 크리스핑 및 고효율 원심 탈유 공정",
+    "processZh": "低温真空脆化及高效离心脱油工艺",
+    "packagingVi": "Túi zip 100g, 250g, 500g / Thùng xá 10kg",
+    "packagingEn": "Zip pouch 100g, 250g, 500g / Bulk carton 10kg",
+    "packagingKo": "지퍼 파우치 100g, 250g, 500g / 벌크 카톤 10kg",
+    "packagingZh": "自封袋 100g、250g、500g / 散装纸箱 10kg"
+  },
+  "vi": {
+    "name": "Chuối sấy giòn",
+    "desc": "Lát chuối vàng ươm, giòn rụm thơm lừng hương chuối chín tự nhiên.",
+    "origin": "Vùng chuối ĐBSCL",
+    "features": ""
+  },
+  "en": {
+    "name": "Banana Chips",
+    "desc": "Golden, crispy banana slices with natural honeyed fragrance and light crunch.",
+    "origin": "Mekong Delta Orchards",
+    "features": ""
+  },
+  "ko": {
+    "name": "바나나 칩",
+    "desc": "황금빛 바삭한 슬라이스와 은은한 자연 바나나 향을 담았습니다.",
+    "origin": "베트남 메콩 델타",
+    "features": ""
+  },
+  "zh": {
+    "name": "香脆香蕉片",
+    "desc": "金黄酥脆香蕉切片，散发浓郁天然蕉香与轻盈脆感。",
+    "origin": "越南湄公河三角洲",
+    "features": ""
+  },
   "shelf_life": "12 Tháng",
-  "shelf_life_ko": "12개월",
-  "shelf_life_zh": "12个月",
-  "packaging": "Túi zip / Thùng carton xuất khẩu",
-  "packaging_ko": "지퍼 파우치 / 수출용 카톤 박스",
-  "packaging_zh": "自封拉链袋 / 出口纸箱",
-  "order": 2
+  "packaging": "Túi zip 100g, 250g, 500g / Thùng xá 10kg",
+  "order": 2,
+  "published": true,
+  "status": "published"
 }

@@ -81,12 +81,21 @@ function isOriginAllowed(req: any): boolean {
   }
 }
 
-function verifyCanonicalProduct(rawProductId: string, rawProductName: string): {
+function verifyCanonicalProduct(
+  rawProductId: string,
+  rawProductSlug: string,
+  rawProductName: string
+): {
   verifiedId: string;
+  verifiedSlug: string;
+  verifiedCategory: string;
   verifiedLabel: string;
   isCatalogVerified: boolean;
 } {
-  const candidates = [rawProductId, rawProductName].map((s) => s.trim().toLowerCase()).filter(Boolean);
+  const candidates = [rawProductSlug, rawProductId, rawProductName]
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+
   for (const needle of candidates) {
     const matched = productsData.find(
       (p) =>
@@ -104,7 +113,9 @@ function verifyCanonicalProduct(rawProductId: string, rawProductName: string): {
     );
     if (matched) {
       return {
-        verifiedId: matched.slug,
+        verifiedId: matched.id,
+        verifiedSlug: matched.slug,
+        verifiedCategory: matched.category,
         verifiedLabel: `${matched.nameVi} / ${matched.name} (${matched.slug})`,
         isCatalogVerified: true,
       };
@@ -112,6 +123,8 @@ function verifyCanonicalProduct(rawProductId: string, rawProductName: string): {
     if (needle === 'value-added-lines') {
       return {
         verifiedId: 'value-added-lines',
+        verifiedSlug: 'value-added-lines',
+        verifiedCategory: '',
         verifiedLabel: 'Honey-Infused / Chocolate-Dipped / Granola (OEM)',
         isCatalogVerified: true,
       };
@@ -119,6 +132,8 @@ function verifyCanonicalProduct(rawProductId: string, rawProductName: string): {
     if (needle === 'oem-private-label') {
       return {
         verifiedId: 'oem-private-label',
+        verifiedSlug: 'oem-private-label',
+        verifiedCategory: '',
         verifiedLabel: 'OEM / ODM & Private Label Project',
         isCatalogVerified: true,
       };
@@ -127,6 +142,8 @@ function verifyCanonicalProduct(rawProductId: string, rawProductName: string): {
 
   return {
     verifiedId: rawProductId || '',
+    verifiedSlug: rawProductSlug || rawProductId || '',
+    verifiedCategory: '',
     verifiedLabel: rawProductName || '',
     isCatalogVerified: false,
   };
@@ -202,8 +219,10 @@ export default wrapHandler(async (req: any, res: any) => {
   const country = cleanText(rawBody.country, 100);
   const inquiryType = cleanText(rawBody.inquiryType, 150);
   const rawProductId = cleanText(rawBody.productId, 120);
+  const rawProductSlug = cleanText(rawBody.productSlug, 120);
   const rawProductName = cleanText(rawBody.productName || rawBody.product, 200);
   const quantity = cleanText(rawBody.quantity || rawBody.volume, 200);
+  const packaging = cleanText(rawBody.packaging, 200);
   const rawTradeTerm = cleanText(rawBody.tradeTerm, 20).toUpperCase();
   const rawShippingMode = cleanText(rawBody.shippingMode, 20).toUpperCase();
   const message = cleanText(rawBody.message, 3000);
@@ -267,7 +286,7 @@ export default wrapHandler(async (req: any, res: any) => {
     });
   }
 
-  const verifiedProduct = verifyCanonicalProduct(rawProductId, rawProductName);
+  const verifiedProduct = verifyCanonicalProduct(rawProductId, rawProductSlug, rawProductName);
 
   // Deduplicate rapid repeated submissions
   const dedupHash = crypto
@@ -336,9 +355,12 @@ export default wrapHandler(async (req: any, res: any) => {
     `Country / Market: ${country || 'N/A'}`,
     `Inquiry Purpose: ${inquiryType || 'N/A'}`,
     `Product ID: ${verifiedProduct.verifiedId || 'N/A'}`,
+    `Product Slug: ${verifiedProduct.verifiedSlug || 'N/A'}`,
+    `Product Category: ${verifiedProduct.verifiedCategory || 'N/A'}`,
     `Product (Verified): ${productDisplayForEmail}`,
     `Catalog Verified: ${verifiedProduct.isCatalogVerified ? 'YES' : 'NO / Custom'}`,
     `Estimated Quantity: ${quantity || 'N/A'}`,
+    `Preferred Packaging: ${packaging || 'N/A'}`,
     `Trade Term (Incoterms): ${tradeTerm || 'N/A'}`,
     `Shipping Mode (Container): ${shippingMode || 'N/A'}`,
     `Customer Locale: ${language}`,
@@ -364,7 +386,9 @@ export default wrapHandler(async (req: any, res: any) => {
           <tr><td style="padding:6px 0;font-weight:bold">Doanh nghiệp:</td><td>${escapeHtml(company || 'N/A')}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Quốc gia / Thị trường:</td><td>${escapeHtml(country || 'N/A')}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Sản phẩm quan tâm:</td><td><strong>${escapeHtml(productDisplayForEmail)}</strong></td></tr>
+          <tr><td style="padding:6px 0;font-weight:bold">Danh mục sản phẩm:</td><td>${escapeHtml(verifiedProduct.verifiedCategory || 'N/A')}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Số lượng dự kiến:</td><td>${escapeHtml(quantity || 'N/A')}</td></tr>
+          <tr><td style="padding:6px 0;font-weight:bold">Quy cách đóng gói:</td><td>${escapeHtml(packaging || 'N/A')}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Điều kiện thương mại (Incoterms):</td><td>${escapeHtml(tradeTerm || 'N/A')}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Hình thức vận chuyển:</td><td>${escapeHtml(shippingMode || 'N/A')}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Mục đích liên hệ:</td><td>${escapeHtml(inquiryType || 'N/A')}</td></tr>
@@ -484,8 +508,11 @@ export default wrapHandler(async (req: any, res: any) => {
         sourcePage,
         locale: language,
         verifiedProductId: verifiedProduct.verifiedId,
+        verifiedProductSlug: verifiedProduct.verifiedSlug,
+        verifiedCategoryId: verifiedProduct.verifiedCategory || undefined,
         verifiedProductLabel: productDisplayForEmail,
         quantity,
+        packaging: packaging || undefined,
         tradeTerm: tradeTerm || undefined,
         shippingMode: shippingMode || undefined,
         inquiryType,
@@ -521,5 +548,7 @@ export default wrapHandler(async (req: any, res: any) => {
     timestamp: submittedAt,
     recipient: recipientEmail,
     verifiedProductId: verifiedProduct.verifiedId || undefined,
+    verifiedProductSlug: verifiedProduct.verifiedSlug || undefined,
+    verifiedCategoryId: verifiedProduct.verifiedCategory || undefined,
   });
 });

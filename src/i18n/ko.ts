@@ -252,8 +252,8 @@ export const ko: Translations = {
       "current": "회사 소개"
     },
     "products": {
-      "title": "VINAXO 열대 건조 과일 제품 카탈로그",
-      "subtitle": "100% 천연 원물, 저온 건조 공법, 무가당 · 무방부제 — 열대 과일 본연의 풍미를 글로벌 소비자에게 전합니다.",
+      "title": "VINAXO 수출 제품 카탈로그",
+      "subtitle": "소프트 건조 과일, 크리스피 과일 칩, 견과류 및 모듬 제품 등 다양한 고객과 B2B 파트너의 요구를 충족하는 VINAXO 제품 포트폴리오를 살펴보세요. 원재료 구성, 가공 공법, 포장 규격 및 기술 사양은 각 제품별로 별도 제공됩니다.",
       "home": "홈",
       "current": "제품 카탈로그"
     },
@@ -465,9 +465,9 @@ export const ko: Translations = {
   },
   "productsPage": {
     "section1": {
-      "label": "프리미엄 베트남 건조 과일",
-      "title": "인증된 메콩 델타 산지에서 엄선한 열대 과일",
-      "desc": "VINAXO의 모든 건조 과일은 동탑, 띠엔장, 빈롱의 우수 과수원에서 엄격한 입하 검사를 거쳐 제조됩니다. 생과 10kg당 완제품 1kg의 농축 비율로 부드러운 식감과 천연 향, 영양을 그대로 담았습니다."
+      "label": "B2B 제품 포트폴리오",
+      "title": "소프트 건조 과일 · 과일 칩 · 견과류 · 모듬 제품",
+      "desc": "VINAXO 제품 카탈로그는 소프트 건조 과일, 크리스피 과일 칩, 견과류·연자육 및 모듬 제품 등 4대 카테고리로 구성되어 있습니다. 각 품목의 원재료, 가공 공법, 포장 형태 및 기술 사양은 개별 제품 규격서에 따라 정확히 제공됩니다."
     },
     "section2": {
       "label": "B2B 협력 & 자체 브랜드(OEM)",
@@ -488,8 +488,10 @@ export const ko: Translations = {
       "colOrigin": "원료 산지",
       "colMoisture": "수분 함량",
       "colShelfLife": "유통기한",
-      "colCert": "주요 인증",
-      "colQuote": "견적",
+      "colCert": "인증 현황",
+      "colFeatures": "제품 특성",
+      "colQuote": "실행 / 견적",
+      "viewDetailBtn": "상세 보기",
       "row1Name": "소프트 건망고",
       "row1Origin": "동탑 & 띠엔장",
       "row2Name": "건잭프루트",

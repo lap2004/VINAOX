@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, CheckCircle, Send } from 'lucide-react';
-import { useLanguage } from '../../i18n/LanguageContext';
 import { getProductLocalized, productsData } from '../../data/products';
+import { useLanguage } from '../../i18n/LanguageContext';
 import { submitInquiry } from '../../services/inquiryService';
 import {
   type ContactRequest,
+  type QuotationProduct,
   FIELD_LIMITS,
   OEM_PRODUCT_ID,
   VALUE_ADDED_PRODUCT_ID,
@@ -23,7 +24,7 @@ import { Button } from './Button';
 export interface QuoteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  defaultProduct?: string;
+  defaultProduct?: string | QuotationProduct;
 }
 
 export const QuoteModal: React.FC<QuoteModalProps> = ({
@@ -44,8 +45,11 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     phone: '',
     company: '',
     productId: initialResolved.productId,
+    productSlug: initialResolved.productSlug,
+    categoryId: initialResolved.categoryId,
     customProductLabel: initialResolved.customLabel,
     quantity: '',
+    packaging: '',
     message: '',
   });
 
@@ -56,13 +60,28 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
   const [failedPayload, setFailedPayload] = useState<ContactRequest | null>(null);
   const [honeypot, setHoneypot] = useState('');
 
-  // Reset product selection cleanly whenever the modal opens or target product changes (prevents stale state)
+  // Reset product selection cleanly whenever the modal opens/closes or target product changes (prevents stale state)
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setFormData((prev) => ({
+        ...prev,
+        productId: '',
+        productSlug: '',
+        categoryId: '',
+        customProductLabel: '',
+      }));
+      setIsSubmitted(false);
+      setReferenceId('');
+      setErrorMsg('');
+      setFailedPayload(null);
+      return;
+    }
     const resolved = resolveCanonicalProduct(defaultProduct);
     setFormData((prev) => ({
       ...prev,
       productId: resolved.productId,
+      productSlug: resolved.productSlug,
+      categoryId: resolved.categoryId,
       customProductLabel: resolved.customLabel,
     }));
     setIsSubmitted(false);
@@ -110,15 +129,31 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
 
   const handleProductSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
-    if (
-      !val ||
-      val === VALUE_ADDED_PRODUCT_ID ||
-      val === OEM_PRODUCT_ID ||
-      productsData.some((p) => p.slug === val)
-    ) {
-      setFormData((prev) => ({ ...prev, productId: val, customProductLabel: '' }));
+    const matched = productsData.find((p) => p.slug === val || p.id === val);
+    if (matched) {
+      setFormData((prev) => ({
+        ...prev,
+        productId: matched.slug,
+        productSlug: matched.slug,
+        categoryId: matched.category,
+        customProductLabel: '',
+      }));
+    } else if (!val || val === VALUE_ADDED_PRODUCT_ID || val === OEM_PRODUCT_ID) {
+      setFormData((prev) => ({
+        ...prev,
+        productId: val,
+        productSlug: '',
+        categoryId: '',
+        customProductLabel: '',
+      }));
     } else {
-      setFormData((prev) => ({ ...prev, productId: '', customProductLabel: val }));
+      setFormData((prev) => ({
+        ...prev,
+        productId: '',
+        productSlug: '',
+        categoryId: '',
+        customProductLabel: val,
+      }));
     }
   };
 
@@ -186,8 +221,11 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
       phone: formData.phone.trim() || undefined,
       company: formData.company.trim() || undefined,
       productId: formData.productId || undefined,
+      productSlug: formData.productSlug || undefined,
+      categoryId: formData.categoryId || undefined,
       productName: resolvedName || 'General Catalog',
       quantity: formData.quantity.trim() || undefined,
+      packaging: formData.packaging.trim() || undefined,
       message: formData.message.trim(),
       source: typeof window !== 'undefined' ? window.location.pathname : 'QuoteModal',
       hp_website: honeypot,
@@ -210,8 +248,10 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
         className="modal-content"
         onClick={(e) => e.stopPropagation()}
         style={{
-          maxWidth: '580px',
-          padding: 'clamp(20px, 3.5vw, 30px)',
+          maxWidth: '600px',
+          maxHeight: '92dvh',
+          overflowY: 'auto',
+          padding: 'clamp(18px, 3.2vw, 28px)',
           borderRadius: '20px',
         }}
       >
@@ -355,7 +395,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
               </p>
             </div>
 
-            <SelectedProductPreview productId={formData.productId} locale={language} />
+            <SelectedProductPreview productId={formData.productSlug || formData.productId} locale={language} />
 
             <ContactFormStatus
               locale={language}
@@ -470,7 +510,55 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                 </div>
               </div>
 
-              {/* Row 3: Optional Product & Quantity */}
+              {/* Row 3: Select / Change Exact Product */}
+              <div className="form-group" style={{ marginBottom: '10px' }}>
+                <label htmlFor="quoteProduct" className="form-label" style={{ fontSize: '0.8125rem', marginBottom: '4px' }}>
+                  {t('modal.productLabel', 'Product of Interest')}
+                </label>
+                <select
+                  id="quoteProduct"
+                  name="productId"
+                  value={selectValue}
+                  onChange={handleProductSelect}
+                  className="form-select"
+                  style={{ padding: '9px 12px', cursor: 'pointer' }}
+                >
+                  <option value="">
+                    {pick({
+                      vi: '-- Chọn sản phẩm hoặc dịch vụ --',
+                      en: '-- Select product or service --',
+                      ko: '-- 관심 품목 선택 --',
+                      zh: '-- 请选择意向产品 --',
+                    })}
+                  </option>
+                  {productsData.map((p) => (
+                    <option key={p.id} value={p.slug}>
+                      {getProductLocalized(p, language).name}
+                    </option>
+                  ))}
+                  <option value={VALUE_ADDED_PRODUCT_ID}>
+                    {pick({
+                      vi: 'Trái cây sấy tẩm mật ong / Phủ Sô-cô-la / Granola',
+                      en: 'Honey-Infused & Chocolate-Dipped / Granola',
+                      ko: '천연 벌꿀 인퓨즈드 / 초콜릿 디핑 / 그래놀라',
+                      zh: '蜂蜜浸渍果干 / 巧克力蘸酱果干 / 格兰诺拉麦片',
+                    })}
+                  </option>
+                  <option value={OEM_PRODUCT_ID}>
+                    {pick({
+                      vi: 'Gia công OEM / ODM & Nhãn riêng (Private Label)',
+                      en: 'OEM / ODM & Private Label Project',
+                      ko: 'OEM / ODM 자체 브랜드(PB) 생산',
+                      zh: 'OEM / ODM 自有品牌贴牌项目',
+                    })}
+                  </option>
+                  {formData.customProductLabel && (
+                    <option value={formData.customProductLabel}>{formData.customProductLabel}</option>
+                  )}
+                </select>
+              </div>
+
+              {/* Row 4: Optional Quantity & Packaging Specification */}
               <div
                 style={{
                   display: 'grid',
@@ -479,53 +567,6 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                   marginBottom: '10px',
                 }}
               >
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label htmlFor="quoteProduct" className="form-label" style={{ fontSize: '0.8125rem', marginBottom: '4px' }}>
-                    {t('modal.productLabel', 'Product of Interest')}
-                  </label>
-                  <select
-                    id="quoteProduct"
-                    name="productId"
-                    value={selectValue}
-                    onChange={handleProductSelect}
-                    className="form-select"
-                    style={{ padding: '9px 12px', cursor: 'pointer' }}
-                  >
-                    <option value="">
-                      {pick({
-                        vi: '-- Chọn sản phẩm hoặc dịch vụ --',
-                        en: '-- Select product or service --',
-                        ko: '-- 관심 품목 선택 --',
-                        zh: '-- 请选择意向产品 --',
-                      })}
-                    </option>
-                    {productsData.map((p) => (
-                      <option key={p.id} value={p.slug}>
-                        {getProductLocalized(p, language).name}
-                      </option>
-                    ))}
-                    <option value={VALUE_ADDED_PRODUCT_ID}>
-                      {pick({
-                        vi: 'Trái cây sấy tẩm mật ong / Phủ Sô-cô-la / Granola',
-                        en: 'Honey-Infused & Chocolate-Dipped / Granola',
-                        ko: '천연 벌꿀 인퓨즈드 / 초콜릿 디핑 / 그래놀라',
-                        zh: '蜂蜜浸渍果干 / 巧克力蘸酱果干 / 格兰诺拉麦片',
-                      })}
-                    </option>
-                    <option value={OEM_PRODUCT_ID}>
-                      {pick({
-                        vi: 'Gia công OEM / ODM & Nhãn riêng (Private Label)',
-                        en: 'OEM / ODM & Private Label Project',
-                        ko: 'OEM / ODM 자체 브랜드(PB) 생산',
-                        zh: 'OEM / ODM 自有品牌贴牌项目',
-                      })}
-                    </option>
-                    {formData.customProductLabel && (
-                      <option value={formData.customProductLabel}>{formData.customProductLabel}</option>
-                    )}
-                  </select>
-                </div>
-
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label htmlFor="quoteQuantity" className="form-label" style={{ fontSize: '0.8125rem', marginBottom: '4px' }}>
                     {pick({ vi: 'Số lượng dự kiến (tùy chọn)', en: 'Estimated Quantity (optional)', ko: '예상 주문 수량 (선택)', zh: '预计采购量（选填）' })}
@@ -547,9 +588,36 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                     style={{ padding: '9px 12px' }}
                   />
                 </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label htmlFor="quotePackaging" className="form-label" style={{ fontSize: '0.8125rem', marginBottom: '4px' }}>
+                    {pick({
+                      vi: 'Quy cách đóng gói mong muốn (tùy chọn)',
+                      en: 'Preferred Packaging (optional)',
+                      ko: '희망 포장 규격 (선택)',
+                      zh: '期望包装规格（选填）',
+                    })}
+                  </label>
+                  <input
+                    id="quotePackaging"
+                    type="text"
+                    name="packaging"
+                    value={formData.packaging}
+                    onChange={handleChange}
+                    maxLength={FIELD_LIMITS.packagingMax}
+                    placeholder={pick({
+                      vi: 'VD: Túi zip 250g / Thùng 10kg OEM',
+                      en: 'e.g. 250g zip pouch / 10kg carton',
+                      ko: '예: 250g 지퍼 파우치 / 10kg 카톤',
+                      zh: '如：250g 自封袋 / 10kg 纸箱',
+                    })}
+                    className="form-input"
+                    style={{ padding: '9px 12px' }}
+                  />
+                </div>
               </div>
 
-              {/* Row 4: Required Message */}
+              {/* Row 5: Required Message */}
               <div className="form-group" style={{ marginBottom: '14px' }}>
                 <label htmlFor="quoteMessage" className="form-label" style={{ fontSize: '0.8125rem', marginBottom: '4px' }}>
                   {pick({

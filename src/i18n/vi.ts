@@ -252,8 +252,8 @@ export const vi: Translations = {
       "current": "Về chúng tôi"
     },
     "products": {
-      "title": "Danh Mục Sản Phẩm Trái Cây Sấy VINAXO",
-      "subtitle": "100% tự nhiên, sấy dẻo nhiệt thấp, không thêm đường, bảo toàn màu sắc và dưỡng chất tự nhiên từ các vùng chuyên canh ĐBSCL.",
+      "title": "Danh Mục Sản Phẩm VINAXO",
+      "subtitle": "Khám phá danh mục sản phẩm VINAXO, bao gồm trái cây sấy dẻo, trái cây sấy giòn, hạt dinh dưỡng và các sản phẩm thập cẩm, phục vụ nhu cầu đa dạng của khách hàng và đối tác B2B. Thông tin về thành phần, công nghệ chế biến, quy cách đóng gói và thông số kỹ thuật được cung cấp riêng cho từng sản phẩm.",
       "home": "Trang chủ",
       "current": "Sản phẩm"
     },
@@ -507,9 +507,9 @@ export const vi: Translations = {
   },
   "productsPage": {
     "section1": {
-      "label": "NÔNG SẢN SẤY CAO CẤP",
-      "title": "Nông Sản Nhiệt Đới Chọn Lọc Từ Vùng Trồng Đạt Chuẩn",
-      "desc": "Mỗi mẻ trái cây sấy VINAXO đều trải qua quy trình phân loại nghiêm ngặt từ những vựa trái cây danh tiếng nhất Đồng bằng sông Cửu Long (Đồng Tháp, Tiền Giang, Vĩnh Long). Tỷ lệ thu hồi 10:1 (10 kg trái cây tươi qua sơ chế và sấy nhiệt thấp cho ra 1 kg thành phẩm sấy dẻo) tạo nên kết cấu dẻo mềm đặc trưng, thơm tự nhiên và giàu dưỡng chất."
+      "label": "DANH MỤC SẢN PHẨM B2B",
+      "title": "Danh Mục Trái Cây Sấy, Hạt Dinh Dưỡng & Sản Phẩm Thập Cẩm",
+      "desc": "Danh mục sản phẩm VINAXO được phân chia theo 4 nhóm chính gồm trái cây sấy dẻo, trái cây sấy giòn, hạt dinh dưỡng và sản phẩm thập cẩm. Mỗi mặt hàng có thành phần nguyên liệu, công nghệ chế biến, quy cách đóng gói và bảng thông số kỹ thuật riêng biệt phục vụ khách hàng và đối tác B2B."
     },
     "section2": {
       "label": "HỢP TÁC B2B & GIA CÔNG OEM",
@@ -531,7 +531,9 @@ export const vi: Translations = {
       "colMoisture": "Độ Ẩm",
       "colShelfLife": "Hạn Sử Dụng",
       "colCert": "Chứng Nhận",
-      "colQuote": "Báo Giá",
+      "colFeatures": "Đặc Tính Sản Phẩm",
+      "colQuote": "Thao Tác",
+      "viewDetailBtn": "Chi Tiết",
       "row1Name": "Xoài Sấy Dẻo Tự Nhiên",
       "row1Origin": "Đồng Tháp & Tiền Giang",
       "row2Name": "Mít Sấy Dẻo & Chiên Chân Không",

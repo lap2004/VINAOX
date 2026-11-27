@@ -35,6 +35,7 @@ export default wrapHandler(async (req: any, res: any) => {
         const nameKo = raw.name_ko || raw.nameKo || raw.ko?.name || '';
         const nameZh = raw.name_zh || raw.nameZh || raw.zh?.name || '';
         const slug = raw.slug || raw.id || `product-${idx}`;
+        const published = raw.published !== undefined ? Boolean(raw.published) : raw.status !== 'draft';
         return {
           ...raw,
           id: raw.id || slug,
@@ -47,6 +48,10 @@ export default wrapHandler(async (req: any, res: any) => {
           name: nameEn,
           category: raw.category || 'soft-dried',
           image: raw.image || raw.imageWebp || raw.imageJpg || '/assets/images/products/placeholder.webp',
+          shortDescriptionVi: raw.shortDescriptionVi || raw.vi?.desc || '',
+          shortDescription: raw.shortDescription || raw.en?.desc || '',
+          shortDescriptionKo: raw.shortDescriptionKo || raw.ko?.desc || '',
+          shortDescriptionZh: raw.shortDescriptionZh || raw.zh?.desc || '',
           description_vi: raw.description_vi || raw.descriptionVi || raw.shortDescriptionVi || raw.vi?.desc || '',
           description_en: raw.description_en || raw.description || raw.shortDescription || raw.en?.desc || '',
           description_ko: raw.description_ko || raw.descriptionKo || raw.shortDescriptionKo || raw.ko?.desc || '',
@@ -55,9 +60,14 @@ export default wrapHandler(async (req: any, res: any) => {
           origin_en: raw.origin_en || raw.originEn || raw.en?.origin || raw.origin || '',
           origin_ko: raw.origin_ko || raw.originKo || raw.ko?.origin || '',
           origin_zh: raw.origin_zh || raw.originZh || raw.zh?.origin || '',
-          shelf_life: raw.shelf_life || raw.specs?.shelfLifeVi || '12 Tháng',
-          packaging: raw.packaging || raw.specs?.packagingVi || 'Túi zip / Thùng carton xuất khẩu',
+          shelf_life: raw.shelf_life || raw.specs?.shelfLifeVi || raw.specs?.shelfLifeEn || '',
+          packaging: raw.packaging || raw.specs?.packagingVi || raw.specs?.packagingEn || '',
+          specs: raw.specs || {},
+          productCertifications: Array.isArray(raw.productCertifications) ? raw.productCertifications : [],
+          productFeatures: Array.isArray(raw.productFeatures) ? raw.productFeatures : [],
           certifications: Array.isArray(raw.certifications) ? raw.certifications : [],
+          published,
+          status: published ? 'published' : 'draft',
           order: Number(raw.order) || idx + 1
         };
       };

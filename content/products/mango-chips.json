@@ -1,30 +1,120 @@
 {
   "id": "mango-chips",
   "slug": "mango-chips",
+  "category": "chips",
   "name_vi": "Xoài sấy giòn",
   "name_en": "Mango Chips",
-  "name_ko": "망고 칩",
+  "name_ko": "크리스피 망고 칩",
   "name_zh": "香脆芒果干片",
-  "category": "chips",
+  "nameVi": "Xoài sấy giòn",
+  "name": "Mango Chips",
+  "nameKo": "크리스피 망고 칩",
+  "nameZh": "香脆芒果干片",
   "image": "/images/products/mango-chips.webp",
+  "imageWebp": "/images/products/mango-chips.webp",
+  "imageJpg": "/images/products/mango-chips.jpg",
+  "shortDescriptionVi": "Lát xoài giòn tan, vị chua ngọt hài hòa bùng nổ hương vị nhiệt đới.",
+  "shortDescription": "Crisp and airy mango slices delivering an enticing sweet-tart tropical burst.",
+  "shortDescriptionKo": "상큼 달콤한 열대 망고 풍미가 살아 있는 가볍고 바삭한 슬라이스입니다.",
+  "shortDescriptionZh": "轻盈酥脆的芒果切片，带来清甜微酸的热带风味体验。",
   "description_vi": "Được sản xuất từ xoài tươi đồng bằng sông Cửu Long. Quy trình chiên sấy chân không hiện đại tạo nên lát xoài giòn xốp hấp dẫn, vị chua ngọt tự nhiên hài hòa và màu vàng tươi đẹp mắt.",
   "description_en": "Crafted from fresh Mekong Delta mangoes, our mango chips undergo high-precision vacuum crisping that produces a clean, brittle snap while retaining true mango flavor and vibrant sunny color.",
-  "description_ko": "메콩 델타산 신선한 망고를 정밀 진공 크리스핑 공법으로 건조하여 깔끔하고 바삭한 식감과 상큼달콤한 망고 본연의 풍미, 선명한 황금빛 색감을 유지한 과일 칩입니다.",
-  "description_zh": "精选湄公河三角洲新鲜芒果，采用高精度真空脆化工艺制成，片型饱满酥脆，完整锁住芒果天然酸甜风味与明亮金黄色泽。",
+  "description_ko": "메콩 델타산 신선 망고를 정밀 진공 건조 및 원심 탈유 공정으로 가공하여 선명한 황금빛과 깔끔하게 바삭한 식감을 구현했습니다.",
+  "description_zh": "采用湄公河三角洲新鲜芒果，经精准低温真空脆化与离心脱油处理，入口爽脆不油腻，留存天然金黄色泽。",
+  "descriptionVi": "Được sản xuất từ xoài tươi đồng bằng sông Cửu Long. Quy trình chiên sấy chân không hiện đại tạo nên lát xoài giòn xốp hấp dẫn, vị chua ngọt tự nhiên hài hòa và màu vàng tươi đẹp mắt.",
+  "description": "Crafted from fresh Mekong Delta mangoes, our mango chips undergo high-precision vacuum crisping that produces a clean, brittle snap while retaining true mango flavor and vibrant sunny color.",
+  "descriptionKo": "메콩 델타산 신선 망고를 정밀 진공 건조 및 원심 탈유 공정으로 가공하여 선명한 황금빛과 깔끔하게 바삭한 식감을 구현했습니다.",
+  "descriptionZh": "采用湄公河三角洲新鲜芒果，经精准低温真空脆化与离心脱油处理，入口爽脆不油腻，留存天然金黄色泽。",
   "origin_vi": "Vùng xoài ĐBSCL",
   "origin_en": "Mekong Delta Orchards",
-  "origin_ko": "메콩 델타 망고 산지",
-  "origin_zh": "越南湄公河三角洲芒果产区",
-  "shelf_life": "12 Tháng",
-  "shelf_life_ko": "12개월",
-  "shelf_life_zh": "12个月",
-  "packaging": "Túi nhôm zipper 50g, 100g, 200g / Thùng carton xuất khẩu 10kg",
-  "packaging_ko": "알루미늄 지퍼 파우치 50g, 100g, 200g / 수출용 마스터 카톤 10kg",
-  "packaging_zh": "铝箔自封袋 50g、100g、200g / 出口纸箱 10kg",
-  "certifications": [
-    "BRCGS Facility",
-    "Clean Label",
-    "Export Standard"
+  "origin_ko": "베트남 메콩 델타",
+  "origin_zh": "越南湄公河三角洲",
+  "originVi": "Vùng xoài ĐBSCL",
+  "origin": "Mekong Delta Orchards",
+  "originKo": "베트남 메콩 델타",
+  "originZh": "越南湄公河三角洲",
+  "ocop": "",
+  "productCertifications": [],
+  "productFeatures": [
+    {
+      "id": "vacuum-mango",
+      "label": {
+        "vi": "Sấy giòn chân không & ly tâm tách dầu",
+        "en": "Vacuum crisping & centrifugal de-oiling",
+        "ko": "진공 크리스핑 & 원심 탈유",
+        "zh": "真空脆化与离心脱油"
+      }
+    },
+    {
+      "id": "low-moisture-mango",
+      "label": {
+        "vi": "Độ ẩm < 5%",
+        "en": "Moisture < 5%",
+        "ko": "수분 함량 < 5%",
+        "zh": "水分含量 < 5%"
+      }
+    },
+    {
+      "id": "aluminum-foil-pack",
+      "label": {
+        "vi": "Đóng túi nhôm zipper chống ẩm",
+        "en": "Moisture-barrier foil zipper pouch",
+        "ko": "방습 알루미늄 지퍼 파우치",
+        "zh": "防潮铝箔自封袋包装"
+      }
+    }
   ],
-  "order": 5
+  "specs": {
+    "moisture": "< 5%",
+    "brix": "",
+    "shelfLifeVi": "12 Tháng",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeKo": "12개월",
+    "shelfLifeZh": "12个月",
+    "storageVi": "Bảo quản nơi khô mát; đóng kín khóa zip ngay sau khi sử dụng",
+    "storageEn": "Store in a dry, cool place; reseal immediately after use",
+    "storageKo": "건조하고 서늘한 곳 보관, 개봉 후 즉시 밀봉",
+    "storageZh": "阴凉干燥处保存；开封后请立即密封",
+    "ingredientsVi": "Xoài tươi tuyển chọn (98%), dầu thực vật tinh luyện",
+    "ingredientsEn": "Fresh selected mango (98%), refined vegetable oil",
+    "ingredientsKo": "엄선된 신선 망고 (98%), 정제 식물성 유지",
+    "ingredientsZh": "新鲜精选芒果（98%）、精炼植物油",
+    "processVi": "Sấy chân không nhiệt thấp kết hợp công nghệ ly tâm tách dầu",
+    "processEn": "Low-temperature vacuum crisping with centrifugal oil extraction",
+    "processKo": "저온 진공 크리스핑 및 원심 탈유 공정",
+    "processZh": "低温真空脆化及离心脱油技术",
+    "packagingVi": "Túi nhôm zipper 50g, 100g, 200g / Thùng carton xuất khẩu 10kg",
+    "packagingEn": "Aluminium foil zip pouch 50g, 100g, 200g / Master carton 10kg",
+    "packagingKo": "알루미늄 지퍼 파우치 50g, 100g, 200g / 마스터 카톤 10kg",
+    "packagingZh": "铝箔自封袋 50g、100g、200g / 出口纸箱 10kg"
+  },
+  "vi": {
+    "name": "Xoài sấy giòn",
+    "desc": "Lát xoài giòn tan, vị chua ngọt hài hòa bùng nổ hương vị nhiệt đới.",
+    "origin": "Vùng xoài ĐBSCL",
+    "features": ""
+  },
+  "en": {
+    "name": "Mango Chips",
+    "desc": "Crisp and airy mango slices delivering an enticing sweet-tart tropical burst.",
+    "origin": "Mekong Delta Orchards",
+    "features": ""
+  },
+  "ko": {
+    "name": "크리스피 망고 칩",
+    "desc": "상큼 달콤한 열대 망고 풍미가 살아 있는 가볍고 바삭한 슬라이스입니다.",
+    "origin": "베트남 메콩 델타",
+    "features": ""
+  },
+  "zh": {
+    "name": "香脆芒果干片",
+    "desc": "轻盈酥脆的芒果切片，带来清甜微酸的热带风味体验。",
+    "origin": "越南湄公河三角洲",
+    "features": ""
+  },
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi nhôm zipper 50g, 100g, 200g / Thùng carton xuất khẩu 10kg",
+  "order": 5,
+  "published": true,
+  "status": "published"
 }

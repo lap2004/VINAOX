@@ -1,30 +1,120 @@
 {
   "id": "jackfruit-chips",
   "slug": "jackfruit-chips",
+  "category": "chips",
   "name_vi": "Mít sấy giòn",
   "name_en": "Jackfruit Chips",
-  "name_ko": "잭프루트 칩",
+  "name_ko": "크리스피 잭프루트 칩",
   "name_zh": "香脆菠萝蜜片",
-  "category": "chips",
+  "nameVi": "Mít sấy giòn",
+  "name": "Jackfruit Chips",
+  "nameKo": "크리스피 잭프루트 칩",
+  "nameZh": "香脆菠萝蜜片",
   "image": "/images/products/jackfruit-chips.webp",
+  "imageWebp": "/images/products/jackfruit-chips.webp",
+  "imageJpg": "/images/products/jackfruit-chips.jpg",
+  "shortDescriptionVi": "Múi mít vàng ruộm giòn tan, thơm nức hương vị nhiệt đới ngọt ngào đặc trưng.",
+  "shortDescription": "Crispy golden jackfruit chips with rich tropical sweetness and signature aroma.",
+  "shortDescriptionKo": "바삭하게 튀겨낸 황금빛 잭프루트 칩으로 풍부한 열대 과일 향을 즐길 수 있습니다.",
+  "shortDescriptionZh": "金黄酥脆的菠萝蜜果瓣，饱含浓郁热带果香。",
   "description_vi": "Được sản xuất từ múi mít Thái tươi chín cây tại Tiền Giang. Công nghệ chiên sấy chân không kết hợp ly tâm tách dầu triệt để giúp từng múi mít giòn rụm, ngọt đậm đà tự nhiên mà không hề ngấy.",
   "description_en": "Made from fresh ripe Thai jackfruit sourced from Tien Giang. Advanced vacuum frying and centrifugal oil extraction deliver an exceptionally crispy crunch with zero excess oil, capturing full authentic jackfruit flavor.",
-  "description_ko": "띠엔장성산 신선한 완숙 태국 품종 잭프루트로 생산합니다. 첨단 진공 저온 건조 및 원심 탈유 공정을 통해 기름기 없이 바삭한 식감과 진한 열대과일 본연의 달콤함을 살렸습니다.",
-  "description_zh": "选用前江省树熟泰国种菠萝蜜果肉，结合先进真空低温脆化与高速离心脱油技术，打造口感酥脆、甜而不腻、原汁原味的高品质菠萝蜜脆片。",
+  "description_ko": "띠엔장산 완숙 태국 품종 잭프루트를 저온 진공 건조 및 고속 원심 탈유 공정으로 가공해 잔여 유분 없이 깔끔하고 바삭한 식감을 구현했습니다.",
+  "description_zh": "采用前江省树熟泰种菠萝蜜，经低温真空干燥及高速离心脱油处理，入口松脆香甜不油腻。",
+  "descriptionVi": "Được sản xuất từ múi mít Thái tươi chín cây tại Tiền Giang. Công nghệ chiên sấy chân không kết hợp ly tâm tách dầu triệt để giúp từng múi mít giòn rụm, ngọt đậm đà tự nhiên mà không hề ngấy.",
+  "description": "Made from fresh ripe Thai jackfruit sourced from Tien Giang. Advanced vacuum frying and centrifugal oil extraction deliver an exceptionally crispy crunch with zero excess oil, capturing full authentic jackfruit flavor.",
+  "descriptionKo": "띠엔장산 완숙 태국 품종 잭프루트를 저온 진공 건조 및 고속 원심 탈유 공정으로 가공해 잔여 유분 없이 깔끔하고 바삭한 식감을 구현했습니다.",
+  "descriptionZh": "采用前江省树熟泰种菠萝蜜，经低温真空干燥及高速离心脱油处理，入口松脆香甜不油腻。",
   "origin_vi": "Tiền Giang, Việt Nam",
   "origin_en": "Tien Giang, Vietnam",
   "origin_ko": "베트남 띠엔장성",
   "origin_zh": "越南前江省",
-  "shelf_life": "12 Tháng",
-  "shelf_life_ko": "12개월",
-  "shelf_life_zh": "12个月",
-  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 10kg",
-  "packaging_ko": "지퍼 파우치 100g, 250g, 500g / 수출용 카톤 박스 10kg",
-  "packaging_zh": "自封拉链袋 100g、250g、500g / 出口纸箱 10kg",
-  "certifications": [
-    "BRCGS Facility",
-    "Clean Label",
-    "Export Standard"
+  "originVi": "Tiền Giang, Việt Nam",
+  "origin": "Tien Giang, Vietnam",
+  "originKo": "베트남 띠엔장성",
+  "originZh": "越南前江省",
+  "ocop": "",
+  "productCertifications": [],
+  "productFeatures": [
+    {
+      "id": "tien-giang-thai-jf",
+      "label": {
+        "vi": "Mít Thái chín cây Tiền Giang",
+        "en": "Tree-ripened Tien Giang Thai jackfruit",
+        "ko": "띠엔장 완숙 태국 품종 잭프루트",
+        "zh": "前江省树熟泰种菠萝蜜"
+      }
+    },
+    {
+      "id": "vacuum-jf-chips",
+      "label": {
+        "vi": "Sấy chân không & ly tâm tách dầu",
+        "en": "Vacuum crisping & centrifugal de-oiling",
+        "ko": "저온 진공 건조 & 고속 원심 탈유",
+        "zh": "低温真空干燥与高速离心脱油"
+      }
+    },
+    {
+      "id": "low-moisture-jf",
+      "label": {
+        "vi": "Độ ẩm < 5%",
+        "en": "Moisture < 5%",
+        "ko": "수분 함량 < 5%",
+        "zh": "水分含量 < 5%"
+      }
+    }
   ],
-  "order": 8
+  "specs": {
+    "moisture": "< 5%",
+    "brix": "",
+    "shelfLifeVi": "12 Tháng",
+    "shelfLifeEn": "12 Months",
+    "shelfLifeKo": "12개월",
+    "shelfLifeZh": "12个月",
+    "storageVi": "Bảo quản nơi khô ráo thoáng mát, đậy kín sau khi mở bao bì",
+    "storageEn": "Cool, dry place, seal tightly after opening",
+    "storageKo": "서늘하고 건조한 곳 보관, 개봉 후 밀봉",
+    "storageZh": "阴凉干燥处储存，开封后请密封",
+    "ingredientsVi": "Mít Thái tươi chín cây (98%), dầu thực vật tinh luyện",
+    "ingredientsEn": "Fresh ripe Thai jackfruit (98%), refined vegetable oil",
+    "ingredientsKo": "신선 완숙 태국 품종 잭프루트 (98%), 정제 식물성 유지",
+    "ingredientsZh": "新鲜树熟泰国种菠萝蜜（98%）、精炼植物油",
+    "processVi": "Chiên sấy chân không nhiệt thấp và ly tâm tách dầu công nghệ cao",
+    "processEn": "Low-temperature vacuum drying with high-speed centrifugal oil separation",
+    "processKo": "저온 진공 건조 및 고속 원심 유분 분리 공정",
+    "processZh": "低温真空干燥及高速离心脱油工艺",
+    "packagingVi": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 10kg",
+    "packagingEn": "Zip pouch 100g, 250g, 500g / Bulk master carton 10kg",
+    "packagingKo": "지퍼 파우치 100g, 250g, 500g / 벌크 마스터 카톤 10kg",
+    "packagingZh": "自封袋 100g、250g、500g / 出口大箱 10kg"
+  },
+  "vi": {
+    "name": "Mít sấy giòn",
+    "desc": "Múi mít vàng ruộm giòn tan, thơm nức hương vị nhiệt đới ngọt ngào đặc trưng.",
+    "origin": "Tiền Giang, Việt Nam",
+    "features": ""
+  },
+  "en": {
+    "name": "Jackfruit Chips",
+    "desc": "Crispy golden jackfruit chips with rich tropical sweetness and signature aroma.",
+    "origin": "Tien Giang, Vietnam",
+    "features": ""
+  },
+  "ko": {
+    "name": "크리스피 잭프루트 칩",
+    "desc": "바삭하게 튀겨낸 황금빛 잭프루트 칩으로 풍부한 열대 과일 향을 즐길 수 있습니다.",
+    "origin": "베트남 띠엔장성",
+    "features": ""
+  },
+  "zh": {
+    "name": "香脆菠萝蜜片",
+    "desc": "金黄酥脆的菠萝蜜果瓣，饱含浓郁热带果香。",
+    "origin": "越南前江省",
+    "features": ""
+  },
+  "shelf_life": "12 Tháng",
+  "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 10kg",
+  "order": 8,
+  "published": true,
+  "status": "published"
 }

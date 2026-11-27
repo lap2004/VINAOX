@@ -757,7 +757,7 @@ export const Home: React.FC = () => {
                 key={p.id}
                 product={p}
                 onViewDetails={(item) => setSelectedProduct(item)}
-                onRequestQuote={(name) => onOpenQuote(name)}
+                onRequestQuote={(target) => onOpenQuote(target)}
               />
             ))}
           </div>

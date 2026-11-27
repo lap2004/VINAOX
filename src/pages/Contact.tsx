@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   Anchor,
@@ -66,12 +66,26 @@ export const Contact: React.FC = () => {
     phone: '',
     inquiryType: '',
     productId: initialResolved.productId,
+    productSlug: initialResolved.productSlug,
+    categoryId: initialResolved.categoryId,
     customProductLabel: initialResolved.customLabel,
     quantity: '',
     tradeTerm: '' as TradeTerm | '',
     shippingMode: '' as ShippingMode | '',
     message: '',
   });
+
+  useEffect(() => {
+    if (!rawInitialProduct) return;
+    const resolved = resolveCanonicalProduct(rawInitialProduct);
+    setFormData((prev) => ({
+      ...prev,
+      productId: resolved.productId,
+      productSlug: resolved.productSlug,
+      categoryId: resolved.categoryId,
+      customProductLabel: resolved.customLabel,
+    }));
+  }, [rawInitialProduct]);
 
   const [honeypot, setHoneypot] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,15 +96,31 @@ export const Contact: React.FC = () => {
 
   const handleProductSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
-    if (
-      !val ||
-      val === VALUE_ADDED_PRODUCT_ID ||
-      val === OEM_PRODUCT_ID ||
-      productsData.some((p) => p.slug === val)
-    ) {
-      setFormData((prev) => ({ ...prev, productId: val, customProductLabel: '' }));
+    const matched = productsData.find((p) => p.slug === val || p.id === val);
+    if (matched) {
+      setFormData((prev) => ({
+        ...prev,
+        productId: matched.slug,
+        productSlug: matched.slug,
+        categoryId: matched.category,
+        customProductLabel: '',
+      }));
+    } else if (!val || val === VALUE_ADDED_PRODUCT_ID || val === OEM_PRODUCT_ID) {
+      setFormData((prev) => ({
+        ...prev,
+        productId: val,
+        productSlug: '',
+        categoryId: '',
+        customProductLabel: '',
+      }));
     } else {
-      setFormData((prev) => ({ ...prev, productId: '', customProductLabel: val }));
+      setFormData((prev) => ({
+        ...prev,
+        productId: '',
+        productSlug: '',
+        categoryId: '',
+        customProductLabel: val,
+      }));
     }
   };
 
@@ -161,6 +191,8 @@ export const Contact: React.FC = () => {
       phone: formData.phone.trim() || undefined,
       inquiryType: formData.inquiryType || undefined,
       productId: formData.productId || undefined,
+      productSlug: formData.productSlug || undefined,
+      categoryId: formData.categoryId || undefined,
       productName: resolvedName || 'General Catalog',
       quantity: formData.quantity.trim() || undefined,
       tradeTerm: formData.tradeTerm || undefined,

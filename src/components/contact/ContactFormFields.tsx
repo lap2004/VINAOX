@@ -55,6 +55,9 @@ export const SelectedProductPreview: React.FC<{ productId: string; locale: Langu
   return (
     <div
       data-testid="selected-product-preview"
+      data-product-id={matched.id}
+      data-product-slug={matched.slug}
+      data-category-id={matched.category}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -68,7 +71,7 @@ export const SelectedProductPreview: React.FC<{ productId: string; locale: Langu
     >
       <img
         src={matched.imageWebp || matched.imageJpg || '/images/products/placeholder.webp'}
-        alt={localized.name}
+        alt={localized.imageAlt || localized.name}
         style={{
           width: '48px',
           height: '48px',
@@ -78,26 +81,51 @@ export const SelectedProductPreview: React.FC<{ productId: string; locale: Langu
           flexShrink: 0,
         }}
       />
-      <div style={{ minWidth: 0 }}>
+      <div style={{ minWidth: 0, flex: 1 }}>
         <div
           style={{
-            fontSize: '0.72rem',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            color: 'var(--primary-green)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            flexWrap: 'wrap',
+            marginBottom: '2px',
           }}
         >
-          {pickLocale(locale, {
-            vi: 'Sản phẩm đang yêu cầu báo giá',
-            en: 'Quoting Selected Product',
-            ko: '견적 요청 선택 품목',
-            'zh-CN': '当前询价产品',
-          })}
+          <span
+            style={{
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              color: 'var(--primary-green)',
+            }}
+          >
+            {pickLocale(locale, {
+              vi: 'Sản phẩm đang yêu cầu báo giá',
+              en: 'Quoting Selected Product',
+              ko: '견적 요청 선택 품목',
+              'zh-CN': '当前询价产品',
+            })}
+          </span>
+          <span
+            data-testid="selected-product-category"
+            style={{
+              fontSize: '0.7rem',
+              fontWeight: 600,
+              padding: '1px 7px',
+              borderRadius: '9999px',
+              backgroundColor: 'var(--white)',
+              border: '1px solid var(--color-border)',
+              color: 'var(--color-muted)',
+            }}
+          >
+            {localized.categoryLabel}
+          </span>
         </div>
         <div
+          data-testid="selected-product-name"
           style={{
-            fontSize: '0.92rem',
+            fontSize: '0.94rem',
             fontWeight: 700,
             color: 'var(--dark-chocolate)',
             whiteSpace: 'nowrap',

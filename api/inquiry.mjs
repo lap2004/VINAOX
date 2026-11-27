@@ -730,12 +730,634 @@ var CATEGORY_LABELS = {
     zh: "\u575A\u679C\u4E0E\u83B2\u5B50"
   },
   mixed: {
-    vi: "Tr\u1ED9n th\u1EADp c\u1EA9m",
+    vi: "S\u1EA3n ph\u1EA9m th\u1EADp c\u1EA9m",
     en: "Mixed Products",
     ko: "\uBAA8\uB4EC \uACFC\uC77C\xB7\uCC44\uC18C",
     zh: "\u7EFC\u5408\u679C\u852C"
   }
 };
+function hasApplicableBrix(brix) {
+  if (!brix || typeof brix !== "string") return false;
+  const trimmed = brix.trim();
+  return trimmed.length > 0 && (trimmed.includes("Brix") || trimmed.includes("\xB0"));
+}
+function normalizeForDedupe(text) {
+  return text.toLowerCase().replace(/[\s\u00A0]+/g, " ").replace(/[.,;:!?()[\]"'“”‘’•\-–—]/g, "").trim();
+}
+function dedupeNarrative(primary, secondary) {
+  const p = (primary || "").trim();
+  const s = (secondary || "").trim();
+  if (!s) return "";
+  if (!p) return s;
+  const np = normalizeForDedupe(p);
+  const ns = normalizeForDedupe(s);
+  if (!ns || np === ns || np.includes(ns) || ns.includes(np)) {
+    return "";
+  }
+  return s;
+}
+var OCOP_3_STAR_CERT = {
+  certificateId: "ocop-3-star",
+  nameVi: "OCOP 3 Sao Ti\u1EC1n Giang",
+  nameEn: "3-Star OCOP Tien Giang",
+  nameKo: "\uBCA0\uD2B8\uB0A8 OCOP 3\uC131\uAE09 (\uB760\uC5D4\uC7A5)",
+  nameZh: "\u524D\u6C5F\u7701 OCOP \u4E09\u661F\u8BA4\u8BC1",
+  scopeType: "product",
+  scopeVi: "Ch\u1EE9ng nh\u1EADn s\u1EA3n ph\u1EA9m OCOP c\u1EA5p t\u1EC9nh",
+  scopeEn: "Provincial Product Certification",
+  scopeKo: "\uC131(\u7701) \uC815\uBD80 \uACF5\uC2DD \uC81C\uD488 \uC778\uC99D",
+  scopeZh: "\u7701\u7EA7\u4E00\u4E61\u4E00\u54C1\u4EA7\u54C1\u8BA4\u8BC1"
+};
+var PRODUCT_CATALOG_META = {
+  "soft-dried-red-dragonfruit": {
+    verifiedCerts: [OCOP_3_STAR_CERT],
+    ocopLabel: "3-Star OCOP",
+    features: [
+      {
+        id: "soft-drying",
+        label: {
+          vi: "S\u1EA5y d\u1EBBo nhi\u1EC7t th\u1EA5p (~50\u201355\xB0C)",
+          en: "Low-heat drying (~50\u201355\xB0C)",
+          ko: "\uC800\uC628 \uC21C\uD658 \uAC74\uC870 (~50\u201355\xB0C)",
+          zh: "\u4F4E\u6E29\u5FAA\u73AF\u8F6F\u70D8 (~50\u201355\xB0C)"
+        }
+      },
+      {
+        id: "cho-gao-origin",
+        label: {
+          vi: "V\xF9ng tr\u1ED3ng Ch\u1EE3 G\u1EA1o (Ti\u1EC1n Giang)",
+          en: "Cho Gao, Tien Giang origin",
+          ko: "\uB760\uC5D4\uC7A5\uC131 \uCA4C\uAC00\uC624 \uD2B9\uD654 \uC0B0\uC9C0",
+          zh: "\u524D\u6C5F\u7701\u9E45\u8D21\u6838\u5FC3\u4EA7\u533A"
+        }
+      },
+      {
+        id: "no-colorant",
+        label: {
+          vi: "Kh\xF4ng ph\u1EA9m m\xE0u & ch\u1EA5t b\u1EA3o qu\u1EA3n",
+          en: "No artificial color or preservatives",
+          ko: "\uC778\uACF5 \uC0C9\uC18C\xB7\uBC29\uBD80\uC81C \uBB34\uCCA8\uAC00",
+          zh: "\u65E0\u4EBA\u5DE5\u8272\u7D20\u4E0E\u9632\u8150\u5242"
+        }
+      }
+    ],
+    ko: {
+      name: "\uC18C\uD504\uD2B8 \uAC74\uC801\uC0C9 \uC6A9\uACFC",
+      shortDesc: "\uC120\uBA85\uD55C \uCC9C\uC5F0 \uC790\uC90F\uBE5B\uACFC \uC740\uC740\uD55C \uB2E8\uB9DB, \uD1A1\uD1A1 \uC539\uD788\uB294 \uC528\uC557\uC758 \uC2DD\uAC10\uC774 \uD2B9\uC9D5\uC785\uB2C8\uB2E4.",
+      desc: "\uB760\uC5D4\uC7A5\uC131 \uCA4C\uAC00\uC624(Cho Gao) \uC804\uBB38 \uC0B0\uC9C0\uC758 \uC801\uC0C9 \uC6A9\uACFC\uB97C \uC5C4\uC120\uD574 \uC800\uC628 \uC21C\uD658 \uAC74\uC870 \uACF5\uBC95\uC73C\uB85C \uAC00\uACF5\uD588\uC2B5\uB2C8\uB2E4. \uC778\uACF5 \uC0C9\uC18C \uC5C6\uC774 \uCC9C\uC5F0 \uC790\uC90F\uBE5B \uC0C9\uAC10\uACFC \uBCA0\uD0C0\uC2DC\uC544\uB2CC \uD56D\uC0B0\uD654 \uC131\uBD84\uC744 \uC628\uC804\uD788 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4.",
+      origin: "\uB760\uC5D4\uC7A5\uC131 \uCA4C\uAC00\uC624 \uB18D\uC7A5"
+    },
+    zh: {
+      name: "\u8F6F\u70D8\u7EA2\u5FC3\u706B\u9F99\u679C\u5E72",
+      shortDesc: "\u5929\u7136\u5B9D\u77F3\u7EA2\u7D2B\u5207\u7247\uFF0C\u6E05\u751C\u67D4\u548C\uFF0C\u4FDD\u7559\u706B\u9F99\u679C\u7C7D\u72EC\u7279\u8106\u723D\u53E3\u611F\u3002",
+      desc: "\u4E25\u9009\u524D\u6C5F\u7701\u9E45\u8D21\uFF08Cho Gao\uFF09\u6838\u5FC3\u4EA7\u533A\u7EA2\u5FC3\u706B\u9F99\u679C\uFF0C\u91C7\u7528\u4F4E\u6E29\u70ED\u98CE\u5FAA\u73AF\u8F6F\u70D8\u5DE5\u827A\uFF0C\u4E0D\u6DFB\u52A0\u4EBA\u5DE5\u8272\u7D20\uFF0C\u4FDD\u7559\u5929\u7136\u7D2B\u7EA2\u8272\u6CFD\u3001\u751C\u83DC\u7EA2\u7D20\u4E0E\u81B3\u98DF\u7EA4\u7EF4\u3002",
+      origin: "\u524D\u6C5F\u7701\u9E45\u8D21\u79CD\u690D\u57FA\u5730"
+    }
+  },
+  "banana-chips": {
+    verifiedCerts: [],
+    ocopLabel: "",
+    brixOverride: "",
+    features: [
+      {
+        id: "vacuum-crisp",
+        label: {
+          vi: "S\u1EA5y gi\xF2n ch\xE2n kh\xF4ng & ly t\xE2m t\xE1ch d\u1EA7u",
+          en: "Vacuum crisping & centrifugal de-oiling",
+          ko: "\uC800\uC628 \uC9C4\uACF5 \uD06C\uB9AC\uC2A4\uD551 & \uC6D0\uC2EC \uD0C8\uC720",
+          zh: "\u4F4E\u6E29\u771F\u7A7A\u8106\u5316\u4E0E\u79BB\u5FC3\u8131\u6CB9"
+        }
+      },
+      {
+        id: "low-moisture",
+        label: {
+          vi: "\u0110\u1ED9 \u1EA9m < 5%",
+          en: "Moisture < 5%",
+          ko: "\uC218\uBD84 \uD568\uB7C9 < 5%",
+          zh: "\u6C34\u5206\u542B\u91CF < 5%"
+        }
+      },
+      {
+        id: "mekong-banana",
+        label: {
+          vi: "Chu\u1ED1i ch\xEDn \u0110BSCL",
+          en: "Ripe Mekong Delta banana",
+          ko: "\uBA54\uCF69 \uB378\uD0C0 \uC644\uC219 \uBC14\uB098\uB098",
+          zh: "\u6E44\u516C\u6CB3\u4E09\u89D2\u6D32\u6210\u719F\u9999\u8549"
+        }
+      }
+    ],
+    ko: {
+      name: "\uBC14\uB098\uB098 \uCE69",
+      shortDesc: "\uD669\uAE08\uBE5B \uBC14\uC0AD\uD55C \uC2AC\uB77C\uC774\uC2A4\uC640 \uC740\uC740\uD55C \uC790\uC5F0 \uBC14\uB098\uB098 \uD5A5\uC744 \uB2F4\uC558\uC2B5\uB2C8\uB2E4.",
+      desc: "\uBA54\uCF69 \uB378\uD0C0\uC0B0 \uC644\uC219 \uBC14\uB098\uB098\uB97C \uC800\uC628 \uC9C4\uACF5 \uD06C\uB9AC\uC2A4\uD551 \uBC0F \uC6D0\uC2EC \uD0C8\uC720 \uACF5\uC815\uC73C\uB85C \uAC00\uACF5\uD558\uC5EC \uBC14\uC0AD\uD55C \uC2DD\uAC10\uACFC \uBC14\uB098\uB098 \uACE0\uC720\uC758 \uD48D\uBBF8\uB97C \uC0B4\uB838\uC2B5\uB2C8\uB2E4.",
+      origin: "\uBCA0\uD2B8\uB0A8 \uBA54\uCF69 \uB378\uD0C0"
+    },
+    zh: {
+      name: "\u9999\u8106\u9999\u8549\u7247",
+      shortDesc: "\u91D1\u9EC4\u9165\u8106\u9999\u8549\u5207\u7247\uFF0C\u6563\u53D1\u6D53\u90C1\u5929\u7136\u8549\u9999\u4E0E\u8F7B\u76C8\u8106\u611F\u3002",
+      desc: "\u9009\u7528\u6E44\u516C\u6CB3\u4E09\u89D2\u6D32\u6210\u719F\u9999\u8549\uFF0C\u91C7\u7528\u4F4E\u6E29\u771F\u7A7A\u8106\u5316\u7ED3\u5408\u79BB\u5FC3\u8131\u6CB9\u5DE5\u827A\u5236\u6210\uFF0C\u53E3\u611F\u9165\u8106\u723D\u53E3\uFF0C\u4FDD\u7559\u9999\u8549\u5929\u7136\u98CE\u5473\u4E0E\u94BE\u5143\u7D20\u3002",
+      origin: "\u8D8A\u5357\u6E44\u516C\u6CB3\u4E09\u89D2\u6D32"
+    }
+  },
+  cashew: {
+    verifiedCerts: [],
+    ocopLabel: "",
+    brixOverride: "",
+    features: [
+      {
+        id: "binh-phuoc-grade-a",
+        label: {
+          vi: "H\u1EA1t \u0111i\u1EC1u B\xECnh Ph\u01B0\u1EDBc (W240 / W320)",
+          en: "Binh Phuoc Grade A (W240 / W320)",
+          ko: "\uBE48\uD504\uC5B5 A\uB4F1\uAE09 \uCE90\uC288\uB11B (W240/W320)",
+          zh: "\u5E73\u798F\u7701 A \u7EA7\u8170\u679C\u4EC1 (W240/W320)"
+        }
+      },
+      {
+        id: "hot-air-roast",
+        label: {
+          vi: "Rang nhi\u1EC7t phong ki\u1EC3m so\xE1t nhi\u1EC7t \u0111\u1ED9",
+          en: "Controlled hot-air roasting",
+          ko: "\uC815\uBC00 \uC628\uB3C4 \uC81C\uC5B4 \uC5F4\uD48D \uB85C\uC2A4\uD305",
+          zh: "\u7CBE\u51C6\u63A7\u6E29\u70ED\u98CE\u70D8\u7119"
+        }
+      },
+      {
+        id: "vacuum-n2",
+        label: {
+          vi: "H\xFAt ch\xE2n kh\xF4ng / N\u1EA1p kh\xED Nit\u01A1",
+          en: "Vacuum / Nitrogen-flushed pack",
+          ko: "\uC9C4\uACF5 \uBC0F \uC9C8\uC18C \uCDA9\uC804 \uD3EC\uC7A5",
+          zh: "\u771F\u7A7A / \u5145\u6C2E\u4FDD\u9C9C\u5305\u88C5"
+        }
+      }
+    ],
+    ko: {
+      name: "\uBCA0\uD2B8\uB0A8 \uB85C\uC2A4\uD2B8 \uCE90\uC288\uB11B",
+      shortDesc: "\uBE48\uD504\uC5B5\uC0B0 \uC5C4\uC120 \uCE90\uC288\uB11B \uCEE4\uB110\uC744 \uACE0\uC18C\uD558\uACE0 \uBC14\uC0AD\uD558\uAC8C \uB85C\uC2A4\uD305\uD588\uC2B5\uB2C8\uB2E4.",
+      desc: "\uBCA0\uD2B8\uB0A8 \uCE90\uC288\uB11B \uC8FC\uC0B0\uC9C0 \uBE48\uD504\uC5B5\uC5D0\uC11C \uC5C4\uC120\uD55C W240/W320 \uADDC\uACA9 \uCEE4\uB110\uC744 \uC815\uBC00 \uC628\uB3C4 \uC81C\uC5B4 \uC5F4\uD48D\uC73C\uB85C \uB85C\uC2A4\uD305\uD558\uC5EC \uACE0\uC18C\uD55C \uD48D\uBBF8\uC640 \uBC14\uC0AD\uD55C \uC2DD\uAC10\uC744 \uAD6C\uD604\uD588\uC2B5\uB2C8\uB2E4.",
+      origin: "\uBCA0\uD2B8\uB0A8 \uBE48\uD504\uC5B5\uC131"
+    },
+    zh: {
+      name: "\u8D8A\u5357\u70D8\u7119\u8170\u679C\u4EC1",
+      shortDesc: "\u4E25\u9009\u5E73\u798F\u7701\u4F18\u8D28\u8170\u679C\u4EC1\uFF0C\u63A7\u6E29\u8F7B\u67D4\u70D8\u7119\uFF0C\u9999\u8106\u9187\u539A\u3002",
+      desc: "\u6765\u81EA\u8D8A\u5357\u8170\u679C\u6838\u5FC3\u4EA7\u533A\u5E73\u798F\u7701\u7684 W240 / W320 \u89C4\u683C\u5168\u4EC1\u8170\u679C\uFF0C\u7ECF\u63A7\u6E29\u70ED\u98CE\u8F7B\u67D4\u70D8\u7119\uFF0C\u4E0D\u7ECF\u6CB9\u70B8\u5373\u53EF\u4FDD\u6301\u9165\u8106\u5976\u9999\u4E0E\u4E30\u5BCC\u690D\u7269\u86CB\u767D\u3002",
+      origin: "\u8D8A\u5357\u5E73\u798F\u7701"
+    }
+  },
+  "soft-dried-jackfruit": {
+    verifiedCerts: [OCOP_3_STAR_CERT],
+    ocopLabel: "3-Star OCOP",
+    features: [
+      {
+        id: "soft-drying-jf",
+        label: {
+          vi: "S\u1EA5y d\u1EBBo nhi\u1EC7t th\u1EA5p (~55\u201360\xB0C)",
+          en: "Low-heat drying (~55\u201360\xB0C)",
+          ko: "\uC800\uC628 \uC5F4\uD48D \uAC74\uC870 (~55\u201360\xB0C)",
+          zh: "\u4F4E\u6E29\u70ED\u98CE\u8F6F\u70D8 (~55\u201360\xB0C)"
+        }
+      },
+      {
+        id: "thai-jackfruit",
+        label: {
+          vi: "M\xEDt Th\xE1i Ti\u1EC1n Giang & H\u1EADu Giang",
+          en: "Tien Giang & Hau Giang Thai Jackfruit",
+          ko: "\uB760\uC5D4\uC7A5\xB7\uD558\uC6B0\uC7A5 \uC644\uC219 \uC7AD\uD504\uB8E8\uD2B8",
+          zh: "\u524D\u6C5F\u4E0E\u540E\u6C5F\u6811\u719F\u6CF0\u79CD\u83E0\u841D\u871C"
+        }
+      },
+      {
+        id: "no-preservatives-jf",
+        label: {
+          vi: "Kh\xF4ng ph\u1EA9m m\xE0u & ch\u1EA5t b\u1EA3o qu\u1EA3n",
+          en: "No colorants or preservatives",
+          ko: "\uC778\uACF5 \uC0C9\uC18C\xB7\uBC29\uBD80\uC81C \uBB34\uCCA8\uAC00",
+          zh: "\u65E0\u8272\u7D20\u4E0E\u9632\u8150\u5242"
+        }
+      }
+    ],
+    ko: {
+      name: "\uCC9C\uC5F0 \uC18C\uD504\uD2B8 \uAC74\uC7AD\uD504\uB8E8\uD2B8",
+      shortDesc: "\uB450\uD23C\uD55C \uD669\uAE08\uBE5B \uD0DC\uAD6D \uD488\uC885 \uC7AD\uD504\uB8E8\uD2B8 \uACFC\uC721\uC5D0 \uC9C4\uD55C \uC5F4\uB300 \uD5A5\uACFC \uCAC4\uAE43\uD55C \uC2DD\uAC10\uC744 \uB2F4\uC558\uC2B5\uB2C8\uB2E4.",
+      desc: "\uB760\uC5D4\uC7A5\xB7\uD558\uC6B0\uC7A5 \uACFC\uC218\uC6D0\uC5D0\uC11C \uC218\uD655\uD55C \uC644\uC219 \uC7AD\uD504\uB8E8\uD2B8\uB97C ~55\u201360\xB0C \uC800\uC628 \uC21C\uD658 \uAC74\uC870\uD558\uC5EC \uD669\uAE08\uBE5B \uC0C9\uAC10\uACFC \uBD80\uB4DC\uB7FD\uACE0 \uCAC4\uAE43\uD55C \uACFC\uC721 \uC12C\uC720\uC9C8\uC744 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4.",
+      origin: "\uB760\uC5D4\uC7A5 & \uD558\uC6B0\uC7A5 \uACFC\uC218\uC6D0"
+    },
+    zh: {
+      name: "\u5929\u7136\u8F6F\u70D8\u83E0\u841D\u871C\u5E72",
+      shortDesc: "\u679C\u8089\u539A\u5B9E\u7684\u91D1\u9EC4\u6CF0\u79CD\u83E0\u841D\u871C\u74E3\uFF0C\u9999\u6C14\u6D53\u90C1\u3001\u53E3\u611F\u67D4\u97E7\u591A\u6C41\u3002",
+      desc: "\u4E25\u9009\u524D\u6C5F\u4E0E\u540E\u6C5F\u7701\u6811\u719F\u6CF0\u79CD\u83E0\u841D\u871C\uFF0C\u91C7\u7528 ~55\u201360\xB0C \u4F4E\u6E29\u70ED\u98CE\u5FAA\u73AF\u8F6F\u70D8\u5DE5\u827A\uFF0C\u4FDD\u7559\u5929\u7136\u91D1\u9EC4\u8272\u6CFD\u4E0E\u9971\u6EE1\u67D4\u97E7\u7EA4\u7EF4\u3002",
+      origin: "\u524D\u6C5F\u4E0E\u540E\u6C5F\u7701\u679C\u56ED"
+    }
+  },
+  "mango-chips": {
+    verifiedCerts: [],
+    ocopLabel: "",
+    brixOverride: "",
+    features: [
+      {
+        id: "vacuum-mango",
+        label: {
+          vi: "S\u1EA5y gi\xF2n ch\xE2n kh\xF4ng & ly t\xE2m t\xE1ch d\u1EA7u",
+          en: "Vacuum crisping & centrifugal de-oiling",
+          ko: "\uC9C4\uACF5 \uD06C\uB9AC\uC2A4\uD551 & \uC6D0\uC2EC \uD0C8\uC720",
+          zh: "\u771F\u7A7A\u8106\u5316\u4E0E\u79BB\u5FC3\u8131\u6CB9"
+        }
+      },
+      {
+        id: "low-moisture-mango",
+        label: {
+          vi: "\u0110\u1ED9 \u1EA9m < 5%",
+          en: "Moisture < 5%",
+          ko: "\uC218\uBD84 \uD568\uB7C9 < 5%",
+          zh: "\u6C34\u5206\u542B\u91CF < 5%"
+        }
+      },
+      {
+        id: "aluminum-foil-pack",
+        label: {
+          vi: "\u0110\xF3ng t\xFAi nh\xF4m zipper ch\u1ED1ng \u1EA9m",
+          en: "Moisture-barrier foil zipper pouch",
+          ko: "\uBC29\uC2B5 \uC54C\uB8E8\uBBF8\uB284 \uC9C0\uD37C \uD30C\uC6B0\uCE58",
+          zh: "\u9632\u6F6E\u94DD\u7B94\u81EA\u5C01\u888B\u5305\u88C5"
+        }
+      }
+    ],
+    ko: {
+      name: "\uD06C\uB9AC\uC2A4\uD53C \uB9DD\uACE0 \uCE69",
+      shortDesc: "\uC0C1\uD07C \uB2EC\uCF64\uD55C \uC5F4\uB300 \uB9DD\uACE0 \uD48D\uBBF8\uAC00 \uC0B4\uC544 \uC788\uB294 \uAC00\uBCCD\uACE0 \uBC14\uC0AD\uD55C \uC2AC\uB77C\uC774\uC2A4\uC785\uB2C8\uB2E4.",
+      desc: "\uBA54\uCF69 \uB378\uD0C0\uC0B0 \uC2E0\uC120 \uB9DD\uACE0\uB97C \uC815\uBC00 \uC9C4\uACF5 \uAC74\uC870 \uBC0F \uC6D0\uC2EC \uD0C8\uC720 \uACF5\uC815\uC73C\uB85C \uAC00\uACF5\uD558\uC5EC \uC120\uBA85\uD55C \uD669\uAE08\uBE5B\uACFC \uAE54\uB054\uD558\uAC8C \uBC14\uC0AD\uD55C \uC2DD\uAC10\uC744 \uAD6C\uD604\uD588\uC2B5\uB2C8\uB2E4.",
+      origin: "\uBCA0\uD2B8\uB0A8 \uBA54\uCF69 \uB378\uD0C0"
+    },
+    zh: {
+      name: "\u9999\u8106\u8292\u679C\u5E72\u7247",
+      shortDesc: "\u8F7B\u76C8\u9165\u8106\u7684\u8292\u679C\u5207\u7247\uFF0C\u5E26\u6765\u6E05\u751C\u5FAE\u9178\u7684\u70ED\u5E26\u98CE\u5473\u4F53\u9A8C\u3002",
+      desc: "\u91C7\u7528\u6E44\u516C\u6CB3\u4E09\u89D2\u6D32\u65B0\u9C9C\u8292\u679C\uFF0C\u7ECF\u7CBE\u51C6\u4F4E\u6E29\u771F\u7A7A\u8106\u5316\u4E0E\u79BB\u5FC3\u8131\u6CB9\u5904\u7406\uFF0C\u5165\u53E3\u723D\u8106\u4E0D\u6CB9\u817B\uFF0C\u7559\u5B58\u5929\u7136\u91D1\u9EC4\u8272\u6CFD\u3002",
+      origin: "\u8D8A\u5357\u6E44\u516C\u6CB3\u4E09\u89D2\u6D32"
+    }
+  },
+  "macadamia-nuts": {
+    verifiedCerts: [],
+    ocopLabel: "",
+    brixOverride: "",
+    features: [
+      {
+        id: "central-highlands-macca",
+        label: {
+          vi: "M\u1EAFc ca n\u1EE9t v\u1ECF T\xE2y Nguy\xEAn",
+          en: "Central Highlands in-shell cracked macadamia",
+          ko: "\uC911\uBD80\uACE0\uC6D0 \uD06C\uB799 \uC778\uC258 \uB9C8\uCE74\uB2E4\uBBF8\uC544",
+          zh: "\u897F\u539F\u5E26\u58F3\u5F00\u53E3\u590F\u5A01\u5937\u679C"
+        }
+      },
+      {
+        id: "multistage-dry",
+        label: {
+          vi: "S\u1EA5y nhi\u1EC7t th\u1EA5p \u0111a t\u1EA7ng (< 3% \u1EA9m)",
+          en: "Multi-stage low-heat drying (< 3% moisture)",
+          ko: "\uB2E4\uB2E8\uACC4 \uC800\uC628 \uAC74\uC870 (\uC218\uBD84 < 3%)",
+          zh: "\u591A\u6BB5\u4F4E\u6E29\u70D8\u5E72\uFF08\u6C34\u5206 < 3%\uFF09"
+        }
+      },
+      {
+        id: "opener-included",
+        label: {
+          vi: "K\xE8m d\u1EE5ng c\u1EE5 t\xE1ch v\u1ECF ti\u1EC7n l\u1EE3i",
+          en: "Shell-opening key included",
+          ko: "\uC804\uC6A9 \uAECD\uC9C8 \uC624\uD504\uB108 \uB3D9\uBD09",
+          zh: "\u9644\u8D60\u4FBF\u6377\u5F00\u679C\u5668"
+        }
+      }
+    ],
+    ko: {
+      name: "\uBCA0\uD2B8\uB0A8 \uB9C8\uCE74\uB2E4\uBBF8\uC544 \uB108\uD2B8",
+      shortDesc: "\uBCA0\uD2B8\uB0A8 \uC911\uBD80\uACE0\uC6D0 \uD654\uC0B0\uD1A0\uC5D0\uC11C \uC7AC\uBC30\uD55C \uD06C\uB9AC\uBBF8\uD558\uACE0 \uACE0\uC18C\uD55C \uC778\uC258 \uB9C8\uCE74\uB2E4\uBBF8\uC544\uC785\uB2C8\uB2E4.",
+      desc: "\uC911\uBD80\uACE0\uC6D0 \uC801\uC0C9 \uD604\uBB34\uC554 \uD1A0\uC591\uC5D0\uC11C \uC790\uB780 \uB9C8\uCE74\uB2E4\uBBF8\uC544\uB97C \uB2E4\uB2E8\uACC4 \uC800\uC628 \uC5F4\uD48D \uAC74\uC870\uB85C \uC218\uBD84 3% \uBBF8\uB9CC\uC73C\uB85C \uAD00\uB9AC\uD574 \uC2E0\uC120\uD55C \uACAC\uACFC \uC624\uC77C\uACFC \uBD80\uB4DC\uB7EC\uC6B4 \uD06C\uB9AC\uBBF8 \uD48D\uBBF8\uB97C \uC720\uC9C0\uD588\uC2B5\uB2C8\uB2E4.",
+      origin: "\uBCA0\uD2B8\uB0A8 \uC911\uBD80\uACE0\uC6D0 (\uB5A0\uC774\uC751\uC6B0\uC60C)"
+    },
+    zh: {
+      name: "\u8D8A\u5357\u5E26\u58F3\u590F\u5A01\u5937\u679C",
+      shortDesc: "\u4EA7\u81EA\u897F\u539F\u706B\u5C71\u7EA2\u58E4\uFF0C\u679C\u4EC1\u5706\u6DA6\u9971\u6EE1\u3001\u5976\u9999\u9187\u539A\u7EC6\u817B\u3002",
+      desc: "\u751F\u957F\u4E8E\u8D8A\u5357\u897F\u539F\u80A5\u6C83\u7EA2\u58E4\u533A\u7684\u4F18\u8D28\u590F\u5A01\u5937\u679C\uFF0C\u7ECF\u5F00\u53E3\u5904\u7406\u53CA\u591A\u6BB5\u4F4E\u6E29\u70ED\u98CE\u5E72\u71E5\u5C06\u6C34\u5206\u63A7\u5236\u5728 3% \u4EE5\u4E0B\uFF0C\u5B8C\u6574\u7559\u5B58\u5929\u7136\u679C\u4EC1\u6CB9\u8102\u4E0E\u9165\u8106\u5976\u9999\u3002",
+      origin: "\u8D8A\u5357\u897F\u539F\u4EA7\u533A"
+    }
+  },
+  "soft-dried-mango": {
+    verifiedCerts: [OCOP_3_STAR_CERT],
+    ocopLabel: "3-Star OCOP",
+    features: [
+      {
+        id: "cat-chu-hoa-loc",
+        label: {
+          vi: "Xo\xE0i C\xE1t Chu & C\xE1t H\xF2a L\u1ED9c",
+          en: "Cat Chu & Hoa Loc mangoes",
+          ko: "\uAE5F\uCD94 & \uD638\uC544\uB85D \uD488\uC885 \uB9DD\uACE0",
+          zh: "Cat Chu \u4E0E Hoa Loc \u8292\u679C"
+        }
+      },
+      {
+        id: "soft-drying-mango",
+        label: {
+          vi: "S\u1EA5y d\u1EBBo nhi\u1EC7t th\u1EA5p (~60\xB0C)",
+          en: "Low-heat drying (~60\xB0C)",
+          ko: "\uC800\uC628 \uC5F4\uD48D \uAC74\uC870 (~60\xB0C)",
+          zh: "\u4F4E\u6E29\u5FAA\u73AF\u8F6F\u70D8 (~60\xB0C)"
+        }
+      },
+      {
+        id: "no-sugar-preservative-mango",
+        label: {
+          vi: "Kh\xF4ng \u0111\u01B0\u1EDDng tinh luy\u1EC7n & kh\xF4ng ch\u1EA5t b\u1EA3o qu\u1EA3n",
+          en: "Zero added refined sugar & preservative-free",
+          ko: "\uC815\uC81C\uB2F9\xB7\uBC29\uBD80\uC81C \uBB34\uCCA8\uAC00",
+          zh: "\u4E0D\u6DFB\u52A0\u7CBE\u5236\u8517\u7CD6\u3001\u65E0\u9632\u8150\u5242"
+        }
+      }
+    ],
+    ko: {
+      name: "\uCC9C\uC5F0 \uC18C\uD504\uD2B8 \uAC74\uB9DD\uACE0",
+      shortDesc: "\uAE5F\uCD94(Cat Chu)\xB7\uD638\uC544\uB85D(Hoa Loc) \uD488\uC885 \uB9DD\uACE0 \uBCF8\uC5F0\uC758 \uCAC4\uAE43\uD55C \uC2DD\uAC10\uACFC \uB2EC\uCF64\uD568\uC744 \uC0B4\uB838\uC2B5\uB2C8\uB2E4.",
+      desc: "\uB3D9\uD0D1\xB7\uB760\uC5D4\uC7A5 \uB300\uD45C \uC0B0\uC9C0\uC758 \uAE5F\uCD94 \uBC0F \uD638\uC544\uB85D \uB9DD\uACE0\uB97C \uC5C4\uC120\uD574 \uC57D 60\xB0C \uC800\uC628 \uC21C\uD658 \uAC74\uC870 \uACF5\uBC95\uC73C\uB85C \uAC00\uACF5\uD588\uC2B5\uB2C8\uB2E4. \uC815\uC81C\uB2F9 \uCCA8\uAC00 \uC5C6\uC774 \uD669\uAE08\uBE5B \uC0C9\uAC10\uACFC \uBE44\uD0C0\uBBFC A\xB7C\uB97C \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+      origin: "\uB3D9\uD0D1 & \uB760\uC5D4\uC7A5 \uACFC\uC218\uC6D0"
+    },
+    zh: {
+      name: "\u5929\u7136\u8F6F\u70D8\u8292\u679C\u5E72",
+      shortDesc: "\u7CBE\u9009 Cat Chu \u4E0E Hoa Loc \u4F18\u8D28\u8292\u679C\uFF0C\u8F6F\u7CEF\u591A\u6C41\u3001\u679C\u9999\u9187\u6B63\u3002",
+      desc: "\u7CBE\u9009\u540C\u5854\u7701\u4E0E\u524D\u6C5F\u7701\u540D\u4F18 Cat Chu \u53CA Hoa Loc \u8292\u679C\uFF0C\u91C7\u7528\u7EA6 60\xB0C \u4F4E\u6E29\u70ED\u98CE\u5FAA\u73AF\u5DE5\u827A\u5E72\u71E5\uFF0C\u4E0D\u6DFB\u52A0\u7CBE\u5236\u7CD6\uFF0C\u4FDD\u7559\u81EA\u7136\u91D1\u9EC4\u8272\u6CFD\u53CA\u7EF4\u751F\u7D20 A\u3001C\u3002",
+      origin: "\u540C\u5854\u7701\u4E0E\u524D\u6C5F\u7701\u679C\u56ED"
+    }
+  },
+  "jackfruit-chips": {
+    verifiedCerts: [],
+    ocopLabel: "",
+    brixOverride: "",
+    features: [
+      {
+        id: "tien-giang-thai-jf",
+        label: {
+          vi: "M\xEDt Th\xE1i ch\xEDn c\xE2y Ti\u1EC1n Giang",
+          en: "Tree-ripened Tien Giang Thai jackfruit",
+          ko: "\uB760\uC5D4\uC7A5 \uC644\uC219 \uD0DC\uAD6D \uD488\uC885 \uC7AD\uD504\uB8E8\uD2B8",
+          zh: "\u524D\u6C5F\u7701\u6811\u719F\u6CF0\u79CD\u83E0\u841D\u871C"
+        }
+      },
+      {
+        id: "vacuum-jf-chips",
+        label: {
+          vi: "S\u1EA5y ch\xE2n kh\xF4ng & ly t\xE2m t\xE1ch d\u1EA7u",
+          en: "Vacuum crisping & centrifugal de-oiling",
+          ko: "\uC800\uC628 \uC9C4\uACF5 \uAC74\uC870 & \uACE0\uC18D \uC6D0\uC2EC \uD0C8\uC720",
+          zh: "\u4F4E\u6E29\u771F\u7A7A\u5E72\u71E5\u4E0E\u9AD8\u901F\u79BB\u5FC3\u8131\u6CB9"
+        }
+      },
+      {
+        id: "low-moisture-jf",
+        label: {
+          vi: "\u0110\u1ED9 \u1EA9m < 5%",
+          en: "Moisture < 5%",
+          ko: "\uC218\uBD84 \uD568\uB7C9 < 5%",
+          zh: "\u6C34\u5206\u542B\u91CF < 5%"
+        }
+      }
+    ],
+    ko: {
+      name: "\uD06C\uB9AC\uC2A4\uD53C \uC7AD\uD504\uB8E8\uD2B8 \uCE69",
+      shortDesc: "\uBC14\uC0AD\uD558\uAC8C \uD280\uACA8\uB0B8 \uD669\uAE08\uBE5B \uC7AD\uD504\uB8E8\uD2B8 \uCE69\uC73C\uB85C \uD48D\uBD80\uD55C \uC5F4\uB300 \uACFC\uC77C \uD5A5\uC744 \uC990\uAE38 \uC218 \uC788\uC2B5\uB2C8\uB2E4.",
+      desc: "\uB760\uC5D4\uC7A5\uC0B0 \uC644\uC219 \uD0DC\uAD6D \uD488\uC885 \uC7AD\uD504\uB8E8\uD2B8\uB97C \uC800\uC628 \uC9C4\uACF5 \uAC74\uC870 \uBC0F \uACE0\uC18D \uC6D0\uC2EC \uD0C8\uC720 \uACF5\uC815\uC73C\uB85C \uAC00\uACF5\uD574 \uC794\uC5EC \uC720\uBD84 \uC5C6\uC774 \uAE54\uB054\uD558\uACE0 \uBC14\uC0AD\uD55C \uC2DD\uAC10\uC744 \uAD6C\uD604\uD588\uC2B5\uB2C8\uB2E4.",
+      origin: "\uBCA0\uD2B8\uB0A8 \uB760\uC5D4\uC7A5\uC131"
+    },
+    zh: {
+      name: "\u9999\u8106\u83E0\u841D\u871C\u7247",
+      shortDesc: "\u91D1\u9EC4\u9165\u8106\u7684\u83E0\u841D\u871C\u679C\u74E3\uFF0C\u9971\u542B\u6D53\u90C1\u70ED\u5E26\u679C\u9999\u3002",
+      desc: "\u91C7\u7528\u524D\u6C5F\u7701\u6811\u719F\u6CF0\u79CD\u83E0\u841D\u871C\uFF0C\u7ECF\u4F4E\u6E29\u771F\u7A7A\u5E72\u71E5\u53CA\u9AD8\u901F\u79BB\u5FC3\u8131\u6CB9\u5904\u7406\uFF0C\u5165\u53E3\u677E\u8106\u9999\u751C\u4E0D\u6CB9\u817B\u3002",
+      origin: "\u8D8A\u5357\u524D\u6C5F\u7701"
+    }
+  },
+  walnuts: {
+    verifiedCerts: [],
+    ocopLabel: "",
+    brixOverride: "",
+    features: [
+      {
+        id: "walnut-halves",
+        label: {
+          vi: "Nh\xE2n n\u1EEDa h\u1EA1t (Light Halves 80%)",
+          en: "Selected walnut halves (80%)",
+          ko: "\uC5C4\uC120 \uBC18\uCABD \uC6D0\uBB3C \uD638\uB450 \uCEE4\uB110 (80%)",
+          zh: "\u7CBE\u9009\u5B8C\u6574\u534A\u4EC1\u6838\u6843\u4EC1 (Light Halves 80%)"
+        }
+      },
+      {
+        id: "gentle-convection-walnut",
+        label: {
+          vi: "S\u1EA5y \u0111\u1ED1i l\u01B0u nhi\u1EC7t th\u1EA5p gi\u1EEF axit b\xE9o",
+          en: "Low-heat convection drying",
+          ko: "\uC800\uC628 \uC5F4\uD48D \uC21C\uD658 \uAC74\uC870",
+          zh: "\u4F4E\u6E29\u70ED\u5BF9\u6D41\u70D8\u5E72\u5DE5\u827A"
+        }
+      },
+      {
+        id: "omega-3-ala",
+        label: {
+          vi: "Gi\xE0u Omega-3 th\u1EF1c v\u1EADt t\u1EF1 nhi\xEAn",
+          en: "Naturally rich in plant Omega-3 ALA",
+          ko: "\uCC9C\uC5F0 \uC2DD\uBB3C\uC131 \uC624\uBA54\uAC00-3 ALA \uD568\uC720",
+          zh: "\u5BCC\u542B\u5929\u7136\u690D\u7269\u6027 Omega-3 (ALA)"
+        }
+      }
+    ],
+    ko: {
+      name: "\uD504\uB9AC\uBBF8\uC5C4 \uD638\uB450 \uCEE4\uB110",
+      shortDesc: "\uD06C\uAE30\uAC00 \uADE0\uC77C\uD55C \uBC18\uCABD \uC6D0\uBB3C \uD638\uB450\uB97C \uAC00\uBCCD\uAC8C \uB85C\uC2A4\uD305\uD574 \uB2F4\uBC31\uD558\uACE0 \uBC14\uC0AD\uD55C \uC2DD\uAC10\uC744 \uC0B4\uB838\uC2B5\uB2C8\uB2E4.",
+      desc: "\uADE0\uC77C\uD558\uAC8C \uC120\uBCC4\uD55C \uB77C\uC774\uD2B8 \uD558\uD504 80% \uB4F1\uAE09 \uD638\uB450\uB97C \uC800\uC628 \uC5F4\uD48D \uC21C\uD658 \uAC74\uC870\uD558\uC5EC \uC624\uBA54\uAC00-3 \uC9C0\uBC29\uC0B0\uACFC \uD3F4\uB9AC\uD398\uB180\uC744 \uC548\uC815\uC801\uC73C\uB85C \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4.",
+      origin: "\uC5C4\uC120\uB41C \uD504\uB9AC\uBBF8\uC5C4 \uC6D0\uBB3C"
+    },
+    zh: {
+      name: "\u7CBE\u9009\u4F18\u8D28\u6838\u6843\u4EC1",
+      shortDesc: "\u9897\u7C92\u5300\u79F0\u7684\u5B8C\u6574\u534A\u4EC1\u6838\u6843\uFF0C\u8F7B\u5EA6\u4F4E\u6E29\u70D8\u70E4\uFF0C\u6E05\u9999\u9165\u8106\u3002",
+      desc: "\u4E25\u9009 80% \u534A\u4EC1\u5B8C\u6574\u6838\u6843\u4EC1\uFF08Light Halves\uFF09\uFF0C\u91C7\u7528\u4F4E\u6E29\u70ED\u5BF9\u6D41\u5DE5\u827A\u5E72\u71E5\uFF0C\u51CF\u5C11\u6CB9\u8102\u6C27\u5316\uFF0C\u4FDD\u7559\u5929\u7136\u690D\u7269 Omega-3 ALA \u4E0E\u591A\u915A\u6210\u5206\u3002",
+      origin: "\u7CBE\u9009\u4F18\u8D28\u539F\u6599"
+    }
+  },
+  "soft-dried-papaya": {
+    verifiedCerts: [],
+    ocopLabel: "",
+    features: [
+      {
+        id: "papaya-mekong",
+        label: {
+          vi: "\u0110u \u0111\u1EE7 ch\xEDn c\xE2y v\xF9ng ph\xF9 sa \u0110BSCL",
+          en: "Mekong Delta alluvial-soil ripe papaya",
+          ko: "\uBA54\uCF69 \uB378\uD0C0 \uCDA9\uC801\uD1A0 \uC644\uC219 \uD30C\uD30C\uC57C",
+          zh: "\u6E44\u516C\u6CB3\u4E09\u89D2\u6D32\u6811\u719F\u6728\u74DC"
+        }
+      },
+      {
+        id: "heat-pump-papaya",
+        label: {
+          vi: "S\u1EA5y b\u01A1m nhi\u1EC7t nhi\u1EC7t \u0111\u1ED9 th\u1EA5p",
+          en: "Low-heat convective heat-pump drying",
+          ko: "\uC800\uC628 \uD788\uD2B8\uD38C\uD504 \uC21C\uD658 \uAC74\uC870",
+          zh: "\u4F4E\u6E29\u70ED\u6CF5\u5FAA\u73AF\u5E72\u71E5\u5DE5\u827A"
+        }
+      },
+      {
+        id: "no-color-papaya",
+        label: {
+          vi: "Kh\xF4ng ph\u1EA9m m\xE0u & ch\u1EA5t b\u1EA3o qu\u1EA3n",
+          en: "No artificial color or preservatives",
+          ko: "\uC778\uACF5 \uC0C9\uC18C\xB7\uBC29\uBD80\uC81C \uBB34\uCCA8\uAC00",
+          zh: "\u65E0\u4EBA\u5DE5\u8272\u7D20\u4E0E\u9632\u8150\u5242"
+        }
+      }
+    ],
+    ko: {
+      name: "\uCC9C\uC5F0 \uC18C\uD504\uD2B8 \uAC74\uD30C\uD30C\uC57C",
+      shortDesc: "\uC120\uBA85\uD55C \uC8FC\uD669\uBE5B\uC744 \uB764 \uBD80\uB4DC\uB7FD\uACE0 \uCAC4\uAE43\uD55C \uD30C\uD30C\uC57C \uC2AC\uB77C\uC774\uC2A4\uB85C \uC740\uC740\uD55C \uB2E8\uB9DB\uC744 \uC120\uC0AC\uD569\uB2C8\uB2E4.",
+      desc: "\uBA54\uCF69 \uB378\uD0C0 \uBE44\uC625\uD55C \uD1A0\uC591\uC5D0\uC11C \uC7AC\uBC30\uD55C \uC644\uC219 \uD30C\uD30C\uC57C\uB97C \uC800\uC628 \uD788\uD2B8\uD38C\uD504 \uAC74\uC870\uB85C \uAC00\uACF5\uD558\uC5EC \uCC9C\uC5F0 \uBCA0\uD0C0\uCE74\uB85C\uD2F4 \uC0C9\uAC10\uACFC \uBD80\uB4DC\uB7EC\uC6B4 \uACFC\uC721 \uC2DD\uAC10\uC744 \uC720\uC9C0\uD588\uC2B5\uB2C8\uB2E4.",
+      origin: "\uBCA0\uD2B8\uB0A8 \uBA54\uCF69 \uB378\uD0C0"
+    },
+    zh: {
+      name: "\u5929\u7136\u8F6F\u70D8\u6728\u74DC\u5E72",
+      shortDesc: "\u6563\u53D1\u81EA\u7136\u6A59\u7EA2\u5149\u6CFD\u7684\u67D4\u97E7\u6728\u74DC\u7247\uFF0C\u6E05\u751C\u53EF\u53E3\u3001\u8D28\u5730\u67D4\u6DA6\u3002",
+      desc: "\u4E25\u9009\u6E44\u516C\u6CB3\u4E09\u89D2\u6D32\u51B2\u79EF\u571F\u58E4\u4EA7\u533A\u6811\u719F\u6728\u74DC\uFF0C\u91C7\u7528\u4F4E\u6E29\u70ED\u6CF5\u5FAA\u73AF\u5E72\u71E5\uFF0C\u4FDD\u7559\u5929\u7136 \u03B2-\u80E1\u841D\u535C\u7D20\u3001\u81B3\u98DF\u7EA4\u7EF4\u4E0E\u67D4\u97E7\u5480\u56BC\u611F\u3002",
+      origin: "\u8D8A\u5357\u6E44\u516C\u6CB3\u4E09\u89D2\u6D32"
+    }
+  },
+  "mix-fruits-and-vegetables": {
+    verifiedCerts: [],
+    ocopLabel: "",
+    brixOverride: "",
+    features: [
+      {
+        id: "multi-produce-blend",
+        label: {
+          vi: "7+ lo\u1EA1i tr\xE1i c\xE2y & c\u1EE7 qu\u1EA3 (M\xEDt, chu\u1ED1i, khoai, c\xE0 r\u1ED1t, \u0111\u1EADu b\u1EAFp)",
+          en: "Multi-produce blend (Jackfruit, banana, sweet potato, taro, carrot, okra)",
+          ko: "\uB2E4\uC591\uD55C \uC5F4\uB300 \uACFC\uC77C\xB7\uBFCC\uB9AC\uCC44\uC18C \uC870\uD569",
+          zh: "\u591A\u79CD\u70ED\u5E26\u679C\u5E72\u4E0E\u6839\u830E\u852C\u679C\u7EC4\u5408"
+        }
+      },
+      {
+        id: "vacuum-mixed",
+        label: {
+          vi: "S\u1EA5y ch\xE2n kh\xF4ng & ly t\xE2m t\xE1ch d\u1EA7u",
+          en: "Vacuum crisping & centrifugal de-oiling",
+          ko: "\uC800\uC628 \uC9C4\uACF5 \uAC74\uC870 & \uC6D0\uC2EC \uD0C8\uC720",
+          zh: "\u4F4E\u6E29\u771F\u7A7A\u5E72\u71E5\u4E0E\u79BB\u5FC3\u8131\u6CB9"
+        }
+      },
+      {
+        id: "no-artificial-flavor-mix",
+        label: {
+          vi: "Kh\xF4ng h\u01B0\u01A1ng li\u1EC7u & ph\u1EA9m m\xE0u t\u1ED5ng h\u1EE3p",
+          en: "No artificial flavorings or colorants",
+          ko: "\uD569\uC131 \uD5A5\uB8CC\xB7\uCC29\uC0C9\uB8CC \uBB34\uCCA8\uAC00",
+          zh: "\u65E0\u4EBA\u5DE5\u9999\u7CBE\u4E0E\u5408\u6210\u8272\u7D20"
+        }
+      }
+    ],
+    ko: {
+      name: "\uBAA8\uB4EC \uACFC\uC77C\xB7\uCC44\uC18C \uCE69",
+      shortDesc: "\uC7AD\uD504\uB8E8\uD2B8, \uBC14\uB098\uB098, \uACE0\uAD6C\uB9C8, \uD1A0\uB780, \uB2F9\uADFC \uB4F1\uC774 \uC5B4\uC6B0\uB7EC\uC9C4 \uB2E4\uCC44\uB86D\uACE0 \uBC14\uC0AD\uD55C \uC2A4\uB0B5\uC785\uB2C8\uB2E4.",
+      desc: "\uBA54\uCF69 \uB378\uD0C0 \uC5F4\uB300 \uACFC\uC77C\uACFC \uB2EC\uB78F \uACE0\uC0B0 \uCC44\uC18C\uB97C \uC800\uC628 \uC9C4\uACF5 \uAC74\uC870\uB85C \uAC00\uACF5\uD574 \uB2E4\uCC44\uB85C\uC6B4 \uC0C9\uAC10\uACFC \uAC00\uBCCD\uACE0 \uBC14\uC0AD\uD55C \uC2DD\uAC10, \uD48D\uBD80\uD55C \uC2DD\uC774\uC12C\uC720\uB97C \uD568\uAED8 \uB2F4\uC558\uC2B5\uB2C8\uB2E4.",
+      origin: "\uBA54\uCF69 \uB378\uD0C0 & \uB2EC\uB78F \uACE0\uC6D0"
+    },
+    zh: {
+      name: "\u7EFC\u5408\u679C\u852C\u8106\u7247",
+      shortDesc: "\u6C47\u96C6\u83E0\u841D\u871C\u3001\u9999\u8549\u3001\u7EA2\u85AF\u3001\u7D2B\u85AF\u3001\u828B\u5934\u3001\u80E1\u841D\u535C\u4E0E\u79CB\u8475\u7684\u591A\u5F69\u9165\u8106\u7EC4\u5408\u3002",
+      desc: "\u7504\u9009\u6E44\u516C\u6CB3\u4E09\u89D2\u6D32\u70ED\u5E26\u6C34\u679C\u4E0E\u5927\u53FB\u9AD8\u539F\u6839\u830E\u852C\u83DC\uFF0C\u91C7\u7528\u4F4E\u6E29\u771F\u7A7A\u8106\u5316\u4E0E\u79BB\u5FC3\u8131\u6CB9\u5DE5\u827A\uFF0C\u4E0D\u6DFB\u52A0\u4EBA\u5DE5\u9999\u7CBE\u4E0E\u8272\u7D20\uFF0C\u53E3\u611F\u591A\u5143\u723D\u8106\u3002",
+      origin: "\u6E44\u516C\u6CB3\u4E09\u89D2\u6D32\u4E0E\u5927\u53FB\u9AD8\u539F"
+    }
+  },
+  "lotus-seeds": {
+    verifiedCerts: [],
+    ocopLabel: "",
+    brixOverride: "",
+    features: [
+      {
+        id: "dong-thap-specialty",
+        label: {
+          vi: "\u0110\u1EB7c s\u1EA3n v\xF9ng sen \u0110\u1ED3ng Th\xE1p",
+          en: "Dong Thap geographic specialty",
+          ko: "\uB3D9\uD0D1\uC131 \uC9C0\uC5ED \uD2B9\uC0B0 \uC6D0\uBB3C",
+          zh: "\u540C\u5854\u7701\u83B2\u4E61\u7279\u8272\u4EA7\u533A\u539F\u6599"
+        }
+      },
+      {
+        id: "porous-crisp-lotus",
+        label: {
+          vi: "S\u1EA5y ch\xE2n kh\xF4ng gi\xF2n x\u1ED1p (< 6% \u1EA9m)",
+          en: "Vacuum-dried crisp porous texture (< 6% moisture)",
+          ko: "\uC9C4\uACF5 \uAC74\uC870 \uB2E4\uACF5\uC131 \uBC14\uC0AD\uD55C \uC2DD\uAC10 (< 6% \uC218\uBD84)",
+          zh: "\u771F\u7A7A\u5E72\u71E5\u9165\u677E\u591A\u5B54\u53E3\u611F\uFF08\u6C34\u5206 < 6%\uFF09"
+        }
+      },
+      {
+        id: "no-preservatives-lotus",
+        label: {
+          vi: "Kh\xF4ng ch\u1EA5t b\u1EA3o qu\u1EA3n",
+          en: "Preservative-free",
+          ko: "\uBCF4\uC874\uB8CC \uBB34\uCCA8\uAC00",
+          zh: "\u65E0\u9632\u8150\u5242\u6DFB\u52A0"
+        }
+      }
+    ],
+    ko: {
+      name: "\uD06C\uB9AC\uC2A4\uD53C \uB3D9\uD0D1 \uC5F0\uC790\uC721",
+      shortDesc: "\uB3D9\uD0D1\uC131\uC0B0 \uC5C4\uC120 \uC5F0\uC790\uC721\uC744 \uBD80\uB4DC\uB7FD\uACE0 \uBC14\uC0AD\uD558\uAC8C \uAC74\uC870\uD574 \uB2F4\uBC31\uD558\uACE0 \uC740\uC740\uD55C \uB2E8\uB9DB\uC744 \uC0B4\uB838\uC2B5\uB2C8\uB2E4.",
+      desc: "\uBCA0\uD2B8\uB0A8 \uCD5C\uB300 \uC5F0\uAF43 \uC0B0\uC9C0 \uB3D9\uD0D1\uC131\uC5D0\uC11C \uC218\uD655\uD55C \uC5F0\uC790\uC721\uC758 \uAECD\uC9C8\uACFC \uC2EC\uC744 \uC81C\uAC70\uD55C \uB4A4 \uC800\uC628 \uC9C4\uACF5 \uAC74\uC870\uD574 \uAC00\uBCCD\uACE0 \uD3EC\uC2AC\uD3EC\uC2AC\uD55C \uBC14\uC0AD\uD568\uACFC \uACE0\uC18C\uD55C \uD48D\uBBF8\uB97C \uAD6C\uD604\uD588\uC2B5\uB2C8\uB2E4.",
+      origin: "\uBCA0\uD2B8\uB0A8 \uB3D9\uD0D1\uC131"
+    },
+    zh: {
+      name: "\u540C\u5854\u9999\u8106\u83B2\u5B50",
+      shortDesc: "\u4E25\u9009\u540C\u5854\u7701\u83B2\u5B50\u53BB\u58F3\u53BB\u82AF\uFF0C\u4F4E\u6E29\u70D8\u7119\u6210\u6E05\u751C\u9165\u677E\u53E3\u611F\u3002",
+      desc: "\u4EA7\u81EA\u8D8A\u5357\u83B2\u4E61\u540C\u5854\u7701\u7684\u9971\u6EE1\u83B2\u5B50\uFF0C\u7ECF\u7CBE\u7EC6\u53BB\u76AE\u53BB\u82AF\u4E0E\u4F4E\u6E29\u771F\u7A7A\u5E72\u71E5\uFF0C\u53E3\u611F\u8F7B\u76C8\u9165\u677E\u3001\u6E05\u9999\u56DE\u7518\uFF0C\u5929\u7136\u5BCC\u542B\u690D\u7269\u86CB\u767D\u3002",
+      origin: "\u8D8A\u5357\u540C\u5854\u7701"
+    }
+  }
+};
+function mergeSpecsCleanly(baseSpecs, cmsSpecs, cmsRaw, meta, isNewCmsOnlyProduct) {
+  const pickSpec = (cmsVal, baseVal) => {
+    if (typeof cmsVal === "string" && cmsVal.trim()) return cmsVal.trim();
+    return isNewCmsOnlyProduct ? "" : baseVal;
+  };
+  const brixFromCms = typeof cmsSpecs?.brix === "string" ? cmsSpecs.brix : typeof cmsRaw?.specs_brix === "string" ? cmsRaw.specs_brix : void 0;
+  const resolvedBrix = meta?.brixOverride !== void 0 ? meta.brixOverride : pickSpec(brixFromCms, baseSpecs.brix);
+  return {
+    moisture: pickSpec(cmsSpecs?.moisture ?? cmsRaw?.specs_moisture, baseSpecs.moisture),
+    brix: hasApplicableBrix(resolvedBrix) ? resolvedBrix : "",
+    ...cmsSpecs?.sizeOrWeightVi || baseSpecs.sizeOrWeightVi ? { sizeOrWeightVi: pickSpec(cmsSpecs?.sizeOrWeightVi, baseSpecs.sizeOrWeightVi || "") } : {},
+    ...cmsSpecs?.sizeOrWeightEn || baseSpecs.sizeOrWeightEn ? { sizeOrWeightEn: pickSpec(cmsSpecs?.sizeOrWeightEn, baseSpecs.sizeOrWeightEn || "") } : {},
+    ...cmsSpecs?.sizeOrWeightKo || baseSpecs.sizeOrWeightKo ? { sizeOrWeightKo: pickSpec(cmsSpecs?.sizeOrWeightKo, baseSpecs.sizeOrWeightKo || "") } : {},
+    ...cmsSpecs?.sizeOrWeightZh || baseSpecs.sizeOrWeightZh ? { sizeOrWeightZh: pickSpec(cmsSpecs?.sizeOrWeightZh, baseSpecs.sizeOrWeightZh || "") } : {},
+    shelfLifeEn: pickSpec(cmsSpecs?.shelfLifeEn, baseSpecs.shelfLifeEn),
+    shelfLifeVi: pickSpec(cmsSpecs?.shelfLifeVi ?? cmsRaw?.shelf_life, baseSpecs.shelfLifeVi),
+    shelfLifeKo: pickSpec(cmsSpecs?.shelfLifeKo, baseSpecs.shelfLifeKo || ""),
+    shelfLifeZh: pickSpec(cmsSpecs?.shelfLifeZh, baseSpecs.shelfLifeZh || ""),
+    storageEn: pickSpec(cmsSpecs?.storageEn, baseSpecs.storageEn),
+    storageVi: pickSpec(cmsSpecs?.storageVi, baseSpecs.storageVi),
+    storageKo: pickSpec(cmsSpecs?.storageKo, baseSpecs.storageKo || ""),
+    storageZh: pickSpec(cmsSpecs?.storageZh, baseSpecs.storageZh || ""),
+    ingredientsEn: pickSpec(cmsSpecs?.ingredientsEn, baseSpecs.ingredientsEn),
+    ingredientsVi: pickSpec(cmsSpecs?.ingredientsVi ?? cmsRaw?.specs_ingredients_vi, baseSpecs.ingredientsVi),
+    ingredientsKo: pickSpec(cmsSpecs?.ingredientsKo, baseSpecs.ingredientsKo || ""),
+    ingredientsZh: pickSpec(cmsSpecs?.ingredientsZh, baseSpecs.ingredientsZh || ""),
+    processEn: pickSpec(cmsSpecs?.processEn, baseSpecs.processEn),
+    processVi: pickSpec(cmsSpecs?.processVi ?? cmsRaw?.specs_process_vi, baseSpecs.processVi),
+    processKo: pickSpec(cmsSpecs?.processKo, baseSpecs.processKo || ""),
+    processZh: pickSpec(cmsSpecs?.processZh, baseSpecs.processZh || ""),
+    packagingEn: pickSpec(cmsSpecs?.packagingEn, baseSpecs.packagingEn),
+    packagingVi: pickSpec(cmsSpecs?.packagingVi ?? cmsRaw?.packaging, baseSpecs.packagingVi),
+    packagingKo: pickSpec(cmsSpecs?.packagingKo, baseSpecs.packagingKo || ""),
+    packagingZh: pickSpec(cmsSpecs?.packagingZh, baseSpecs.packagingZh || ""),
+    certificationsEn: pickSpec(cmsSpecs?.certificationsEn, baseSpecs.certificationsEn),
+    certificationsVi: pickSpec(cmsSpecs?.certificationsVi ?? cmsRaw?.specs_cert_vi, baseSpecs.certificationsVi),
+    certificationsKo: pickSpec(cmsSpecs?.certificationsKo, baseSpecs.certificationsKo || ""),
+    certificationsZh: pickSpec(cmsSpecs?.certificationsZh, baseSpecs.certificationsZh || "")
+  };
+}
 var PRODUCT_SPECS_I18N = {
   "soft-dried-red-dragonfruit": {
     ko: {
@@ -744,7 +1366,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "100% \uB760\uC5D4\uC7A5\uC131 \uCA4C\uAC00\uC624\uC0B0 \uC2E0\uC120 \uC801\uC0C9 \uC6A9\uACFC, \uC124\uD0D5 \uBB34\uCCA8\uAC00, \uC778\uACF5 \uC0C9\uC18C \uBB34\uCCA8\uAC00",
       processKo: "\uC800\uC628 \uC21C\uD658 \uD788\uD2B8\uD38C\uD504 \uAC74\uC870 (~50 - 55\xB0C)\uB85C \uCC9C\uC5F0 \uBCA0\uD0C0\uC2DC\uC544\uB2CC \uC0C9\uC18C\uC640 \uC601\uC591\uC18C \uBCF4\uC874",
       packagingKo: "\uC9C0\uD37C \uD30C\uC6B0\uCE58 100g, 250g, 500g / \uC9C8\uC18C \uCDA9\uC804 \uC218\uCD9C \uB9C8\uC2A4\uD130 \uCE74\uD1A4 5kg, 10kg / OEM",
-      certificationsKo: "\uBCA0\uD2B8\uB0A8 OCOP 3\uC131\uAE09, BRCGS Grade B \uC2DC\uC124, \uD074\uB9B0 \uB77C\uBCA8"
+      certificationsKo: "\uBCA0\uD2B8\uB0A8 OCOP 3\uC131\uAE09"
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -752,7 +1374,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "100% \u9E45\u8D21\u4EA7\u533A\u65B0\u9C9C\u7EA2\u5FC3\u706B\u9F99\u679C\uFF0C\u4E0D\u6DFB\u52A0\u7CBE\u5236\u7CD6\uFF0C\u65E0\u4EBA\u5DE5\u8272\u7D20",
       processZh: "\u4F4E\u6E29\u70ED\u6CF5\u5FAA\u73AF\u5E72\u71E5\uFF08\u7EA6 50 - 55\xB0C\uFF09\uFF0C\u5B8C\u6574\u4FDD\u7559\u5929\u7136\u751C\u83DC\u7EA2\u7D20\u4E0E\u8425\u517B\u6210\u5206",
       packagingZh: "\u81EA\u5C01\u888B 100g\u3001250g\u3001500g / \u5145\u6C2E\u51FA\u53E3\u7EB8\u7BB1 5kg\u300110kg / OEM \u8D34\u724C",
-      certificationsZh: "\u8D8A\u5357 OCOP \u4E09\u661F\u7EA7\u3001BRCGS B\u7EA7\u8BA4\u8BC1\u5DE5\u5382\u3001\u6E05\u6D01\u6807\u7B7E"
+      certificationsZh: "\u8D8A\u5357 OCOP \u4E09\u661F\u7EA7"
     }
   },
   "banana-chips": {
@@ -762,7 +1384,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "100% \uC5C4\uC120\uB41C \uC644\uC219 \uBC14\uB098\uB098, \uC815\uC81C \uC2DD\uBB3C\uC131 \uC720\uC9C0",
       processKo: "\uC800\uC628 \uC9C4\uACF5 \uD06C\uB9AC\uC2A4\uD551 \uBC0F \uACE0\uD6A8\uC728 \uC6D0\uC2EC \uD0C8\uC720 \uACF5\uC815",
       packagingKo: "\uC9C0\uD37C \uD30C\uC6B0\uCE58 100g, 250g, 500g / \uBC8C\uD06C \uCE74\uD1A4 10kg",
-      certificationsKo: "BRCGS Grade B \uC2DC\uC124, \uD074\uB9B0 \uB77C\uBCA8, \uC218\uCD9C \uADDC\uACA9"
+      certificationsKo: ""
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -770,7 +1392,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "100% \u7CBE\u9009\u6210\u719F\u9999\u8549\u3001\u7CBE\u70BC\u690D\u7269\u6CB9",
       processZh: "\u4F4E\u6E29\u771F\u7A7A\u8106\u5316\u53CA\u9AD8\u6548\u79BB\u5FC3\u8131\u6CB9\u5DE5\u827A",
       packagingZh: "\u81EA\u5C01\u888B 100g\u3001250g\u3001500g / \u6563\u88C5\u7EB8\u7BB1 10kg",
-      certificationsZh: "BRCGS B\u7EA7\u8BA4\u8BC1\u5DE5\u5382\u3001\u6E05\u6D01\u6807\u7B7E\u3001\u51FA\u53E3\u54C1\u8D28"
+      certificationsZh: ""
     }
   },
   cashew: {
@@ -780,7 +1402,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "100% Grade A \uBCA0\uD2B8\uB0A8\uC0B0 \uCE90\uC288\uB11B \uCEE4\uB110 (W240 / W320)",
       processKo: "\uACFC\uB3C4\uD55C \uC720\uBD84 \uC5C6\uC774 \uC815\uBC00 \uC5F4\uD48D \uCEE4\uBE0C \uB85C\uC2A4\uD305",
       packagingKo: "\uC9C4\uACF5 \uD30C\uC6B0\uCE58 / \uC9C8\uC18C \uCDA9\uC804 \uCE94 250g, 500g / \uBC8C\uD06C \uC9C4\uACF5 \uBC15\uC2A4 10kg, 22.68kg",
-      certificationsKo: "BRCGS \uC2DC\uC124, ISO 22000:2018, HACCP \uC778\uC99D"
+      certificationsKo: ""
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -788,7 +1410,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "100% A\u7EA7\u8D8A\u5357\u8170\u679C\u4EC1\uFF08W240 / W320\uFF09",
       processZh: "\u63A7\u6E29\u66F2\u7EBF\u8F7B\u67D4\u70ED\u98CE\u70D8\u7119\uFF0C\u65E0\u591A\u4F59\u6CB9\u8102",
       packagingZh: "\u771F\u7A7A\u888B / \u5145\u6C2E\u7F50 250g\u3001500g / \u51FA\u53E3\u771F\u7A7A\u5927\u7BB1 10kg\u300122.68kg",
-      certificationsZh: "BRCGS \u5DE5\u5382\u3001ISO 22000:2018\u3001HACCP \u8BA4\u8BC1"
+      certificationsZh: ""
     }
   },
   "soft-dried-jackfruit": {
@@ -798,7 +1420,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "100% \uB098\uBB34\uC5D0\uC11C \uC644\uC219\uD55C \uD0DC\uAD6D \uD488\uC885 \uC7AD\uD504\uB8E8\uD2B8, \uBB34\uCF5C\uB808\uC2A4\uD14C\uB864, \uBB34\uBC29\uBD80\uC81C",
       processKo: "\uC800\uC628 \uC21C\uD658 \uC5F4\uD48D \uAC74\uC870 (~55 - 60\xB0C)\uB85C \uCD09\uCD09\uD55C \uACFC\uC721 \uC12C\uC720\uC9C8 \uBCF4\uC874",
       packagingKo: "\uC9C0\uD37C \uD30C\uC6B0\uCE58 100g, 250g, 500g / \uC218\uCD9C \uB9C8\uC2A4\uD130 \uCE74\uD1A4 5kg, 10kg",
-      certificationsKo: "\uBCA0\uD2B8\uB0A8 OCOP 3\uC131\uAE09, BRCGS Grade B \uC2DC\uC124, \uD074\uB9B0 \uB77C\uBCA8"
+      certificationsKo: "\uBCA0\uD2B8\uB0A8 OCOP 3\uC131\uAE09"
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -806,7 +1428,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "100% \u6811\u719F\u6CF0\u56FD\u79CD\u83E0\u841D\u871C\uFF0C\u96F6\u80C6\u56FA\u9187\uFF0C\u65E0\u4EBA\u5DE5\u9632\u8150\u5242",
       processZh: "\u4F4E\u6E29\u70ED\u98CE\u5FAA\u73AF\u8F6F\u70D8\uFF08\u7EA6 55 - 60\xB0C\uFF09\uFF0C\u4FDD\u7559\u9971\u6EE1\u679C\u8089\u7EA4\u7EF4",
       packagingZh: "\u81EA\u5C01\u888B 100g\u3001250g\u3001500g / \u51FA\u53E3\u7EB8\u7BB1 5kg\u300110kg",
-      certificationsZh: "\u8D8A\u5357 OCOP \u4E09\u661F\u7EA7\u3001BRCGS B\u7EA7\u8BA4\u8BC1\u5DE5\u5382\u3001\u6E05\u6D01\u6807\u7B7E"
+      certificationsZh: "\u8D8A\u5357 OCOP \u4E09\u661F\u7EA7"
     }
   },
   "mango-chips": {
@@ -816,7 +1438,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "\uC5C4\uC120\uB41C \uC2E0\uC120 \uB9DD\uACE0 (98%), \uC815\uC81C \uC2DD\uBB3C\uC131 \uC720\uC9C0",
       processKo: "\uC800\uC628 \uC9C4\uACF5 \uD06C\uB9AC\uC2A4\uD551 \uBC0F \uC6D0\uC2EC \uD0C8\uC720 \uACF5\uC815",
       packagingKo: "\uC54C\uB8E8\uBBF8\uB284 \uC9C0\uD37C \uD30C\uC6B0\uCE58 50g, 100g, 200g / \uB9C8\uC2A4\uD130 \uCE74\uD1A4 10kg",
-      certificationsKo: "BRCGS \uC2DC\uC124, \uD074\uB9B0 \uB77C\uBCA8, \uC218\uCD9C \uD45C\uC900"
+      certificationsKo: ""
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -824,7 +1446,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "\u65B0\u9C9C\u7CBE\u9009\u8292\u679C\uFF0898%\uFF09\u3001\u7CBE\u70BC\u690D\u7269\u6CB9",
       processZh: "\u4F4E\u6E29\u771F\u7A7A\u8106\u5316\u53CA\u79BB\u5FC3\u8131\u6CB9\u6280\u672F",
       packagingZh: "\u94DD\u7B94\u81EA\u5C01\u888B 50g\u3001100g\u3001200g / \u51FA\u53E3\u7EB8\u7BB1 10kg",
-      certificationsZh: "BRCGS \u5DE5\u5382\u3001\u6E05\u6D01\u6807\u7B7E\u3001\u51FA\u53E3\u6807\u51C6"
+      certificationsZh: ""
     }
   },
   "macadamia-nuts": {
@@ -834,7 +1456,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "100% \uBCA0\uD2B8\uB0A8\uC0B0 \uD06C\uB799 \uC778\uC258 \uB9C8\uCE74\uB2E4\uBBF8\uC544 \uB108\uD2B8 (\uC624\uD504\uB108 \uD3EC\uD568)",
       processKo: "\uBD88\uD3EC\uD654\uC9C0\uBC29\uC0B0 \uBCF4\uC874\uC744 \uC704\uD55C \uC800\uC628 \uB2E4\uB2E8\uACC4 \uC5F4\uD48D \uAC74\uC870",
       packagingKo: "\uC9C0\uD37C \uD30C\uC6B0\uCE58 / PET \uC6A9\uAE30 250g, 500g / \uB9C8\uC2A4\uD130 \uCE74\uD1A4 10kg",
-      certificationsKo: "ISO 22000:2018, HACCP, \uD074\uB9B0 \uB77C\uBCA8"
+      certificationsKo: ""
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -842,7 +1464,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "100% \u8D8A\u5357\u5E26\u58F3\u5F00\u53E3\u590F\u5A01\u5937\u679C\uFF08\u9644\u8D60\u5F00\u679C\u5668\uFF09",
       processZh: "\u4F4E\u6E29\u591A\u6BB5\u70ED\u98CE\u5E72\u71E5\u5DE5\u827A\uFF0C\u9501\u4F4F\u73CD\u8D35\u5065\u5EB7\u6CB9\u8102",
       packagingZh: "\u81EA\u5C01\u888B / PET \u7F50 250g\u3001500g / \u51FA\u53E3\u7EB8\u7BB1 10kg",
-      certificationsZh: "ISO 22000:2018\u3001HACCP\u3001\u6E05\u6D01\u6807\u7B7E"
+      certificationsZh: ""
     }
   },
   "soft-dried-mango": {
@@ -852,7 +1474,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "100% \uBA54\uCF69 \uB378\uD0C0\uC0B0 \uC2E0\uC120 \uB9DD\uACE0 (\uAE5F\uCD94 & \uD638\uC544\uB85D \uD488\uC885), \uC124\uD0D5 \uBB34\uCCA8\uAC00, \uBB34\uBC29\uBD80\uC81C",
       processKo: "\uC800\uC628 \uC21C\uD658 \uC5F4\uD48D \uAC74\uC870 (~60\xB0C)\uB85C \uD669\uAE08\uBE5B \uC0C9\uAC10, \uC2DD\uC774\uC12C\uC720 \uBC0F \uBE44\uD0C0\uBBFC A\xB7C \uC720\uC9C0",
       packagingKo: "\uC9C0\uD37C \uD30C\uC6B0\uCE58 100g, 250g, 500g / \uC9C8\uC18C \uCDA9\uC804 \uB9C8\uC2A4\uD130 \uCE74\uD1A4 5kg, 10kg / OEM PB",
-      certificationsKo: "\uBCA0\uD2B8\uB0A8 OCOP 3\uC131\uAE09, BRCGS Grade B \uC2DC\uC124, BSCI \uC0AC\uD68C\uC801 \uCC45\uC784 \uC900\uC218"
+      certificationsKo: "\uBCA0\uD2B8\uB0A8 OCOP 3\uC131\uAE09"
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -860,7 +1482,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "100% \u6E44\u516C\u6CB3\u4E09\u89D2\u6D32\u65B0\u9C9C\u8292\u679C\uFF08Cat Chu & Hoa Loc\uFF09\uFF0C\u4E0D\u6DFB\u52A0\u8517\u7CD6\uFF0C\u65E0\u9632\u8150\u5242",
       processZh: "\u4F4E\u6E29\u70ED\u98CE\u5FAA\u73AF\u5E72\u71E5\uFF08\u7EA6 60\xB0C\uFF09\uFF0C\u4FDD\u7559\u5929\u7136\u91D1\u9EC4\u8272\u6CFD\u3001\u81B3\u98DF\u7EA4\u7EF4\u4E0E\u7EF4\u751F\u7D20 A\u3001C",
       packagingZh: "\u81EA\u5C01\u888B 100g\u3001250g\u3001500g / \u5145\u6C2E\u51FA\u53E3\u7EB8\u7BB1 5kg\u300110kg / OEM \u8D34\u724C",
-      certificationsZh: "\u8D8A\u5357 OCOP \u4E09\u661F\u7EA7\u3001BRCGS B\u7EA7\u8BA4\u8BC1\u5DE5\u5382\u3001BSCI \u793E\u4F1A\u8D23\u4EFB\u5BA1\u6838"
+      certificationsZh: "\u8D8A\u5357 OCOP \u4E09\u661F\u7EA7"
     }
   },
   "jackfruit-chips": {
@@ -870,7 +1492,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "\uC2E0\uC120 \uC644\uC219 \uD0DC\uAD6D \uD488\uC885 \uC7AD\uD504\uB8E8\uD2B8 (98%), \uC815\uC81C \uC2DD\uBB3C\uC131 \uC720\uC9C0",
       processKo: "\uC800\uC628 \uC9C4\uACF5 \uAC74\uC870 \uBC0F \uACE0\uC18D \uC6D0\uC2EC \uC720\uBD84 \uBD84\uB9AC \uACF5\uC815",
       packagingKo: "\uC9C0\uD37C \uD30C\uC6B0\uCE58 100g, 250g, 500g / \uBC8C\uD06C \uB9C8\uC2A4\uD130 \uCE74\uD1A4 10kg",
-      certificationsKo: "BRCGS Grade B \uC2DC\uC124, \uD074\uB9B0 \uB77C\uBCA8, \uC218\uCD9C \uD45C\uC900"
+      certificationsKo: ""
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -878,7 +1500,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "\u65B0\u9C9C\u6811\u719F\u6CF0\u56FD\u79CD\u83E0\u841D\u871C\uFF0898%\uFF09\u3001\u7CBE\u70BC\u690D\u7269\u6CB9",
       processZh: "\u4F4E\u6E29\u771F\u7A7A\u5E72\u71E5\u53CA\u9AD8\u901F\u79BB\u5FC3\u8131\u6CB9\u5DE5\u827A",
       packagingZh: "\u81EA\u5C01\u888B 100g\u3001250g\u3001500g / \u51FA\u53E3\u5927\u7BB1 10kg",
-      certificationsZh: "BRCGS B\u7EA7\u8BA4\u8BC1\u5DE5\u5382\u3001\u6E05\u6D01\u6807\u7B7E\u3001\u51FA\u53E3\u6807\u51C6"
+      certificationsZh: ""
     }
   },
   walnuts: {
@@ -888,7 +1510,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "100% \uC5C4\uC120\uB41C \uD504\uB9AC\uBBF8\uC5C4 \uD638\uB450 \uCEE4\uB110 (\uB77C\uC774\uD2B8 \uD558\uD504 80%)",
       processKo: "\uC624\uBA54\uAC00 \uC9C0\uBC29\uC0B0 \uC0B0\uD328 \uBC29\uC9C0\uB97C \uC704\uD55C \uC800\uC628 \uC5F4\uD48D \uC21C\uD658 \uAC74\uC870",
       packagingKo: "\uC9C8\uC18C \uCDA9\uC804 \uD638\uC77C \uD30C\uC6B0\uCE58 / \uCE94 200g, 400g / \uB9C8\uC2A4\uD130 \uCE74\uD1A4 10kg",
-      certificationsKo: "ISO 22000, HACCP, \uD074\uB9B0 \uB77C\uBCA8"
+      certificationsKo: ""
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -896,7 +1518,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "100% \u7CBE\u9009\u4F18\u8D28\u6838\u6843\u4EC1\uFF08Light Halves 80%\uFF09",
       processZh: "\u4F4E\u6E29\u70ED\u5BF9\u6D41\u5E72\u71E5\u4EE5\u7A33\u5B9A Omega \u8102\u80AA\u9178\u6D3B\u6027",
       packagingZh: "\u5145\u6C2E\u94DD\u7B94\u888B / \u7F50\u88C5 200g\u3001400g / \u51FA\u53E3\u7EB8\u7BB1 10kg",
-      certificationsZh: "ISO 22000\u3001HACCP\u3001\u6E05\u6D01\u6807\u7B7E"
+      certificationsZh: ""
     }
   },
   "soft-dried-papaya": {
@@ -906,7 +1528,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "100% \uBA54\uCF69 \uB378\uD0C0\uC0B0 \uC644\uC219 \uD30C\uD30C\uC57C, \uC778\uACF5 \uC0C9\uC18C \uBB34\uCCA8\uAC00, \uBB34\uBC29\uBD80\uC81C",
       processKo: "\uBCA0\uD0C0\uCE74\uB85C\uD2F4\uACFC \uC2DD\uAC10\uC744 \uBCF4\uC874\uD558\uB294 \uC800\uC628 \uC21C\uD658 \uD788\uD2B8\uD38C\uD504 \uAC74\uC870",
       packagingKo: "\uC9C0\uD37C \uD30C\uC6B0\uCE58 100g, 250g, 500g / \uC218\uCD9C \uB9C8\uC2A4\uD130 \uCE74\uD1A4 5kg, 10kg",
-      certificationsKo: "BRCGS \uC2DC\uC124, \uD074\uB9B0 \uB77C\uBCA8, \uC218\uCD9C \uD45C\uC900"
+      certificationsKo: ""
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -914,7 +1536,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "100% \u6E44\u516C\u6CB3\u4E09\u89D2\u6D32\u6210\u719F\u6728\u74DC\uFF0C\u65E0\u4EBA\u5DE5\u8272\u7D20\uFF0C\u65E0\u9632\u8150\u5242",
       processZh: "\u4F4E\u6E29\u70ED\u6CF5\u5FAA\u73AF\u5E72\u71E5\uFF0C\u4FDD\u7559 \u03B2-\u80E1\u841D\u535C\u7D20\u4E0E\u67D4\u97E7\u53E3\u611F",
       packagingZh: "\u81EA\u5C01\u888B 100g\u3001250g\u3001500g / \u51FA\u53E3\u7EB8\u7BB1 5kg\u300110kg",
-      certificationsZh: "BRCGS \u5DE5\u5382\u3001\u6E05\u6D01\u6807\u7B7E\u3001\u51FA\u53E3\u6807\u51C6"
+      certificationsZh: ""
     }
   },
   "mix-fruits-and-vegetables": {
@@ -924,7 +1546,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "\uC7AD\uD504\uB8E8\uD2B8, \uBC14\uB098\uB098, \uACE0\uAD6C\uB9C8, \uC790\uC0C9\uACE0\uAD6C\uB9C8, \uD1A0\uB780, \uB2F9\uADFC, \uD48B\uAC15\uB0AD\uCF69, \uC2DD\uBB3C\uC131 \uC720\uC9C0",
       processKo: "\uC800\uC628 \uC9C4\uACF5 \uAC74\uC870 \uBC0F \uACE0\uC18D \uC6D0\uC2EC \uC720\uBD84 \uBD84\uB9AC \uACF5\uC815",
       packagingKo: "\uC9C0\uD37C \uD30C\uC6B0\uCE58 150g, 250g, 500g / \uB9C8\uC2A4\uD130 \uCE74\uD1A4 10kg",
-      certificationsKo: "BRCGS \uC2DC\uC124, \uD074\uB9B0 \uB77C\uBCA8, \uC218\uCD9C \uD45C\uC900"
+      certificationsKo: ""
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -932,7 +1554,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "\u83E0\u841D\u871C\u3001\u9999\u8549\u3001\u7EA2\u85AF\u3001\u7D2B\u85AF\u3001\u828B\u5934\u3001\u80E1\u841D\u535C\u3001\u56DB\u5B63\u8C46\u3001\u690D\u7269\u6CB9",
       processZh: "\u4F4E\u6E29\u771F\u7A7A\u5E72\u71E5\u53CA\u9AD8\u901F\u79BB\u5FC3\u8131\u6CB9\u5DE5\u827A",
       packagingZh: "\u81EA\u5C01\u888B 150g\u3001250g\u3001500g / \u51FA\u53E3\u7EB8\u7BB1 10kg",
-      certificationsZh: "BRCGS \u5DE5\u5382\u3001\u6E05\u6D01\u6807\u7B7E\u3001\u51FA\u53E3\u6807\u51C6"
+      certificationsZh: ""
     }
   },
   "lotus-seeds": {
@@ -942,7 +1564,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsKo: "100% \uC5C4\uC120\uB41C \uB3D9\uD0D1\uC131 \uC5F0\uC790\uC721, \uC778\uACF5 \uBC29\uBD80\uC81C \uBB34\uCCA8\uAC00",
       processKo: "\uB2E4\uACF5\uC131 \uBC14\uC0AD\uD55C \uC2DD\uAC10\uACFC \uC544\uBBF8\uB178\uC0B0\uC744 \uC720\uC9C0\uD558\uB294 \uC800\uC628 \uC9C4\uACF5 \uAC74\uC870",
       packagingKo: "\uC9C0\uD37C \uD30C\uC6B0\uCE58 / \uCE94 150g, 250g, 500g / \uB9C8\uC2A4\uD130 \uCE74\uD1A4 10kg",
-      certificationsKo: "\uB3D9\uD0D1\uC131 \uC9C0\uB9AC\uC801 \uD2B9\uC0B0\uBB3C, BRCGS \uC2DC\uC124, \uD074\uB9B0 \uB77C\uBCA8"
+      certificationsKo: ""
     },
     zh: {
       shelfLifeZh: "12\u4E2A\u6708",
@@ -950,7 +1572,7 @@ var PRODUCT_SPECS_I18N = {
       ingredientsZh: "100% \u7CBE\u9009\u540C\u5854\u7701\u83B2\u5B50\uFF0C\u65E0\u4EBA\u5DE5\u9632\u8150\u5242",
       processZh: "\u4F4E\u6E29\u771F\u7A7A\u5E72\u71E5\uFF0C\u4FDD\u7559\u9165\u677E\u591A\u5B54\u53E3\u611F\u4E0E\u5929\u7136\u6C28\u57FA\u9178",
       packagingZh: "\u81EA\u5C01\u888B / \u7F50\u88C5 150g\u3001250g\u3001500g / \u51FA\u53E3\u7EB8\u7BB1 10kg",
-      certificationsZh: "\u540C\u5854\u7701\u5730\u7406\u7279\u8272\u4EA7\u54C1\u3001BRCGS \u5DE5\u5382\u3001\u6E05\u6D01\u6807\u7B7E"
+      certificationsZh: ""
     }
   }
 };
@@ -962,105 +1584,161 @@ try {
 }
 var cmsProductMap = /* @__PURE__ */ new Map();
 for (const mod of Object.values(productCmsModules)) {
-  const p = mod.default || mod;
+  const p = mod?.default || mod;
   if (p?.slug) cmsProductMap.set(p.slug, p);
   if (p?.id) cmsProductMap.set(p.id, p);
 }
-var productsData = BASE_PRODUCTS_DATA.map((base) => {
-  const cms = cmsProductMap.get(base.slug) || cmsProductMap.get(base.id);
-  const specI18n = PRODUCT_SPECS_I18N[base.slug];
-  const baseCats = CATEGORY_LABELS[base.category];
-  const baseWithKoZh = {
-    ...base,
-    categoryLabelKo: base.categoryLabelKo || baseCats?.ko || base.categoryLabelEn,
-    categoryLabelZh: base.categoryLabelZh || baseCats?.zh || base.categoryLabelEn,
-    specs: {
-      ...base.specs,
-      ...specI18n?.ko || {},
-      ...specI18n?.zh || {}
-    }
+function buildProductFromBaseAndCms(base, cms, idx, isCmsOnly = false) {
+  const key = base.slug || base.id;
+  const meta = PRODUCT_CATALOG_META[key];
+  const specI18n = PRODUCT_SPECS_I18N[key];
+  const category = cms?.category || base.category || "soft-dried";
+  const cats = CATEGORY_LABELS[category] || CATEGORY_LABELS["soft-dried"];
+  const baseSpecsWithI18n = {
+    ...base.specs,
+    ...specI18n?.ko || {},
+    ...specI18n?.zh || {}
   };
-  if (!cms) return baseWithKoZh;
-  const nameVi = cms.name_vi || cms.nameVi || base.nameVi;
-  const nameEn = cms.name_en || cms.name || base.name;
-  const nameKo = cms.name_ko || cms.nameKo || cms.ko?.name || baseWithKoZh.nameKo || nameEn;
-  const nameZh = cms.name_zh || cms.nameZh || cms.zh?.name || baseWithKoZh.nameZh || nameEn;
-  const descVi = cms.description_vi || cms.descriptionVi || base.descriptionVi;
-  const descEn = cms.description_en || cms.description || base.description;
-  const descKo = cms.description_ko || cms.descriptionKo || cms.ko?.desc || baseWithKoZh.descriptionKo || descEn;
-  const descZh = cms.description_zh || cms.descriptionZh || cms.zh?.desc || baseWithKoZh.descriptionZh || descEn;
-  const originVi = cms.origin_vi || cms.originVi || base.originVi;
-  const originEn = cms.origin_en || cms.origin || base.origin;
-  const originKo = cms.origin_ko || cms.originKo || cms.ko?.origin || baseWithKoZh.originKo || originEn;
-  const originZh = cms.origin_zh || cms.originZh || cms.zh?.origin || baseWithKoZh.originZh || originEn;
-  const category = cms.category || base.category;
-  const cats = CATEGORY_LABELS[category] || baseCats;
-  const img = cms.image || cms.imageWebp || base.imageWebp || base.image;
-  const imgWebp = cms.imageWebp || (img.endsWith(".webp") ? img : img.endsWith(".jpg") ? img.replace(/\.jpe?g$/, ".webp") : img);
-  const imgJpg = cms.imageJpg || (img.endsWith(".webp") ? img.replace(/\.webp$/, ".jpg") : img);
+  const nameVi = (cms?.name_vi || cms?.nameVi || base.nameVi || "").trim();
+  const nameEn = (cms?.name_en || cms?.name || base.name || nameVi).trim();
+  const nameKo = (cms?.name_ko || cms?.nameKo || cms?.ko?.name || meta?.ko?.name || nameEn).trim();
+  const nameZh = (cms?.name_zh || cms?.nameZh || cms?.zh?.name || meta?.zh?.name || nameEn).trim();
+  const fullDescVi = (cms?.description_vi || cms?.descriptionVi || base.descriptionVi || "").trim();
+  const shortDescVi = (cms?.shortDescriptionVi || base.shortDescriptionVi || fullDescVi).trim();
+  const fullDescEn = (cms?.description_en || cms?.description || base.description || "").trim();
+  const shortDescEn = (cms?.shortDescription || base.shortDescription || fullDescEn).trim();
+  const fullDescKo = (cms?.description_ko || cms?.descriptionKo || cms?.ko?.desc || meta?.ko?.desc || fullDescEn).trim();
+  const shortDescKo = (cms?.shortDescriptionKo || meta?.ko?.shortDesc || fullDescKo).trim();
+  const fullDescZh = (cms?.description_zh || cms?.descriptionZh || cms?.zh?.desc || meta?.zh?.desc || fullDescEn).trim();
+  const shortDescZh = (cms?.shortDescriptionZh || meta?.zh?.shortDesc || fullDescZh).trim();
+  const originVi = (cms?.origin_vi || cms?.originVi || base.originVi || "").trim();
+  const originEn = (cms?.origin_en || cms?.origin || base.origin || "").trim();
+  const originKo = (cms?.origin_ko || cms?.originKo || cms?.ko?.origin || meta?.ko?.origin || originEn).trim();
+  const originZh = (cms?.origin_zh || cms?.originZh || cms?.zh?.origin || meta?.zh?.origin || originEn).trim();
+  const rawImg = (cms?.image || cms?.imageWebp || base.imageWebp || base.image || "/images/products/placeholder.webp").trim();
+  const imgWebp = (cms?.imageWebp || (rawImg.endsWith(".jpg") || rawImg.endsWith(".jpeg") ? rawImg.replace(/\.jpe?g$/, ".webp") : rawImg)).trim();
+  const imgJpg = (cms?.imageJpg || (rawImg.endsWith(".webp") ? rawImg.replace(/\.webp$/, ".jpg") : rawImg)).trim();
+  const verifiedCerts = Array.isArray(cms?.productCertifications) ? cms.productCertifications : meta?.verifiedCerts ?? [];
+  const productFeatures = Array.isArray(cms?.productFeatures) && cms.productFeatures.length > 0 ? cms.productFeatures : meta?.features ?? [];
+  const ocopLabel = typeof cms?.ocop === "string" ? verifiedCerts.length > 0 ? cms.ocop : "" : meta ? meta.ocopLabel : base.ocop;
+  const mergedSpecs = mergeSpecsCleanly(baseSpecsWithI18n, cms?.specs, cms, meta, isCmsOnly);
+  const published = cms?.published !== void 0 ? Boolean(cms.published) : cms?.status !== "draft";
   return {
-    ...baseWithKoZh,
+    ...base,
     nameVi,
     name: nameEn,
     nameKo,
     nameZh,
     category,
-    categoryLabelEn: cats?.en || baseWithKoZh.categoryLabelEn,
-    categoryLabelVi: cats?.vi || baseWithKoZh.categoryLabelVi,
-    categoryLabelKo: cats?.ko || baseWithKoZh.categoryLabelKo,
-    categoryLabelZh: cats?.zh || baseWithKoZh.categoryLabelZh,
-    image: img,
+    categoryLabelEn: cats.en,
+    categoryLabelVi: cats.vi,
+    categoryLabelKo: cats.ko,
+    categoryLabelZh: cats.zh,
+    image: rawImg,
     imageWebp: imgWebp,
     imageJpg: imgJpg,
-    shortDescriptionVi: descVi,
-    descriptionVi: descVi,
-    shortDescription: descEn,
-    description: descEn,
-    shortDescriptionKo: cms.shortDescriptionKo || descKo,
-    descriptionKo: descKo,
-    shortDescriptionZh: cms.shortDescriptionZh || descZh,
-    descriptionZh: descZh,
+    shortDescriptionVi: shortDescVi,
+    descriptionVi: fullDescVi || shortDescVi,
+    shortDescription: shortDescEn,
+    description: fullDescEn || shortDescEn,
+    shortDescriptionKo: shortDescKo,
+    descriptionKo: fullDescKo,
+    shortDescriptionZh: shortDescZh,
+    descriptionZh: fullDescZh,
     originVi,
     origin: originEn,
     originKo,
     originZh,
-    certifications: cms.certifications || base.certifications,
-    specs: {
-      ...baseWithKoZh.specs,
-      ...cms.specs || {},
-      shelfLifeVi: cms.shelf_life || cms.specs?.shelfLifeVi || base.specs.shelfLifeVi,
-      shelfLifeKo: cms.shelf_life_ko || cms.specs?.shelfLifeKo || baseWithKoZh.specs.shelfLifeKo,
-      shelfLifeZh: cms.shelf_life_zh || cms.specs?.shelfLifeZh || baseWithKoZh.specs.shelfLifeZh,
-      packagingVi: cms.packaging || cms.specs?.packagingVi || base.specs.packagingVi,
-      packagingKo: cms.packaging_ko || cms.specs?.packagingKo || baseWithKoZh.specs.packagingKo,
-      packagingZh: cms.packaging_zh || cms.specs?.packagingZh || baseWithKoZh.specs.packagingZh
-    },
+    ocop: ocopLabel,
+    certifications: Array.isArray(cms?.certifications) ? cms.certifications : base.certifications,
+    productCertifications: verifiedCerts,
+    productFeatures,
+    specs: mergedSpecs,
     en: {
-      ...base.en,
       name: nameEn,
-      desc: descEn,
-      origin: originEn || base.en.origin
+      desc: shortDescEn || fullDescEn,
+      origin: originEn,
+      features: dedupeNarrative(fullDescEn || shortDescEn, cms?.en?.features || base.en.features)
     },
     vi: {
-      ...base.vi,
       name: nameVi,
-      desc: descVi,
-      origin: originVi || base.vi.origin
+      desc: shortDescVi || fullDescVi,
+      origin: originVi,
+      features: dedupeNarrative(fullDescVi || shortDescVi, cms?.vi?.features || base.vi.features)
     },
     ko: {
       name: nameKo,
-      desc: descKo,
-      origin: originKo || originEn || base.en.origin,
-      features: cms.ko?.features || descKo
+      desc: shortDescKo || fullDescKo,
+      origin: originKo,
+      features: dedupeNarrative(fullDescKo || shortDescKo, cms?.ko?.features)
     },
     zh: {
       name: nameZh,
-      desc: descZh,
-      origin: originZh || originEn || base.en.origin,
-      features: cms.zh?.features || descZh
-    }
+      desc: shortDescZh || fullDescZh,
+      origin: originZh,
+      features: dedupeNarrative(fullDescZh || shortDescZh, cms?.zh?.features)
+    },
+    ...cms?.seoTitleVi ? { seoTitleVi: cms.seoTitleVi } : {},
+    ...cms?.seoTitleEn ? { seoTitleEn: cms.seoTitleEn } : {},
+    ...cms?.seoDescriptionVi ? { seoDescriptionVi: cms.seoDescriptionVi } : {},
+    ...cms?.seoDescriptionEn ? { seoDescriptionEn: cms.seoDescriptionEn } : {},
+    ...cms?.imageAltVi ? { imageAltVi: cms.imageAltVi } : {},
+    ...cms?.imageAltEn ? { imageAltEn: cms.imageAltEn } : {},
+    published,
+    status: published ? "published" : "draft",
+    order: Number(cms?.order) || base.order || idx + 1
   };
+}
+var baseSlugSet = new Set(BASE_PRODUCTS_DATA.map((b) => b.slug));
+var mergedBaseProducts = BASE_PRODUCTS_DATA.map((base, idx) => {
+  const cms = cmsProductMap.get(base.slug) || cmsProductMap.get(base.id);
+  return buildProductFromBaseAndCms(base, cms, idx, false);
 });
+var extraCmsProducts = [];
+var seenExtraSlugs = /* @__PURE__ */ new Set();
+for (const cms of cmsProductMap.values()) {
+  const slug = String(cms?.slug || cms?.id || "").trim();
+  if (!slug || baseSlugSet.has(slug) || seenExtraSlugs.has(slug)) continue;
+  seenExtraSlugs.add(slug);
+  const emptyBase = {
+    id: slug,
+    slug,
+    name: cms.name || cms.name_en || cms.name_vi || slug,
+    nameVi: cms.nameVi || cms.name_vi || slug,
+    category: cms.category || "soft-dried",
+    categoryLabelEn: "",
+    categoryLabelVi: "",
+    image: cms.image || "/images/products/placeholder.webp",
+    imageWebp: cms.imageWebp || cms.image || "/images/products/placeholder.webp",
+    imageJpg: cms.imageJpg || cms.image || "/images/products/placeholder.webp",
+    shortDescription: "",
+    shortDescriptionVi: "",
+    description: "",
+    descriptionVi: "",
+    verified: true,
+    ocop: "",
+    specs: {
+      moisture: "",
+      brix: "",
+      shelfLifeEn: "",
+      shelfLifeVi: "",
+      storageEn: "",
+      storageVi: "",
+      ingredientsEn: "",
+      ingredientsVi: "",
+      processEn: "",
+      processVi: "",
+      packagingEn: "",
+      packagingVi: "",
+      certificationsEn: "",
+      certificationsVi: ""
+    },
+    en: { name: "", desc: "", origin: "", features: "" },
+    vi: { name: "", desc: "", origin: "", features: "" }
+  };
+  extraCmsProducts.push(buildProductFromBaseAndCms(emptyBase, cms, 100 + extraCmsProducts.length, true));
+}
+var productsData = [...mergedBaseProducts, ...extraCmsProducts].filter((p) => p.published !== false && p.status !== "draft").sort((a, b) => (Number(a.order) || 999) - (Number(b.order) || 999));
 
 // server/inquiry.ts
 var EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -1120,15 +1798,17 @@ function isOriginAllowed(req) {
     return false;
   }
 }
-function verifyCanonicalProduct(rawProductId, rawProductName) {
-  const candidates = [rawProductId, rawProductName].map((s) => s.trim().toLowerCase()).filter(Boolean);
+function verifyCanonicalProduct(rawProductId, rawProductSlug, rawProductName) {
+  const candidates = [rawProductSlug, rawProductId, rawProductName].map((s) => s.trim().toLowerCase()).filter(Boolean);
   for (const needle of candidates) {
     const matched = productsData.find(
       (p) => p.slug.toLowerCase() === needle || p.id.toLowerCase() === needle || p.name.toLowerCase() === needle || p.nameVi.toLowerCase() === needle || p.nameKo?.toLowerCase() === needle || p.nameZh?.toLowerCase() === needle || p.en?.name?.toLowerCase() === needle || p.vi?.name?.toLowerCase() === needle || p.ko?.name?.toLowerCase() === needle || p.zh?.name?.toLowerCase() === needle || p.aliases?.some((a) => a.toLowerCase() === needle)
     );
     if (matched) {
       return {
-        verifiedId: matched.slug,
+        verifiedId: matched.id,
+        verifiedSlug: matched.slug,
+        verifiedCategory: matched.category,
         verifiedLabel: `${matched.nameVi} / ${matched.name} (${matched.slug})`,
         isCatalogVerified: true
       };
@@ -1136,6 +1816,8 @@ function verifyCanonicalProduct(rawProductId, rawProductName) {
     if (needle === "value-added-lines") {
       return {
         verifiedId: "value-added-lines",
+        verifiedSlug: "value-added-lines",
+        verifiedCategory: "",
         verifiedLabel: "Honey-Infused / Chocolate-Dipped / Granola (OEM)",
         isCatalogVerified: true
       };
@@ -1143,6 +1825,8 @@ function verifyCanonicalProduct(rawProductId, rawProductName) {
     if (needle === "oem-private-label") {
       return {
         verifiedId: "oem-private-label",
+        verifiedSlug: "oem-private-label",
+        verifiedCategory: "",
         verifiedLabel: "OEM / ODM & Private Label Project",
         isCatalogVerified: true
       };
@@ -1150,6 +1834,8 @@ function verifyCanonicalProduct(rawProductId, rawProductName) {
   }
   return {
     verifiedId: rawProductId || "",
+    verifiedSlug: rawProductSlug || rawProductId || "",
+    verifiedCategory: "",
     verifiedLabel: rawProductName || "",
     isCatalogVerified: false
   };
@@ -1214,8 +1900,10 @@ var inquiry_default = wrapHandler(async (req, res) => {
   const country = cleanText(rawBody.country, 100);
   const inquiryType = cleanText(rawBody.inquiryType, 150);
   const rawProductId = cleanText(rawBody.productId, 120);
+  const rawProductSlug = cleanText(rawBody.productSlug, 120);
   const rawProductName = cleanText(rawBody.productName || rawBody.product, 200);
   const quantity = cleanText(rawBody.quantity || rawBody.volume, 200);
+  const packaging = cleanText(rawBody.packaging, 200);
   const rawTradeTerm = cleanText(rawBody.tradeTerm, 20).toUpperCase();
   const rawShippingMode = cleanText(rawBody.shippingMode, 20).toUpperCase();
   const message = cleanText(rawBody.message, 3e3);
@@ -1274,7 +1962,7 @@ var inquiry_default = wrapHandler(async (req, res) => {
       errors
     });
   }
-  const verifiedProduct = verifyCanonicalProduct(rawProductId, rawProductName);
+  const verifiedProduct = verifyCanonicalProduct(rawProductId, rawProductSlug, rawProductName);
   const dedupHash = crypto.createHash("sha256").update(`${email.toLowerCase()}|${requestType}|${verifiedProduct.verifiedId || rawProductName}|${message}`).digest("hex");
   const existingExpiry = recentSubmissionStore.get(dedupHash);
   if (existingExpiry && now < existingExpiry) {
@@ -1327,9 +2015,12 @@ var inquiry_default = wrapHandler(async (req, res) => {
     `Country / Market: ${country || "N/A"}`,
     `Inquiry Purpose: ${inquiryType || "N/A"}`,
     `Product ID: ${verifiedProduct.verifiedId || "N/A"}`,
+    `Product Slug: ${verifiedProduct.verifiedSlug || "N/A"}`,
+    `Product Category: ${verifiedProduct.verifiedCategory || "N/A"}`,
     `Product (Verified): ${productDisplayForEmail}`,
     `Catalog Verified: ${verifiedProduct.isCatalogVerified ? "YES" : "NO / Custom"}`,
     `Estimated Quantity: ${quantity || "N/A"}`,
+    `Preferred Packaging: ${packaging || "N/A"}`,
     `Trade Term (Incoterms): ${tradeTerm || "N/A"}`,
     `Shipping Mode (Container): ${shippingMode || "N/A"}`,
     `Customer Locale: ${language}`,
@@ -1354,7 +2045,9 @@ var inquiry_default = wrapHandler(async (req, res) => {
           <tr><td style="padding:6px 0;font-weight:bold">Doanh nghi\u1EC7p:</td><td>${escapeHtml(company || "N/A")}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Qu\u1ED1c gia / Th\u1ECB tr\u01B0\u1EDDng:</td><td>${escapeHtml(country || "N/A")}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">S\u1EA3n ph\u1EA9m quan t\xE2m:</td><td><strong>${escapeHtml(productDisplayForEmail)}</strong></td></tr>
+          <tr><td style="padding:6px 0;font-weight:bold">Danh m\u1EE5c s\u1EA3n ph\u1EA9m:</td><td>${escapeHtml(verifiedProduct.verifiedCategory || "N/A")}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">S\u1ED1 l\u01B0\u1EE3ng d\u1EF1 ki\u1EBFn:</td><td>${escapeHtml(quantity || "N/A")}</td></tr>
+          <tr><td style="padding:6px 0;font-weight:bold">Quy c\xE1ch \u0111\xF3ng g\xF3i:</td><td>${escapeHtml(packaging || "N/A")}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">\u0110i\u1EC1u ki\u1EC7n th\u01B0\u01A1ng m\u1EA1i (Incoterms):</td><td>${escapeHtml(tradeTerm || "N/A")}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">H\xECnh th\u1EE9c v\u1EADn chuy\u1EC3n:</td><td>${escapeHtml(shippingMode || "N/A")}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">M\u1EE5c \u0111\xEDch li\xEAn h\u1EC7:</td><td>${escapeHtml(inquiryType || "N/A")}</td></tr>
@@ -1466,8 +2159,11 @@ var inquiry_default = wrapHandler(async (req, res) => {
         sourcePage,
         locale: language,
         verifiedProductId: verifiedProduct.verifiedId,
+        verifiedProductSlug: verifiedProduct.verifiedSlug,
+        verifiedCategoryId: verifiedProduct.verifiedCategory || void 0,
         verifiedProductLabel: productDisplayForEmail,
         quantity,
+        packaging: packaging || void 0,
         tradeTerm: tradeTerm || void 0,
         shippingMode: shippingMode || void 0,
         inquiryType,
@@ -1500,7 +2196,9 @@ var inquiry_default = wrapHandler(async (req, res) => {
     referenceId,
     timestamp: submittedAt,
     recipient: recipientEmail,
-    verifiedProductId: verifiedProduct.verifiedId || void 0
+    verifiedProductId: verifiedProduct.verifiedId || void 0,
+    verifiedProductSlug: verifiedProduct.verifiedSlug || void 0,
+    verifiedCategoryId: verifiedProduct.verifiedCategory || void 0
   });
 });
 export {

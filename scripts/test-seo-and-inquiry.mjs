@@ -602,6 +602,59 @@ async function main() {
     }
   });
 
+  // 11. Exact Product Quotation Payload & Product Banner Terminology Audit
+  await testCase('Product quotation & banner accuracy: resolves productSlug/categoryId/packaging and removes blanket low-temp sugar claims', async () => {
+    const prevFetch = globalThis.fetch;
+    const prevKey = process.env.RESEND_API_KEY;
+    const prevHook = process.env.INQUIRY_WEBHOOK_URL;
+    process.env.RESEND_API_KEY = 're_test_ephemeral_prod_quote_key';
+    delete process.env.INQUIRY_WEBHOOK_URL;
+    const sentEmails = [];
+    globalThis.fetch = async (_url, init) => {
+      sentEmails.push(JSON.parse(init.body));
+      return { ok: true, status: 200, text: async () => '{"id":"msg_prod_quote_1"}' };
+    };
+    try {
+      const resQuote = createMockRes();
+      await contactHandler(
+        createReq({
+          ip: '198.51.100.77',
+          body: {
+            requestType: 'quotation',
+            locale: 'vi',
+            fullName: 'Nguyen Hoang',
+            email: 'hoang@importer.example',
+            productId: 'soft-dried-red-dragonfruit',
+            productSlug: 'soft-dried-red-dragonfruit',
+            categoryId: 'soft-dried',
+            packaging: '250g zip pouch OEM',
+            message: 'Báo giá 500kg Thanh long ruột đỏ sấy dẻo FOB Cát Lái.',
+          },
+        }),
+        resQuote
+      );
+      assert.strictEqual(resQuote.statusCode, 200);
+      assert.strictEqual(resQuote.body.verifiedProductSlug, 'soft-dried-red-dragonfruit');
+      assert.strictEqual(resQuote.body.verifiedCategoryId, 'soft-dried');
+      assert(sentEmails[0].text.includes('Product Slug: soft-dried-red-dragonfruit'));
+      assert(sentEmails[0].text.includes('Product Category: soft-dried'));
+      assert(sentEmails[0].text.includes('Preferred Packaging: 250g zip pouch OEM'));
+    } finally {
+      globalThis.fetch = prevFetch;
+      if (prevKey !== undefined) process.env.RESEND_API_KEY = prevKey;
+      else delete process.env.RESEND_API_KEY;
+      if (prevHook !== undefined) process.env.INQUIRY_WEBHOOK_URL = prevHook;
+    }
+
+    const productsPageSrc = fs.readFileSync(path.join(process.cwd(), 'src/pages/Products.tsx'), 'utf8');
+    assert(!/sấy dẻo nhiệt thấp,\s*không thêm đường/i.test(productsPageSrc), 'Products.tsx must not carry blanket soft-dried/no-sugar copy');
+    for (const locFile of ['src/i18n/vi.ts', 'src/i18n/en.ts', 'src/i18n/ko.ts', 'src/i18n/zhCN.ts']) {
+      const content = fs.readFileSync(path.join(process.cwd(), locFile), 'utf8');
+      assert(!/sấy dẻo nhiệt thấp,\s*không thêm đường/i.test(content), `${locFile} must not carry blanket banner claim`);
+      assert(!/zero added sugar or artificial preservatives/i.test(content), `${locFile} EN banner must not carry blanket zero-added-sugar claim`);
+    }
+  });
+
   console.log(`\nSummary: ${passed}/${total} SEO & Inquiry test cases passed.`);
 }
 

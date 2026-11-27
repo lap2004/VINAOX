@@ -754,6 +754,76 @@ async function runTests() {
     assert.strictEqual(rPost.body?.module, 'products');
   });
 
+  // 20. Product Schema Separation, Field Preservation & 12-Product JSON Integrity
+  await runCase('Product Schema: separates certs vs features, prevents false defaults, and validates all 12 JSONs', async () => {
+    // Chips must NOT receive fabricated soft-dried Brix / heat-pump drying / 3-Star OCOP defaults
+    const chipRes = validateProduct({
+      slug: 'test-banana-chips',
+      name_vi: 'Chuối sấy giòn kiểm thử',
+      category: 'chips',
+      description_vi: 'Lát chuối chín sấy giòn chân không.',
+      specs: { moisture: '< 5%' }
+    });
+    assert.strictEqual(chipRes.valid, true);
+    assert.strictEqual(chipRes.data.specs.brix, '', 'Fruit chips must not receive fabricated Brix');
+    assert.strictEqual(chipRes.data.ocop, '', 'Unverified chips must not receive 3-Star OCOP');
+    assert.deepStrictEqual(chipRes.data.productCertifications, [], 'Product certs default empty unless explicitly assigned');
+    assert.strictEqual(chipRes.data.vi.features, '', 'Features must not duplicate description_vi');
+
+    // Editing productCertifications & productFeatures preserves descriptions, KO/ZH translations & image
+    const mergedWithCertAndFeat = mergeProduct(
+      {
+        id: 'lotus-seeds',
+        slug: 'lotus-seeds',
+        nameVi: 'Hạt sen',
+        name: 'Lotus Seeds',
+        nameKo: '크리스피 연자육',
+        nameZh: '香脆莲子',
+        category: 'nuts-seeds',
+        image: '/images/products/lotus-seeds.webp',
+        imageWebp: '/images/products/lotus-seeds.webp',
+        imageJpg: '/images/products/lotus-seeds.jpg',
+        descriptionVi: 'Hạt sen Đồng Tháp sấy giòn.',
+        description: 'Crispy Dong Thap lotus seeds.',
+        descriptionKo: '동탑성 연자육 스낵.',
+        descriptionZh: '同塔省香脆莲子。',
+      },
+      {
+        productCertifications: [],
+        productFeatures: [
+          { id: 'dong-thap-specialty', label: { vi: 'Đặc sản Đồng Tháp', en: 'Dong Thap Specialty' } }
+        ]
+      }
+    );
+    assert.strictEqual(mergedWithCertAndFeat.description, 'Crispy Dong Thap lotus seeds.');
+    assert.strictEqual(mergedWithCertAndFeat.descriptionKo, '동탑성 연자육 스낵.');
+    assert.strictEqual(mergedWithCertAndFeat.image, '/images/products/lotus-seeds.webp');
+    assert.strictEqual(mergedWithCertAndFeat.productCertifications?.length, 0);
+    assert.strictEqual(mergedWithCertAndFeat.productFeatures?.[0]?.label.vi, 'Đặc sản Đồng Tháp');
+
+    // Verify all 12 production CMS JSON files
+    const prodDir = path.join(process.cwd(), 'content/products');
+    const jsonFiles = fs.readdirSync(prodDir).filter((f) => f.endsWith('.json'));
+    assert.strictEqual(jsonFiles.length, 12, 'Must preserve all 12 products');
+    const ocopSlugs = new Set();
+    for (const file of jsonFiles) {
+      const p = JSON.parse(fs.readFileSync(path.join(prodDir, file), 'utf8'));
+      assert(!String(p.image || '').includes('img_5608'), `${file} image must not use img_5608`);
+      assert.strictEqual(p.vi?.features || '', '', `${file} vi.features must not duplicate description`);
+      const certs = Array.isArray(p.productCertifications) ? p.productCertifications : [];
+      if (certs.some((c) => c.certificateId === 'ocop-3-star')) {
+        ocopSlugs.add(p.slug);
+      }
+      if (p.category !== 'soft-dried') {
+        assert.strictEqual(p.specs?.brix || '', '', `${file} non-soft-dried category must not have Brix`);
+      }
+    }
+    assert.deepStrictEqual(
+      [...ocopSlugs].sort(),
+      ['soft-dried-jackfruit', 'soft-dried-mango', 'soft-dried-red-dragonfruit']
+    );
+  });
+
   console.log(`\n========================================`);
   console.log(`SECURITY & UNIT SUITE RESULTS: ${passed}/${total} PASSED`);
   console.log(`========================================\n`);
