@@ -221,6 +221,102 @@ export const GlobalMarket: React.FC = () => {
               <div className="logistics-item-val">{t('marketsPage.section2.containerDesc')}</div>
             </div>
           </div>
+
+          {/* Explicit Separation: Trade Terms (Incoterms) vs Container Shipping Modes */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+              gap: '20px',
+              marginTop: '28px',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: 'var(--white)',
+                border: '1px solid var(--soft-border)',
+                borderRadius: 'var(--radius-lg)',
+                padding: '22px 24px',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  color: 'var(--vinaxo-red)',
+                  marginBottom: '6px',
+                }}
+              >
+                {pick({
+                  vi: 'NHÓM 1 · ĐIỀU KIỆN THƯƠNG MẠI (INCOTERMS)',
+                  en: 'GROUP 1 · INTERNATIONAL TRADE TERMS (INCOTERMS)',
+                  ko: '구분 1 · 국제 무역 조건 (INCOTERMS)',
+                  zh: '类别 1 · 国际贸易条款 (INCOTERMS)',
+                })}
+              </div>
+              <h3 style={{ fontSize: '1.12rem', color: 'var(--dark-chocolate)', margin: '0 0 8px 0', fontWeight: 700 }}>
+                {pick({
+                  vi: 'Điều kiện thương mại: FOB / CIF',
+                  en: 'Trade Terms: FOB / CIF',
+                  ko: '무역 조건: FOB / CIF',
+                  zh: '贸易条款：FOB / CIF',
+                })}
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-body)', lineHeight: 1.6, margin: 0 }}>
+                {pick({
+                  vi: 'Áp dụng cho vận tải biển & đường thủy nội địa gồm FOB (Free On Board – Giao hàng lên tàu tại cảng đi) và CIF (Cost, Insurance and Freight – Tiền hàng, bảo hiểm và cước phí tới cảng đến); điều kiện chi tiết được thống nhất phù hợp theo từng đơn hàng.',
+                  en: 'Maritime and inland waterway Incoterms covering FOB (Free On Board) and CIF (Cost, Insurance and Freight), agreed flexibly with each B2B export order.',
+                  ko: '해상 및 내수로 운송 기준 FOB(본선인도조건) 및 CIF(운임·보험료 포함 인도조건)를 지원하며, 세부 조건은 주문별 협의에 따라 확정됩니다.',
+                  zh: '适用于海运及内河水运的国际贸易条款，涵盖 FOB（装运港船上交货）与 CIF（成本、保险费加运费），具体条款依据各笔出口订单协商确认。',
+                })}
+              </p>
+            </div>
+
+            <div
+              style={{
+                backgroundColor: 'var(--white)',
+                border: '1px solid var(--soft-border)',
+                borderRadius: 'var(--radius-lg)',
+                padding: '22px 24px',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  color: 'var(--primary-green)',
+                  marginBottom: '6px',
+                }}
+              >
+                {pick({
+                  vi: 'NHÓM 2 · HÌNH THỨC VẬN CHUYỂN CONTAINER',
+                  en: 'GROUP 2 · CONTAINER SHIPPING OPTIONS',
+                  ko: '구분 2 · 컨테이너 운송 방식',
+                  zh: '类别 2 · 集装箱海运方式',
+                })}
+              </div>
+              <h3 style={{ fontSize: '1.12rem', color: 'var(--dark-chocolate)', margin: '0 0 8px 0', fontWeight: 700 }}>
+                {pick({
+                  vi: 'Hình thức vận chuyển: FCL / LCL',
+                  en: 'Shipping Options: FCL / LCL',
+                  ko: '운송 방식: FCL / LCL',
+                  zh: '运输方式：FCL / LCL',
+                })}
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-body)', lineHeight: 1.6, margin: 0 }}>
+                {pick({
+                  vi: 'Hỗ trợ cả FCL (Full Container Load – Hàng nguyên container 20ft/40ft) và LCL (Less than Container Load – Hàng lẻ ghép container) đáp ứng linh hoạt quy mô nhập khẩu thực tế của đối tác.',
+                  en: 'Supports both FCL (Full Container Load, 20ft/40ft) and LCL (Less than Container Load) cargo consolidation tailored to each importer’s order volume.',
+                  ko: 'FCL(Full Container Load – 20ft/40ft 컨테이너 단위 화물) 및 LCL(Less than Container Load – 컨테이너 혼재 화물) 운송을 모두 지원하여 발주 규모에 맞춰 유연하게 대응합니다.',
+                  zh: '支持 FCL（整箱运输，20尺/40尺柜）与 LCL（拼箱运输）两种集装箱配载模式，灵活匹配不同进口商的实际订货规模。',
+                })}
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -319,10 +415,10 @@ export const GlobalMarket: React.FC = () => {
             title={t('marketsPage.section4.title')}
             description={t('marketsPage.section4.desc')}
             primaryText={pick({
-              vi: 'Yêu Cầu Báo Giá FCL/CIF',
-              en: 'Request FCL/CIF Quotation',
-              ko: 'FCL/CIF 수출 견적 요청',
-              zh: '获取整柜 FCL / CIF 报价'
+              vi: 'Nhận Báo Giá Theo Điều Kiện FOB/CIF',
+              en: 'Request Export Quote (FOB/CIF)',
+              ko: 'FOB/CIF 조건 수출 견적 요청',
+              zh: '获取出口报价（FOB / CIF）',
             })}
             onPrimaryClick={() => onOpenQuote()}
             secondaryText={pick({

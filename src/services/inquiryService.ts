@@ -33,6 +33,8 @@ export function buildInquiryPlainText(payload: ContactRequest): string {
     `Product ID: ${payload.productId || 'general'}`,
     `Product of Interest: ${productLabel}`,
     `Estimated Quantity / Packaging: ${qty}`,
+    `Trade Term (Incoterms): ${payload.tradeTerm || 'N/A'}`,
+    `Shipping Mode (Container): ${payload.shippingMode || 'N/A'}`,
     `Language: ${loc.toUpperCase()}`,
     `Source: ${payload.source || payload.sourcePage || '/'}`,
     '----------------------------------------',

@@ -450,7 +450,7 @@ export const ko: Translations = {
       "step1Desc": "품목 선정 협의, DHL/FedEx 샘플 발송 및 예상 발주량에 따른 FOB/CIF 견적서 제공.",
       "step2Num": "2단계",
       "step2Title": "계약 체결 및 OEM 포장 확정",
-      "step2Desc": "수분·사이즈 규격 확정, 자체 브랜드(PB) 패키지 디자인 최종 검토, 생산 일정 및 결제 조건(L/C, T/T) 협의.",
+      "step2Desc": "수분·사이즈 규격 확정, 자체 브랜드(OEM / Private Label) 라벨 디자인 시안 및 포장 디자인 검토, 생산 일정 및 결제 조건(L/C, T/T) 협의.",
       "step3Num": "3단계",
       "step3Title": "배치 생산, COA 발급 및 선적",
       "step3Desc": "표준 공정 생산 및 검사성적서(COA) 발급, 수출 통관 완료 후 선하증권(B/L) 일체 송부."
@@ -458,8 +458,8 @@ export const ko: Translations = {
     "section4": {
       "label": "해외 바이어 문의",
       "title": "VINAXO 국제 수출부서와 연결하세요",
-      "desc": "글로벌 수입사, 리테일 바이어, 도매 유통사와의 컨테이너 단위 계약 및 시즌 원물 공급 상담을 환영합니다.",
-      "btnPrimary": "컨테이너 견적 요청",
+      "desc": "VINAXO는 B2B 고객의 요구에 맞춘 열대 건조 과일 OEM 생산 및 수출 솔루션을 제공합니다. 무역 조건(FOB/CIF), 포장 규격 및 운송 방식(FCL/LCL)은 주문별로 최적화하여 협의됩니다.",
+      "btnPrimary": "FOB/CIF 수출 견적 요청",
       "btnSecondary": "수출팀 직접 문의"
     }
   },

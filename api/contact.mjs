@@ -1216,9 +1216,31 @@ var inquiry_default = wrapHandler(async (req, res) => {
   const rawProductId = cleanText(rawBody.productId, 120);
   const rawProductName = cleanText(rawBody.productName || rawBody.product, 200);
   const quantity = cleanText(rawBody.quantity || rawBody.volume, 200);
+  const rawTradeTerm = cleanText(rawBody.tradeTerm, 20).toUpperCase();
+  const rawShippingMode = cleanText(rawBody.shippingMode, 20).toUpperCase();
   const message = cleanText(rawBody.message, 3e3);
   const sourcePage = cleanText(rawBody.source || rawBody.sourcePage, 200) || (requestType === "quotation" ? "QuoteModal" : "/contact");
+  const ALLOWED_TRADE_TERMS = /* @__PURE__ */ new Set(["FOB", "CIF", "CONSULT"]);
+  const ALLOWED_SHIPPING_MODES = /* @__PURE__ */ new Set(["FCL", "LCL", "CONSULT"]);
   const errors = [];
+  if (rawTradeTerm && !ALLOWED_TRADE_TERMS.has(rawTradeTerm)) {
+    errors.push(pickMsg({
+      vi: "\u0110i\u1EC1u ki\u1EC7n th\u01B0\u01A1ng m\u1EA1i kh\xF4ng h\u1EE3p l\u1EC7 (ch\u1EC9 ch\u1EA5p nh\u1EADn FOB, CIF ho\u1EB7c CONSULT).",
+      en: "Invalid trade term (only FOB, CIF, or CONSULT allowed).",
+      ko: "\uC720\uD6A8\uD558\uC9C0 \uC54A\uC740 \uBB34\uC5ED \uC870\uAC74\uC785\uB2C8\uB2E4 (FOB, CIF \uB610\uB294 CONSULT\uB9CC \uD5C8\uC6A9).",
+      "zh-CN": "\u65E0\u6548\u7684\u8D38\u6613\u6761\u6B3E\uFF08\u4EC5\u652F\u6301 FOB\u3001CIF \u6216 CONSULT\uFF09\u3002"
+    }));
+  }
+  if (rawShippingMode && !ALLOWED_SHIPPING_MODES.has(rawShippingMode)) {
+    errors.push(pickMsg({
+      vi: "H\xECnh th\u1EE9c v\u1EADn chuy\u1EC3n kh\xF4ng h\u1EE3p l\u1EC7 (ch\u1EC9 ch\u1EA5p nh\u1EADn FCL, LCL ho\u1EB7c CONSULT).",
+      en: "Invalid shipping mode (only FCL, LCL, or CONSULT allowed).",
+      ko: "\uC720\uD6A8\uD558\uC9C0 \uC54A\uC740 \uC6B4\uC1A1 \uBC29\uC2DD\uC785\uB2C8\uB2E4 (FCL, LCL \uB610\uB294 CONSULT\uB9CC \uD5C8\uC6A9).",
+      "zh-CN": "\u65E0\u6548\u7684\u8FD0\u8F93\u65B9\u5F0F\uFF08\u4EC5\u652F\u6301 FCL\u3001LCL \u6216 CONSULT\uFF09\u3002"
+    }));
+  }
+  const tradeTerm = rawTradeTerm || "";
+  const shippingMode = rawShippingMode || "";
   if (fullName.length < 2) {
     errors.push(pickMsg({
       vi: "Vui l\xF2ng nh\u1EADp h\u1ECD t\xEAn \u0111\u1EA7y \u0111\u1EE7 (t\u1ED1i thi\u1EC3u 2 k\xFD t\u1EF1).",
@@ -1308,6 +1330,8 @@ var inquiry_default = wrapHandler(async (req, res) => {
     `Product (Verified): ${productDisplayForEmail}`,
     `Catalog Verified: ${verifiedProduct.isCatalogVerified ? "YES" : "NO / Custom"}`,
     `Estimated Quantity: ${quantity || "N/A"}`,
+    `Trade Term (Incoterms): ${tradeTerm || "N/A"}`,
+    `Shipping Mode (Container): ${shippingMode || "N/A"}`,
     `Customer Locale: ${language}`,
     `Source Page: ${sourcePage}`,
     `----------------------------------------`,
@@ -1331,6 +1355,8 @@ var inquiry_default = wrapHandler(async (req, res) => {
           <tr><td style="padding:6px 0;font-weight:bold">Qu\u1ED1c gia / Th\u1ECB tr\u01B0\u1EDDng:</td><td>${escapeHtml(country || "N/A")}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">S\u1EA3n ph\u1EA9m quan t\xE2m:</td><td><strong>${escapeHtml(productDisplayForEmail)}</strong></td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">S\u1ED1 l\u01B0\u1EE3ng d\u1EF1 ki\u1EBFn:</td><td>${escapeHtml(quantity || "N/A")}</td></tr>
+          <tr><td style="padding:6px 0;font-weight:bold">\u0110i\u1EC1u ki\u1EC7n th\u01B0\u01A1ng m\u1EA1i (Incoterms):</td><td>${escapeHtml(tradeTerm || "N/A")}</td></tr>
+          <tr><td style="padding:6px 0;font-weight:bold">H\xECnh th\u1EE9c v\u1EADn chuy\u1EC3n:</td><td>${escapeHtml(shippingMode || "N/A")}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">M\u1EE5c \u0111\xEDch li\xEAn h\u1EC7:</td><td>${escapeHtml(inquiryType || "N/A")}</td></tr>
           <tr><td style="padding:6px 0;font-weight:bold">Ng\xF4n ng\u1EEF / Ngu\u1ED3n:</td><td>${escapeHtml(language)} (${escapeHtml(sourcePage)})</td></tr>
         </table>
@@ -1442,6 +1468,8 @@ var inquiry_default = wrapHandler(async (req, res) => {
         verifiedProductId: verifiedProduct.verifiedId,
         verifiedProductLabel: productDisplayForEmail,
         quantity,
+        tradeTerm: tradeTerm || void 0,
+        shippingMode: shippingMode || void 0,
         inquiryType,
         company,
         country

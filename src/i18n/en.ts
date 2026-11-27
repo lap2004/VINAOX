@@ -490,7 +490,7 @@ export const en = {
       "step1Desc": "Product selection review, sample dispatch via DHL/FedEx courier, and comprehensive FOB/CIF quotation based on projected container volumes.",
       "step2Num": "Step 2",
       "step2Title": "Contracting & OEM Packaging Design",
-      "step2Desc": "Specification alignment, private label packaging artwork finalization, production scheduling, and international payment terms (L/C, T/T).",
+      "step2Desc": "Specification alignment, label design mockup and packaging design finalization (for OEM / Private Label), production scheduling, and international payment terms (L/C, T/T).",
       "step3Num": "Step 3",
       "step3Title": "Batch Manufacturing, Testing & Port Dispatch",
       "step3Desc": "Controlled batch dehydration, issuing Certificates of Analysis (COA), export customs clearance, and prompt courier of complete Bill of Lading (B/L) shipping sets."
@@ -498,8 +498,8 @@ export const en = {
     "section4": {
       "label": "INTERNATIONAL TRADE INQUIRY",
       "title": "Connect with VINAXO International Export Department",
-      "desc": "We welcome international importers, retail chains, and global wholesalers to discuss delivery terms, preferential FCL volume rates, and customized seasonal crop contracts.",
-      "btnPrimary": "Request Container Quote",
+      "desc": "VINAXO delivers tailored B2B tropical dried fruit manufacturing and export solutions. Trade terms (FOB/CIF), packaging specifications, and shipping options (FCL/LCL) are agreed to suit each order.",
+      "btnPrimary": "Request Export Quote (FOB/CIF)",
       "btnSecondary": "Contact Export Desk"
     }
   },

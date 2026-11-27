@@ -2,6 +2,8 @@ import { getProductLocalized, productsData, type ProductItem } from '../../data/
 import { pickLocale, type Language } from '../../i18n/localize';
 
 export type RequestType = 'contact' | 'quotation';
+export type TradeTerm = 'FOB' | 'CIF' | 'CONSULT';
+export type ShippingMode = 'FCL' | 'LCL' | 'CONSULT';
 
 export interface ContactRequest {
   requestType: RequestType;
@@ -20,6 +22,8 @@ export interface ContactRequest {
   product?: string;
   quantity?: string;
   volume?: string;
+  tradeTerm?: TradeTerm;
+  shippingMode?: ShippingMode;
   message: string;
   source: string;
   sourcePage?: string;

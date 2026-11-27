@@ -450,7 +450,7 @@ export const zhCN: Translations = {
       "step1Desc": "确认产品规格、通过 DHL/FedEx 寄送评估样品，并依据预计柜量提供完整 FOB/CIF 报价。",
       "step2Num": "第二步",
       "step2Title": "签约及 OEM 包装定稿",
-      "step2Desc": "锁定水分与切型标准、审核私有品牌包装设计稿、排定生产档期并确认信用证 (L/C) 或电汇 (T/T) 结算方式。",
+      "step2Desc": "锁定水分与切型标准、确认 OEM / 自有品牌标签设计样稿与包装设计、排定生产档期并确认信用证 (L/C) 或电汇 (T/T) 结算方式。",
       "step3Num": "第三步",
       "step3Title": "批量生产、出厂检测与装船",
       "step3Desc": "规范化批次烘干加工、出具每批 COA 检测报告、办理出口报关并及时寄送全套提单 (B/L) 清关单证。"
@@ -458,8 +458,8 @@ export const zhCN: Translations = {
     "section4": {
       "label": "国际贸易洽谈",
       "title": "立即对接 VINAXO 国际出口部门",
-      "desc": "诚邀海外进口商、连锁商超及全球批发商洽谈交付条款、整柜优惠价及年度产季锁量合作。",
-      "btnPrimary": "申请整柜报价",
+      "desc": "VINAXO 依据 B2B 客户需求提供热带果干生产与出口解决方案。贸易条款（FOB/CIF）、包装规格与运输方式（FCL/LCL）均按具体订单需求协商确定。",
+      "btnPrimary": "获取出口报价（FOB / CIF）",
       "btnSecondary": "联系出口部门"
     }
   },

@@ -65,3 +65,18 @@
 | `soft-dried-papaya` | Đu đủ sấy dẻo | Soft Dried Papaya | 소프트 건파파야 | 软烘木瓜干 |
 | `mix-fruits-and-vegetables` | Trái cây và rau củ sấy thập cẩm | Mix Fruits and Vegetables | 모듬 과일·채소 칩 | 综合果蔬脆片 |
 | `lotus-seeds` | Hạt sen | Lotus Seeds | 크리스피 연자육 | 香脆莲子 |
+
+---
+
+## 5. Thuật ngữ Logistics Xuất khẩu, Incoterms & Thiết kế Nhãn mác OEM (Chuẩn hóa 4 Ngôn ngữ)
+
+| Khái niệm | Tiếng Việt (`vi`) | English (`en`) | 한국어 (`ko`) | 简体中文 (`zh-CN`) |
+|---|---|---|---|---|
+| **Điều kiện thương mại (Incoterms)** | Điều kiện thương mại (`FOB` / `CIF`) | Trade Terms (`FOB` / `CIF`) | 무역 조건 (`FOB` / `CIF`) | 贸易条款 (`FOB` / `CIF`) |
+| **Hình thức vận chuyển** | Hình thức vận chuyển (`FCL` / `LCL`) | Shipping Options (`FCL` / `LCL`) | 운송 방식 (`FCL` / `LCL`) | 运输方式 (`FCL` / `LCL`) |
+| **FCL** | Hàng nguyên container (`FCL`) | Full Container Load (`FCL`) | 컨테이너 단위 화물 (`FCL`) | 整箱运输 (`FCL`) |
+| **LCL** | Hàng lẻ ghép container (`LCL`) | Less than Container Load (`LCL`) | 컨테이너 혼재 화물 (`LCL`) | 拼箱运输 (`LCL`) |
+| **Nhận báo giá** | Nhận báo giá | Request a Quote | 견적 요청 | 获取报价 |
+| **Mẫu thiết kế nhãn mác** | Mẫu thiết kế nhãn mác | Label Design Mockup | 라벨 디자인 시안 | 标签设计样稿 |
+| **Thiết kế bao bì** | Thiết kế bao bì | Packaging Design | 포장 디자인 | 包装设计 |
+| **Gia công OEM** | Gia công OEM | OEM Manufacturing | OEM 생산 | OEM 代工生产 |
