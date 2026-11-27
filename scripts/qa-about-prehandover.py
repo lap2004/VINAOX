@@ -175,8 +175,14 @@ def run_browser_qa(browser_name: str, base_url: str, save_screenshots: bool):
                     time.sleep(0.5)
                     driver.save_screenshot(os.path.join(SCREENSHOT_ROOT, "after-about-visual-vi.png"))
                     gal_el = driver.find_element(By.CSS_SELECTOR, "[data-testid='about-gallery-grid']")
-                    driver.execute_script('arguments[0].scrollIntoView({block:"start"});', gal_el)
-                    time.sleep(0.6)
+                    driver.execute_script("""
+                        arguments[0].scrollIntoView({block:"start"});
+                        for (const img of arguments[0].querySelectorAll('img')) { img.loading = 'eager'; }
+                    """, gal_el)
+                    WebDriverWait(driver, 15).until(lambda d: d.execute_script(
+                        "return Array.from(document.querySelectorAll('.about-gallery-thumb-img')).every(i => i.complete && i.naturalWidth > 0);"
+                    ))
+                    time.sleep(0.3)
                     driver.save_screenshot(os.path.join(SCREENSHOT_ROOT, "after-about-gallery-vi.png"))
                 elif lang["code"] == "ko":
                     driver.execute_script('arguments[0].scrollIntoView({block:"center"});', card2)

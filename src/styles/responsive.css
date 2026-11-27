@@ -1126,7 +1126,7 @@
 
 .about-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
 }
 
@@ -1156,6 +1156,12 @@
   background: #f5efe6;
   cursor: pointer;
   overflow: hidden;
+}
+
+.about-gallery-thumb-btn picture {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .about-gallery-thumb-img {
@@ -1406,6 +1412,12 @@
   color: var(--color-body);
   line-height: 1.55;
   margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .about-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 640px) {
