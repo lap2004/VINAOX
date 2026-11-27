@@ -115,6 +115,8 @@
   "shelf_life": "12 Tháng",
   "packaging": "Túi hút chân không / Lon nạp khí Nitơ 250g, 500g / Thùng chân không 10kg, 22.68kg",
   "order": 3,
+  "featured": true,
+  "featuredOrder": 4,
   "published": true,
   "status": "published"
 }

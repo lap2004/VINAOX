@@ -102,6 +102,91 @@ function stripUnsafeKeys(obj) {
   return clean;
 }
 
+// src/shared/catalogCategories.ts
+var CATALOG_CATEGORIES = [
+  {
+    id: "soft-dried",
+    slug: "soft-dried",
+    name: {
+      vi: "Tr\xE1i c\xE2y s\u1EA5y d\u1EBBo",
+      en: "Soft-Dried Fruits",
+      ko: "\uC18C\uD504\uD2B8 \uAC74\uC870 \uACFC\uC77C",
+      zh: "\u8F6F\u70D8\u5E72\u679C"
+    },
+    description: {
+      vi: "Ch\u1EBF bi\u1EBFn b\u1EB1ng c\xF4ng ngh\u1EC7 s\u1EA5y b\u01A1m nhi\u1EC7t nhi\u1EC7t \u0111\u1ED9 th\u1EA5p gi\xFAp gi\u1EEF k\u1EBFt c\u1EA5u d\u1EBBo m\u1EC1m v\xE0 h\u01B0\u01A1ng v\u1ECB \u0111\u1EB7c tr\u01B0ng c\u1EE7a t\u1EEBng lo\u1EA1i tr\xE1i c\xE2y.",
+      en: "Processed via low-temperature heat-pump dehydration to preserve soft, chewy fruit texture and tropical aroma by SKU.",
+      ko: "\uC800\uC628 \uD788\uD2B8\uD38C\uD504 \uAC74\uC870\uB85C \uD488\uBAA9\uBCC4 \uBD80\uB4DC\uB7FD\uACE0 \uCAC4\uAE43\uD55C \uC2DD\uAC10\uACFC \uC5F4\uB300 \uACFC\uC77C \uD48D\uBBF8\uB97C \uC720\uC9C0\uD569\uB2C8\uB2E4.",
+      zh: "\u91C7\u7528\u4F4E\u6E29\u70ED\u6CF5\u5FAA\u73AF\u70D8\u5E72\u5DE5\u827A\uFF0C\u4F9D\u636E\u5404\u679C\u54C1\u7279\u70B9\u4FDD\u7559\u67D4\u97E7\u53E3\u611F\u4E0E\u6D53\u90C1\u679C\u9999\u3002"
+    },
+    image: "/assets/images/hero_fruits.webp",
+    imageFallback: "/assets/images/hero_fruits.jpg",
+    visible: true,
+    sortOrder: 1
+  },
+  {
+    id: "chips",
+    slug: "chips",
+    name: {
+      vi: "Tr\xE1i c\xE2y s\u1EA5y gi\xF2n",
+      en: "Crispy Dried Fruits",
+      ko: "\uD06C\uB9AC\uC2A4\uD53C \uACFC\uC77C \uCE69",
+      zh: "\u9999\u8106\u679C\u5E72\u7247"
+    },
+    description: {
+      vi: "C\xE1c d\xF2ng l\xE1t tr\xE1i c\xE2y s\u1EA5y gi\xF2n v\xE0 chi\xEAn s\u1EA5y ch\xE2n kh\xF4ng nhi\u1EC7t \u0111\u1ED9 th\u1EA5p k\u1EBFt h\u1EE3p ly t\xE2m t\xE1ch d\u1EA7u, \u0111\u1ED9 \u1EA9m th\u1EA5p d\u01B0\u1EDBi 5%.",
+      en: "Crispy fruit chips processed via low-temperature vacuum crisping and centrifugal de-oiling with moisture below 5%.",
+      ko: "\uC800\uC628 \uC9C4\uACF5 \uAC74\uC870 \uBC0F \uC6D0\uC2EC \uD0C8\uC720 \uACF5\uC815\uC744 \uC801\uC6A9\uD574 \uC218\uBD84 5% \uBBF8\uB9CC\uC758 \uBC14\uC0AD\uD55C \uC2DD\uAC10\uC744 \uAD6C\uD604\uD55C \uACFC\uC77C \uCE69 \uC81C\uD488\uAD70\uC785\uB2C8\uB2E4.",
+      zh: "\u91C7\u7528\u4F4E\u6E29\u771F\u7A7A\u8106\u5316\u4E0E\u79BB\u5FC3\u8131\u6CB9\u5DE5\u827A\u5236\u6210\u7684\u6C34\u679C\u8106\u7247\u7CFB\u5217\uFF0C\u6210\u54C1\u6C34\u5206\u542B\u91CF\u4F4E\u4E8E 5%\u3002"
+    },
+    image: "/images/products/banana-chips.webp",
+    imageFallback: "/images/products/banana-chips.jpg",
+    visible: true,
+    sortOrder: 2
+  },
+  {
+    id: "nuts-seeds",
+    slug: "nuts-seeds",
+    name: {
+      vi: "H\u1EA1t dinh d\u01B0\u1EE1ng",
+      en: "Nuts & Seeds",
+      ko: "\uACAC\uACFC\uB958 \uBC0F \uC5F0\uC790\uC721",
+      zh: "\u575A\u679C\u4E0E\u83B2\u5B50"
+    },
+    description: {
+      vi: "H\u1EA1t \u0111i\u1EC1u, m\u1EAFc ca, \xF3c ch\xF3 v\xE0 h\u1EA1t sen \u0111\u01B0\u1EE3c tuy\u1EC3n ch\u1ECDn theo v\xF9ng nguy\xEAn li\u1EC7u v\xE0 rang/s\u1EA5y ph\xF9 h\u1EE3p t\u1EEBng lo\u1EA1i h\u1EA1t.",
+      en: "Cashew, macadamia, walnuts, and lotus seeds sourced by regional origin with roasting or drying tailored to each kernel.",
+      ko: "\uC0B0\uC9C0\uBCC4\uB85C \uC5C4\uC120\uD55C \uCE90\uC288\uB11B\xB7\uB9C8\uCE74\uB2E4\uBBF8\uC544\xB7\uD638\uB450\xB7\uC5F0\uC790\uC721\uC744 \uC6D0\uBB3C \uD2B9\uC131\uC5D0 \uB9DE\uAC8C \uB85C\uC2A4\uD305\xB7\uAC74\uC870\uD558\uC5EC \uACF5\uAE09\uD569\uB2C8\uB2E4.",
+      zh: "\u4E25\u9009\u4F18\u8D28\u4EA7\u533A\u8170\u679C\u3001\u590F\u5A01\u5937\u679C\u3001\u6838\u6843\u4E0E\u83B2\u5B50\uFF0C\u6309\u4E0D\u540C\u575A\u679C\u7279\u6027\u5339\u914D\u70D8\u7119\u6216\u5E72\u71E5\u5DE5\u827A\u3002"
+    },
+    image: "/images/products/cashew.webp",
+    imageFallback: "/images/products/cashew.jpg",
+    visible: true,
+    sortOrder: 3
+  },
+  {
+    id: "mixed",
+    slug: "mixed",
+    name: {
+      vi: "S\u1EA3n ph\u1EA9m th\u1EADp c\u1EA9m",
+      en: "Mixed Products",
+      ko: "\uBAA8\uB4EC \uC81C\uD488",
+      zh: "\u7EFC\u5408\u4EA7\u54C1"
+    },
+    description: {
+      vi: "Ph\u1ED1i tr\u1ED9n \u0111a d\u1EA1ng tr\xE1i c\xE2y v\xE0 rau c\u1EE7 Vi\u1EC7t Nam s\u1EA5y gi\xF2n ch\xE2n kh\xF4ng ph\u1EE5c v\u1EE5 k\xEAnh b\xE1n l\u1EBB, food-service v\xE0 OEM.",
+      en: "Vacuum-dried blends of Vietnamese tropical fruits and vegetables tailored for retail, food-service, and OEM.",
+      ko: "\uB2E4\uC591\uD55C \uBCA0\uD2B8\uB0A8 \uC5F4\uB300 \uACFC\uC77C\uACFC \uBFCC\uB9AC\uCC44\uC18C\uB97C \uC800\uC628 \uC9C4\uACF5 \uAC74\uC870\uB85C \uBE14\uB80C\uB529\uD55C \uBAA8\uB4EC \uC81C\uD488\uAD70\uC785\uB2C8\uB2E4.",
+      zh: "\u7CBE\u9009\u591A\u79CD\u8D8A\u5357\u70ED\u5E26\u6C34\u679C\u4E0E\u6839\u830E\u852C\u83DC\u7ECF\u771F\u7A7A\u8106\u5316\u62FC\u914D\uFF0C\u5E7F\u6CDB\u9002\u914D\u5546\u8D85\u53CA OEM \u6E20\u9053\u3002"
+    },
+    image: "/images/products/mix-fruits-and-vegetables.webp",
+    imageFallback: "/images/products/mix-fruits-and-vegetables.jpg",
+    visible: true,
+    sortOrder: 4
+  }
+];
+var VALID_CATALOG_CATEGORY_IDS = CATALOG_CATEGORIES.map((c) => c.id);
+
 // src/data/products.ts
 var BASE_PRODUCTS_DATA = [
   // 01 — Soft Dried Red Dragonfruit
@@ -710,32 +795,18 @@ var BASE_PRODUCTS_DATA = [
     }
   }
 ];
-var CATEGORY_LABELS = {
-  "soft-dried": {
-    vi: "Tr\xE1i c\xE2y s\u1EA5y d\u1EBBo",
-    en: "Soft-Dried Fruits",
-    ko: "\uC18C\uD504\uD2B8 \uAC74\uC870 \uACFC\uC77C",
-    zh: "\u8F6F\u70D8\u5E72\u679C"
+var CATEGORY_LABELS = CATALOG_CATEGORIES.reduce(
+  (acc, cat) => {
+    acc[cat.id] = {
+      vi: cat.name.vi,
+      en: cat.name.en,
+      ko: cat.name.ko || cat.name.en,
+      zh: cat.name.zh || cat.name.en
+    };
+    return acc;
   },
-  chips: {
-    vi: "Tr\xE1i c\xE2y s\u1EA5y gi\xF2n",
-    en: "Fruit Chips",
-    ko: "\uD06C\uB9AC\uC2A4\uD53C \uACFC\uC77C \uCE69",
-    zh: "\u9999\u8106\u679C\u5E72\u7247"
-  },
-  "nuts-seeds": {
-    vi: "H\u1EA1t dinh d\u01B0\u1EE1ng",
-    en: "Nuts & Seeds",
-    ko: "\uACAC\uACFC\uB958 \uBC0F \uC5F0\uC790\uC721",
-    zh: "\u575A\u679C\u4E0E\u83B2\u5B50"
-  },
-  mixed: {
-    vi: "S\u1EA3n ph\u1EA9m th\u1EADp c\u1EA9m",
-    en: "Mixed Products",
-    ko: "\uBAA8\uB4EC \uACFC\uC77C\xB7\uCC44\uC18C",
-    zh: "\u7EFC\u5408\u679C\u852C"
-  }
-};
+  {}
+);
 function hasApplicableBrix(brix) {
   if (!brix || typeof brix !== "string") return false;
   const trimmed = brix.trim();
@@ -1686,7 +1757,9 @@ function buildProductFromBaseAndCms(base, cms, idx, isCmsOnly = false) {
     ...cms?.imageAltEn ? { imageAltEn: cms.imageAltEn } : {},
     published,
     status: published ? "published" : "draft",
-    order: Number(cms?.order) || base.order || idx + 1
+    order: Number(cms?.order) || base.order || idx + 1,
+    featured: cms?.featured !== void 0 ? Boolean(cms.featured) : Boolean(base.featured),
+    ...Number.isFinite(Number(cms?.featuredOrder)) && Number(cms?.featuredOrder) > 0 ? { featuredOrder: Math.floor(Number(cms.featuredOrder)) } : {}
   };
 }
 var baseSlugSet = new Set(BASE_PRODUCTS_DATA.map((b) => b.slug));
@@ -1810,6 +1883,42 @@ function verifyCanonicalProduct(rawProductId, rawProductSlug, rawProductName) {
         verifiedSlug: matched.slug,
         verifiedCategory: matched.category,
         verifiedLabel: `${matched.nameVi} / ${matched.name} (${matched.slug})`,
+        isCatalogVerified: true
+      };
+    }
+    if (needle === "granola") {
+      return {
+        verifiedId: "granola",
+        verifiedSlug: "granola",
+        verifiedCategory: "",
+        verifiedLabel: "OEM Custom Inquiry: Fruit & Nut Granola (Made to Order)",
+        isCatalogVerified: true
+      };
+    }
+    if (needle === "fruit-and-nut-balls") {
+      return {
+        verifiedId: "fruit-and-nut-balls",
+        verifiedSlug: "fruit-and-nut-balls",
+        verifiedCategory: "",
+        verifiedLabel: "OEM Custom Inquiry: Fruit & Nut Energy Balls (Made to Order)",
+        isCatalogVerified: true
+      };
+    }
+    if (needle === "honey-infused-dried-fruit") {
+      return {
+        verifiedId: "honey-infused-dried-fruit",
+        verifiedSlug: "honey-infused-dried-fruit",
+        verifiedCategory: "",
+        verifiedLabel: "OEM Custom Inquiry: Honey-Infused Dried Fruit (Made to Order)",
+        isCatalogVerified: true
+      };
+    }
+    if (needle === "chocolate-dipped-dried-fruit") {
+      return {
+        verifiedId: "chocolate-dipped-dried-fruit",
+        verifiedSlug: "chocolate-dipped-dried-fruit",
+        verifiedCategory: "",
+        verifiedLabel: "OEM Custom Inquiry: Chocolate-Dipped Dried Fruit (Made to Order)",
         isCatalogVerified: true
       };
     }

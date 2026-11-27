@@ -31,8 +31,10 @@ import {
   type TradeTerm,
   type ShippingMode,
   FIELD_LIMITS,
+  OEM_INQUIRY_LINE_IDS,
   OEM_PRODUCT_ID,
   VALUE_ADDED_PRODUCT_ID,
+  isOemInquiryLineId,
   getLocalizedProductLabel,
   resolveCanonicalProduct,
   validateContactForm,
@@ -105,7 +107,7 @@ export const Contact: React.FC = () => {
         categoryId: matched.category,
         customProductLabel: '',
       }));
-    } else if (!val || val === VALUE_ADDED_PRODUCT_ID || val === OEM_PRODUCT_ID) {
+    } else if (!val || val === VALUE_ADDED_PRODUCT_ID || val === OEM_PRODUCT_ID || isOemInquiryLineId(val)) {
       setFormData((prev) => ({
         ...prev,
         productId: val,
@@ -687,14 +689,11 @@ export const Contact: React.FC = () => {
                             {getProductLocalized(p, language).name}
                           </option>
                         ))}
-                        <option value={VALUE_ADDED_PRODUCT_ID}>
-                          {pick({
-                            vi: 'Trái cây mật ong / Phủ sô-cô-la / Granola & Viên hạt',
-                            en: 'Honey-Infused / Chocolate-Dipped / Granola & Fruit Balls',
-                            ko: '벌꿀 인퓨즈드 / 초콜릿 디핑 / 그래놀라 & 에너지 볼',
-                            zh: '蜂蜜浸渍果干 / 巧克力蘸酱果干 / 格兰诺拉与能量球',
-                          })}
-                        </option>
+                        {OEM_INQUIRY_LINE_IDS.map((lineId) => (
+                          <option key={lineId} value={lineId}>
+                            {getLocalizedProductLabel(lineId, '', language)}
+                          </option>
+                        ))}
                         <option value={OEM_PRODUCT_ID}>
                           {pick({
                             vi: 'Gia công theo quy cách riêng (OEM / ODM)',

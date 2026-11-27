@@ -131,6 +131,8 @@
   "shelf_life": "12 Tháng",
   "packaging": "Túi zip 100g, 250g, 500g / Thùng carton xuất khẩu 5kg, 10kg nạp khí Nitơ / OEM nhãn riêng",
   "order": 7,
+  "featured": true,
+  "featuredOrder": 1,
   "published": true,
   "status": "published"
 }

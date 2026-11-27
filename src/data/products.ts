@@ -1,3 +1,5 @@
+import { CATALOG_CATEGORIES, type CatalogCategoryDefinition } from '../shared/catalogCategories.js';
+
 export type CertificationScopeType =
   | 'product'
   | 'facility'
@@ -135,6 +137,8 @@ export interface ProductItem {
   shelf_life?: string;
   packaging?: string;
   order?: number;
+  featured?: boolean;
+  featuredOrder?: number;
 }
 
 const BASE_PRODUCTS_DATA: ProductItem[] = [
@@ -758,32 +762,22 @@ const BASE_PRODUCTS_DATA: ProductItem[] = [
 
 import type { Language } from '../i18n/localize.js';
 
-export const CATEGORY_LABELS: Record<ProductCategory, { vi: string; en: string; ko: string; zh: string }> = {
-  'soft-dried': {
-    vi: 'Trái cây sấy dẻo',
-    en: 'Soft-Dried Fruits',
-    ko: '소프트 건조 과일',
-    zh: '软烘干果'
-  },
-  chips: {
-    vi: 'Trái cây sấy giòn',
-    en: 'Fruit Chips',
-    ko: '크리스피 과일 칩',
-    zh: '香脆果干片'
-  },
-  'nuts-seeds': {
-    vi: 'Hạt dinh dưỡng',
-    en: 'Nuts & Seeds',
-    ko: '견과류 및 연자육',
-    zh: '坚果与莲子'
-  },
-  mixed: {
-    vi: 'Sản phẩm thập cẩm',
-    en: 'Mixed Products',
-    ko: '모듬 과일·채소',
-    zh: '综合果蔬'
-  }
-};
+export const CATEGORY_LABELS: Record<ProductCategory, { vi: string; en: string; ko: string; zh: string }> =
+  CATALOG_CATEGORIES.reduce(
+    (
+      acc: Record<ProductCategory, { vi: string; en: string; ko: string; zh: string }>,
+      cat: CatalogCategoryDefinition
+    ) => {
+      acc[cat.id] = {
+        vi: cat.name.vi,
+        en: cat.name.en,
+        ko: cat.name.ko || cat.name.en,
+        zh: cat.name.zh || cat.name.en,
+      };
+      return acc;
+    },
+    {} as Record<ProductCategory, { vi: string; en: string; ko: string; zh: string }>
+  );
 
 export function getCategoryDefaultLabel(category: ProductCategory, lang: Language): string {
   const cat = CATEGORY_LABELS[category];
@@ -1809,7 +1803,11 @@ function buildProductFromBaseAndCms(base: ProductItem, cms: any, idx: number, is
     ...(cms?.imageAltEn ? { imageAltEn: cms.imageAltEn } : {}),
     published,
     status: published ? 'published' : 'draft',
-    order: Number(cms?.order) || base.order || idx + 1
+    order: Number(cms?.order) || base.order || idx + 1,
+    featured: cms?.featured !== undefined ? Boolean(cms.featured) : Boolean(base.featured),
+    ...(Number.isFinite(Number(cms?.featuredOrder)) && Number(cms?.featuredOrder) > 0
+      ? { featuredOrder: Math.floor(Number(cms.featuredOrder)) }
+      : {}),
   };
 }
 

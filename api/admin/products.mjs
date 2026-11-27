@@ -814,6 +814,8 @@ function validateProduct(input) {
     ...cleanStr(raw.imageAltEn) ? { imageAltEn: cleanStr(raw.imageAltEn) } : {},
     published,
     status,
+    featured: raw.featured !== void 0 ? Boolean(raw.featured) : false,
+    ...Number.isFinite(Number(raw.featuredOrder)) && Number(raw.featuredOrder) > 0 ? { featuredOrder: Math.floor(Number(raw.featuredOrder)) } : {},
     // Compatibility aliases
     name_vi: nameVi,
     name_en: name,
@@ -936,7 +938,9 @@ var products_default = wrapHandler(async (req, res) => {
           certifications: Array.isArray(raw.certifications) ? raw.certifications : [],
           published,
           status: published ? "published" : "draft",
-          order: Number(raw.order) || idx + 1
+          order: Number(raw.order) || idx + 1,
+          featured: Boolean(raw.featured),
+          ...Number.isFinite(Number(raw.featuredOrder)) && Number(raw.featuredOrder) > 0 ? { featuredOrder: Math.floor(Number(raw.featuredOrder)) } : {}
         };
       };
       if (useGitHub) {

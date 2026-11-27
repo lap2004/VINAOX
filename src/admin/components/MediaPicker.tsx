@@ -24,7 +24,7 @@ export interface MediaPickerProps {
   onClose: () => void;
   onSelect: (url: string, item?: MediaPickerItem) => void;
   currentValue?: string;
-  initialCategory?: 'all' | 'about' | 'news' | 'products' | 'certificates' | 'banners';
+  initialCategory?: 'all' | 'homepage' | 'about' | 'news' | 'products' | 'certificates' | 'banners';
   title?: string;
 }
 
@@ -314,6 +314,7 @@ export const MediaPicker: React.FC<MediaPickerProps> = ({
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                   {[
                     { id: 'all', label: 'Tất cả' },
+                    { id: 'homepage', label: 'Trang chủ' },
                     { id: 'about', label: 'Về chúng tôi / Nhà máy' },
                     { id: 'products', label: 'Sản phẩm' },
                     { id: 'news', label: 'Tin tức' },

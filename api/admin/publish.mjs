@@ -507,11 +507,12 @@ async function getCommitDeployStatus(commitSha) {
 // server/admin/publish.ts
 import fs from "fs";
 import path from "path";
-var ALLOWED_MODULES = ["news", "products", "about", "certificates", "media", "brochure", "company", "all"];
+var ALLOWED_MODULES = ["news", "products", "about", "homepage", "certificates", "media", "brochure", "company", "all"];
 var MODULE_LABELS = {
   news: "Tin t\u1EE9c & B\xE1o ch\xED",
   products: "S\u1EA3n ph\u1EA9m nhi\u1EC7t \u0111\u1EDBi",
   about: "Trang V\u1EC1 ch\xFAng t\xF4i",
+  homepage: "Trang ch\u1EE7 & Danh m\u1EE5c",
   certificates: "Ch\u1EE9ng nh\u1EADn & Ti\xEAu chu\u1EA9n",
   media: "Th\u01B0 vi\u1EC7n h\xECnh \u1EA3nh",
   brochure: "H\u1ED3 s\u01A1 n\u0103ng l\u1EF1c (Brochure)",

@@ -7,9 +7,11 @@ import {
   type ContactRequest,
   type QuotationProduct,
   FIELD_LIMITS,
+  OEM_INQUIRY_LINE_IDS,
   OEM_PRODUCT_ID,
   VALUE_ADDED_PRODUCT_ID,
   getLocalizedProductLabel,
+  isOemInquiryLineId,
   resolveCanonicalProduct,
   validateContactForm,
 } from '../contact/contactSchema';
@@ -138,7 +140,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
         categoryId: matched.category,
         customProductLabel: '',
       }));
-    } else if (!val || val === VALUE_ADDED_PRODUCT_ID || val === OEM_PRODUCT_ID) {
+    } else if (!val || val === VALUE_ADDED_PRODUCT_ID || val === OEM_PRODUCT_ID || isOemInquiryLineId(val)) {
       setFormData((prev) => ({
         ...prev,
         productId: val,
@@ -536,14 +538,11 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                       {getProductLocalized(p, language).name}
                     </option>
                   ))}
-                  <option value={VALUE_ADDED_PRODUCT_ID}>
-                    {pick({
-                      vi: 'Trái cây sấy tẩm mật ong / Phủ Sô-cô-la / Granola',
-                      en: 'Honey-Infused & Chocolate-Dipped / Granola',
-                      ko: '천연 벌꿀 인퓨즈드 / 초콜릿 디핑 / 그래놀라',
-                      zh: '蜂蜜浸渍果干 / 巧克力蘸酱果干 / 格兰诺拉麦片',
-                    })}
-                  </option>
+                  {OEM_INQUIRY_LINE_IDS.map((lineId) => (
+                    <option key={lineId} value={lineId}>
+                      {getLocalizedProductLabel(lineId, '', language)}
+                    </option>
+                  ))}
                   <option value={OEM_PRODUCT_ID}>
                     {pick({
                       vi: 'Gia công OEM / ODM & Nhãn riêng (Private Label)',

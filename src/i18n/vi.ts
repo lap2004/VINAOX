@@ -2,8 +2,8 @@ import type { Translations } from './en';
 
 export const vi: Translations = {
   "meta": {
-    "title": "VINAXO - Trái Cây Sấy Tự Nhiên | Doanh Nghiệp Xuất Khẩu Nông Sản Việt Nam",
-    "description": "CÔNG TY TNHH VINAXO (Tiền Giang & Đồng Tháp) chuyên chế biến và xuất khẩu xoài sấy dẻo tự nhiên, mít sấy, thơm sấy, thanh long sấy. Đạt chuẩn BRCGS Grade B, OCOP 3 sao, xuất khẩu Mỹ, EU, Nga."
+    "title": "VINAXO - Nhà Sản Xuất Trái Cây Sấy & Hạt Dinh Dưỡng Việt Nam",
+    "description": "CÔNG TY TNHH VINAXO (Đồng Tháp) chuyên chế biến và xuất khẩu Trái cây sấy dẻo, Trái cây sấy giòn, Hạt dinh dưỡng, Sản phẩm thập cẩm và gia công OEM. Đạt chuẩn BRCGS Grade B, US FDA, ISO 22000:2018 & OCOP 3 sao."
   },
   "nav": {
     "home": "Trang chủ",

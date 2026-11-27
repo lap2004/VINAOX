@@ -17,6 +17,7 @@ import {
   Clock,
   AlertCircle,
   Zap,
+  Home,
   Info
 } from 'lucide-react';
 import { getAllArticles, isArticleDraft } from '../../services/contentService';
@@ -136,6 +137,15 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const modulesList = [
+    {
+      key: 'homepage',
+      name: 'Trang chủ & Danh mục',
+      desc: 'Quản lý Hero, 4 Danh mục chính thức, Dòng OEM riêng & tối đa 4 Sản phẩm tiêu biểu',
+      icon: <Home size={20} color="#D97706" />,
+      bg: '#FFF8EC',
+      link: '/admin/homepage',
+      manageLabel: 'Quản lý trang chủ'
+    },
     {
       key: 'news',
       name: 'Tin tức & Báo chí',

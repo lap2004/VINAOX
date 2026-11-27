@@ -2,8 +2,8 @@ import type { Translations } from './en';
 
 export const zhCN: Translations = {
   "meta": {
-    "title": "VINAXO – 越南热带果干生产与出口制造商",
-    "description": "VINAXO COMPANY LIMITED（越南同塔省、前江省）专业加工与出口天然软烘芒果干、菠萝蜜干、菠萝干及红心火龙果干。通过 BRCGS Grade B 及 OCOP 三星认证，远销美国、欧盟、俄罗斯及东亚市场。"
+    "title": "VINAXO – 越南热带果干、坚果生产与 OEM 出口制造商",
+    "description": "VINAXO COMPANY LIMITED（越南同塔省）专业加工与出口软烘干果、香脆果干片、坚果、综合果蔬脆片及 OEM 贴牌产品。通过 BRCGS Grade B、US FDA 与 ISO 22000:2018 认证。"
   },
   "nav": {
     "home": "首页",
